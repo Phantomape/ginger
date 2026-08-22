@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-07-27T07:13:30Z",
+  "research_date": "2026-07-27",
+  "timezone": "America/Los_Angeles",
+  "experiment_id_reserved": false,
+  "strategy_changed": false,
+  "orders_changed": false,
+  "generation_budget": {
+    "exploration": 1,
+    "adjacent": 2,
+    "exploitation": 0,
+    "selection_used_historical_winner_rate": false
+  },
+  "baseline_universe": [
+    "47-name cash-feasible core universe",
+    "1228-name broad-market observation universe",
+    "current 12-position account",
+    "accepted default-off paper sleeves",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash / no executable new entry",
+  "opportunity_cost_shadow": {
+    "ticker": "RTX",
+    "strategy": "trend_long",
+    "status": "shadow_only_not_executable",
+    "reason": "The 2026-07-26 cross-section contains one core signal, but live position control fails closed on missing daily-report controls and the report/open-position as-of mismatch."
+  },
+  "evidence_surfaces_used": [
+    {
+      "surface": "price",
+      "state": "cold warehouse through 2026-06-15 plus hot overlay through 2026-07-24",
+      "pit_boundary": "canonical frozen windows for Gate 1-4; hot overlay is current observation/settlement only"
+    },
+    {
+      "surface": "flow",
+      "state": "13188 Moomoo daily-flow rows across 62 tickers through 2026-07-24; four forward PIT dates after 2026-07-20",
+      "settled_count": 0
+    },
+    {
+      "surface": "derivatives",
+      "state": "options-forward has 241 candidates and 30 scoring-allowed rows after hot-overlay repair; paired flow/options eligibility remains below contract",
+      "readiness": "requires at least 10 forward PIT flow dates and 20 settled paired disagreement decisions"
+    },
+    {
+      "surface": "event",
+      "state": "entity-theme observer has 67212 settled rows versus 71268 reopen threshold; SEC contract-relation daily surface emitted zero provenance/counterparty rows"
+    },
+    {
+      "surface": "positioning",
+      "state": "ORTEX observer remains default-off and the current entry-admission branch lacks availability plus current cost-to-borrow-new coverage; Form4/13D/13G cohorts are underpowered"
+    },
+    {
+      "surface": "portfolio_exposure",
+      "state": "12 positions and 22204.45 USD cash; live drift is below alert threshold, but position control fails closed for new adds"
+    },
+    {
+      "surface": "external_research_digest",
+      "state": "all displayed entries have terminal dispositions; mechanism_scan_20260727_001 recorded a valid zero-lead abstention"
+    }
+  ],
+  "evidence_surfaces_missing": [
+    "20 independent closed flow-put decisions with cash/SPY/QQQ replacement values and at least five selected and settled decisions per evaluation window",
+    "25 closed Form4 rows including at least eight high-sale-overhang rows joined to executable flow-put decisions",
+    "six additional forward PIT flow dates and 20 settled paired flow/options disagreements",
+    "4056 additional entity-theme settlements to satisfy the registered axis-c threshold",
+    "an authorized canonical-PIT new physical bottleneck source with an observable same-cohort market prior and executable touches"
+  ],
+  "hypothesis_candidates": [
+    {
+      "id": "form4_sale_overhang_x_flow_put_stabilization",
+      "queue": "adjacent",
+      "decision_surface": "entry admission audit on the default-off flow-put sleeve",
+      "baseline": "unchanged core drawdown flow-put stabilization selection",
+      "treatment": "exclude or down-rank only contemporaneous high Form4 sale-overhang rows after the frozen cohorts mature",
+      "expected_horizon": "H10 primary; H5 and H20 diagnostics",
+      "replacement_value_comparator": "cash, SPY, QQQ, low/no-sale-overhang complement and the same-day core alternative",
+      "economic_mechanism": "heavy insider sale supply can distinguish information-driven drawdowns from forced-selling exhaustion, falsifying a price-flow-options rebound signal when insiders are distributing",
+      "falsifier": "high-overhang rows do not underperform the complement after costs, either chronological half has nonpositive replacement value, concentration exceeds 40%, or any evaluation window has fewer than five joined touches",
+      "evidence_grade": "lead",
+      "current_joint_touch_count": 0,
+      "legal_reopen_axis": "axis-c only after both predeclared forward cohorts mature"
+    },
+    {
+      "id": "options_confirmation_x_flow_event_disagreement",
+      "queue": "adjacent",
+      "decision_surface": "candidate ranking within already-produced event rows",
+      "baseline": "existing event candidate order",
+      "treatment": "rank only paired PIT decisions where flow and options state disagree under a frozen rule",
+      "expected_horizon": "H5/H10/H20",
+      "replacement_value_comparator": "cash, SPY, QQQ, original event candidate and displaced same-day core candidate",
+      "economic_mechanism": "options convexity/liquidity can separate hedging demand from informed directional flow",
+      "falsifier": "paired disagreements remain sparse, unstable, concentrated or nonpositive after costs",
+      "evidence_grade": "observer",
+      "legal_reopen_axis": "axis-c after 10 forward PIT flow dates and 20 settled paired decisions"
+    },
+    {
+      "id": "physical_bottleneck_external_mechanism_scan",
+      "queue": "exploration",
+      "decision_surface": "research-map mechanism generation only",
+      "baseline": "current strategy without a bottleneck mechanism score",
+      "treatment": "outcome-blind external source scan with no ranking, experiment reservation or strategy mutation",
+      "expected_horizon": "not applicable until a source-qualified expectation-gap lead exists",
+      "replacement_value_comparator": "cash, SPY, QQQ and exact displaced core candidate in any later candidate contract",
+      "economic_mechanism": "a physical supply response lag may create a source-dated expectation gap",
+      "falsifier": "no two independent authorized canonical-PIT sources with a bound observable market prior",
+      "evidence_grade": "lead_abstained",
+      "scan_run_id": "mechanism_scan_20260727_001",
+      "lead_count": 0
+    }
+  ],
+  "selected_hypothesis": "form4_sale_overhang_x_flow_put_stabilization",
+  "economic_mechanism": "insider distribution may reveal information-driven supply and invalidate a liquidity-exhaustion rebound interpretation when price stabilization, positive flow and downside-option crowding otherwise agree",
+  "falsifier": "after the fixed cohorts mature, high-overhang joined decisions fail to underperform the complement or fail the predeclared half, window, replacement-value or concentration checks",
+  "evidence_grade": "lead",
+  "next_machine_action": "do not reserve an experiment; continue routine producer-before-consumer forward collection and recheck only when the exact Form4/flow-put or registered readiness counters materially advance",
+  "reopen_readiness_summary": {
+    "ready_lane_count": 0,
+    "lane_count": 11,
+    "closest_registered_lane": "entity_theme_axis_c",
+    "closest_registered_counter": "67212/71268"
+  },
+  "research_digest_disposition": {
+    "actionable_fresh_entries": 0,
+    "new_ledger_rows_appended": 0,
+    "latest_mechanism_scan_status": "no_new_lead"
+  }
+}

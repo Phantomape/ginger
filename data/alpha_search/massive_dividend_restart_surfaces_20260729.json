@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "opportunity_cost"
+      ],
+      "artifacts": [
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 94,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_candidate_order_or_cash_at_decision",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Use only as the frozen active opportunity-cost comparator; it grants no novelty or promotion authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-28T21:34:22Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json": "d8af32ec2cfd73036f81ed8f347e3c09e891e91685e6fc6ff8404ee7f14cb03e",
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "massive_dividend_restart_research_pit_20260728",
+      "data_source": "massive_full_market_ohlcv",
+      "component_sources": [
+        "massive_full_market_ohlcv"
+      ],
+      "roles": [
+        "independent_evidence",
+        "candidate_pool",
+        "official_event",
+        "price_revealed_context",
+        "liquidity"
+      ],
+      "artifacts": [
+        "data/alpha_search/massive_dividend_declaration_readiness_20260728.json",
+        "experiments/logs/exp-20260728-008.json",
+        "data/experiments/exp-20260728-002/after_source_surface.json",
+        "data/alpha_search/massive_normalization_readiness_20260728.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 5805212,
+      "candidate_overlap_count": 94,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "A positive private replay remains observed-only until immutable as-published dividend vintages and shared replay/daily parity are independently verified.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-29T00:05:09Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/massive_dividend_declaration_readiness_20260728.json": "656064b54c04c775c819fe6209cc353e492a2473c90f496b5e4f67000ca73916",
+        "experiments/logs/exp-20260728-008.json": "d44c682f4b2eb961298e85816394a240d5d54070766de46999a7ad2351305be6",
+        "data/experiments/exp-20260728-002/after_source_surface.json": "d607f2debcdd44925abac522ff75df88da0aa68d550850cc5035ab85797a69bc",
+        "data/alpha_search/massive_normalization_readiness_20260728.json": "adbda5afa1ef7c92135e2f1efca75f2fd641010da930ccebcedb91e9a4251e7e"
+      },
+      "research_pit_basis": "Official dividend rows and session-date unadjusted grouped daily bars are retrieval-time hash-bound. Decisions use only provider_id, ticker, declaration_date, ex_dividend_date, positive cash_amount and USD currency; each decision requires full 1095-day source coverage and exactly 20 rows with trade_date <= declaration_date. Later prices are excluded until a separately promoted replay. Immutable as-published historical Massive vintages and corrections remain unverified.",
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "massive_reference_asof_identity_research_pit_20260728",
+      "data_source": "massive_reference_asof_identity",
+      "component_sources": [
+        "massive_reference_asof_identity"
+      ],
+      "roles": [
+        "independent_evidence",
+        "candidate_universe",
+        "identity"
+      ],
+      "artifacts": [
+        "data/alpha_search/massive_asof_identity_readiness_20260728.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 188528,
+      "candidate_overlap_count": 94,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "A positive private replay remains observed-only until the dated reference endpoint has immutable as-published vintage proof; descriptive revisions and FIGIs remain excluded from decisions.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-28T10:59:15Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/massive_asof_identity_readiness_20260728.json": "04bae7c39f5bb76980c9553165c53c1110e0570b8d4279cf130a9094344e0a00"
+      },
+      "research_pit_basis": "The official dated reference query freezes active=true,type=CS membership by reference snapshot date and a New York close decision cutoff. Candidate decisions use only as_of, ticker, type and active; future descriptive revisions are quarantined and immutable as-published vintage proof remains absent.",
+      "known_future_leakage": false
+    }
+  ]
+}

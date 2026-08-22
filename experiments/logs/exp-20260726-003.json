@@ -1,0 +1,1049 @@
+{
+  "acceptance_basis": "The real +520.64bp legacy MRVL alert is reproduced; broker and operator evidence are kept separate; non-persisting v3 retains exact raw core metrics while clearing the false policy alert; valid trend_long fills still alert; v1/v2 compatibility and v3 fail-closed behavior pass; canonical hashes and all three Gate-1 windows remain exact.",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "active_gate1_baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "after": {
+    "alert": {
+      "bucket": "core",
+      "consecutive_breach_sessions": 0,
+      "fill_alert": false,
+      "latest_mean_fill_drift_pct": null,
+      "sessions_observed": 2,
+      "thresholds": {
+        "consecutive_sessions": 10,
+        "mean_fill_drift_pct": 0.003,
+        "trajectory_drift_pct": -0.015
+      },
+      "trajectory_alert": false
+    },
+    "appended_rows": 0,
+    "raw_core_bucket": {
+      "mean_fill_drift_pct": 0.052064,
+      "notional_usd": 1942.3,
+      "positions": 1,
+      "reconciled": 1,
+      "weighted_trajectory_drift_pct": -0.047799
+    },
+    "rule_version": "live_drift_reconciliation_v3"
+  },
+  "after_metrics": {
+    "expected_value_score_sum": 6.2057,
+    "minimum_survival_rate": 0.8116,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "alpha_hypothesis": "Default-off core drawdown stabilization that combines price stabilization, positive flow, and elevated near-put positioning may identify forced-selling exhaustion; its forward settlements remain insufficient for an alpha claim.",
+  "alpha_ready": false,
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "47-name cash-feasible core",
+      "current broad observation universe",
+      "current broker account positions",
+      "accepted default-off sleeves",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "economic_mechanism": "Price stabilization plus flow absorption and crowded downside hedging may mark exhaustion of forced selling.",
+    "evidence_grade": "measurement_repair_underlying_alpha_observer",
+    "evidence_surfaces_missing": [
+      "20 independent closed flow-put decisions",
+      "intraday strict 100/20/5/5 maturity",
+      "revision cash conflicts and H5/H10/H20 settlements",
+      "settled prediction-market rows"
+    ],
+    "evidence_surfaces_used": [
+      "price",
+      "flow",
+      "derivatives",
+      "events",
+      "positioning",
+      "portfolio exposure",
+      "operator position provenance",
+      "broker execution facts",
+      "live drift ledger/state",
+      "research digest"
+    ],
+    "falsifier": "Survival below 5%, nonpositive chronological halves, single-name positive-PnL concentration above 40%, or insufficient independent closes.",
+    "hypothesis_candidates": [
+      {
+        "baseline": "cash and baseline core candidate pool",
+        "falsifier": "low survival, weak chronological halves, or concentration",
+        "horizon": "fixed forward close windows",
+        "lead": "deep-drawdown stabilization x positive flow x near-put OI",
+        "replacement_value": "cash-feasible next-best candidate or cash",
+        "treatment": "default-off three-surface observer candidate"
+      },
+      {
+        "baseline": "same-session eligible universe",
+        "falsifier": "fewer than 10 cash conflicts or 30 settlements per horizon",
+        "horizon": "H5/H10/H20",
+        "lead": "timestamp-safe estimate revision x muted price response",
+        "replacement_value": "cash-feasible candidate displaced at admission",
+        "treatment": "revision-ranked default-off candidate"
+      },
+      {
+        "baseline": "next-close hold",
+        "falsifier": "strict cohorts fail the frozen 100/20/5/5 contract",
+        "horizon": "same-session to next close",
+        "lead": "intraday REDUCE_RISK versus next-close hold",
+        "replacement_value": "realized avoided loss net of execution",
+        "treatment": "deterministic reduce-risk observer action"
+      }
+    ],
+    "next_machine_action": "Continue routine observer production and settlements without new IDs; retain cash until a frozen reopen contract is met.",
+    "opportunity_cost_winner": "cash/no new executable entry",
+    "selected_hypothesis": "core drawdown price-flow-derivatives observer"
+  },
+  "before": {
+    "legacy_alert_reproduction": {
+      "bucket": "core",
+      "consecutive_breach_sessions": 2,
+      "fill_alert": true,
+      "latest_mean_fill_drift_pct": 0.052064,
+      "sessions_observed": 2,
+      "thresholds": {
+        "consecutive_sessions": 10,
+        "mean_fill_drift_pct": 0.003,
+        "trajectory_drift_pct": -0.015
+      },
+      "trajectory_alert": false
+    },
+    "mrvl_core_legacy_rows": [
+      {
+        "asof_date": "2026-07-23",
+        "avg_cost": 211.56,
+        "close_asof": 209.32,
+        "entry_date": "2026-07-22",
+        "fill_drift_pct": 0.052064,
+        "market_val": 2045.8,
+        "modeled_entry_price": 201.0905,
+        "modeled_return_pct": 0.040924,
+        "position_id": 5438192453869111284,
+        "realized_return_pct": -0.032993,
+        "reason": null,
+        "reconcilable": true,
+        "rule_version": "live_drift_reconciliation_v2",
+        "shares": 10.0,
+        "strategy_bucket": "core",
+        "suspect_multi_fill": false,
+        "ticker": "MRVL",
+        "trajectory_drift_pct": -0.073917,
+        "unrealized_pl": -69.8
+      },
+      {
+        "asof_date": "2026-07-24",
+        "avg_cost": 211.56,
+        "close_asof": 194.23,
+        "entry_date": "2026-07-22",
+        "fill_drift_pct": 0.052064,
+        "market_val": 1942.3,
+        "modeled_entry_price": 201.0905,
+        "modeled_return_pct": -0.034117,
+        "position_id": 5438192453869111284,
+        "realized_return_pct": -0.081915,
+        "reason": null,
+        "reconcilable": true,
+        "rule_version": "live_drift_reconciliation_v2",
+        "shares": 10.0,
+        "strategy_bucket": "core",
+        "suspect_multi_fill": false,
+        "ticker": "MRVL",
+        "trajectory_drift_pct": -0.047799,
+        "unrealized_pl": -173.3
+      }
+    ],
+    "persisted_state": {
+      "alert": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 2,
+        "fill_alert": true,
+        "latest_mean_fill_drift_pct": 0.052064,
+        "sessions_observed": 2,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "appended_rows": 12,
+      "asof_date": "2026-07-24",
+      "buckets": {
+        "core": {
+          "mean_fill_drift_pct": 0.052064,
+          "notional_usd": 1942.3,
+          "positions": 1,
+          "reconciled": 1,
+          "weighted_trajectory_drift_pct": -0.047799
+        },
+        "discretionary_legacy": {
+          "mean_fill_drift_pct": -0.004701,
+          "notional_usd": 2587.3,
+          "positions": 2,
+          "reconciled": 2,
+          "weighted_trajectory_drift_pct": 0.004962
+        },
+        "sleeve": {
+          "mean_fill_drift_pct": 0.019428,
+          "notional_usd": 30043.39,
+          "positions": 9,
+          "reconciled": 9,
+          "suspect_multi_fill": 2,
+          "weighted_trajectory_drift_pct": -0.016496
+        }
+      },
+      "contract": "docs/live_drift_reconciliation.md",
+      "generated_at": "2026-07-25T03:34:24+00:00",
+      "position_count": 12,
+      "production_impact": "observe_only_no_orders_no_ranking_no_sizing",
+      "reconciled_count": 12,
+      "rule_version": "live_drift_reconciliation_v2",
+      "status": "ok",
+      "unreconcilable": []
+    }
+  },
+  "before_metrics": {
+    "expected_value_score_sum": 6.2057,
+    "minimum_survival_rate": 0.8116,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "calibration": {
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "provenance_not_reliably_available",
+      "historical_rows_cannot_be_reclassified",
+      "valid_core_alert_suppressed"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_modes": [],
+    "surprise_note": "Current-position provenance cleanly enriches append-only v1/v2 alert copies while v3 raw exposure metrics remain exact."
+  },
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_files": [
+    "quant/live_drift_reconciliation.py",
+    "quant/test_live_drift_reconciliation.py",
+    "docs/live_drift_reconciliation.md",
+    "quant/experiments/exp_20260726_003_live_drift_policy_entry_eligibility.py",
+    "data/experiments/exp-20260726-003/exp_20260726_003_live_drift_policy_entry_eligibility.json",
+    "experiments/logs/exp-20260726-003.json",
+    "experiments/cards/exp-20260726-003.md",
+    "experiments/manifests/exp-20260726-003.json",
+    "experiments/tickets/exp-20260726-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "changed_variable": "live_drift policy-entry eligibility distinct from core-slot exposure ownership",
+  "checks": {
+    "canonical_live_drift_ledger_and_state_hashes_unchanged": true,
+    "focused_19_tests_and_pycompile_passed": true,
+    "persisted_v1_v2_rows_remain_append_only": true,
+    "real_legacy_fault_and_repair_contract_passed": true,
+    "research_digest_has_no_undispositioned_fresh_entries": true,
+    "three_window_cash_feasible_gate1_identity_passed": true,
+    "ticket_lifecycle_valid": true
+  },
+  "decision": "accepted_measurement_repair",
+  "delta_metrics": {
+    "expected_value_score_sum": 0.0,
+    "minimum_survival_rate": 0.0,
+    "positive_ev_windows": 0,
+    "total_pnl_sum": 0.0,
+    "trade_count_sum": 0,
+    "worst_max_drawdown_pct": 0.0
+  },
+  "evidence_boundary": "The broker ledger proves BUY 10 MRVL at 211.56 with a raw timestamp whose timezone is unspecified. It does not prove regular/extended hours or manual/FOMO attribution. FOMO provenance is independently read from the operator position; no session label is required by the repair.",
+  "experiment_id": "exp-20260726-003",
+  "gate1": {
+    "aggregate": {
+      "expected_value_score_sum": 6.2057,
+      "minimum_survival_rate": 0.8116,
+      "positive_ev_windows": 3,
+      "total_pnl_sum": 130992.36,
+      "trade_count_sum": 49,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "baseline": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "baseline_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "passed": true,
+    "per_window_identity": {
+      "late_strong": {
+        "cash_ledger": {
+          "cash_conservation_error": 0.0,
+          "cash_conservation_passed": true,
+          "core_realized_pnl": 70075.17,
+          "ending_cash": 170075.17,
+          "enforced": true,
+          "min_cash": 11.95,
+          "negative_cash_event_count": 0,
+          "scaled_addon_count": 0,
+          "scaled_entry_count": 7,
+          "skipped_addon_count": 2,
+          "skipped_entry_count": 10
+        },
+        "checks": {
+          "cash_ledger_match": true,
+          "daily_return_series_sha256_match": true,
+          "headline_metrics_match": true,
+          "sharpe_inference_contract_passed": true,
+          "trade_rows_sha256_match": true
+        },
+        "daily_return_series_sha256": "515a20571760ed34cf34c873216fcec237ab95bd6f7052814f9ab19a9be92166",
+        "headline": {
+          "expected_value_score": 4.1067,
+          "max_drawdown_pct": 0.0394,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "total_pnl": 70075.18,
+          "trade_count": 13
+        },
+        "passed": true,
+        "reference_headline": {
+          "expected_value_score": 4.1067,
+          "max_drawdown_pct": 0.0394,
+          "signals_generated": 54,
+          "signals_survived": 48,
+          "survival_rate": 0.8889,
+          "total_pnl": 70075.18,
+          "trade_count": 13
+        },
+        "trade_rows_sha256": "009d8eb277588aa5dcee644425b881dee837e752e1ebd8cd7b52ae86a630a308"
+      },
+      "mid_weak": {
+        "cash_ledger": {
+          "cash_conservation_error": 0.0,
+          "cash_conservation_passed": true,
+          "core_realized_pnl": 51976.42,
+          "ending_cash": 151976.42,
+          "enforced": true,
+          "min_cash": 0.44,
+          "negative_cash_event_count": 0,
+          "scaled_addon_count": 0,
+          "scaled_entry_count": 5,
+          "skipped_addon_count": 1,
+          "skipped_entry_count": 18
+        },
+        "checks": {
+          "cash_ledger_match": true,
+          "daily_return_series_sha256_match": true,
+          "headline_metrics_match": true,
+          "sharpe_inference_contract_passed": true,
+          "trade_rows_sha256_match": true
+        },
+        "daily_return_series_sha256": "687048aafc02d1be68c52b50b6865fa024876348c9b9a51a645874a117d445a4",
+        "headline": {
+          "expected_value_score": 1.9908,
+          "max_drawdown_pct": 0.0661,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "total_pnl": 51976.41,
+          "trade_count": 13
+        },
+        "passed": true,
+        "reference_headline": {
+          "expected_value_score": 1.9908,
+          "max_drawdown_pct": 0.0661,
+          "signals_generated": 69,
+          "signals_survived": 56,
+          "survival_rate": 0.8116,
+          "total_pnl": 51976.41,
+          "trade_count": 13
+        },
+        "trade_rows_sha256": "bef79cb1e7801811bba75f20f4c6bcac9c179b3079f5b35bd99d23518c89464a"
+      },
+      "old_thin": {
+        "cash_ledger": {
+          "cash_conservation_error": -0.0,
+          "cash_conservation_passed": true,
+          "core_realized_pnl": 8940.76,
+          "ending_cash": 108940.76,
+          "enforced": true,
+          "min_cash": 5.12,
+          "negative_cash_event_count": 0,
+          "scaled_addon_count": 0,
+          "scaled_entry_count": 9,
+          "skipped_addon_count": 4,
+          "skipped_entry_count": 7
+        },
+        "checks": {
+          "cash_ledger_match": true,
+          "daily_return_series_sha256_match": true,
+          "headline_metrics_match": true,
+          "sharpe_inference_contract_passed": true,
+          "trade_rows_sha256_match": true
+        },
+        "daily_return_series_sha256": "050f16d7328f12ea3e5c0e0c12688d9cbba99b2d5c2a42ca6345a8ff85626d1d",
+        "headline": {
+          "expected_value_score": 0.1082,
+          "max_drawdown_pct": 0.0889,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "total_pnl": 8940.77,
+          "trade_count": 23
+        },
+        "passed": true,
+        "reference_headline": {
+          "expected_value_score": 0.1082,
+          "max_drawdown_pct": 0.0889,
+          "signals_generated": 65,
+          "signals_survived": 60,
+          "survival_rate": 0.9231,
+          "total_pnl": 8940.77,
+          "trade_count": 23
+        },
+        "trade_rows_sha256": "117e894243589913bf3442bbd9a397e07289970049cdeeabce39bc4d5526f40b"
+      }
+    }
+  },
+  "gate2": {
+    "fields_checked": [
+      "entry_date",
+      "target_price contract unchanged",
+      "position_id",
+      "opened_by_strategy",
+      "strategy_bucket",
+      "entry_strategy_provenance",
+      "entry_strategy_provenance_field",
+      "core_execution_alert_eligible",
+      "core_execution_alert_exclusion_reason"
+    ],
+    "passed": true,
+    "provenance_boundary": "operator position, not broker timestamp inference"
+  },
+  "gate3": {
+    "entry_admission_changed": false,
+    "filter_added": false,
+    "minimum_survival_rate": 0.8116,
+    "passed": true,
+    "signals_generated": 188,
+    "signals_survived": 164,
+    "survival_floor": 0.05
+  },
+  "gate4": {
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "before_after_strategy_delta": {
+      "expected_value_score_sum": 0.0,
+      "minimum_survival_rate": 0.0,
+      "positive_ev_windows": 0,
+      "total_pnl_sum": 0.0,
+      "trade_count_sum": 0,
+      "worst_max_drawdown_pct": 0.0
+    },
+    "decision": "accepted_measurement_repair",
+    "measurement_blockers": [],
+    "passed": true
+  },
+  "hypothesis": "Urgent live-drift fault recovery: two correctly core-bucketed MRVL sessions trigger a +520.64bp fill alert, while the broker ledger proves the fill and the operator position separately identifies FOMO provenance. Separating core exposure ownership from policy-entry execution-model eligibility should preserve raw drift without treating this entry as a policy-conformant next-open fill; no timezone/session inference is required.",
+  "implementation_mode": "observe_only_live_drift_policy_entry_eligibility_v3",
+  "lane": "measurement_repair",
+  "lean_quality_passed": true,
+  "live_drift_verification": {
+    "after": {
+      "alert": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": false,
+        "latest_mean_fill_drift_pct": null,
+        "sessions_observed": 2,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "appended_rows": 0,
+      "raw_core_bucket": {
+        "mean_fill_drift_pct": 0.052064,
+        "notional_usd": 1942.3,
+        "positions": 1,
+        "reconciled": 1,
+        "weighted_trajectory_drift_pct": -0.047799
+      },
+      "rule_version": "live_drift_reconciliation_v3"
+    },
+    "before": {
+      "legacy_alert_reproduction": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 2,
+        "fill_alert": true,
+        "latest_mean_fill_drift_pct": 0.052064,
+        "sessions_observed": 2,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "mrvl_core_legacy_rows": [
+        {
+          "asof_date": "2026-07-23",
+          "avg_cost": 211.56,
+          "close_asof": 209.32,
+          "entry_date": "2026-07-22",
+          "fill_drift_pct": 0.052064,
+          "market_val": 2045.8,
+          "modeled_entry_price": 201.0905,
+          "modeled_return_pct": 0.040924,
+          "position_id": 5438192453869111284,
+          "realized_return_pct": -0.032993,
+          "reason": null,
+          "reconcilable": true,
+          "rule_version": "live_drift_reconciliation_v2",
+          "shares": 10.0,
+          "strategy_bucket": "core",
+          "suspect_multi_fill": false,
+          "ticker": "MRVL",
+          "trajectory_drift_pct": -0.073917,
+          "unrealized_pl": -69.8
+        },
+        {
+          "asof_date": "2026-07-24",
+          "avg_cost": 211.56,
+          "close_asof": 194.23,
+          "entry_date": "2026-07-22",
+          "fill_drift_pct": 0.052064,
+          "market_val": 1942.3,
+          "modeled_entry_price": 201.0905,
+          "modeled_return_pct": -0.034117,
+          "position_id": 5438192453869111284,
+          "realized_return_pct": -0.081915,
+          "reason": null,
+          "reconcilable": true,
+          "rule_version": "live_drift_reconciliation_v2",
+          "shares": 10.0,
+          "strategy_bucket": "core",
+          "suspect_multi_fill": false,
+          "ticker": "MRVL",
+          "trajectory_drift_pct": -0.047799,
+          "unrealized_pl": -173.3
+        }
+      ],
+      "persisted_state": {
+        "alert": {
+          "bucket": "core",
+          "consecutive_breach_sessions": 2,
+          "fill_alert": true,
+          "latest_mean_fill_drift_pct": 0.052064,
+          "sessions_observed": 2,
+          "thresholds": {
+            "consecutive_sessions": 10,
+            "mean_fill_drift_pct": 0.003,
+            "trajectory_drift_pct": -0.015
+          },
+          "trajectory_alert": false
+        },
+        "appended_rows": 12,
+        "asof_date": "2026-07-24",
+        "buckets": {
+          "core": {
+            "mean_fill_drift_pct": 0.052064,
+            "notional_usd": 1942.3,
+            "positions": 1,
+            "reconciled": 1,
+            "weighted_trajectory_drift_pct": -0.047799
+          },
+          "discretionary_legacy": {
+            "mean_fill_drift_pct": -0.004701,
+            "notional_usd": 2587.3,
+            "positions": 2,
+            "reconciled": 2,
+            "weighted_trajectory_drift_pct": 0.004962
+          },
+          "sleeve": {
+            "mean_fill_drift_pct": 0.019428,
+            "notional_usd": 30043.39,
+            "positions": 9,
+            "reconciled": 9,
+            "suspect_multi_fill": 2,
+            "weighted_trajectory_drift_pct": -0.016496
+          }
+        },
+        "contract": "docs/live_drift_reconciliation.md",
+        "generated_at": "2026-07-25T03:34:24+00:00",
+        "position_count": 12,
+        "production_impact": "observe_only_no_orders_no_ranking_no_sizing",
+        "reconciled_count": 12,
+        "rule_version": "live_drift_reconciliation_v2",
+        "status": "ok",
+        "unreconcilable": []
+      }
+    },
+    "broker_fill": {
+      "currency": "USD",
+      "deal_id": "813560059998291594",
+      "event_time_raw": "2026-07-22 16:05:55.249",
+      "event_time_timezone_status": "broker_local_unspecified",
+      "event_time_utc": null,
+      "evidence_boundary": "The broker record establishes a real BUY of 10 MRVL at 211.56 and retains the raw broker timestamp. Because timezone status is broker_local_unspecified and event_time_utc is null, it does not establish regular versus extended hours. It also does not establish manual/FOMO provenance; that comes from operator_inputs separately.",
+      "fact_hash": "253a7196b4f76a8651826f925ade6cccdde5fa927cb894cc1f6687de9475b737",
+      "gross_notional": "2115.6",
+      "observed_at_utc": "2026-07-23T03:01:25.546643Z",
+      "price": "211.56",
+      "quantity": "10",
+      "record_hash": "e65edb957db3474168e084889fc62194ad67598241386db82397e5d1dd801e2e",
+      "record_type": "broker_deal_snapshot",
+      "side": "BUY",
+      "source": "moomoo_opend",
+      "source_path": "data/live_pilot/broker_execution/fills.jsonl",
+      "source_sha256": "b42427bdbd007a7049bfc5529c73cebbd5a9c0f578f8f17bef1ed41c19b668e7",
+      "ticker": "MRVL",
+      "trade_environment": "REAL"
+    },
+    "checks": {
+      "alert_formulas_and_thresholds_unchanged": true,
+      "broker_real_fill_fact_matches": true,
+      "broker_timezone_and_session_not_inferred": true,
+      "current_position_enrichment_excludes_mrvl_copies": true,
+      "legacy_alert_reproduced": true,
+      "legacy_ledger_rows_remain_unmodified_in_memory": true,
+      "legacy_v1_v2_missing_field_compatibility": true,
+      "mrvl_520_64bp_exact": true,
+      "mrvl_two_forward_core_rows_reproduced": true,
+      "operator_provenance_is_fomo_but_core_exposure": true,
+      "persisted_fault_is_v2_core_fill_alert": true,
+      "raw_core_bucket_metrics_unchanged": true,
+      "signal_sentinel_fields_present": true,
+      "trend_long_core_fill_remains_eligible_and_alerts": true,
+      "v3_clears_false_policy_alert": true,
+      "v3_missing_eligibility_fails_closed": true,
+      "v3_nonpersist_build_used": true
+    },
+    "current_mrvl_position": {
+      "avg_cost": 211.56,
+      "entry_date": "2026-07-22",
+      "market_val": 1942.3,
+      "opened_by_strategy": "fomo",
+      "position_group": "core_positions",
+      "position_id": 5438192453869111284,
+      "shares": 10.0,
+      "sleeve": "core_strategy",
+      "slot_policy": "consumes_core_slot",
+      "ticker": "MRVL",
+      "unrealized_pl": -173.3
+    },
+    "legacy_in_memory_enrichment": {
+      "alert_after": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": false,
+        "latest_mean_fill_drift_pct": null,
+        "sessions_observed": 2,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "alert_before": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 2,
+        "fill_alert": true,
+        "latest_mean_fill_drift_pct": 0.052064,
+        "sessions_observed": 2,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "mrvl_enriched_rows": [
+        {
+          "asof_date": "2026-07-22",
+          "avg_cost": 211.56,
+          "close_asof": 210.99,
+          "core_execution_alert_eligible": false,
+          "core_execution_alert_exclusion_reason": "entry_not_attributable_to_core_policy",
+          "entry_date": "2026-07-22",
+          "entry_strategy_provenance": "fomo",
+          "entry_strategy_provenance_field": "opened_by_strategy",
+          "fill_drift_pct": 0.052064,
+          "market_val": 2128.1,
+          "modeled_entry_price": 201.0905,
+          "modeled_return_pct": 0.049229,
+          "position_id": 5438192453869111284,
+          "realized_return_pct": 0.005908,
+          "reason": null,
+          "reconcilable": true,
+          "rule_version": "live_drift_reconciliation_v1",
+          "shares": 10.0,
+          "strategy_bucket": "sleeve",
+          "suspect_multi_fill": false,
+          "ticker": "MRVL",
+          "trajectory_drift_pct": -0.043321,
+          "unrealized_pl": 12.5
+        },
+        {
+          "asof_date": "2026-07-23",
+          "avg_cost": 211.56,
+          "close_asof": 209.32,
+          "core_execution_alert_eligible": false,
+          "core_execution_alert_exclusion_reason": "entry_not_attributable_to_core_policy",
+          "entry_date": "2026-07-22",
+          "entry_strategy_provenance": "fomo",
+          "entry_strategy_provenance_field": "opened_by_strategy",
+          "fill_drift_pct": 0.052064,
+          "market_val": 2045.8,
+          "modeled_entry_price": 201.0905,
+          "modeled_return_pct": 0.040924,
+          "position_id": 5438192453869111284,
+          "realized_return_pct": -0.032993,
+          "reason": null,
+          "reconcilable": true,
+          "rule_version": "live_drift_reconciliation_v2",
+          "shares": 10.0,
+          "strategy_bucket": "core",
+          "suspect_multi_fill": false,
+          "ticker": "MRVL",
+          "trajectory_drift_pct": -0.073917,
+          "unrealized_pl": -69.8
+        },
+        {
+          "asof_date": "2026-07-24",
+          "avg_cost": 211.56,
+          "close_asof": 194.23,
+          "core_execution_alert_eligible": false,
+          "core_execution_alert_exclusion_reason": "entry_not_attributable_to_core_policy",
+          "entry_date": "2026-07-22",
+          "entry_strategy_provenance": "fomo",
+          "entry_strategy_provenance_field": "opened_by_strategy",
+          "fill_drift_pct": 0.052064,
+          "market_val": 1942.3,
+          "modeled_entry_price": 201.0905,
+          "modeled_return_pct": -0.034117,
+          "position_id": 5438192453869111284,
+          "realized_return_pct": -0.081915,
+          "reason": null,
+          "reconcilable": true,
+          "rule_version": "live_drift_reconciliation_v2",
+          "shares": 10.0,
+          "strategy_bucket": "core",
+          "suspect_multi_fill": false,
+          "ticker": "MRVL",
+          "trajectory_drift_pct": -0.047799,
+          "unrealized_pl": -173.3
+        }
+      ],
+      "persisted_rows_mutated": false
+    },
+    "operator_positions_path": "operator_inputs/open_positions.json",
+    "operator_positions_sha256": "ed160259a64628a14ede738fd190c41ba938edce84c5e87b1979f7ba7031942a",
+    "passed": true,
+    "raw_core_identity": {
+      "after": {
+        "mean_fill_drift_pct": 0.052064,
+        "notional_usd": 1942.3,
+        "positions": 1,
+        "reconciled": 1,
+        "weighted_trajectory_drift_pct": -0.047799
+      },
+      "before": {
+        "mean_fill_drift_pct": 0.052064,
+        "notional_usd": 1942.3,
+        "positions": 1,
+        "reconciled": 1,
+        "weighted_trajectory_drift_pct": -0.047799
+      },
+      "exact": true
+    },
+    "synthetic_policy_core_fill": {
+      "alert": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": true,
+        "latest_mean_fill_drift_pct": 0.01,
+        "sessions_observed": 1,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "row": {
+        "asof_date": "2026-07-24",
+        "avg_cost": 101.0505,
+        "close_asof": 101.0,
+        "core_execution_alert_eligible": true,
+        "core_execution_alert_exclusion_reason": null,
+        "entry_date": "2026-07-22",
+        "entry_strategy_provenance": "trend_long",
+        "entry_strategy_provenance_field": "opened_by_strategy",
+        "fill_drift_pct": 0.01,
+        "market_val": 10100.0,
+        "modeled_entry_price": 100.05,
+        "modeled_return_pct": 0.009495,
+        "position_id": "synthetic-trend-long",
+        "realized_return_pct": -0.0005,
+        "reason": null,
+        "reconcilable": true,
+        "rule_version": "live_drift_reconciliation_v3",
+        "shares": 100.0,
+        "strategy_bucket": "core",
+        "suspect_multi_fill": false,
+        "ticker": "SYNTH",
+        "trajectory_drift_pct": -0.009995,
+        "unrealized_pl": 0.0
+      }
+    },
+    "version_compatibility": {
+      "v1_missing_field": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": true,
+        "latest_mean_fill_drift_pct": 0.01,
+        "sessions_observed": 1,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "v2_missing_field": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": true,
+        "latest_mean_fill_drift_pct": 0.01,
+        "sessions_observed": 1,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      },
+      "v3_missing_field": {
+        "bucket": "core",
+        "consecutive_breach_sessions": 0,
+        "fill_alert": false,
+        "latest_mean_fill_drift_pct": null,
+        "sessions_observed": 1,
+        "thresholds": {
+          "consecutive_sessions": 10,
+          "mean_fill_drift_pct": 0.003,
+          "trajectory_drift_pct": -0.015
+        },
+        "trajectory_alert": false
+      }
+    }
+  },
+  "mechanism_family": "live_drift_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260723-010",
+    "exp-20260706-019",
+    "exp-20260707-011"
+  ],
+  "new_evidence_type": "forward_core_alert_provenance_mismatch",
+  "next_retry_requires": [
+    "No near-neighbor retry; regression tests own v3 eligibility semantics.",
+    "Underlying alpha waits for its frozen independent-settlement reopen count."
+  ],
+  "owner": "codex-alpha-automation",
+  "parameters": {
+    "fill_alert_threshold": 0.003,
+    "mrvl_expected_raw_fill_drift_bps": 520.64,
+    "mrvl_expected_raw_fill_drift_pct": 0.052064,
+    "persist": false,
+    "policy_entry_tags": [
+      "breakout_long",
+      "earnings_event_long",
+      "trend_long"
+    ],
+    "rule_version": "live_drift_reconciliation_v3",
+    "strategy_parameters_changed": false,
+    "trajectory_alert_consecutive_sessions": 10,
+    "trajectory_alert_threshold": -0.015
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another FOMO/manual core-slot alert-exclusion or v1/v2 provenance-overlay repair; focused tests own this contract.",
+    "new_evidence_required": "A new production position whose authoritative policy-entry tag is misclassified despite v3, an upstream provenance schema change, or a valid trend/breakout/earnings policy fill whose alert is suppressed.",
+    "why_result_happened": "Core-slot ownership and core-policy entry attribution were encoded as one label. MRVL correctly consumed core exposure but its FOMO operator provenance did not justify comparison with the strategy's next-open fill model."
+  },
+  "pre_run_questions": {
+    "1_money_hypothesis": "The underlying price-flow-derivatives drawdown observer may improve candidate quality; this repair only restores trustworthy execution attribution.",
+    "2_history_and_novelty": "exp-20260706-019 created the surface, exp-20260707-011 handled multi-fill warm positions, and exp-20260723-010 aligned core-slot classification. Two new correctly core-classified MRVL v2 sessions expose the distinct policy-entry provenance mismatch.",
+    "3_single_bundle": "live_drift policy-entry eligibility distinct from core-slot exposure ownership",
+    "4_acceptance": "Accept only if MRVL remains in the core exposure bucket with raw drift visible but is explicitly non-policy-entry and excluded from execution alerts; policy-conformant core fills remain alert-eligible with unchanged formulas and thresholds; historical ledger rows remain append-only; focused tests pass; and the cash-feasible Gate-1 metrics remain zero-delta.",
+    "5_reproducibility": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260726_003_live_drift_policy_entry_eligibility.py",
+    "6_opportunity_cost": "Cash/no new executable entry remains the cross-sectional winner; no current observer has enough independent settled evidence to displace it.",
+    "7_cross_surface_boundary": "Price, flow, derivatives, event, positioning, portfolio exposure, operator provenance, broker fills, and live drift were inventoried. Only the measurement boundary is changed; alpha surfaces remain immature."
+  },
+  "prediction": {
+    "confidence_reason": "The current operator position explicitly carries opened_by_strategy=fomo while shared core policy tags are explicit, and the broker ledger independently proves BUY 10 MRVL at 211.56. The broker timestamp has no established timezone/session label.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "provenance_not_reliably_available",
+      "historical_rows_cannot_be_reclassified",
+      "valid_core_alert_suppressed"
+    ],
+    "recorded_at": "2026-07-26T07:16:41+00:00",
+    "reserved_wording_caveat": "The reserved ticket's manual/ETH wording is not treated as broker evidence; only the raw fill fact and separate operator provenance are used.",
+    "success_probability": 0.9
+  },
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "observe_only": true,
+    "orders_changed": false,
+    "policy_execution_alert_attribution_changed": true,
+    "ranking_changed": false,
+    "raw_core_exposure_metrics_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_measurement_changed": true,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "quant/live_drift_reconciliation.py",
+    "quant/test_live_drift_reconciliation.py",
+    "docs/live_drift_reconciliation.md",
+    "quant/experiments/exp_20260726_003_live_drift_policy_entry_eligibility.py",
+    "data/experiments/exp-20260726-003/exp_20260726_003_live_drift_policy_entry_eligibility.json",
+    "experiments/logs/exp-20260726-003.json",
+    "experiments/cards/exp-20260726-003.md",
+    "experiments/manifests/exp-20260726-003.json",
+    "experiments/tickets/exp-20260726-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "operator_inputs/open_positions.json",
+    "data/live_pilot/live_drift/ledger.jsonl",
+    "data/live_pilot/live_drift/state.json",
+    "data/live_pilot/broker_execution/fills.jsonl",
+    "data/research_digest/latest_digest.md",
+    "data/research_digest/ledger.jsonl"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260726_003_live_drift_policy_entry_eligibility.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_live_drift_reconciliation.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "research_digest": {
+    "digest_entry_ids": [
+      "res-20260721-factor-models-need-cap-axis-diagnostics",
+      "res-20260721-macd-style-signals-need-latent-drift-and-cost-co",
+      "res-20260721-learning-agent-impact-cycles-are-stress-tests-no",
+      "res-20260721-order-flow-impact-is-a-liquidity-state-not-raw-f",
+      "res-20260721-short-trend-alpha-needs-microstructure-viability",
+      "res-20260721-intangible-investment-and-advertising-efficiency",
+      "res-20260721-10-k-narrative-distress-as-risk-context",
+      "res-20260721-13d-13g-beneficial-ownership-needs-structured-pr",
+      "res-20260721-13f-is-delayed-ownership-and-crowding-context",
+      "res-20260721-options-surface-as-risk-and-execution-context"
+    ],
+    "digest_path": "data/research_digest/latest_digest.md",
+    "digest_sha256": "071ae6d31da433148ea49fac132b0af2df5c971c496eaa655a1b8ecd3cd1fa0b",
+    "disposition": "No fresh research-digest entries; no ledger append is required.",
+    "fresh_entries": 0,
+    "fresh_entry_ids": [],
+    "ledger_append_required": false,
+    "ledger_path": "data/research_digest/ledger.jsonl",
+    "ledger_sha256": "d10f6c98ec8a5fe1c825774922d96e13adccfc86eb195f913bc2aac32417ee8f",
+    "passed": true,
+    "status_counts": {
+      "declined": 137,
+      "fresh": 133,
+      "lane_blocked": 1,
+      "parked": 5,
+      "proposed": 5
+    }
+  },
+  "reserved_ticket_hypothesis": "Urgent live-drift fault recovery: two correctly core-bucketed MRVL sessions trigger a +520.64bp fill alert even though the operator position explicitly records opened_by_strategy=fomo rather than a core-policy tag; separating core exposure ownership from policy-entry execution-model eligibility should preserve the real position and raw drift while preventing non-policy fills from masquerading as next-open strategy execution decay. The broker fill independently confirms BUY 10 MRVL at 211.56, but its broker-local timestamp has unspecified timezone and is not used to infer a regular- or extended-hours session.",
+  "reserved_ticket_hypothesis_caveat": "The reserved manual/after-hours wording is retained for audit only and is not adopted as a fact by this runner.",
+  "single_causal_variable": "live_drift policy-entry eligibility distinct from core-slot exposure ownership",
+  "source_hashes": {
+    "active_baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "broker_fills": "b42427bdbd007a7049bfc5529c73cebbd5a9c0f578f8f17bef1ed41c19b668e7",
+    "live_drift_ledger_after": "ffa0d7748acc2f32dee944ed5a2b3f4ff221be3c986d1b770de1bd0a6d4d4696",
+    "live_drift_ledger_before": "ffa0d7748acc2f32dee944ed5a2b3f4ff221be3c986d1b770de1bd0a6d4d4696",
+    "live_drift_state_after": "c12b62417d28def69604b21c1d1fa0bfee72e690825995bcad83cd41a6ed4be3",
+    "live_drift_state_before": "c12b62417d28def69604b21c1d1fa0bfee72e690825995bcad83cd41a6ed4be3",
+    "operator_positions": "ed160259a64628a14ede738fd190c41ba938edce84c5e87b1979f7ba7031942a",
+    "research_digest": "071ae6d31da433148ea49fac132b0af2df5c971c496eaa655a1b8ecd3cd1fa0b",
+    "research_digest_ledger": "d10f6c98ec8a5fe1c825774922d96e13adccfc86eb195f913bc2aac32417ee8f"
+  },
+  "status": "accepted_measurement_repair",
+  "surface_hash_guard": {
+    "after": {
+      "ledger": {
+        "byte_count": 82860,
+        "path": "data/live_pilot/live_drift/ledger.jsonl",
+        "row_count": 160,
+        "sha256": "ffa0d7748acc2f32dee944ed5a2b3f4ff221be3c986d1b770de1bd0a6d4d4696"
+      },
+      "state": {
+        "byte_count": 1372,
+        "path": "data/live_pilot/live_drift/state.json",
+        "sha256": "c12b62417d28def69604b21c1d1fa0bfee72e690825995bcad83cd41a6ed4be3"
+      }
+    },
+    "before": {
+      "ledger": {
+        "byte_count": 82860,
+        "path": "data/live_pilot/live_drift/ledger.jsonl",
+        "row_count": 160,
+        "sha256": "ffa0d7748acc2f32dee944ed5a2b3f4ff221be3c986d1b770de1bd0a6d4d4696"
+      },
+      "state": {
+        "byte_count": 1372,
+        "path": "data/live_pilot/live_drift/state.json",
+        "sha256": "c12b62417d28def69604b21c1d1fa0bfee72e690825995bcad83cd41a6ed4be3"
+      }
+    },
+    "exact": true,
+    "persist_called": false
+  },
+  "ticket_baseline_reference": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "timestamp": "2026-07-26T07:46:04Z",
+  "trial_family": "live_drift_policy_entry_provenance",
+  "trial_variant_id": "manual_eth_core_slot_execution_eligibility_v1",
+  "validation": {
+    "expected_focused_tests": 19,
+    "passed": true,
+    "runs": [
+      {
+        "command": "-B -m pytest quant/test_live_drift_reconciliation.py -q",
+        "expected_test_count_observed": true,
+        "passed": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": [
+          "...................                                                      [100%]",
+          "19 passed in 0.42s"
+        ]
+      },
+      {
+        "command": "-B -m py_compile quant/live_drift_reconciliation.py quant/test_live_drift_reconciliation.py quant/experiments/exp_20260726_003_live_drift_policy_entry_eligibility.py",
+        "expected_test_count_observed": true,
+        "passed": true,
+        "returncode": 0,
+        "stderr_tail": [],
+        "stdout_tail": []
+      }
+    ]
+  }
+}

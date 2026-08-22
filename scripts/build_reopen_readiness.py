@@ -302,8 +302,17 @@ def lane_exit_lifecycle_advisory():
 
 
 def lane_short_volume_q5_soft_tilt():
-    """Rejected exp-20260716-007. Governing reopen (exp-20260716-007 reflection):
-    >=20 PIT-tagged Q5 closed forward rows AND max single-ticker Q5 share <=40%."""
+    """Rejected exp-20260716-007. Governing reopen (exp-20260716-007 reflection,
+    STRICT-vintage rebind exp-20260813-001): >=20 honestly PIT-tagged Q5 closed
+    forward rows AND max single-ticker Q5 share <=40% on the SAME strict subset.
+
+    exp-20260813-001: the moomoo short-volume archive froze at activity_date
+    2026-06-22 while the v1 tag kept stamping ok on later entries, so raw ok
+    counts flipped this lane to a FALSE ready on 2026-08-13. The tag is now
+    rule v2 (fail-closed stale_archive + source_activity_date + collected
+    vintage); this lane counts only rows that are BOTH fresh at entry
+    (status ok) AND collected_before_entry (the source row was retrieved
+    before the entry date, i.e. genuinely knowable at decision time)."""
     path = os.path.join(REPO_ROOT, "data", "paper_sleeves", "forward_replacement_value.jsonl")
     rows = _read_jsonl(path)
     uniq = {r["decision_id"]: r for r in rows}
@@ -312,33 +321,56 @@ def lane_short_volume_q5_soft_tilt():
         if r.get("exit_date") and r.get("replacement_value_vs_cash_usd") is not None
     ]
     tagged = [r for r in settled if r.get("entry_short_volume_status") == "ok"]
-    q5 = [r for r in tagged if r.get("entry_short_volume_quintile") == 5]
-    shares = Counter(r.get("ticker") for r in q5)
-    top_ticker, top_n = (shares.most_common(1)[0] if q5 else (None, 0))
-    max_share = round(top_n / len(q5), 4) if q5 else 0.0
+    stale = [
+        r for r in settled if r.get("entry_short_volume_status") == "stale_archive"
+    ]
+    q5_any = [r for r in tagged if r.get("entry_short_volume_quintile") == 5]
+    q5_strict = [
+        r
+        for r in q5_any
+        if r.get("entry_short_volume_vintage") == "collected_before_entry"
+    ]
+    shares = Counter(r.get("ticker") for r in q5_strict)
+    top_ticker, top_n = (shares.most_common(1)[0] if q5_strict else (None, 0))
+    max_share = round(top_n / len(q5_strict), 4) if q5_strict else 0.0
     counters = {
         "tagged_settled": len(tagged),
-        "q5_settled": len(q5),
+        "stale_tagged_settled": len(stale),
+        # STRICT: fresh at entry AND source row collected before the entry date.
+        "q5_settled": len(q5_strict),
+        "q5_settled_any_vintage": len(q5_any),
+        # Q5 count when the 20-row bar was first declared (exp-20260703-003
+        # gate4 bucket_summary.toxic_q5.n); axis-C proofs bind this baseline.
+        # NOTE: that baseline was counted under the pre-repair v1 tag; the
+        # strict counter restarts low and only daily-refresh rows can grow it.
+        "q5_settled_baseline_at_park": 9,
         "max_q5_ticker_share": max_share,
         "max_q5_ticker": top_ticker,
     }
     thresholds = {"q5_settled": 20, "max_q5_ticker_share_max": 0.40}
-    ready = len(q5) >= 20 and max_share <= 0.40
-    concentration_blocked = len(q5) > 0 and max_share > 0.40
+    ready = len(q5_strict) >= 20 and max_share <= 0.40
+    concentration_blocked = len(q5_strict) > 0 and max_share > 0.40
     return {
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if ready else "not_ready",
         "threshold_source": (
             "exp-20260716-007 post_run_reflection (Q5>=20 AND max ticker share <=40%); "
-            "NOTE the ticket's own acceptance_rule said Q5>=12 -- the reflection is governing"
+            "exp-20260813-001 strict-vintage rebind: only status ok (fresh, rule v2) "
+            "AND vintage collected_before_entry rows count; raw any-vintage counts "
+            "are reported for visibility only"
         ),
         "counter_source": "data/paper_sleeves/forward_replacement_value.jsonl",
         "note": (
             "Concentration currently breached (deadlock risk): even at Q5>=20 the lane "
-            "stays blocked while one ticker holds >40% of Q5 rows."
+            "stays blocked while one ticker holds >40% of strict Q5 rows."
             if concentration_blocked
-            else "Both count and concentration must pass together."
+            else (
+                "Both count and concentration must pass together on the strict "
+                "fresh+collected_before_entry subset. Accrual requires the daily "
+                "archive refresh (moomoo_daily_short_volume_archive.py) to keep "
+                "running; a frozen archive now yields stale_archive tags, not ok."
+            )
         ),
     }
 
@@ -602,13 +634,16 @@ def lane_prediction_market_postfix():
 
 
 def lane_entity_theme_axis_c():
-    """Observed-only refresh exp-20260729-006 baseline: 73275 settled rows.
-    Axis-(c) requires >=+50% growth (>=109913) before a same-face re-probe."""
+    """Observed-only refresh exp-20260810-001 baseline: 114541 settled rows.
+    Axis-(c) requires >=+50% growth (>=171812) before a same-face re-probe.
+    Note: the entity_theme_news observed-only streak reached 3 consecutive
+    closes (exp-20260719-004, exp-20260729-006, exp-20260810-001), so a
+    fourth probe also needs an explicit observed-only override."""
     path = os.path.join(
         REPO_ROOT, "data", "non_ohlcv", "entity_theme_news_observer", "latest_outcome_summary.json"
     )
     d = json.load(open(path, encoding="utf-8"))
-    baseline = 73275
+    baseline = 114541
     current = int(d.get("settled_count") or 0)
     counters = {
         "settled_count": current,
@@ -620,9 +655,9 @@ def lane_entity_theme_axis_c():
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if current >= thresholds["settled_count"] else "not_ready",
-        "threshold_source": "AGENTS.md section 2.4 axis (c): >=+50% and >=+10 settled rows vs exp-20260729-006 baseline",
+        "threshold_source": "AGENTS.md section 2.4 axis (c): >=+50% and >=+10 settled rows vs exp-20260810-001 baseline",
         "counter_source": "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
-        "note": None,
+        "note": "observed-only streak at 3; fourth same-face probe needs --observed-only-override plus the >=171812 bar (exp-20260810-001: sole failed bar was 3/6 query groups vs SPY+QQQ, needed 4)",
     }
 
 
@@ -715,21 +750,21 @@ def lane_news_propagation_negative_side():
             neg_dates.add(r.get("event_date"))
     counters = {
         "negative_side_closed": neg_rows,
-        "negative_side_closed_baseline_at_park": 433,
+        "negative_side_closed_baseline_at_park": 655,
         "negative_side_closed_unique_events": len(neg_events),
         "negative_side_closed_unique_event_dates": len(neg_dates),
     }
-    thresholds = {"negative_side_closed": 650}
+    thresholds = {"negative_side_closed": 983}
     return {
         "counters": counters,
         "thresholds": thresholds,
-        "status": "ready" if neg_rows >= 650 else "not_ready",
+        "status": "ready" if neg_rows >= 983 else "not_ready",
         "threshold_source": (
-            "exp-20260807-001 post_run_reflection: the 200-row park bar "
-            "(2026-07-19 note, 56 rows then) was consumed at 433 rows by the "
-            "confirmed out-of-replay validation read; another attribution "
-            "re-read needs >= 650 closed negative-side rows (+50% and >= +10 "
-            "absolute from 433)"
+            "exp-20260815-001 post_run_reflection: the 650-row bar (declared "
+            "at the 2026-08-08 re-park, baseline 433) was consumed at 655 rows "
+            "by the REJECTED viability re-read; another attribution re-read "
+            "needs >= 983 closed negative-side rows (+50% and >= +10 absolute "
+            "from 655)"
         ),
         "counter_source": (
             "data/non_ohlcv/news_event_exposure_observations/rows.jsonl "
@@ -737,27 +772,25 @@ def lane_news_propagation_negative_side():
             "event_date >= 2026-07-01)"
         ),
         "note": (
-            "exp-20260807-001 CONFIRMED the inverted-polarity separation "
-            "forward (event-level +88bp, both halves positive, concentration "
-            "clean; both sides negative vs SPY, so it is a relative/rotation "
-            "signal). 2026-08-08 execution-envelope preflight (0 IDs, "
-            "outcome-blind: frozen stats + cost constants only) killed both "
-            "deployable shapes at current magnitude: (1) a dollar-neutral "
-            "polarity pair pays ~90bp round trip per side-notional (2 legs x "
-            "(ROUND_TRIP_COST_PCT 35bp + 10bp slippage)) vs confirmed gross "
-            "separation of +47bp row-level / +88bp event-level per 10 "
-            "sessions -> net negative; (2) a zero-marginal-cost tilt on core "
-            "entries fails the section 5 touch-density preflight: baseline "
-            "executed entries inside active 14d polarity-peer windows = "
-            "1/0/0 across late_strong/mid_weak/old_thin vs the >=5-per-window "
-            "bar (earliest event 2026-01-23; two windows structurally "
-            "uncovered). Reopen contract at the 650-row re-read: build the "
-            "pair sleeve ONLY if event-level separation > 100bp (two-sided "
-            "cost bar + buffer) with row-level mean also > 45bp; the tilt "
-            "shape additionally needs >= 5 executed-entry touches per "
-            "evaluation window from the machine join (entry ticker+date x "
-            "observer rows with event_date within 10 sessions before entry). "
-            "Horizon/polarity/settlement stay frozen; do not retune costs."
+            "exp-20260815-001 REJECTED the 650-row viability re-read at 655 "
+            "rows / 72 events / 24 dates: event-level separation 90.2bp "
+            "missed the 100bp two-leg cost bar AND the exp-20260807-001 "
+            "half-stability confirmation BROKE (half1 -91.0bp reversed, half2 "
+            "+245.2bp; at 433 rows both halves had been positive), so the "
+            "separation is regime-concentrated in the recent half, not "
+            "time-stable. Row-level mean 61.2bp did clear the 45bp bar and "
+            "concentration stayed clean (event 4.2%, ticker 8.5%). Reopen "
+            "contract at the 983-row re-read: FIRST re-verify all five "
+            "exp-20260807-001 confirmation bars including BOTH chronological "
+            "halves positive; only then ask viability - pair sleeve ONLY if "
+            "event-level separation > 100bp (two-sided cost bar + buffer) "
+            "with row-level mean also > 45bp; the tilt shape additionally "
+            "needs >= 5 executed-entry touches per evaluation window from "
+            "the machine join (entry ticker+date x observer rows with "
+            "event_date within 10 sessions before entry; still 1/0/0 and "
+            "structurally uncovered - needs a PIT-safe historical "
+            "transmission surface). Horizon/polarity/settlement stay frozen; "
+            "do not retune costs; do not condition on the passing half."
         ),
     }
 

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260729-004",
+  "artifact_type": "measurement_contract_after",
+  "recorded_at": "2026-07-29T05:10:27Z",
+  "outcome_accessed": false,
+  "strategy_or_order_behavior_changed": false,
+  "decision": "accepted_measurement_repair",
+  "implemented_contract": {
+    "candidate_schema": "First-class immutable amendment_lineage with embedded canonical parent snapshot, parent snapshot SHA-256, parent candidate/scope identity, exact reason, exact changed-field list, parent_outcome_accessed=false, parent_experiment_id=null, and a timezone-aware declaration clock.",
+    "allowlisted_changes": [
+      "source_readiness_snapshot",
+      "baseline.comparator_allocation_attachment",
+      "baseline.comparator_allocation_attachment_hash",
+      "treatment.endpoint_preflight_attachment",
+      "treatment.endpoint_preflight_attachment_hash",
+      "next_machine_action"
+    ],
+    "history_binding": "Canonical discovery projections now bind candidate ID, candidate snapshot hash, selection scope, and any amendment parent/reason. Invalid legacy events remain anti-repeat evidence but cannot authenticate lineage.",
+    "d3_behavior": "Only authenticated parent record IDs are waived. Actual parent/child diff must exactly equal declared changed_fields. Attachments must be paired, repository-contained, present, byte-verified against SHA-256, parsed as one of two closed schemas, recursively free of outcome fields, bound to the exact parent ID/hash, and satisfy attachment.data_cutoff <= preflight.data_cutoff and attachment.created_at <= amendment declaration. Depth greater than one, competing children, semantic changes, and every non-parent neighbor reject.",
+    "verification_behavior": "Lineaged candidates require a canonical snapshot that validate_repository_historical_snapshot can rebuild from repository ledgers; legacy lists and merely self-consistent isolated snapshots reject. Freeze and strict verification retain that complete snapshot rather than collapsing it through legacy fingerprint de-duplication, and verification recomputes D3."
+  },
+  "acceptance_matrix": {
+    "authenticated_depth_one_allowlisted_completion": "pass_and_strict_reverify",
+    "parent_missing_from_bound_history": "reject",
+    "parent_hash_or_scope_mismatch": "reject",
+    "semantic_policy_rewrite": "reject",
+    "missing_invalid_unpaired_or_hash_mismatched_attachment": "reject",
+    "wrong_attachment_type_or_unknown_content_field": "reject",
+    "outcome_bearing_attachment": "reject_and_outcome_blind_false",
+    "attachment_cutoff_after_preflight_cutoff": "reject_and_outcome_blind_false",
+    "nested_or_competing_child": "reject",
+    "second_non_parent_neighbor": "reject",
+    "legacy_or_non_repository_history": "reject",
+    "declaration_child_clock_mismatch": "reject",
+    "panel_lineage_tamper": "strict_verification_failure"
+  },
+  "verification": [
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -m pytest quant\\test_alpha_search_contract.py quant\\test_alpha_search_history.py quant\\test_alpha_search_engine.py quant\\test_alpha_search_cli.py quant\\test_alpha_debate.py -q",
+      "result": "171 passed in 175.17s"
+    },
+    {
+      "command": ".\\.venv\\Scripts\\python.exe -B data\\experiments\\exp-20260729-004\\repository_lineage_integration_check.py",
+      "result": "Canonical repository history rebuilt to 1398 records; authenticated parent-specific D3 passed outcome-blind. Overall decision remained reject on unrelated PIT/source readiness, as expected."
+    }
+  ],
+  "massive_safety_check": {
+    "candidate_id": "cand-4047cfda28a51c488a77",
+    "complete_history_record_count": 1397,
+    "complete_history_snapshot_hash": "9795ca2a9b433327144d9638e0ade99b2bece25aca664d146276dd38388ff949",
+    "outcome_blind": true,
+    "d3_decision": "reject",
+    "d3_reason": "legacy_near_neighbor:cand-d3d84780295914d0f19a:score=0.9688",
+    "interpretation": "The generic repair does not grandfather the existing v3 Massive amendment. It remains parked until a fresh candidate uses the strict lineage contract, its real diff is allowlisted, the 89-row comparator map is hash-bound, and all other review requirements pass."
+  },
+  "unchanged_safety_hashes": {
+    "quant/run.py": "59c92d6f232d5e17e77c40cd9c95c0b8b91dc6c9ff7ccb6d5188a667cd3297e5",
+    "quant/backtester.py": "8d0bb9e7d5a25ef4471f5e6ffe24c772da56cb64ed850b36da12800854ec4104",
+    "data/alpha_search/massive_dividend_restart_panel_v3_20260729.json": "1ea68bdb25c40f835629033842cde38d4d51366086859d75aff0bdeaa231574f",
+    "data/alpha_search/massive_dividend_restart_candidate_pool_20260729.json": "ec682474cc85c4a6cdc0ef3f2d8b3d72a93f9de0c0d61c6551d96a344d000bae",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+  },
+  "gate4": {
+    "required": false,
+    "reason": "This experiment changes only pre-reservation measurement and search-integrity validation. It does not alter entry, exit, ranking, sizing, risk allocation, backtest policy, production policy, or orders."
+  },
+  "independent_review": {
+    "initial_verdict": "blocked",
+    "initial_findings": [
+      "phantom attachment hashes were not byte-verified",
+      "self-consistent but repository-incomplete history could authenticate",
+      "legacy-list de-duplication could mask a second neighbor",
+      "declared_at was not bound to child created_at",
+      "hash-bound attachment contents were not typed or outcome-audited",
+      "attachment data_cutoff was not bound to the current preflight cutoff"
+    ],
+    "remediation": "All findings were implemented and covered by fail-closed negative tests, a 171-test combined run, and one canonical repository integration check.",
+    "final_verdict": "passed_no_blocking_findings"
+  },
+  "next_machine_action": "Materialize the exact 89-row Massive core-or-cash allocation as an outcome-blind hash-bound artifact, construct a fresh lineage-compliant candidate against a complete history snapshot, and rerun pre-reservation review. The separate ISCF/VRL futureless-forward admission defect found this run should be handled by one later batch measurement-repair ticket."
+}

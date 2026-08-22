@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T18:01:38.342Z",
+  "run_started_at_basis": "Hourly wake inferred from the recorded 2026-08-21T17:01:38.342Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T18:40:59Z",
+  "milestone": "M2",
+  "work_unit": "m2_segmented_universe_publisher_writer",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "6c8bb54c2d071e7951326d9eff1c3e4a1b4792f1",
+  "selection_rationale": {
+    "priority": "The two preceding non-blocking construction units triggered the bounded scout-readiness check. No V2 experiment was open, the prior SEC/Moomoo/FINRA candidate input identities were unchanged, and no admission-ready novelty axis existed, so the prior outcome-blind rejection was reused without reserving an experiment ID. The earliest safe promotion-construction blocker was the committed sidecar contract's missing publisher/writer.",
+    "chosen_unit": "Add explicit first-transaction bootstrap and one-transaction segmented append with the same M1 transaction guards as the legacy writer, immutable-object-first publication, fixed-HEAD-last commit, and deterministic crash/orphan retry semantics.",
+    "scope_boundary": "Opt-in research-only physical storage. No checked-in universe data, SEC source bundle, materialization envelope, runtime/observation reader, CandidatePool, signal, outcome, policy, scheduler, broker, order, allocation, evidence tier, parity status, or trading permission changed."
+  },
+  "implementation": {
+    "shared_transaction_guard": "The legacy writer now separates pre-I/O request/M1 preparation from locked-history classification, and both legacy and segmented paths reuse those exact helpers. Source/evidence, calendar/clock, event/manifest/batch, PIT, default-off, duplicate, conflict, and legacy validation-before-timeout-before-I/O ordering remain enforced.",
+    "explicit_bootstrap": "Bootstrap accepts only the first events plus manifest and complete M1 evidence/calendar inputs; it cannot publish an arbitrary structurally valid legacy view. With no HEAD it accepts only a virgin root or the one exact planned checkpoint with zero segments from a failed first publication. Existing segment history without HEAD fails closed instead of rolling back.",
+    "segmented_append": "Each successful append publishes exactly one immutable segment containing one unchanged v1 transaction, including zero-event manifests, then publishes a constant-size HEAD that binds the new tail. Exact retries return duplicate and never add another physical event or segment.",
+    "publication_protocol": "Checkpoint and segment records use exact canonical LF bytes, fsynced same-directory temporary files, and create-only hard links; existing content-addressed paths are reused only for exact bytes and are never overwritten. All API writers use one OS advisory lock, immutable records publish before HEAD, predecessor HEAD bytes are rechecked immediately before binary temp+fsync+atomic replace, and the committed view is strictly reloaded.",
+    "crash_and_orphan_semantics": "A failure before HEAD leaves the old committed view unchanged and any complete new object unreachable/audit-only; exact retry may reuse only its deterministic hash/bytes. If HEAD replacement committed but the caller did not receive success, retry classifies the transaction as duplicate. No rollback or orphan auto-selection exists.",
+    "honest_ceiling": "The guarantee covers cooperating API writers and process-level torn-write/crash windows. It does not claim a cross-platform conditional replace against writers that bypass the advisory lock, parent-directory fsync/power-loss durability, repository-external rollback detection, compact checkpoint rotation, runtime reader wiring, canonical evidence, or production authority."
+  },
+  "review_findings": {
+    "initial_p1_closed": [
+      "Bootstrap initially accepted any strict legacy view and could bypass M1 evidence/calendar validation; it now accepts only a fully guarded first transaction through the shared planner.",
+      "Missing HEAD with established segments could initially republish the first checkpoint and truncate visible history; the recovery-surface guard and regression now fail closed.",
+      "The first shared-planner extraction moved legacy validation behind timeout/lock I/O; request preparation and history classification were split to preserve legacy error order and side-effect boundaries."
+    ],
+    "claim_boundary_corrected": "A late predecessor identity check plus cooperative advisory lock is not represented as an atomic CAS against non-cooperating writers. That stronger problem remains outside this slice.",
+    "final_review": "Two independent final reviews reported P0=0 and P1=0 on the frozen diff."
+  },
+  "verification": [
+    "58 focused legacy-ledger and segmented-writer tests passed.",
+    "305 complete quant/test_v2*.py tests passed in 50.32s.",
+    "Bootstrap/append M1 guard, canonical LF bytes, create-only collision, zero-event segment, exact duplicate, pre-HEAD orphan reuse, missing-HEAD rollback, late predecessor identity, and cooperative same-batch concurrency regressions passed.",
+    "A manual post-HEAD exception injection left the new HEAD valid; exact retry returned duplicate and the orphan audit reported zero.",
+    "Target production and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "27 existing hourly receipt JSON files and 22 unique durable decision JSONL rows parsed before this receipt was added; structural default-off validation found zero true trade_enabled values.",
+    "Working diff whitespace validation passed with line-ending warnings only.",
+    "Independent final reviews reported P0=0 and P1=0."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger.py",
+    "quant/v2_universe_ledger_segments.py",
+    "quant/test_v2_universe_ledger.py",
+    "quant/test_v2_universe_ledger_segments.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1841Z_m2_segmented_universe_publisher_writer.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but engineering-scoped: first and subsequent universe transactions now share the same causal M1 guards across legacy and segmented storage, while immutable publication, idempotent retry, missing-HEAD containment, and crash-window recovery reduce the chance that damaged or partially published physical state is mistaken for a valid research decision history. This creates no alpha, validation, or canonical evidence.",
+  "parity_impact": "No runtime parity status changed. The writer can reconstruct exact legacy logical views but remains opt-in and unwired; existing SEC daily/replay and pre-Engine-0 observation identities are unchanged, while Engine-0, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Implement compact checkpoint rotation so cumulative v1 manifest event, registry, membership, and full-chain reconstruction costs are actually removed.",
+    "Establish a repository-external append anchor before any canonical eligibility claim; a valid historical local HEAD rollback remains undetectable without it.",
+    "Wire a segmented reader into runtime only after rotation semantics are complete and prove the applicable production/backtest parity boundary.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline.",
+    "Add a richer authorized SEC item/text semantic axis or another registered source axis before reserving a scout beyond coarse exact-8-K occurrence."
+  ],
+  "next_step": "Implement compact checkpoint rotation with deterministic old/new checkpoint crash recovery and exact logical-identity preservation; if a genuinely new admission-ready source axis appears first, run the bounded outcome-blind zero-ID preflight.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

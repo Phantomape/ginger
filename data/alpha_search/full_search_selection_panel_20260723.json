@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "record_type": "panel_selection",
+  "selection_scope_id": "scope-a58acf071831ed531e42710b",
+  "created_at": "2026-07-23T16:50:59Z",
+  "data_cutoff": "2026-07-23T16:46:02Z",
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "cash_feasible_core_price_prior_20260715",
+      "execution_capacity_context_20260722",
+      "portfolio_exposure_context_unbound_20260722"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap",
+        "plain_event_lead"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generator_version": "alpha-search-full-digest-capacity-synthesis-v1",
+      "queue_budgets": {
+        "adjacent": 1,
+        "exploitation": 0,
+        "exploration": 0
+      },
+      "required_evidence_roles": [
+        "price_revealed_context",
+        "independent_evidence",
+        "portfolio_exposure",
+        "execution_cost"
+      ],
+      "required_precommitments": [
+        "baseline",
+        "treatment",
+        "expected_horizon",
+        "replacement_value_comparator",
+        "falsifier",
+        "execution_envelope"
+      ],
+      "required_queues": [
+        "adjacent"
+      ],
+      "schema_version": 1,
+      "selection_limit": 1,
+      "selection_policy": "one candidate only; pass opposite-runtime debate and outcome-blind D0-D3 or select none",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-07-23T16:46:02Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-07-23T16:50:59Z",
+    "generator_version": "alpha-search-full-digest-capacity-synthesis-v1",
+    "manifest_hash": "a58acf071831ed531e42710b12a61f4606fda41d7806ab3bc429e44f474878ce",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-07-23T16:46:01Z",
+    "prior_fingerprint_count": 1354,
+    "prior_fingerprint_snapshot_hash": "7dc75bac76e8186562a59b555258209f5cd1c7925ed6cc829642c2f0f512d8eb",
+    "queue_budgets": {
+      "adjacent": 1,
+      "exploitation": 0,
+      "exploration": 0
+    },
+    "schema_version": 1,
+    "scope_name": "full-alpha-search-20260722-contract-normalization-replay",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "5cd672605c9f9071d14652f222dce24ad0dba703666812be1b0ce9afc2d6e7a6",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "a58acf071831ed531e42710b12a61f4606fda41d7806ab3bc429e44f474878ce",
+  "surface_registry_hash": "5cd672605c9f9071d14652f222dce24ad0dba703666812be1b0ce9afc2d6e7a6",
+  "prior_fingerprint_snapshot_hash": "7dc75bac76e8186562a59b555258209f5cd1c7925ed6cc829642c2f0f512d8eb",
+  "prior_fingerprint_count": 1354,
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "queue_budgets": {
+    "adjacent": 1,
+    "exploitation": 0,
+    "exploration": 0
+  },
+  "queue_actual_counts": {
+    "adjacent": 1,
+    "exploitation": 0,
+    "exploration": 0
+  },
+  "expected_candidate_count": 1,
+  "candidate_pool_complete": true,
+  "selection_pool_complete": true,
+  "candidate_ids": [
+    "cand-cd1b86e579b9c423f316"
+  ],
+  "candidate_snapshots": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "plain_event_lead",
+      "candidate_id": "cand-cd1b86e579b9c423f316",
+      "search_queue": "adjacent",
+      "hypothesis": "When two or more already-fixed candidate sources compete for one cash-feasible slot, choosing the highest standalone candidate score can overpay for correlated exposure and execution impact; a frozen net-replacement allocator that subtracts only predeclared incremental exposure and liquidity-cost penalties may improve portfolio-level replacement value without creating a new signal.",
+      "fingerprint": {
+        "data_source": "portfolio_exposure_state",
+        "component_sources": [
+          "ohlcv_warehouse",
+          "portfolio_exposure_state"
+        ],
+        "expectation_proxy": "unidentified",
+        "economic_mechanism": "marginal_portfolio_replacement_value_after_exposure_and_impact",
+        "decision_surface": "allocator",
+        "payoff_shape": "capacity_adjusted_portfolio_diversification",
+        "horizon": "fixed_per_source_hold",
+        "execution_dependency": "cash_feasible_same_slot_conflict_with_point_in_time_costs",
+        "portfolio_role": "portfolio_diversifier"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "execution_capacity_context_20260722",
+        "portfolio_exposure_context_unbound_20260722"
+      ],
+      "expectation_gap": null,
+      "why_not_arbitraged": "Standalone candidate scores are produced on different source clocks and do not price the marginal correlation, crowding, spread, or participation cost of the exact slot they displace; any edge must come from that pre-decision portfolio externality, not from refitting the underlying signals.",
+      "falsifier": "The mechanism is falsified if it changes fewer than five actual same-slot choices in any canonical window, cannot bind point-in-time exposure and cost fields, or fails to improve net replacement value while preserving drawdown and concentration relative to the current cash-feasible one-slot allocator.",
+      "baseline": {
+        "policy": "Use the current one-slot cash-feasible allocator and its existing candidate ordering without a portfolio-correlation or impact penalty.",
+        "universe": "already-fixed eligible candidates competing for the same cash-feasible slot"
+      },
+      "treatment": {
+        "policy": "Within an actual same-slot conflict only, choose the candidate with the highest frozen standalone score minus predeclared incremental exposure-correlation, spread, and participation-impact penalties; preserve every source's entry, exit, horizon, notional cap, and eligibility rule."
+      },
+      "replacement_value_comparator": "The exact candidate or cash displaced by the current cash-feasible one-slot allocator, plus SPY and QQQ context under identical capital and cost constraints.",
+      "expected_horizon": "fixed_per_source_hold",
+      "execution_envelope": {
+        "borrow_dependency": "none; this allocator cannot create short positions",
+        "capacity_constraint": "one existing cash-feasible slot with unchanged per-source notional caps",
+        "costs_and_carry": "canonical cash-equity costs plus one frozen nonlinear-impact stress function",
+        "intended_instrument": "the original liquid cash equity emitted by each fixed source",
+        "liquidity_dependency": "point-in-time spread, ADV, and planned participation rate must be available for every changed choice",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "all exposure and cost features must be known before the same decision clock as the baseline allocator",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "cash_feasible_core_price_prior_20260715",
+          "snapshot_hash": "e51e494e93fb99c8b76b4c21481feb7a197bdff7fcb1e3c0571ac28f76a60c73"
+        },
+        {
+          "surface_id": "execution_capacity_context_20260722",
+          "snapshot_hash": "165c06121f3c36971cfb2b7f9d0dfe570bcf662b059bd869571a673899541d0d"
+        },
+        {
+          "surface_id": "portfolio_exposure_context_unbound_20260722",
+          "snapshot_hash": "545810e86b2e8dd279ddc34b22f238977c86abbb9d0c6ba938dce5dbf83f5031"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Cost- and correlation-adjusted one-slot replacement allocator",
+      "created_at": "2026-07-23T16:47:00Z",
+      "created_by": "codex-full-alpha-search-contract-normalization-replay-20260723",
+      "prediction": {
+        "success_probability": 0.08,
+        "main_failure_modes": [
+          "core_opportunity_cost_not_beaten",
+          "duplicate_or_frozen",
+          "no_candidate_overlap",
+          "pit_or_source_failure"
+        ],
+        "confidence_reason": "The economic mechanism is distinct from trend selection, but the portfolio exposure and nonlinear-cost surfaces are not yet bound to historical decisions, allocator conflicts remain under the registered reopen count, and nearby covariance/allocator overlays are frozen."
+      },
+      "reopen_condition": "Bind sanitized point-in-time exposure and spread/impact fields to at least 20 settled same-slot conflict decisions, while proving that the proposed allocator is a genuinely different decision mechanism rather than a covariance-weight or source-priority retune.",
+      "next_machine_action": "Run opposite-runtime challenge and outcome-blind D0-D3 only; do not reserve an experiment unless the source binding and history veto both pass.",
+      "research_refs": [
+        "res-20260721-anticipatory-optimization-needs-a-control-gap-le",
+        "res-20260721-correlation-aware-portfolio-evaluation",
+        "res-20260721-cost-aware-optimization-is-a-capacity-surface",
+        "res-20260721-nonlinear-market-impact-and-turnover-discipline"
+      ]
+    }
+  ],
+  "candidate_snapshot_hashes": {
+    "cand-cd1b86e579b9c423f316": "7680ba7b473bde8dc8408d73f42aba80ddf061ed0c45d71eac73a5b80189463b"
+  },
+  "preflight_decisions": {
+    "cand-cd1b86e579b9c423f316": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-cd1b86e579b9c423f316",
+      "selection_scope_id": "scope-a58acf071831ed531e42710b",
+      "evaluated_at": "2026-07-23T16:50:59Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-23T16:46:02Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "cash_feasible_core_price_prior_20260715": "e51e494e93fb99c8b76b4c21481feb7a197bdff7fcb1e3c0571ac28f76a60c73",
+        "execution_capacity_context_20260722": "165c06121f3c36971cfb2b7f9d0dfe570bcf662b059bd869571a673899541d0d",
+        "portfolio_exposure_context_unbound_20260722": "545810e86b2e8dd279ddc34b22f238977c86abbb9d0c6ba938dce5dbf83f5031"
+      },
+      "declared_evidence_grade": "lead",
+      "maximum_supported_evidence_grade": "lead",
+      "fingerprint_hash": "d3a54900bc628d5f03fc4ed72bc64c29a4caa938a615f43a7501ae86390cc2b8",
+      "gates": {
+        "D0": {
+          "status": "reject",
+          "reasons": [
+            "fingerprint_component_sources_mismatch:declared=['ohlcv_warehouse', 'portfolio_exposure_state'] registry=['execution_liquidity_context', 'ohlcv_warehouse', 'portfolio_exposure_state']",
+            "surface_candidate_overlap_absent:portfolio_exposure_context_unbound_20260722",
+            "surface_source_contract_not_ready:execution_capacity_context_20260722",
+            "surface_source_contract_not_ready:portfolio_exposure_context_unbound_20260722"
+          ]
+        },
+        "D1": {
+          "status": "park",
+          "reasons": [
+            "independent_evidence_missing",
+            "observable_market_prior_incomplete"
+          ]
+        },
+        "D2": {
+          "status": "park",
+          "reasons": [
+            "missing_transmission"
+          ]
+        },
+        "D3": {
+          "status": "reject",
+          "reasons": [
+            "component_surface_parked:portfolio_exposure_context_unbound_20260722",
+            "legacy_near_neighbor:cand-6faef996697226cbf190:score=0.6427",
+            "legacy_near_neighbor:exp-20260613-001:score=0.6322",
+            "legacy_near_neighbor:exp-20260720-004:score=0.6303"
+          ]
+        }
+      },
+      "decision": "reject",
+      "failure_reasons": [
+        "duplicate_or_frozen",
+        "market_expectation_unidentified",
+        "no_candidate_overlap",
+        "pit_or_source_failure",
+        "wrong_transmission_mapping"
+      ],
+      "reopen_condition": "Bind sanitized point-in-time exposure and spread/impact fields to at least 20 settled same-slot conflict decisions, while proving that the proposed allocator is a genuinely different decision mechanism rather than a covariance-weight or source-priority retune.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "f208ce524d2875a258450bd148e0f7c76fec2bc3492287b5595eef20e9e69035"
+    }
+  },
+  "preflight_decision_hashes": {
+    "cand-cd1b86e579b9c423f316": "f208ce524d2875a258450bd148e0f7c76fec2bc3492287b5595eef20e9e69035"
+  },
+  "scores": {
+    "cand-cd1b86e579b9c423f316": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 0.0,
+        "falsifiability": 1.0,
+        "information_gain": 0.7,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 1.0
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": -0.642,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "rejection_reasons": {
+    "cand-cd1b86e579b9c423f316": [
+      "duplicate_or_frozen",
+      "market_expectation_unidentified",
+      "no_candidate_overlap",
+      "pit_or_source_failure",
+      "wrong_transmission_mapping"
+    ]
+  },
+  "selection_limit": 1,
+  "batch_policy_bundle_id": null,
+  "selected_candidate_ids": [],
+  "selected_candidate_id": null,
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "panel_hash": "0feb3b75a59a0d9e6f0cfd1770231e762ba3893acff03f211000d640b5e1e8e6"
+}

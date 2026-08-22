@@ -28,12 +28,19 @@ multiple docs.
 1. Read the startup sources from `AGENTS.md`.
 2. Answer the five pre-run questions in the ticket, card, artifact, or log.
 3. For `alpha_search`, `alpha_discovery`, or `universe_scout`, first complete the outcome-blind D0-D3 panel and tracked promotion request. These discovery artifacts do not consume an experiment ID; multi-model debate is not required.
-4. Reserve an ID before writing runner, artifact, data, ticket, or log files.
+4. Reserve an ID before writing the experiment runner, outcome/evaluation
+   artifact, experiment data, ticket, or log. The D0-D3, source/frame,
+   candidate/decision, and promotion admission artifacts in step 3 are the
+   required pre-reservation exception.
 5. Claim the ticket before work when other agents may be active; claim revalidates the promotion proof.
 6. For production-visible candidate-pool or paper-sleeve alpha, use the
    full-stack candidate-pool contract by default.
 7. Implement the single predeclared decision hypothesis or policy bundle.
-8. Run Gate 1-4 with the canonical protocol in `docs/backtesting.md`.
+8. Run Gate 1-4 with the canonical protocol in `docs/backtesting.md` for
+   promotion-bearing experiments. A Ginger V2 `private_replay_scout` instead
+   follows the bounded scout contract in `docs/quant_agent_protocol_v2.md`:
+   its predeclared scout acceptance rule is diagnostic only and it closes as
+   `observed_only` or `rejected`, never as a Gate pass.
 9. Record production impact and parity boundary.
 10. Write artifact, log, card, ticket, manifest, and JSONL closeout.
 11. Run `scripts/experiment.py audit --lean-strict`.
@@ -106,6 +113,10 @@ candidate-pool source, paper sleeve, source allocator, or replacement-value
 route. Use `change_type=private_replay_scout` only for `research_pit`, uncertain
 data shape, or an idea too speculative to justify the shared helper up front;
 record the escape reason and canonical blockers before running the scout.
+
+For the additional Ginger V2 admission binding, follow the bounded scout
+contract in `docs/quant_agent_protocol_v2.md`; this runbook does not define a
+second evidence ladder.
 
 For measurement repair:
 
@@ -289,8 +300,8 @@ schemas, and meta-research tools live in code, tests, experiment artifacts, and
 generated lessons. Use `rg` over `quant/`, `experiments/`, and `data/` when
 selecting a concrete surface.
 
-Before a context field can affect entry, exit, ranking, sizing, orders, or live
-capital, answer:
+Before a context field can affect shared/daily entry, exit, ranking, sizing,
+orders, or live capital, answer:
 
 1. Is the field produced in production, not only in a research script?
 2. Is the field saved in an append-only, replayable daily artifact?
@@ -474,7 +485,10 @@ Before stopping, the next agent should know:
 
 - Do not start with a hand-written experiment ID.
 - Do not create runner/artifact files before reservation.
-- Do not change strategy behavior without Gate 1-4.
+- Do not change shared, daily, or promotion-bearing strategy behavior without
+  Gate 1-4. Isolated `private_replay_scout` runner logic is allowed only under
+  the `observed_only` ceiling and must not persist into shared policy without a
+  new promotion-bearing experiment.
 - Do not keep failed strategy logic because unit tests pass.
 - Do not call private replay-only scouts accepted alpha.
 - Do not promote default-off logic into live capital without a live-realistic

@@ -1,0 +1,137 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0144,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "snapshot_receipt_too_permissive",
+      "legacy_snapshot_bytes_unrecoverable",
+      "status_normalization_incomplete",
+      "strict_audit_still_fails"
+    ],
+    "predicted_success_probability": 0.88,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The mutable-index mismatch also exposed direct-close, claim takeover, clock, artifact-path, and size-boundary gaps; the receipt contract now fails closed on each."
+  },
+  "causal_components": [
+    "claim-time content-addressed research artifact snapshots",
+    "receipt-bound post-claim revalidation",
+    "pre-claim live-byte fail-closed validation",
+    "exp-20260729-006 canonical rejected normalization",
+    "strict audit regression tests"
+  ],
+  "change_summary": "Persist claim-time content-addressed promotion snapshots and receipt-bound post-claim validation; normalize exp-20260729-006 and close claim-state bypasses.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "research_promotion_post_claim_artifact_revalidation_contract",
+  "component": "scripts/alpha_debate.py, scripts/experiment_registry.py, quant/test_alpha_debate.py, quant/test_experiment_registry.py, data/alpha_search/promotion_artifact_snapshots/, experiments/tickets/exp-20260729-006.json, experiments/logs/exp-20260729-006.json, data/experiments/exp-20260729-006/, experiments/cards/exp-20260729-006.md, docs/experiment_registry.json, docs/experiment_log.jsonl, data/experiments/exp-20260729-007/, experiments/logs/exp-20260729-007.json, experiments/cards/exp-20260729-007.md, experiments/manifests/exp-20260729-007.json, experiments/tickets/exp-20260729-007.json, quant/experiments/exp_20260729_007*.py, .gitattributes",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260729-007",
+  "hypothesis": "Post-claim advancement of mutable research-PIT machine indexes must not retroactively invalidate a hash-bound alpha promotion: persist immutable claim-time research-artifact snapshots, use them only after a successful claim for close/audit revalidation, and normalize exp-20260729-006 to the exact research-replay rejected status without changing its alpha metrics.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_promotion_closeout_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260729-003",
+    "exp-20260729-004",
+    "exp-20260729-005",
+    "exp-20260729-006"
+  ],
+  "new_evidence_type": "measurement_fault_recovery",
+  "next_retry_requires": [
+    "a reproducible new claim/admission bypass or CAS integrity failure",
+    "a legitimate post-claim mutable-index invalidation not covered by receipt v1",
+    "or an upstream artifact-format change that breaks the verified contract"
+  ],
+  "notes": "Accepted measurement repair: 95 focused tests pass; invalid promotion and research-ceiling offenders fell to zero; lean-strict passes; global strict remains red only for pre-existing prediction/calibration debt outside this ticket; no strategy or trading behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "strategy_logic",
+      "alpha_outcome_metrics",
+      "entry",
+      "exit",
+      "ranking",
+      "sizing",
+      "orders",
+      "trade_enabled"
+    ],
+    "single_causal_variable": "alpha_promotion_claim_snapshot_receipt_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not restore old live indexes, weaken hashes, hand-copy mutable artifacts, reuse receipts across tickets, reclaim finalized work, widen snapshot roots, or raise copy caps to make a claim pass.",
+    "new_evidence_required": "Reopen this governance lane only for a reproducible new claim/admission bypass, CAS integrity failure, upstream artifact-format change, or another legitimate mutable-index false invalidation not covered by receipt v1.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Promotion validation conflated immutable claim-time research bytes with a mutable live readiness index, while a non-canonical research terminal status created a second audit violation. A ticket-bound CAS receipt separates those identities without weakening live pre-claim checks."
+  },
+  "prediction": {
+    "confidence_reason": "The two strict-audit failures are isolated and reproducible; exact pre-reserve D0-D3 bytes are restored, the old mutable readiness digest is recoverable from the outcome-blind session transcript, and content-addressed claim receipts preserve tamper detection without freezing live indexes.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "snapshot_receipt_too_permissive",
+      "legacy_snapshot_bytes_unrecoverable",
+      "status_normalization_incomplete",
+      "strict_audit_still_fails"
+    ],
+    "recorded_at": "2026-07-29T06:01:03+00:00",
+    "success_probability": 0.88
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260729-007/before_measurement.json",
+    "data/experiments/exp-20260729-007/after_measurement.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "accepted_alpha": false,
+  "target_contract_passed": true,
+  "lean_strict_passed": true,
+  "global_strict_exception": "The repository-wide strict audit remains red only for 16 historical post-enforcement tickets missing prediction and 70 historical closed tickets missing calibration; those counts predate and are outside this repair, and AGENTS.md forbids retroactive backfill.",
+  "timestamp": "2026-07-29T06:55:04+00:00",
+  "trial_family": "alpha_promotion_post_claim_snapshot_receipt",
+  "trial_variant_id": "content_addressed_receipt_v1"
+}

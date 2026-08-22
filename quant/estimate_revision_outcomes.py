@@ -312,10 +312,16 @@ def persist_estimate_revision_outcomes(
 
     source_rows = _read_jsonl(source_ledger)
     source_summary_payload = _read_json(source_summary, default={})
+    # Settlement population contract (exp-20260811-001): every ledger row that
+    # carries a decision identity must receive an outcome row, otherwise the
+    # phase-2 readiness gate (settled counts over ALL qualified independent
+    # decisions, exp-20260721-002) can never mature. Candidate-overlap rows
+    # without a decision_id stay included for annotation continuity.
     matched_rows = [
         row
         for row in source_rows
-        if bool(row.get("matched_candidate_today") or row.get("matched_candidate_count"))
+        if row.get("decision_id")
+        or bool(row.get("matched_candidate_today") or row.get("matched_candidate_count"))
     ]
     matched_rows.sort(
         key=lambda row: (
@@ -1169,7 +1175,13 @@ def _summarize(
         "round_trip_cost_pct": ROUND_TRIP_COST_PCT,
         "slippage_bps_target": SLIPPAGE_BPS_TARGET,
         "source_ledger_row_count": len(source_rows),
-        "matched_candidate_rows": len(outcome_rows),
+        "settleable_decision_rows": len(outcome_rows),
+        "decision_identified_rows": sum(
+            1 for row in outcome_rows if row.get("decision_id")
+        ),
+        "matched_candidate_rows": sum(
+            1 for row in outcome_rows if row.get("matched_candidate_today")
+        ),
         "mapped_matched_candidate_rows": sum(
             1 for row in outcome_rows if row.get("instrument_mapping_qualified")
         ),

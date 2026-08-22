@@ -1,0 +1,307 @@
+{
+  "acceptance_rule": "Accept only if the builder reproduces the historical 3361 prediction-market unique-decision identity on the repair audit shape, counts only market IDs first persisted on or after 2026-07-18, excludes cross-query duplicate candidate decisions, binds all frozen 60/10/3/15%/50%/20/10 bars, counts Massive only from unique settled restart_after_observed_gap settlement events, verifies summary-ledger alignment and healthy status, fails closed on missing or malformed inputs, reports both current lanes not ready without reading PnL or replacement fields, preserves all unrelated lanes, and leaves the active Gate-1 hash and every strategy behavior unchanged.",
+  "allowed_write_scope": [
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "data/reopen_readiness.json",
+    "data/alpha_search/synthesis_pass_20260804_0809.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260804-001.md",
+  "causal_components": [
+    "prediction_market_postfix_first_seen_dedup_and_full_thresholds",
+    "massive_dividend_restart_settlement_registration",
+    "fail_closed_health_and_schema_checks",
+    "regression_tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "forward_reopen_readiness_registry_completeness_v2",
+  "claimed_at": "2026-08-04T15:22:35+00:00",
+  "completed_at": "2026-08-04T15:39:00+00:00",
+  "created_at": "2026-08-04T15:22:15+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260804-001",
+  "experiment_uid": "expuid-3b195909c6154e0e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260804-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-04T15:22:15+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "forward_reopen_readiness_registry"
+  },
+  "hypothesis": "Alpha evaluation is unreliable because the canonical reopen builder understates two accepted parked forward contracts: prediction-market post-fix reports raw rows with no quantitative bars, while Massive dividend-restart is absent entirely; binding both contracts to outcome-blind canonical ledgers in one batch prevents premature alpha probes and repeated manual recounts without changing either policy.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "prediction_market_cutoff_20260718",
+    "prediction_market_60_10_3_0p15_0p50_20_10_bars",
+    "massive_restart_30_bar",
+    "source_rows",
+    "outcome_values",
+    "observer_policies"
+  ],
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "observer_ledgers",
+    "settlement_policy",
+    "signal_generation",
+    "ranking",
+    "sizing",
+    "exits",
+    "orders",
+    "trade_enabled",
+    "active_gate1"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260721-004",
+    "exp-20260718-002",
+    "exp-20260803-002"
+  ],
+  "new_evidence_type": "accepted_park_contract_registry_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "prediction_market_event",
+      "field_tags": [
+        "absent",
+        "accepted",
+        "alpha",
+        "bars",
+        "batch",
+        "because",
+        "binding",
+        "blind",
+        "both",
+        "builder",
+        "canonical",
+        "changing",
+        "completeness",
+        "contracts",
+        "dividend",
+        "either",
+        "entirely",
+        "evaluation",
+        "fix",
+        "forward",
+        "governance",
+        "in",
+        "is",
+        "ledgers",
+        "manual",
+        "market",
+        "massive",
+        "measurement",
+        "no",
+        "one",
+        "outcome",
+        "parked",
+        "policy",
+        "post",
+        "prediction",
+        "premature",
+        "prevents",
+        "probes",
+        "quantitative",
+        "raw",
+        "readiness",
+        "recounts",
+        "registry",
+        "reopen",
+        "repeated",
+        "reports",
+        "restart",
+        "rows",
+        "to",
+        "tooling",
+        "two",
+        "understates",
+        "unreliable",
+        "while",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "prediction_market_event",
+        "family_key": "prediction_market_event_observer_outcome_settlement",
+        "reopen_condition": "Closed post-relevance-gate prediction-market outcome rows with cash/SPY/QQQ replacement value, or a materially different event-probability source.",
+        "score": 0.4771,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "prediction_market_event",
+        "family_key": "prediction_market_event_outcome_daily_wiring",
+        "reopen_condition": "Closed forward rows from automatically accumulated probability observations, materially richer entity/exposure economics, or a genuinely different event-probability source.",
+        "score": 0.47,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "prediction_market_event",
+        "family_key": "prediction_market_event_observer_surface",
+        "reopen_condition": "Current rows with non-null probabilities plus subsequent entity-exposure forward settlement, or a daily run.py wiring measurement repair that makes rows accumulate automatically.",
+        "score": 0.4638,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "prediction_market_event",
+        "family_key": "prediction_market_event_observer_daily_wiring",
+        "reopen_condition": "Closed forward rows from automatically accumulated probability observations, a materially different prediction-market source, or richer entity/exposure economics.",
+        "score": 0.4633,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "prediction_market_event",
+        "family_key": "prediction_market_event_observer_relevance_repair",
+        "reopen_condition": "Relevant post-repair prediction-market rows with closed forward cash/SPY/QQQ replacement outcomes, or a materially different probability source with cleaner event taxonomy.",
+        "score": 0.4631,
+        "status": "has_accepted",
+        "trials": 2
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "prediction_market_event",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "prediction_market_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation-20260804",
+  "prediction": {
+    "confidence_reason": "Both accepted closeouts state exact quantitative bars and append-only canonical inputs already exist; the repair is deterministic and outcome-blind, with the main risk concentrated in faithfully reproducing first-seen and duplicate semantics rather than in unknown market behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "first_seen_cutoff_drift",
+      "cross_query_duplicate_inflation",
+      "probability_transition_double_count",
+      "summary_ledger_misalignment",
+      "unrelated_lane_regression"
+    ],
+    "recorded_at": "2026-08-04T15:21:26+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "7bdc34913e2947c229bc1b8d7c17e702f965601cd217430cbad28c7488ffe71f",
+    "payload_hash": "7bdc34913e2947c229bc1b8d7c17e702f965601cd217430cbad28c7488ffe71f",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260804-001/readiness_registry_before.json",
+    "after_result_file": "data/experiments/exp-20260804-001/readiness_registry_after.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "first_seen_cutoff_drift",
+        "cross_query_duplicate_inflation",
+        "probability_transition_double_count",
+        "summary_ledger_misalignment",
+        "unrelated_lane_regression"
+      ],
+      "realized_failure_mode": "none_observed",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The raw post-fix settled count already exceeded 60, but the complete contract exposed severe date/query concentration; independent review also caught a pre-first-seen leakage edge and incomplete nested Massive summary alignment before closeout."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260804-001.json",
+  "single_causal_variable": "forward_reopen_readiness_registry_completeness_v2",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260804-001.json",
+  "trial_family": "forward_reopen_readiness_registry_completeness",
+  "trial_variant_id": "exp-20260804-001"
+}

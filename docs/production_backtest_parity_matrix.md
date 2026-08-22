@@ -5,6 +5,31 @@ Use it when an experiment needs the exact shared-source, replay, production, all
 
 The core production/backtest contract remains in `docs/production_backtest_parity.md`.
 
+## V2 SEC 8-K Research Universe Runtime
+
+The V2 SEC 8-K adapter is a source-bounded, research-only membership consumer.
+It now feeds only a read-only pre-Engine-0 observation boundary; it does not feed
+the legacy production runner, an Engine-0 policy/baseline, a market decision
+clock, orders, or paper/live policy. The immutable source manifest keeps
+`parity_status=contract_only_unwired`; adapter and observation alias parity are
+recorded separately and cannot upgrade PIT or authority.
+
+The opt-in segmented sidecar is now available only as the explicit
+`segmented_hot_v1` research runtime backend; `legacy_jsonl_v1` remains a separate
+explicit compatibility route. There is no auto-detection, cold-lineage traversal,
+or silent fallback. Full-checkpoint HEADs retain the legacy storage marker, while
+compact HEADs carry a distinct self-hash-bound capability marker that an older
+reader rejects before checkpoint access. Backend and hot-tip identities are bound
+into adapter/observation identity while the membership semantic snapshot remains
+equal across explicit backends. Deployment is reader-first and one-way within a
+root; rotation remains explicit and unscheduled. No Engine-0, scheduler,
+production/backtest, canonical, paper/live, execution, or trading parity is claimed.
+
+| Decision point | Shared source | Replay use | Daily use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Exact SEC 8-K materialization membership | `v2_sec_8k_runtime_adapter.py`, `v2_sec_8k_universe.py`, `v2_universe_ledger.py` | caller must supply the exact committed `manifest_id` and timezone-aware `as_of`; the full source/envelope/ledger/coverage graph is validated before the sole shared membership reader runs | same callable, same mandatory identity tuple, same normalized snapshot and canonical hashes; there is no implicit latest manifest or process-clock fallback | none in membership, ordering, clocks, identity, hashes, or default-off boundary; Engine-0, production/backtest, canonical, and execution parity remain unclaimed |
+| Pre-Engine-0 universe membership observation | `v2_universe_observation.py` consumes the exact runtime adapter snapshot in memory | `observe_sec_8k_replay_universe` is a true alias that forwards the explicit identity tuple once, revalidates adapter/input/reader/membership identities and full research-only ceilings, and emits only exact membership rows | `observe_sec_8k_daily_universe` is the same callable and produces the same normalized observation hash across equivalent offsets and copied paths | none in membership, state, ordering, identity, hashes, or default-off boundary; status is `daily_replay_alias_verified_research_only`. Engine-0 policy/baseline, market clock, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed |
+
 ## ORTEX Cost-to-Borrow-New Observer
 
 `exp-20260718-003` adds a shared, default-off ORTEX borrow-economics

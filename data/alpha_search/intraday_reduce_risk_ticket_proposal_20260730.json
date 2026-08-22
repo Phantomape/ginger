@@ -1,0 +1,32 @@
+{
+  "lane": "alpha_search",
+  "hypothesis": "Observed-only deterministic policy counterfactual: under the frozen next-eligible-five-minute execution, economic-cohort deduplication, and completed-15:55-ET next-close settlement contract, active machine-default REDUCE_RISK rows add cost-adjusted value versus leaving the same held-position exposure unchanged; semantic overrides are excluded, and no price-independent information claim is made. The corrected exp-20260714-010/exp-20260725-001/002/003 reopen bars are met outcome-blind: 142 strict effective next-close settlements, 24 active machine-default reductions, 9 and 15 per chronological half.",
+  "change_type": "observed_only_attribution",
+  "single_causal_variable": "intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v2",
+  "causal_components": [
+    "treatment population fixed to exactly the settled active machine-default REDUCE_RISK strict effective next-close cohorts in the frozen 20260729 outcome ledger (24 outcome-blind); neutral rows are context only and never enter power or concentration denominators",
+    "frozen next-eligible-five-minute execution and completed-15:55-ET next-close settlement under outcome rule v2 and cohort aggregation rule v1",
+    "fail closed per active row unless decision timestamp and machine-default action origin are present and execution time is strictly after the decision timestamp",
+    "frozen result bars from the predeclared 2026-07-24 candidate: at least 20 active actions with at least five per chronological half; costed active mean and median positive; both half means positive; max ticker action-count share at most 35 percent; max ticker positive-value share at most 40 percent; every leave-one-ticker-out total positive; double one-way cost total positive",
+    "amendment-lineage child of the aborted 2026-07-24 candidate: only source readiness snapshot and next machine action changed; hypothesis / falsifier / baseline / treatment / costs are parent-verbatim",
+    "classifier acceptance requires the reservation fingerprint to resolve to intraday_triage_machine_action before generic routes; verify docs/frozen_families.jsonl carries the source identity post-close and record the check before closeout",
+    "distinct population and source are intraday_triage_machine_action plus moomoo_intraday_price with next-close settlement; prohibit exit-lifecycle severity buckets and next-open-to-five-session settlement and slot-reuse attribution and winner-collateral claims",
+    "no strategy or shared-policy or order or sizing or exit-rule change; if rejected then sync the newly declared reopen bar into scripts/build_reopen_readiness.py in this same ticket"
+  ],
+  "mechanism_family": "intraday_machine_default_continuation_avoidance",
+  "trial_family": "intraday_machine_default_no_adjustment_forward_attribution",
+  "changed_variable": "observed_only_machine_default_counterfactual_attribution_only",
+  "prediction": {
+    "success_probability": 0.25,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "active_mean_or_median_nonpositive",
+      "chronological_half_instability",
+      "leave_one_ticker_out_sign_failure",
+      "positive_value_concentration",
+      "transaction_cost_stress_failure"
+    ],
+    "confidence_reason": "The corrected 100/20/5/5 power bars are met outcome-blind (142 strict cohorts, 24 active reductions, halves 9/15, max action-count share 25%), but the frozen bars demand positive mean and median, both-half positivity, leave-one-ticker-out sign stability, and a double-cost stress on only 24 active rows; reduce-risk counterfactuals skew negative when breaches mean-revert."
+  }
+}

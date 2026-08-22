@@ -1,0 +1,157 @@
+{
+  "admission_class": "research_replay",
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-ed4c2908c4645ea90319",
+    "candidate_snapshot_hash": "9e93af6bebc0db3fa9db036e0ef5ecfff80e554db0ac4e93067af1d0de2b391a",
+    "panel_hash": "0d827e28b4658639dff9ee2d5a10452446c2a107de7fce6ad86d1d0b22c7ae00",
+    "panel_path": "data/alpha_search/massive_dividend_restart_panel_v5_20260801.json",
+    "panel_sha256": "dc2e8c1c46073029c073b3abd77b27c10c2e2b5a1bfc827e1f84bf031f312d50",
+    "paper_live_eligible": false,
+    "preflight_hash": "259854b7be8e0c13fd59f3426d8e1c7548af0e69131151f24ab441c770a42535",
+    "promotion_hash": "3e88e91fc214122a43e4b8445b39639b7e10a975a7c4c64fca6661b480a95e74",
+    "promotion_request_path": "data/alpha_search/promotions/massive_dividend_restart_scout_20260801.json",
+    "promotion_request_sha256": "18a118b6b4258eb3279814dc51c76e8524bc363dc52822fa048a52c9f366d977",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "lead",
+    "selection_scope_id": "scope-53d46149ed22e2bd87477887",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "canonical_pit",
+        "readiness_hash": "aea105740026ed81dce1b8f3d5d3d36381406c5927cec717550d5a79ca080494",
+        "source_contract_hash": "fc59e51da44def80db18e55f60dc2ef2cbfb708301be4b22e6361d79ac115c38",
+        "surface_id": "cash_feasible_core_price_prior_20260715"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "f6e830fa80274720e4e36eb400766b191dc033eda0a04c403e1ae6e51bcdc37d",
+        "source_contract_hash": "17a20f4e354426d8a2ff94832e29553cd1850573a694ceb632273110870f5cf7",
+        "surface_id": "massive_dividend_restart_research_pit_20260728"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "672f075dbdd585c0b6acf12b2c54c1aeb2219d1c68a541cbf879c0512461dcbe",
+        "source_contract_hash": "8a8095e70bed88180ca7807def4bd73b87574910ca81df9085bf235b0c926eb9",
+        "surface_id": "massive_reference_asof_identity_research_pit_20260728"
+      }
+    ]
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "chronological_window_instability",
+      "core_opportunity_cost_not_beaten",
+      "distribution_event_heterogeneity",
+      "double_cost_stress_failure",
+      "identity_or_vintage_contract_failure",
+      "ticker_concentration"
+    ],
+    "predicted_success_probability": 0.28,
+    "realized_failure_mode": "chronological_window_instability",
+    "surprise_level": "not_scored",
+    "surprise_note": "The falsifier passed everything except stability: concentration risk (predicted top failure mode) was a non-issue at HHI 0.022, but the old_thin window loss plus wide cluster bootstrap kept the lead descriptive - window instability, not concentration, is the binding constraint."
+  },
+  "causal_components": [
+    "comparator: one actual same-date cash-feasible core slot consumed at most once for the first liquidity-ranked treatment row when present and not the same ticker; zero-return cash for every unmatched; additional; or same-ticker-collision slot; slot map hash-bound outcome-blind (massive_dividend_restart_comparator_map_20260731.json; 9 matched / 67 no-core-cash / 13 additional-cash / 0 collisions); SPY and QQQ reported separately and never replace the primary hurdle",
+    "declaration-date cluster block bootstrap interval on aggregate replacement value reported descriptively; a positive result whose interval includes zero closes as a descriptive lead only",
+    "decision clock: declaration_date research-PIT row clock with next-regular-session-open entry; the five rows lacking canonical next-open/H10 endpoints were voided outcome-blind before any return access (frozen in endpoint_preflight_v1)",
+    "double-cost stress must stay positive; max single-ticker positive contribution <= 40%; top-five positive share <= 60%; contribution HHI <= 0.25; frozen roster must remain exactly 39/21/29 across old_thin/mid_weak/late_strong",
+    "identity: research-PIT month-start as-of active common-stock membership (as_of; ticker; type; active only); descriptive fields; FIGIs; current reference rows and future vendor revisions quarantined",
+    "amendment lineage: child cand-ed4c2908c4645ea90319 of cand-4047cfda28a51c488a77 with attested abandoned ancestors cand-d3d84780295914d0f19a (v2 block; original) and cand-325a1299bfb2fcc72d57 (v3 block; abandoned prior child) per exp-20260801-003; typed comparator-allocation and endpoint-preflight attachments hash-bound",
+    "no strategy; shared-policy; order; sizing; or exit-rule change; trade_enabled=false; result ceiling observed_only per docs/research_pit_policy.md"
+  ],
+  "change_summary": "First outcome access for cand-ed4c2908c4645ea90319: all 89 frozen roster rows executed with zero voids against the one-use core-or-cash slot map. Every frozen falsifier check passed - windows old_thin -$2,285.56 / mid_weak +$2,446.62 / late_strong +$4,365.64 (2 of 3 positive), aggregate +$4,526.70, double-cost +$3,406.70, max single ticker 11.2% <= 40%, top-5 32.9% <= 60%, HHI 0.022 <= 0.25; SPY/QQQ secondary aggregates were both negative (-$1,179 / -$1,159). But the declaration-date overlapping-hold cluster bootstrap (11 clusters, 10k resamples, seed 20260801) gives CI90 [-$4,777.50, +$12,380.65] which includes zero, so per the frozen contract the result closes as observed_only_descriptive_lead - an unstable descriptive lead, not stable alpha. research_pit ceiling applies regardless of sign.",
+  "change_type": "private_replay_scout",
+  "changed_variable": "private_replay_scout_dividend_restart_replacement_value_v1",
+  "component": "data/alpha_search, data/experiments/exp-20260801-004, experiments/tickets/exp-20260801-004.json, experiments/cards/exp-20260801-004.md, experiments/logs/exp-20260801-004.json, experiments/manifests/exp-20260801-004.json, quant/experiments/exp_20260801_004_massive_dividend_restart_scout.py",
+  "date_range": {},
+  "decision": "observed_only",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260801-004",
+  "hypothesis": "Research-PIT private replay scout: buying endpoint-ready active common stocks at the next regular-session open after their first positive USD cash-distribution declaration in at least 1095 days (point-in-time monthly membership; exactly 20 pre-declaration bars; trailing-20 median dollar volume >= $1,000,000; reference close >= $3; liquidity-ranked top-2 per declaration date de-duplicated to one ticker-date decision; frozen 89-row endpoint roster 39/21/29; fixed next-open-to-10-session hold; round-trip costs on $4,000 research notional) produces after-cost replacement value above the hash-bound nonduplicated same-date cash-feasible core-or-cash comparator slot map; result ceiling observed_only, descriptive lead only.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "capital_distribution_restart_drift",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Disposition observed_only_descriptive_lead. Old_thin window is materially negative while mid_weak and late_strong are positive; the edge, if real, is concentrated in the recent two-thirds of the sample and is diversified across tickers (HHI 0.022). The frozen core_slot_id third component is the Gate-1 ledger trade-key price, not a warehouse open - both comparator legs price from the identical warehouse reader over the identical interval (documented in core_slot_price_note). Upgrade path per docs/research_pit_policy.md: canonical as-published Massive dividend vintages would be required before any gate-ladder attempt; a forward observer on new restart declarations is the only way to add settled evidence, since the historical replay sample is fixed.",
+  "paper_live_eligible": false,
+  "parameters": {
+    "locked_variables": [
+      "massive_dividend_restart_1095d_next_open_h10_replacement_value_v1"
+    ],
+    "single_causal_variable": "massive_dividend_restart_1095d_next_open_h10_replacement_value_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the 1095-day gap, liquidity floors, top-2 rule, hold length, comparator semantics, or concentration thresholds and rerun on the same 89-row historical roster - the sample is fixed and any such rerun is loop unrolling on consumed evidence. Do not relabel the descriptive lead as stable alpha, and do not promote to default-off paper on research_pit evidence.",
+    "new_evidence_required": "Two legal axes only: (1) axis-(c) settled forward rows - a default-off forward observer on NEW first-positive-after-1095d declarations (daily wiring within the section 2.4 observer first-build <=2 ID budget) accumulating calendar-bound settled H10 rows; reopen for a stability re-read once >=30 settled forward decisions exist, since the historical replay sample cannot grow; (2) canonical as-published Massive dividend vintages, which would lift the research_pit ceiling itself.",
+    "realized_failure_mode": "chronological_window_instability",
+    "why_result_happened": "The falsifier passed everything except stability: concentration risk (predicted top failure mode) was a non-issue at HHI 0.022, but the old_thin window loss plus wide cluster bootstrap kept the lead descriptive - window instability, not concentration, is the binding constraint."
+  },
+  "prediction": {
+    "confidence_reason": "The source field and mechanism are new, all fixed windows clear the outcome-blind executable-touch floor by a wide margin (39/21/29; 89 distinct ticker-date decisions), and the long gap plausibly marks a capital-return state change. Confidence remains below one-third because the historical endpoint is only research-PIT, distribution categories are intentionally excluded, and the candidate must beat the nonduplicated cash-feasible core-or-cash slot hurdle after costs rather than merely earn a positive raw return.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "chronological_window_instability",
+      "core_opportunity_cost_not_beaten",
+      "distribution_event_heterogeneity",
+      "double_cost_stress_failure",
+      "identity_or_vintage_contract_failure",
+      "ticker_concentration"
+    ],
+    "recorded_at": "2026-08-01T16:45:17+00:00",
+    "success_probability": 0.28
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260801-004/scout_before.json",
+    "data/experiments/exp-20260801-004/exp_20260801_004_massive_dividend_restart_scout.json"
+  ],
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "secondary_windows": [],
+  "selected_evidence_grade": "lead",
+  "status": "observed_only",
+  "timestamp": "2026-08-01T16:51:21+00:00",
+  "trial_family": "massive_dividend_restart_research_replay",
+  "trial_variant_id": "private_replay_scout_dividend_restart_replacement_value_v1"
+}

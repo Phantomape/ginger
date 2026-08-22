@@ -1,0 +1,69 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Widened the run.py-wired estimate-revision settlement population from candidate-overlap-only rows to every decision-identified ledger row; wired 45-day catch-up re-settled history: settled h5/h10 went 4/3 to 793/407 over 1300 qualified independent decisions, unblocking the exp-20260721-002 phase-2 readiness bar from a structurally unreachable state.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "estimate_revision outcome settlement population filter (matched-candidate-only vs all decision-identified rows)",
+  "component": "quant/experiments/exp_20260811_001_estimate_revision_settlement_population_repair.py, data/experiments/exp-20260811-001/exp_20260811_001_estimate_revision_settlement_population_repair.json, experiments/cards/exp-20260811-001.md, experiments/manifests/exp-20260811-001.json, experiments/tickets/exp-20260811-001.json, experiments/logs/exp-20260811-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260811-001",
+  "hypothesis": "Genuine settlement-pipeline defect (not routine delta materialization): the run.py-wired estimate-revision outcome settlement builder filters its population to candidate-overlap rows only, a semantic population-filter defect that structurally starves the exp-20260721-002 phase-2 readiness contract (12 of 1299 qualified independent decisions ever received outcome rows; settled h5/h10/h20 = 4/3/0 against the 30/30/30 bar, mathematically unreachable at ~11 overlap decisions per 3 weeks). Repair widens the already-wired settlement pipeline to settle every decision-identified ledger row; the existing wired 45-day catch-up then re-settles retrospectively with zero forward-vintage loss and no new manual materialization IDs.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Defect class: semantic population-filter defect in the settlement pipeline (input-side canonical contract intact; no vendor bypass). Settlement is retrospective computation from the canonical hot warehouse, so the starved window was fully reconstructible with zero forward-vintage loss. Remaining honest blockers: settled_h20=0/30 matures ~2026-08-19+ by calendar; actual_cash_conflicts=0/10 is a rare-event bar worth a separate contract review if it stays 0 while decisions scale. Boundary smoke: daily wiring unchanged (persist+catchup+readiness already chained in run.py); empty/missing ledger days keep the existing fail branches; as_of comes from the caller, no wall-clock date entered row attribution; catch-up overwrite is idempotent (exercised daily). reopen_readiness.json rebuilt same-ticket per AGENTS.md section 3 sync rule.",
+  "parameters": {
+    "locked_variables": [
+      "estimate_revision outcome settlement population filter (matched-candidate-only vs all decision-identified rows)"
+    ],
+    "single_causal_variable": "estimate_revision outcome settlement population filter (matched-candidate-only vs all decision-identified rows)"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve further IDs to re-widen, re-filter, or re-materialize this settlement population; the wired daily persist+catchup+readiness chain now covers it routinely. Do not reserve phase-2 alpha reads before the full exp-20260721-002 bar passes (30 settled at EACH of h5/h10/h20 plus 10 actual cash conflicts plus source contracts plus a fresh outcome-blind D0-D3 scope).",
+    "new_evidence_required": "settled_h20 matures by calendar around 2026-08-19+ (earliest qualified decisions ~2026-07-22); actual_cash_conflicts is a rare-event bar - if it remains 0 while settled counts scale past the bar, open ONE contract-review ticket for that bar rather than retuning it inside an alpha ticket. Machine counter: data/non_ohlcv/estimate_revision_readiness_latest.json via data/reopen_readiness.json phase2_estimate_revision lane.",
+    "realized_failure_mode": "settlement_population_filter_starvation",
+    "why_result_happened": "The 30/30/30 settled bar was unreachable by construction, not by data scarcity: only ~11 candidate-overlap decisions existed in 3 weeks while 1299 qualified decisions sat unsettled."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260811-001/before_readiness.json",
+    "data/experiments/exp-20260811-001/after_readiness.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-11T16:24:21+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260811-001"
+}

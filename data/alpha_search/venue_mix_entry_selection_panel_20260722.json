@@ -1,0 +1,426 @@
+{
+  "schema_version": 1,
+  "record_type": "panel_selection",
+  "selection_scope_id": "scope-70aa6b30b86e0d16a33d8485",
+  "created_at": "2026-07-22T10:12:00Z",
+  "data_cutoff": "2026-07-22T10:11:10Z",
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "cash_feasible_core_price_prior_20260715",
+      "moomoo_daily_short_volume_venue_mix_20260623"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generator_version": "alpha-search-venue-mix-synthesis-v1",
+      "queue_budgets": {
+        "adjacent": 0,
+        "exploitation": 0,
+        "exploration": 1
+      },
+      "required_evidence_roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "independent_evidence",
+        "flow"
+      ],
+      "required_precommitments": [
+        "baseline",
+        "treatment",
+        "expected_horizon",
+        "replacement_value_comparator",
+        "falsifier",
+        "execution_envelope"
+      ],
+      "required_queues": [
+        "exploration"
+      ],
+      "schema_version": 1,
+      "selection_limit": 1,
+      "selection_policy": "one candidate only; pass D0-D3 or select none",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-07-22T10:11:10Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-07-22T10:12:00Z",
+    "generator_version": "alpha-search-venue-mix-synthesis-v1",
+    "manifest_hash": "70aa6b30b86e0d16a33d8485282649d8ebc58c43be5e73c876f43ca305c2adea",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-07-22T10:11:00Z",
+    "prior_fingerprint_count": 1340,
+    "prior_fingerprint_snapshot_hash": "06f5e1dc8770ad6a568ee28cd01ad2d32fcd1d707889381a2062e71ca136e070",
+    "queue_budgets": {
+      "adjacent": 0,
+      "exploitation": 0,
+      "exploration": 1
+    },
+    "schema_version": 1,
+    "scope_name": "venue-mix-entry-admission-20260722",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "a391bab6c271c407de1b4b2a123b9e7b8e73723d958c6cde9c1602ff4a1f2986",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "70aa6b30b86e0d16a33d8485282649d8ebc58c43be5e73c876f43ca305c2adea",
+  "surface_registry_hash": "a391bab6c271c407de1b4b2a123b9e7b8e73723d958c6cde9c1602ff4a1f2986",
+  "prior_fingerprint_snapshot_hash": "06f5e1dc8770ad6a568ee28cd01ad2d32fcd1d707889381a2062e71ca136e070",
+  "prior_fingerprint_count": 1340,
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "queue_budgets": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "queue_actual_counts": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "expected_candidate_count": 1,
+  "candidate_pool_complete": true,
+  "selection_pool_complete": true,
+  "candidate_ids": [
+    "cand-47964aba2fc1b6938da4"
+  ],
+  "candidate_snapshots": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-47964aba2fc1b6938da4",
+      "search_queue": "exploration",
+      "hypothesis": "Entry-admission alpha: exclude the next-session core long entry when nasdaq_shares_short divided by total_shares_short is at or above its strictly-prior-60-row 70th percentile; insufficient history is neutral.",
+      "fingerprint": {
+        "data_source": "moomoo_short_volume",
+        "component_sources": [
+          "moomoo_short_volume",
+          "ohlcv_warehouse"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "nasdaq_execution_venue_short_pressure",
+        "decision_surface": "entry_admission",
+        "payoff_shape": "fragile_long_avoidance",
+        "horizon": "H10",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "core_entry_quality"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "moomoo_daily_short_volume_venue_mix_20260623"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "ohlcv_warehouse",
+          "known_at": "2026-07-22T09:57:30Z",
+          "units": "frozen_core_candidate_order",
+          "provenance": "The cash-feasible core ranking uses only frozen behavior inputs and OHLCV bars known by the signal close."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "moomoo-nasdaq-venue-share-percentile-v1",
+            "known_at": "2026-07-22T09:57:30Z",
+            "provenance": "Authenticated Moomoo daily short-volume activity archive; activity_date is usable no earlier than the next tradable session.",
+            "source": "moomoo_short_volume",
+            "state": "nasdaq_shares_short divided by total_shares_short is at or above its within-ticker 70th percentile versus the strictly prior 60 activity rows, with at least 40 prior rows"
+          }
+        ],
+        "gap_definition": "The existing price state says admit the core long candidate, while an unusually NASDAQ-concentrated short-activity venue mix says the apparent strength faces information-sensitive sell pressure not represented by aggregate short-volume ratio.",
+        "transmission": {
+          "affected_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COHR",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GLD",
+            "GOOG",
+            "GS",
+            "HOOD",
+            "IAU",
+            "ISRG",
+            "IWM",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MRVL",
+            "MSFT",
+            "MU",
+            "MUU",
+            "NBIS",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "QQQ",
+            "RKLZ",
+            "RTX",
+            "SLV",
+            "SNOW",
+            "SPCX",
+            "SPOT",
+            "SPY",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "catalyst": "Next-session price discovery incorporates venue-concentrated short activity after the source becomes usable.",
+          "causal_steps": [
+            "core price state admits a long candidate",
+            "independent short activity concentrates on NASDAQ versus the ticker's own history",
+            "the flagged next-session long entry is withheld",
+            "avoiding fragile demand improves replacement value over H10"
+          ],
+          "expected_direction": "exclude the flagged next-session core long entry",
+          "half_life": "10 sessions"
+        }
+      },
+      "why_not_arbitraged": "The venue split is not the commonly used aggregate short-volume ratio, requires ticker-specific rolling history and a strict after-close-to-next-session clock, and is absent from the existing core entry contract.",
+      "falsifier": "Fewer than five exact canonical baseline entry touches in any standard window, fail-open or timing mismatch in the shared policy, or failure to improve aggregate expected-value score and H10 replacement value without worse drawdown falsifies the rule.",
+      "baseline": {
+        "policy": "Preserve the accepted core candidate order without Moomoo venue-mix information.",
+        "universe": "frozen cash-feasible core candidate universe"
+      },
+      "treatment": {
+        "policy": "For the next tradable session only, exclude a core long entry when venue_share_percentile is at or above 0.70, require up to 60 strictly prior activity rows with at least 40, and remain neutral on missing history."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the baseline entered trade under identical costs and capital constraints.",
+      "expected_horizon": "H10",
+      "execution_envelope": {
+        "borrow_dependency": "none; short activity is context for long ranking and does not authorize a short sale",
+        "capacity_constraint": "same cash-feasible slot and notional limits as the active baseline",
+        "costs_and_carry": "canonical cash-equity costs and turnover accounting",
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "the accepted core universe liquidity and spread floors",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "no earlier than next session after activity_date; no same-session use",
+        "trade_enabled": false
+      },
+      "evidence_grade": "gate_candidate",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "cash_feasible_core_price_prior_20260715",
+          "snapshot_hash": "49f3cc3e0fa181ebe1bc7b0974c68de67c0b5eec659bef0723f1a1f7679a6960"
+        },
+        {
+          "surface_id": "moomoo_daily_short_volume_venue_mix_20260623",
+          "snapshot_hash": "5332675a3d91eedb2f0f5b92df5d93f05f44801800b0e227b1ec5e451a2a988b"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Moomoo NASDAQ and NYSE short-activity entry admission",
+      "created_at": "2026-07-22T10:11:20Z",
+      "created_by": "alpha-automation-20260722",
+      "prediction": {
+        "success_probability": 0.1,
+        "main_failure_modes": [
+          "core_opportunity_cost_not_beaten",
+          "false_positive_entry_exclusions",
+          "only_five_mid_and_late_window_touches",
+          "venue_split_is_routing_noise",
+          "window_regression"
+        ],
+        "confidence_reason": "The field axis and entry-admission response are untried and density is broad, but mid and late baseline touches sit exactly at the preflight floor and venue attribution may be routing noise."
+      },
+      "reopen_condition": "If canonical replay drops below five entry touches in any window, park until at least ten additional exact entry touches exist; if Gate 4 rejects, only a genuinely independent source or materially sufficient newly settled forward rows may reopen it.",
+      "next_machine_action": "Run outcome-blind D0-D3, then obtain an opposite-runtime challenge and independent verification before reserving a shared default-off entry-admission experiment."
+    }
+  ],
+  "candidate_snapshot_hashes": {
+    "cand-47964aba2fc1b6938da4": "67ec2005e461e06654c20a4a5aa06891d380e2b4e06a83dcb93162bb3653de09"
+  },
+  "preflight_decisions": {
+    "cand-47964aba2fc1b6938da4": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-47964aba2fc1b6938da4",
+      "selection_scope_id": "scope-70aa6b30b86e0d16a33d8485",
+      "evaluated_at": "2026-07-22T10:12:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-22T10:11:10Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "cash_feasible_core_price_prior_20260715": "49f3cc3e0fa181ebe1bc7b0974c68de67c0b5eec659bef0723f1a1f7679a6960",
+        "moomoo_daily_short_volume_venue_mix_20260623": "5332675a3d91eedb2f0f5b92df5d93f05f44801800b0e227b1ec5e451a2a988b"
+      },
+      "declared_evidence_grade": "gate_candidate",
+      "maximum_supported_evidence_grade": "gate_candidate",
+      "fingerprint_hash": "f9a18016d573f0e371fed867c990a757ad15fd4f718577d23c6995554a9b9fef",
+      "gates": {
+        "D0": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D3": {
+          "status": "reject",
+          "reasons": [
+            "legacy_near_neighbor:cand-6faef996697226cbf190:score=0.5553"
+          ]
+        }
+      },
+      "decision": "reject",
+      "failure_reasons": [
+        "duplicate_or_frozen"
+      ],
+      "reopen_condition": "If canonical replay drops below five entry touches in any window, park until at least ten additional exact entry touches exist; if Gate 4 rejects, only a genuinely independent source or materially sufficient newly settled forward rows may reopen it.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "49cbef090707e8c5850ef385a048e85b88ce7c644706167dd774b03b83e88d2f"
+    }
+  },
+  "preflight_decision_hashes": {
+    "cand-47964aba2fc1b6938da4": "49cbef090707e8c5850ef385a048e85b88ce7c644706167dd774b03b83e88d2f"
+  },
+  "scores": {
+    "cand-47964aba2fc1b6938da4": {
+      "components": {
+        "evidence_maturity": 1.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 1.0,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.25
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": -0.098,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "rejection_reasons": {
+    "cand-47964aba2fc1b6938da4": [
+      "duplicate_or_frozen"
+    ]
+  },
+  "selection_limit": 1,
+  "batch_policy_bundle_id": null,
+  "selected_candidate_ids": [],
+  "selected_candidate_id": null,
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "panel_hash": "84429d35423d96f4680979cff75deee74fa4bc41ca6669d7c6d83400d353130c"
+}

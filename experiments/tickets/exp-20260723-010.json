@@ -1,0 +1,298 @@
+{
+  "acceptance_rule": "A consumes_core_slot/core_strategy position is classified core through the shared open-position schema; positions/core_positions/observations are loaded consistently; current cash-feasible Gate-1 metrics remain zero-delta; focused tests and lean-strict audit pass; no order or strategy behavior changes.",
+  "allowed_write_scope": [
+    "quant\\live_drift_reconciliation.py",
+    "quant\\test_live_drift_reconciliation.py",
+    "docs\\live_drift_reconciliation.md",
+    "quant\\experiments",
+    "data\\experiments"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260723-010.md",
+  "causal_components": [
+    "shared open-position schema",
+    "bucket classification",
+    "all-account-group loader",
+    "focused parity tests",
+    "measurement artifact"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "live_drift_core_slot_schema_alignment_v2",
+  "claimed_at": "2026-07-23T19:17:47+00:00",
+  "completed_at": "2026-07-23T19:26:27+00:00",
+  "created_at": "2026-07-23T19:17:15+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260723-010",
+  "experiment_uid": "expuid-647e18869c4443dd",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260723-010",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-23T19:17:15+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "live_drift_core_slot_schema_alignment"
+  },
+  "hypothesis": "Fault recovery: live-drift must classify every position that the shared open-position schema marks consumes_core_slot as core; the current MRVL row is wrongly bucketed as sleeve, leaving the core drift alert at zero observed sessions and blocking trustworthy live execution-decay measurement, while orders, entries, ranking, sizing, exits, and Gate 1-4 behavior remain unchanged.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled",
+    "orders",
+    "entry",
+    "ranking",
+    "sizing",
+    "exits",
+    "gate1_4",
+    "drift_formulas",
+    "alert_thresholds"
+  ],
+  "mechanism_family": "live_drift_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant\\run.py",
+    "quant\\backtester.py",
+    "quant\\open_position_schema.py",
+    "operator_inputs",
+    "orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260706-019",
+    "exp-20260707-011",
+    "exp-20260711-006"
+  ],
+  "new_evidence_type": "newly_observed_production_schema_mismatch",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "live_drift_reconciliation",
+      "field_tags": [
+        "alert",
+        "alignment",
+        "as",
+        "at",
+        "behavior",
+        "blocking",
+        "bucketed",
+        "classify",
+        "consumes",
+        "core",
+        "current",
+        "decay",
+        "drift",
+        "entries",
+        "every",
+        "execution",
+        "exits",
+        "fault",
+        "gate",
+        "integrity",
+        "is",
+        "leaving",
+        "live",
+        "marks",
+        "measurement",
+        "mrvl",
+        "must",
+        "observed",
+        "orders",
+        "position",
+        "ranking",
+        "recovery",
+        "remain",
+        "row",
+        "schema",
+        "sessions",
+        "sizing",
+        "sleeve",
+        "slot",
+        "that",
+        "trustworthy",
+        "unchanged",
+        "while",
+        "wrongly",
+        "zero"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_amihud_illiquidity_scarce_slot_ranking",
+        "reopen_condition": "After rejection, move to a genuinely different data source or gate shape. After a positive lead, the only next step is a shared production/backtest ranking helper with a daily default-off snapshot and the same Gate 1-4 replay.",
+        "score": 0.1731,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "core_slot_rank_post_sizing_topup",
+        "reopen_condition": "['Do not retry nearby rank-2 scalar values without new forward rows or a new production-visible replacement-value feature.', 'If a variant passes, promote into shared production_parity policy and rerun this same three-window protocol.']",
+        "score": 0.1722,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_ample_slot_stock_rank1_topup_extension",
+        "reopen_condition": "['Do not retry nearby rank-1 ample-slot scalar values without new forward rows or a distinct production-visible feature.', 'Prefer a different alpha family unless a new replacement-value cohort is identified.']",
+        "score": 0.1651,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "entry_day_component_attribution",
+        "reopen_condition": "Use the schema v2 PIT component attribution report before any future component-aware allocation test; do not retry raw expectation_revision, post_earnings_drift, or trend scalars on the frozen canonical windows without new forward evidence or a materially different interaction.",
+        "score": 0.1582,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "accepted_entry_cluster_rank_tail_sizing",
+        "reopen_condition": "['Only retest if new out-of-sample clusters show repeated tail losses.', 'Any promotion must put the cluster policy in shared production_parity.py.', 'Do not combine this with ticker, earnings, or event filters in the same iteration.']",
+        "score": 0.158,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New production measurement mismatch: a current consumes_core_slot position is classified as sleeve by live_drift despite the shared operator-position schema contract.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "live_drift_reconciliation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New production measurement mismatch: a current consumes_core_slot position is classified as sleeve by live_drift despite the shared operator-position schema contract.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "live_drift_reconciliation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The production artifact directly shows MRVL with slot_policy consumes_core_slot and sleeve core_strategy while live_drift records strategy_bucket sleeve; quant/open_position_schema.py already defines the authoritative core-slot semantics, so reusing it is a narrow deterministic repair. The main risk is preserving append-only history and exact alert arithmetic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared_schema_semantics_disagree",
+      "historical_ledger_cannot_reclassify",
+      "focused_test_failure"
+    ],
+    "recorded_at": "2026-07-23T19:16:10+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260723-010/before.json",
+    "after_result_file": "data/experiments/exp-20260723-010/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.97,
+      "brier_score": 0.0009,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "shared_schema_semantics_disagree",
+        "historical_ledger_cannot_reclassify",
+        "focused_test_failure"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The deterministic repair matched the 0.97 success prediction; no unexpected strategy, formula, threshold, or persistence change was observed."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260723-010.json",
+  "single_causal_variable": "live_drift_core_slot_schema_alignment_v2",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260723-010.json",
+  "trial_family": "live_drift_position_schema_alignment",
+  "trial_variant_id": "exp-20260723-010"
+}

@@ -1,0 +1,427 @@
+{
+  "schema_version": 1,
+  "record_type": "panel_selection",
+  "selection_scope_id": "scope-36db468bbaf21baa700e5cfb",
+  "created_at": "2026-07-23T07:40:00Z",
+  "data_cutoff": "2026-07-23T07:30:00Z",
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "cash_feasible_core_price_prior_20260715",
+      "us_opex_week_calendar_20260723"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generator_version": "alpha-search-opex-week-entry-conditioning-synthesis-v1",
+      "queue_budgets": {
+        "adjacent": 0,
+        "exploitation": 0,
+        "exploration": 1
+      },
+      "required_evidence_roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "independent_evidence"
+      ],
+      "required_precommitments": [
+        "baseline",
+        "treatment",
+        "expected_horizon",
+        "replacement_value_comparator",
+        "falsifier",
+        "execution_envelope"
+      ],
+      "required_queues": [
+        "exploration"
+      ],
+      "schema_version": 1,
+      "selection_limit": 1,
+      "selection_policy": "one candidate only; pass outcome-blind D0-D3 AND the outcome-blind touch-density floor (>=5 baseline entry touches per standard window) or select none",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-07-23T07:30:00Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-07-23T07:40:00Z",
+    "generator_version": "alpha-search-opex-week-entry-conditioning-synthesis-v1",
+    "manifest_hash": "36db468bbaf21baa700e5cfb9b135079b17a324a03e5f2525504cb24c09716ac",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-07-23T07:25:00Z",
+    "prior_fingerprint_count": 1349,
+    "prior_fingerprint_snapshot_hash": "5e8209c6a5330ad20f47e69ae8a0a0c2c545df57fbaa0c6dc8625a0eda01ca4f",
+    "queue_budgets": {
+      "adjacent": 0,
+      "exploitation": 0,
+      "exploration": 1
+    },
+    "schema_version": 1,
+    "scope_name": "opex-week-entry-timing-20260723",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "be086e16083a9bf358b3b867b4c63c9fa5f0a575968a2f513f8d105e39ae21d5",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "36db468bbaf21baa700e5cfb9b135079b17a324a03e5f2525504cb24c09716ac",
+  "surface_registry_hash": "be086e16083a9bf358b3b867b4c63c9fa5f0a575968a2f513f8d105e39ae21d5",
+  "prior_fingerprint_snapshot_hash": "5e8209c6a5330ad20f47e69ae8a0a0c2c545df57fbaa0c6dc8625a0eda01ca4f",
+  "prior_fingerprint_count": 1349,
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "queue_budgets": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "queue_actual_counts": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "expected_candidate_count": 1,
+  "candidate_pool_complete": true,
+  "selection_pool_complete": true,
+  "candidate_ids": [
+    "cand-71bafe4934dc3a7f6dd2"
+  ],
+  "candidate_snapshots": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-71bafe4934dc3a7f6dd2",
+      "search_queue": "exploration",
+      "hypothesis": "Entry-timing alpha: a fresh core long entry whose canonical next-open entry session falls inside the monthly options-expiration week (Monday through the third Friday) is admitted into pinning-suppressed, roll-flow-distorted tape and should be excluded for that session only, re-admitting on the first post-OPEX session; all non-OPEX sessions are untouched.",
+      "fingerprint": {
+        "data_source": "exchange_calendar",
+        "component_sources": [
+          "exchange_calendar",
+          "ohlcv_warehouse"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "opex_dealer_gamma_pinning_and_roll_flow_distortion",
+        "decision_surface": "entry_admission",
+        "payoff_shape": "false_breakout_avoidance",
+        "horizon": "H10",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "core_entry_quality"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "us_opex_week_calendar_20260723"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "ohlcv_warehouse",
+          "known_at": "2026-07-23T07:30:00Z",
+          "units": "frozen_core_candidate_order",
+          "provenance": "The cash-feasible core ranking uses only frozen behavior inputs and OHLCV bars known by the signal close."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "us-opex-week-calendar-membership-v1",
+            "known_at": "2026-07-23T07:30:00Z",
+            "provenance": "Deterministic civil calendar; known arbitrarily far in advance; no external feed and no vintage ambiguity.",
+            "source": "exchange_calendar",
+            "state": "The candidate entry session date falls between the Monday and the third Friday of its calendar month inclusive, per the deterministic civil-calendar rule."
+          }
+        ],
+        "gap_definition": "The existing price state says admit the core long entry, while the calendar says the surrounding week is dominated by expiry roll and dealer-hedging flow whose pinning suppresses continuation, so the breakout evidence is more likely mechanical and reverts after expiration.",
+        "transmission": {
+          "affected_tickers": [
+            "AAPL",
+            "AMD",
+            "AMZN",
+            "APP",
+            "AVGO",
+            "BKNG",
+            "CAT",
+            "COHR",
+            "COIN",
+            "CRDO",
+            "CVX",
+            "DDOG",
+            "DE",
+            "DIS",
+            "GE",
+            "GLD",
+            "GOOG",
+            "GS",
+            "HOOD",
+            "IAU",
+            "ISRG",
+            "IWM",
+            "JPM",
+            "LLY",
+            "MA",
+            "MCD",
+            "META",
+            "MRVL",
+            "MSFT",
+            "MU",
+            "MUU",
+            "NBIS",
+            "NFLX",
+            "NOW",
+            "NVDA",
+            "NVO",
+            "PLTR",
+            "QQQ",
+            "RKLZ",
+            "RTX",
+            "SLV",
+            "SNOW",
+            "SPCX",
+            "SPOT",
+            "SPY",
+            "TRIP",
+            "TSLA",
+            "TSM",
+            "UNH",
+            "V",
+            "XOM"
+          ],
+          "catalyst": "Post-expiration unwind of dealer hedges and roll flow removes the mechanical bid/pin that produced the entry trigger.",
+          "causal_steps": [
+            "core price state admits a long candidate during the monthly expiration week",
+            "dealer gamma pinning and roll flow distort the trigger bar's information content",
+            "the OPEX-week entry is withheld for that session only",
+            "avoiding mechanically induced triggers improves replacement value over H10"
+          ],
+          "expected_direction": "exclude the core long entry only when its entry session falls inside the OPEX week",
+          "half_life": "10 sessions"
+        }
+      },
+      "why_not_arbitraged": "The claim is not that OPEX weeks are directionally down, but that trend/breakout triggers fired during expiry weeks are lower-quality for a 10-session hold; this interacts with the specific core entry contract and is invisible to generic seasonality screens.",
+      "falsifier": "Fewer than five exact canonical baseline entry touches inside OPEX weeks in any standard window falsifies testability (outcome-blind); given density, failure to improve aggregate expected-value score without worse drawdown, or any window regression, falsifies the rule.",
+      "baseline": {
+        "policy": "Preserve the accepted core candidate order and admit entries on every session regardless of calendar position.",
+        "universe": "frozen cash-feasible core candidate universe"
+      },
+      "treatment": {
+        "policy": "Exclude a fresh core long entry when its canonical next-open entry session falls inside the Monday-to-third-Friday OPEX week; the signal may re-trigger and enter normally from the first post-OPEX session; no exit, sizing, or ranking changes."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the baseline entered trade under identical costs and capital constraints.",
+      "expected_horizon": "H10",
+      "execution_envelope": {
+        "borrow_dependency": "none",
+        "capacity_constraint": "same cash-feasible slot and notional limits as the active baseline",
+        "costs_and_carry": "canonical cash-equity costs and turnover accounting",
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "the accepted core universe liquidity and spread floors",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "calendar membership known in advance; decision applies to the next-open entry session only",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "cash_feasible_core_price_prior_20260715",
+          "snapshot_hash": "be6c0cf824ca568733b6067be87c23ef048974023aebb87e4a611feef556a3e4"
+        },
+        {
+          "surface_id": "us_opex_week_calendar_20260723",
+          "snapshot_hash": "e00639013fb3f5b874e9432c05e4eaa1b7ce73e5656c8711713397740058699c"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "OPEX-week entry-timing de-admission for core trend entries",
+      "created_at": "2026-07-23T07:35:00Z",
+      "created_by": "fable-alpha-automation-20260723",
+      "prediction": {
+        "success_probability": 0.05,
+        "main_failure_modes": [
+          "core_opportunity_cost_not_beaten",
+          "false_positive_entry_exclusions",
+          "insufficient_opex_week_entry_touches",
+          "single_stock_trend_dominates_index_pinning",
+          "window_regression"
+        ],
+        "confidence_reason": "Outcome-blind canonical baseline touch counts are 4 (old_thin), 2 (mid_weak), 3 (late_strong) OPEX-week entries versus the >=5 per-window floor, so the candidate is untestable on the frozen windows today; the mechanism also lacks a dealer-positioning proxy, which the exp-20260610-001 frozen family already named as the required reopen evidence."
+      },
+      "reopen_condition": "Reopen only when (a) rolling standard windows contain at least 5 canonical baseline entry touches inside OPEX weeks per window (recount with the frozen baseline artifact, one line, no experiment ID), or (b) a point-in-time options open-interest or dealer-gamma proxy surface exists per the exp-20260610-001 frozen-family reopen condition; threshold retunes and response-shape swaps without (a) or (b) stay closed.",
+      "next_machine_action": "Record only: park this candidate as a falsified-at-density lead; recount OPEX-week baseline entry touches when a new standard window is frozen; do not reserve an experiment ID."
+    }
+  ],
+  "candidate_snapshot_hashes": {
+    "cand-71bafe4934dc3a7f6dd2": "2d3828b400dbd8465a8ede9194a6299c3f4512451d3905cec1612d2c1d114c9d"
+  },
+  "preflight_decisions": {
+    "cand-71bafe4934dc3a7f6dd2": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-71bafe4934dc3a7f6dd2",
+      "selection_scope_id": "scope-36db468bbaf21baa700e5cfb",
+      "evaluated_at": "2026-07-23T07:40:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-23T07:30:00Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "cash_feasible_core_price_prior_20260715": "be6c0cf824ca568733b6067be87c23ef048974023aebb87e4a611feef556a3e4",
+        "us_opex_week_calendar_20260723": "e00639013fb3f5b874e9432c05e4eaa1b7ce73e5656c8711713397740058699c"
+      },
+      "declared_evidence_grade": "lead",
+      "maximum_supported_evidence_grade": "lead",
+      "fingerprint_hash": "5104e201c5f64d4a0c84c5282fcc1ff1a5b1f87d820e58b7c05cdbd7c2cf7a02",
+      "gates": {
+        "D0": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D3": {
+          "status": "reject",
+          "reasons": [
+            "legacy_near_neighbor:cand-47964aba2fc1b6938da4:score=0.6615",
+            "legacy_near_neighbor:exp-20260705-006:score=0.6188",
+            "legacy_near_neighbor:exp-20260708-021:score=0.6299"
+          ]
+        }
+      },
+      "decision": "reject",
+      "failure_reasons": [
+        "duplicate_or_frozen"
+      ],
+      "reopen_condition": "Reopen only when (a) rolling standard windows contain at least 5 canonical baseline entry touches inside OPEX weeks per window (recount with the frozen baseline artifact, one line, no experiment ID), or (b) a point-in-time options open-interest or dealer-gamma proxy surface exists per the exp-20260610-001 frozen-family reopen condition; threshold retunes and response-shape swaps without (a) or (b) stay closed.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "4662a4190b7f7538c669850e60cee34c264fb02eac5a0bc30c118f44b2506e40"
+    }
+  },
+  "preflight_decision_hashes": {
+    "cand-71bafe4934dc3a7f6dd2": "4662a4190b7f7538c669850e60cee34c264fb02eac5a0bc30c118f44b2506e40"
+  },
+  "scores": {
+    "cand-71bafe4934dc3a7f6dd2": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 1.0,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.25
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": -0.238,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "rejection_reasons": {
+    "cand-71bafe4934dc3a7f6dd2": [
+      "duplicate_or_frozen"
+    ]
+  },
+  "selection_limit": 1,
+  "batch_policy_bundle_id": null,
+  "selected_candidate_ids": [],
+  "selected_candidate_id": null,
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "panel_hash": "68b75cf72b62a3f5e1f9f27178cbe207e117c6ac138bc1eeb62e1ffec579d618"
+}

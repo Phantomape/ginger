@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260815-001",
+  "generated_at": "2026-08-15T16:32:50Z",
+  "ledger_sha256": "48f127e13b20f1fe9b58b2d19f6396f957ba29505791a708cf291919b436c7a8",
+  "readiness_snapshot": "data\\alpha_search\\news_propagation_forward_readiness_20260815.json",
+  "forward_predicate": {
+    "event_date_min": "2026-07-01",
+    "outcome_status": "closed",
+    "rationale": "Replay rows (exp-20260702-020/021, exp-20260703-005) cover events 2026-01..06; the run.py-wired daily observer (exp-20260702-028) accumulates current events from 2026-07 onward, so event_date >= 2026-07-01 isolates strictly out-of-replay forward rows. Identical predicate to the exp-20260807-001 freeze."
+  },
+  "concentration_cap": 0.4,
+  "viability_bars": {
+    "event_level_bp_required_gt": 100.0,
+    "row_level_mean_bp_required_gt": 45.0,
+    "source": "2026-08-08 re-park contract (two-leg round trip ~90bp + buffer)"
+  },
+  "negative": {
+    "rows": 655,
+    "events": 72,
+    "event_dates": 24,
+    "median_event_date": "2026-07-18",
+    "row_mean": 0.0010517190839694653,
+    "row_median": -0.002441,
+    "event_mean": 0.013935964461001961,
+    "event_median": 0.016717771428571428,
+    "half1_event_mean": -0.008471006216006214,
+    "half2_event_mean": 0.03289570888000888,
+    "half1_events": 33,
+    "half2_events": 39
+  },
+  "positive": {
+    "rows": 812,
+    "events": 83,
+    "event_dates": 26,
+    "median_event_date": "2026-07-20",
+    "row_mean": -0.00506580172413793,
+    "row_median": -0.010645,
+    "event_mean": 0.004920332163452345,
+    "event_median": 0.0030851111111111092,
+    "half1_event_mean": 0.000629550099000099,
+    "half2_event_mean": 0.008371613389207411,
+    "half1_events": 37,
+    "half2_events": 46
+  },
+  "separation": {
+    "event_level_bp": 90.15632297549617,
+    "row_level_mean_bp": 61.175208081073954,
+    "row_level_median_bp": 82.03999999999999,
+    "half1_event_level_bp": -91.00556315006314,
+    "half2_event_level_bp": 245.24095490801471
+  },
+  "concentration": {
+    "max_single_negative_event_positive_excess_share": 0.04197675952109731,
+    "max_single_negative_event_id": "02a766ec0a2175017b5e3662",
+    "max_single_ticker_positive_excess_share": 0.08451292665555979,
+    "max_single_ticker": "AMBA"
+  },
+  "confirmation_checks": {
+    "F1_floors": true,
+    "F2_event_level_negative_gt_positive": true,
+    "F3_row_level_mean_and_median_negative_gt_positive": true,
+    "F4_separation_positive_both_halves": false,
+    "F5_concentration_caps": true
+  },
+  "viability_checks": {
+    "V1_event_level_separation_gt_100bp": false,
+    "V2_row_level_mean_separation_gt_45bp": true
+  },
+  "failed_checks": [
+    "F4_separation_positive_both_halves",
+    "V1_event_level_separation_gt_100bp"
+  ],
+  "decision": "rejected_forward_polarity_separation_direction_unstable",
+  "result_ceiling": "observed_only",
+  "trade_enabled": false,
+  "notes": "Descriptive only; excess_10d is the observer-materialized SPY-excess. The tilt shape was not re-read: it stays dead outcome-blind at 1/0/0 executed-entry touches versus the >=5-per-window bar (structurally uncovered windows; observer starts 2026-01). A viability fail re-parks the lane at >= 983 closed negative-side rows.",
+  "descriptive": {
+    "negative_row_mean_bp_vs_zero": 10.517190839694653,
+    "negative_row_median_bp_vs_zero": -24.41,
+    "positive_row_mean_bp_vs_zero": -50.658017241379305,
+    "positive_row_median_bp_vs_zero": -106.45
+  }
+}

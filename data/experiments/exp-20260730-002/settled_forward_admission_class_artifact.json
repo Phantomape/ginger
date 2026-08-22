@@ -1,0 +1,60 @@
+{
+  "schema": "settled_forward_admission_class_artifact_v1",
+  "experiment_id": "exp-20260730-002",
+  "captured_at": "2026-07-30T17:20:00Z",
+  "change_type": "measurement_repair",
+  "trade_enabled": false,
+  "strategy_behavior_changed": false,
+  "defect": {
+    "description": "The schema-v2 alpha promotion contract admitted only canonical_promotion (evidence_grade gate_candidate, all surfaces canonical_pit) and research_replay (evidence_grade lead, at least one research_pit surface). The AGENTS.md section 5 evidence ladder step 'settled_forward_sufficient -> observed_only attribution' had no admission class, so a predeclared settled-forward observed-only attribution whose frozen reopen bars matured could not reserve an alpha_search experiment at all.",
+    "trigger_case": "intraday_triage_completed_close_settlement lane became ready on 2026-07-30 (142 strict effective next-close settlements, 24 active machine-default REDUCE_RISK, halves 9/15 against the frozen 100/20/5/5 contract from exp-20260714-010/exp-20260725-001/002/003); the predeclared 2026-07-24 candidate re-frozen via amendment lineage passed D0-D3 in a fresh scope but build-promotion failed with promotion_evidence_grade_mismatch.",
+    "before_error": "promotion_evidence_grade_mismatch: selected candidate must be gate_candidate or research-PIT lead"
+  },
+  "repair": {
+    "new_admission_class": "settled_forward_attribution",
+    "requirements": [
+      "selected candidate evidence_grade must be observed_only",
+      "every referenced surface pit_status must be settled_forward_sufficient or canonical_pit",
+      "at least one referenced surface must be settled_forward_sufficient with source_contract_status pass and settled_count > 0",
+      "bound proposal change_type must be observed_only_attribution",
+      "result_ceiling observed_only and paper_live_eligible false, enforced at build, reserve, claim revalidation, and registry closeout"
+    ],
+    "registry_ceiling": "scripts/experiment_registry.py _research_replay_metadata now recognises both research-boundary admission classes and applies the identical observed_only closeout ceiling and nested-authority rejection to settled_forward_attribution."
+  },
+  "after_evidence": {
+    "promotion_request": "data/alpha_search/promotions/intraday_reduce_risk_scout_20260730.json",
+    "admission_class": "settled_forward_attribution",
+    "selected_evidence_grade": "observed_only",
+    "result_ceiling": "observed_only",
+    "paper_live_eligible": false,
+    "tests": [
+      "quant/test_alpha_promotion_v2.py::test_settled_forward_attribution_promotion_keeps_observed_only_boundary",
+      "quant/test_alpha_promotion_v2.py::test_settled_forward_attribution_requires_observed_only_change_type",
+      "quant/test_alpha_promotion_v2.py::test_observed_only_grade_requires_a_settled_forward_surface",
+      "quant/test_experiment_registry.py::test_settled_forward_attribution_enforces_observed_only_ceiling"
+    ],
+    "test_result": "quant/test_alpha_promotion_v2.py + quant/test_experiment_registry.py: 66 passed; quant/test_alpha_debate.py: 34 passed"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false,
+    "orders_changed": false,
+    "ranking_sizing_exits_or_risk_budget_changed": false,
+    "source_ledger_changed": false,
+    "live_ready": false,
+    "summary": "Admission governance only; no trading, outcome, or ledger semantics changed. The new class grants strictly weaker authority than research_replay-admitted work: identical observed_only ceiling, no paper/live eligibility."
+  },
+  "changed_files": [
+    "scripts/alpha_debate.py",
+    "scripts/experiment_registry.py",
+    "quant/test_alpha_promotion_v2.py",
+    "quant/test_experiment_registry.py"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_alpha_promotion_v2.py quant\\test_experiment_registry.py quant\\test_alpha_debate.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\alpha_search.py build-promotion data\\alpha_search\\intraday_reduce_risk_selection_panel_20260730.json --surfaces data\\alpha_search\\intraday_reduce_risk_surfaces_20260730.json --scope-manifest data\\alpha_search\\intraday_reduce_risk_scope_manifest_20260730.json --prior-fingerprints data\\alpha_search\\intraday_reduce_risk_prior_fingerprints_20260730.json --proposal data\\alpha_search\\intraday_reduce_risk_ticket_proposal_20260730.json --output data\\alpha_search\\promotions\\intraday_reduce_risk_scout_20260730.json"
+  ]
+}

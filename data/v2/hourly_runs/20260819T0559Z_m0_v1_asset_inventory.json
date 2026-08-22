@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-19T05:40:00Z",
+  "run_finished_at": "2026-08-19T05:59:17Z",
+  "milestone": "M0",
+  "work_unit": "m0_v1_asset_inventory",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "worktree": {
+    "path": "D:/Github/ginger/.codex/worktrees/edge-v2",
+    "branch": "automation/edge-v2",
+    "source_commit": "7c4a7a9f119f072f248bfc3c6e20c6e840fff2db",
+    "source_dirty_checkout_modified": false
+  },
+  "changed_files": [
+    "AGENTS.md",
+    "docs/quant_agent_protocol.md",
+    "docs/quant_agent_protocol_v2.md",
+    "docs/v2_hourly_development_prompt.md",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/v1_asset_inventory.json",
+    "data/v2/hourly_runs/20260818T1613Z_m0_bootstrap.json",
+    "data/v2/hourly_runs/20260819T0559Z_m0_v1_asset_inventory.json",
+    "quant/test_v2_asset_inventory.py"
+  ],
+  "verification": [
+    "D:/Github/ginger/.venv/Scripts/python.exe -m pytest quant/test_v2_asset_inventory.py -q -> 2 passed in 0.14s",
+    "v1_asset_inventory.json and both hourly receipt JSON files parse successfully",
+    "docs/v2/decision_log.jsonl parses line-by-line: 3 records",
+    "default-off scan found no trade_enabled=true in docs/v2, data/v2, or the inventory test",
+    "git diff --check passed"
+  ],
+  "startup_audit": {
+    "command": "python scripts/experiment.py audit",
+    "command_exit_code": 0,
+    "audit_passed": false,
+    "tickets_checked": 2481,
+    "logs_checked": 2667,
+    "invalid_alpha_promotion_count": 10,
+    "research_result_ceiling_violation_count": 1,
+    "disposition": "recorded_as_v1_historical_bias; canonical shards remain history-only and no V2 qualification transfers"
+  },
+  "inventory_summary": {
+    "total_assets": 25,
+    "reuse_directly": 3,
+    "reuse_after_contract_upgrade": 10,
+    "migrate_as_zero_weight_challenger": 3,
+    "legacy_diagnostic_only": 6,
+    "retire": 3
+  },
+  "scientific_credibility_impact": "Positive: creates an auditable migration boundary that prevents V1 universe, hindsight weights, winner-only evidence, promotion labels, and AI trading authority from silently entering V2.",
+  "parity_impact": "No runtime or policy change. The inventory separates reusable parity assertions from V1 decision rules that require zero-weight challenger migration.",
+  "production_impact": "none",
+  "next_step": "M0 bias register with evidence anchors, V2 mitigations, severity, blocked scope, and quantitative release conditions.",
+  "user_decisions_needed": [
+    "confirm or reject proposed V2 T0 = 2026-08-18",
+    "choose whether the V1 hourly alpha pipeline continues in parallel or freezes to settlement/read-only mode"
+  ]
+}

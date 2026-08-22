@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "record_type": "batch_forward_observer_health_fault_recovery",
+  "experiment_id": "exp-20260729-001",
+  "generated_at": "2026-07-29T00:37:57.1204841Z",
+  "decision": "accepted_measurement_repair",
+  "accepted_alpha": false,
+  "alpha_ready": false,
+  "hypothesis": "A shared fail-closed forward-health contract can recover iBorrowDesk fair progress and prevent ORTEX partial or stale content from being reported ready without changing any trading decision.",
+  "alpha_hypothesis_deferred": "A first positive USD cash dividend declaration after at least 1095 days without a same-ticker positive USD declaration may create costed H10 replacement value, but the outcome-blind research-PIT lead remains frozen pending a later D0-D3 and model-diverse promotion cycle.",
+  "before": {
+    "iborrowdesk": {
+      "consecutive_zero_output_cycles": 6,
+      "latest_provider_date": "2026-07-21",
+      "due_count": 1365,
+      "last_attempted": 5,
+      "last_succeeded": 0,
+      "last_rows_added": 0,
+      "last_aborted_early": true,
+      "fetch_state_sha256": "f31cb2fee6e815bcaabc411d7b9f50b4f0d96d67c2a4cf1da9a896bf5ef7c451"
+    },
+    "ortex": {
+      "as_of": "2026-07-27",
+      "reported_status": "ready",
+      "reported_coverage_count": 20,
+      "provider_date_counts": {
+        "2026-02-19": 11,
+        "2026-07-09": 9
+      },
+      "latest_snapshot_sha256": "bc67b4efd44899566253e8b28e50aaedb750be82cf0bddeb14d4a4f12b7bf51c"
+    }
+  },
+  "repair": {
+    "iborrowdesk": {
+      "scheduler": "Eligibility remains based on last successful refresh age; shard priority is now based on oldest last attempt with last success as fallback, so recently failed names rotate behind unattempted or older-attempt names.",
+      "boundedness": "max_fetches and max_consecutive_failures remain unchanged; append-only daily history is unchanged.",
+      "deterministic_state_check": {
+        "old_head": [
+          "ABC",
+          "ANTM",
+          "BF-B",
+          "BK",
+          "BOK"
+        ],
+        "repaired_next_head": [
+          "DDS",
+          "HWM",
+          "HXL",
+          "IAG",
+          "IBCP"
+        ]
+      }
+    },
+    "ortex": {
+      "pagination": "The daily CTB range fetch follows every same-origin paginationLinks.next page, rejects cycles, malformed links, later-page HTTP or JSON failures, continuation at max_pages, and projected credit-bound breaches before any normalized row is persisted.",
+      "accounting": "creditsUsed is summed across pages, creditsLeft comes from the final page, and physical pages are reported as requests_made, http_requests_made, and pages_fetched; the four-ticker daily selection cap is unchanged.",
+      "freshness": "Snapshot coverage and provider content identity are evaluated separately. Any ticker beyond five completed exchange sessions is stale; when a complete session calendar is unavailable, a seven-calendar-day weekday fallback also applies. Stale full coverage is status=stale_content and ready=false.",
+      "real_state_counterfactual": {
+        "as_of": "2026-07-27",
+        "coverage_count": 20,
+        "status": "stale_content",
+        "ready": false,
+        "stale_ticker_count": 20
+      }
+    }
+  },
+  "acceptance": {
+    "iborrowdesk_later_due_tickers_reachable_next_cycle": true,
+    "iborrowdesk_request_bound_preserved": true,
+    "iborrowdesk_host_down_abort_preserved": true,
+    "ortex_all_pages_materialized_or_none": true,
+    "ortex_physical_request_and_credit_accounting": true,
+    "ortex_stale_content_fails_closed": true,
+    "ortex_weekend_session_age_safe": true,
+    "append_only_and_idempotent_contracts_preserved": true,
+    "api_key_and_raw_payload_not_persisted": true,
+    "strategy_and_orders_unchanged": true,
+    "gate1_anchor_unchanged": true
+  },
+  "verification": {
+    "targeted_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_iborrowdesk_data_source.py quant\\test_ortex_data_sidecar.py quant\\test_ortex_borrow_observer.py -q",
+    "targeted_result": "25 passed",
+    "integration_command": ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_iborrowdesk_data_source.py quant\\test_ortex_data_sidecar.py quant\\test_ortex_borrow_observer.py quant\\test_ortex_borrow_entry_gate.py quant\\test_ortex_moomoo_borrow_pair_paper_sleeve.py quant\\test_run_daily_wiring.py -q",
+    "integration_result": "104 passed",
+    "py_compile_passed": true,
+    "diff_check_passed": true,
+    "network_called": false,
+    "source_sha256": {
+      "quant/iborrowdesk_data_source.py": "60785b940c421fc66150e07814b2c9c67f9752a00d5b8e924f81cf99dcc89757",
+      "quant/ortex_data_sidecar.py": "b54478e759413a6bd8591b57dade7e1527227245bddf074cb0edbb51bc0865c6",
+      "quant/ortex_borrow_observer.py": "1f0be74383aec8d7f1901d2ebeb29da6c2d9f5a2f2d8fd0cbe07b55325fb9068"
+    }
+  },
+  "gate1": {
+    "anchor": "exp-20260715-010",
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889,
+    "artifact_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+  },
+  "locked_hashes": {
+    "quant/backtester.py": "8d0bb9e7d5a25ef4471f5e6ffe24c772da56cb64ed850b36da12800854ec4104",
+    "quant/run.py": "d2e0bf19b2b6c7d845b820bebc6339571f5fc23159bf12614a627e9afa23d1bc",
+    "operator_inputs/open_positions.json": "731db0537f107efa734a83937af9d790a6a8e4b0f87b70711ba689417fb07a74",
+    "data/live_pilot_tree_sha256": "eb27f14c52e0caf57e7a957c6c60d0324d04a938e63ab768cc598dbd88fe809b"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false,
+    "scope": "observer producer scheduling, pagination, and fail-closed health only"
+  },
+  "operational_follow_up": "On the next scheduled producer run, verify iBorrowDesk attempts a shard other than ABC/ANTM/BF-B/BK/BOK and either adds rows or reports a genuine host failure; verify ORTEX either advances provider dates with complete pages or remains explicitly stale/failed, never ready. No experiment ID is needed for that one-line health check.",
+  "post_run_reflection": {
+    "why_result_happened": "Both failures were deterministic control-plane defects: success-age priority ignored recent failed attempts, while a first-page-only fetch and coverage-only readiness confused process completion with fresh content.",
+    "forbidden_near_neighbor_retry": "Do not reserve separate IDs to retune retry order, page size, stale threshold, or manually refresh either observer. Routine production verification and future daily materialization do not consume IDs.",
+    "new_evidence_required": "Reopen only for an independently observed source-format change, a pagination or credit semantic incompatibility, or another content-identity failure that persists after this repaired contract."
+  }
+}

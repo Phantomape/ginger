@@ -1,0 +1,153 @@
+{
+  "experiment_id": "exp-20260728-007",
+  "generated_at": "2026-07-28T21:33:32+00:00",
+  "lane": "measurement_repair",
+  "decision": "accepted",
+  "accepted_alpha": false,
+  "change_type": "identity_or_measurement_repair",
+  "single_causal_variable": "form4_sale_overhang_forward_settlement_wiring_v1",
+  "baseline": {
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "aggregate": {
+      "expected_value_score_sum": 6.2057,
+      "total_pnl_sum": 130992.36,
+      "trade_count_sum": 49,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    }
+  },
+  "before": {
+    "structural_starvation": {
+      "snapshot_file_count": 24,
+      "context_rows": 622,
+      "rows_with_entry_date": 0,
+      "rows_marked_closed_forward": 0,
+      "rows_with_any_replacement_value": 0,
+      "historical_rows_excluded_from_prospective_evidence": 622
+    },
+    "candidate_training_decision_rows": 2,
+    "candidate_training_outcome_rows": 0,
+    "canonical_current_state_replacement_rows": 146
+  },
+  "after_contract": {
+    "refresh_api": "(*, as_of: 'str | date | datetime', candidate_ledger_path: 'str | Path' = WindowsPath('D:/Github/ginger/data/paper_sleeves/candidate_decision_training_ledger/rows.jsonl'), candidate_state_path: 'str | Path | None' = None, data_dir: 'str | Path' = WindowsPath('D:/Github/ginger/data/non_ohlcv'), ledger_path: 'str | Path | None' = None, state_path: 'str | Path | None' = None, effective_date: 'str | date | datetime' = '2026-07-28') -> 'dict[str, Any]'",
+    "candidate_state_observer_key": "form4_sale_overhang_forward_ledger",
+    "forward_effective_date": "2026-07-28",
+    "fixed_horizons_trading_days": [
+      10,
+      20
+    ],
+    "forward_reopen_gate": {
+      "closed_forward_rows_min": 25,
+      "high_sale_overhang_forward_rows_min": 8,
+      "single_ticker_share_max": 0.4,
+      "required_replacement_values": [
+        "cash",
+        "SPY",
+        "QQQ"
+      ],
+      "required_context_rule_version": "form4_sale_overhang_shared_daily_context_logger_v1",
+      "park_after_materialization_runs_without_new_closable_rows": 3
+    },
+    "ledger_path": "data/non_ohlcv/form4_sale_overhang_forward/rows.jsonl",
+    "producer_order": "candidate decision append -> canonical fixed-horizon settlement -> Form4 refresh",
+    "pit_guard": "decision_as_of and entry_date >= effective_date; context_as_of <= entry_date; latest Form4 usable_trade_date <= context_as_of",
+    "content_identity": "candidate ledger bytes and daily Form4 semantic rows are SHA256-bound",
+    "retrospective_backfill_allowed": false,
+    "trade_enabled": false
+  },
+  "readiness": {
+    "counters": {
+      "closed_forward_rows": 0,
+      "high_sale_overhang_closed_forward_rows": 0,
+      "replacement_value_complete_closed_rows": 0,
+      "unique_tickers_closed_forward_rows": 0,
+      "max_single_ticker_closed_forward_row_share": null,
+      "observer_health_fail_closed": true
+    },
+    "thresholds": {
+      "closed_forward_rows": 25,
+      "high_sale_overhang_closed_forward_rows": 8,
+      "replacement_value_complete_closed_rows": 25,
+      "max_single_ticker_closed_forward_row_share_max": 0.4
+    },
+    "checks": {
+      "closed_forward_rows_at_least_25": false,
+      "high_sale_overhang_closed_forward_rows_at_least_8": false,
+      "all_closed_rows_have_cash_spy_qqq_replacement_values": false,
+      "single_ticker_share_at_most_40pct": false,
+      "observer_health_ok": false
+    },
+    "status": "not_ready",
+    "threshold_source": "exp-20260629-003 and exp-20260707-018 frozen Form4 reopen contract; exp-20260728-007 makes observer health binding and excludes every pre-effective-date reconstruction from forward evidence",
+    "counter_source": "data/non_ohlcv/form4_sale_overhang_forward/state.json",
+    "note": "Forward state does not exist yet; all counters truthfully remain zero. Readiness is outcome-direction blind. Only immutable prospective decisions at or after the exp-20260728-007 effective date and their fixed 10d/20d cash/SPY/QQQ settlements count. A missing or stale candidate/context producer fails closed.",
+    "lane": "form4_sale_overhang_forward",
+    "history": [
+      {
+        "as_of": "2026-07-28",
+        "counters": {
+          "closed_forward_rows": 0,
+          "high_sale_overhang_closed_forward_rows": 0,
+          "replacement_value_complete_closed_rows": 0,
+          "unique_tickers_closed_forward_rows": 0,
+          "observer_health_fail_closed": true
+        }
+      }
+    ],
+    "days_since_progress": 0,
+    "stalled": false
+  },
+  "checks": {
+    "baseline_identity_unchanged": true,
+    "structural_starvation_reproduced": true,
+    "prospective_effective_date_frozen": true,
+    "both_fixed_horizons_frozen": true,
+    "production_hook_after_candidate_settlement_present": true,
+    "readiness_lane_registered_fail_closed": true,
+    "no_retrospective_operational_state_materialized": true,
+    "strategy_behavior_unchanged_by_contract": true
+  },
+  "verification": {
+    "focused_tests": "27 passed",
+    "gate_1_to_4": "not rerun: measurement-only wiring cannot affect strategy behavior",
+    "expected_value_score_delta": 0.0,
+    "pnl_delta_usd": 0.0,
+    "trade_count_delta": 0
+  },
+  "synthesis": {
+    "baseline_universe": [
+      "cash-feasible Gate-1 core universe",
+      "current tradable and portfolio universe",
+      "accepted default-off observers",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash_abstain",
+    "evidence_surfaces_used": [
+      "canonical cold+hot OHLCV",
+      "candidate decision training ledger",
+      "Form4 PIT daily contexts",
+      "price/flow/derivatives/event/positioning/portfolio readiness",
+      "research digest"
+    ],
+    "evidence_surfaces_missing": [
+      "prospective post-effective Form4 decisions and 20-session settlements"
+    ],
+    "hypothesis_candidates": [
+      "Form4 sale-overhang risk context after 25 closed rows",
+      "structured negative event x stop breach x concentration after 20 reduce-risk settlements",
+      "official event x options/flow disagreement after 10 dates and 20 settled pairs"
+    ],
+    "selected_hypothesis": "repair Form4 observer settlement starvation before alpha evaluation",
+    "economic_mechanism": "heavy insider selling may identify supply overhang, but only prospective decision-time context with fixed replacement outcomes can test it",
+    "falsifier": "producer/context identity is stale, PIT guard fails, append is non-idempotent, or canonical 10d/20d cash-SPY-QQQ outcomes remain disconnected",
+    "pit_tier": "canonical_pit",
+    "evidence_grade": "observer",
+    "result_ceiling": "observed_only",
+    "next_machine_action": "daily producer and settlement append; do not reopen alpha below 25 closed/8 high/diversity gate"
+  }
+}

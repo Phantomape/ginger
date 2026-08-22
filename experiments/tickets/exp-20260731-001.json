@@ -1,0 +1,291 @@
+{
+  "acceptance_rule": "Synthetic post-midnight ET run resolves the just-completed session; same-session late-evening remains same-date; weekend, holiday, UTC-boundary, next-cycle, non-target historical backfill, restart, and empty/stale canonical-input cases are tested; provider 404 remains non-retryable; active Gate-1 SHA256 stays identical.",
+  "allowed_write_scope": [
+    "quant/run.py",
+    "quant/backfill_non_ohlcv.py",
+    "quant/daily_non_ohlcv_snapshot.py",
+    "quant/us_market_calendar.py",
+    "quant/test_us_market_calendar.py",
+    "quant/test_daily_non_ohlcv_snapshot.py",
+    "quant/test_run_daily_wiring.py"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260731-001.md",
+  "causal_components": [
+    "completed_session_calendar_resolver",
+    "canonical_ohlcv_date_cap",
+    "source_quote_date_manifest_separation",
+    "boundary_regression_tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "onclickmedia_completed_session_quote_date_contract_v1",
+  "claimed_at": "2026-07-31T15:19:22+00:00",
+  "completed_at": "2026-07-31T15:33:26+00:00",
+  "created_at": "2026-07-31T15:19:00+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260731-001",
+  "experiment_uid": "expuid-177a75454e3b40e5",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260731-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-31T15:19:00+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "onclickmedia_completed_session_quote_date_contract"
+  },
+  "hypothesis": "Fault recovery: OnclickMedia daily forward collection should query the latest completed US equity session capped by the canonical SPY/QQQ OHLCV date, rather than the run calendar date, so a post-midnight run cannot request a future provider quote date and lose the just-completed forward snapshot.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "signal_generation",
+    "candidate_ranking",
+    "sizing",
+    "exits",
+    "orders",
+    "trade_enabled",
+    "Gate1_metrics",
+    "OnclickMedia_5xx_bounded_retry"
+  ],
+  "mechanism_family": "forward_observer_health",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "operator_inputs/open_positions.json",
+    "data/live_pilot"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260724-002"
+  ],
+  "new_evidence_type": "genuine_source_contract_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_relation",
+      "field_tags": [
+        "a",
+        "by",
+        "calendar",
+        "cannot",
+        "canonical",
+        "capped",
+        "collection",
+        "completed",
+        "contract",
+        "daily",
+        "date",
+        "equity",
+        "fault",
+        "forward",
+        "future",
+        "health",
+        "just",
+        "latest",
+        "lose",
+        "midnight",
+        "observer",
+        "onclickmedia",
+        "post",
+        "provider",
+        "qqq",
+        "query",
+        "quote",
+        "rather",
+        "recovery",
+        "request",
+        "run",
+        "session",
+        "should",
+        "snapshot",
+        "so",
+        "spy",
+        "than",
+        "us"
+      ],
+      "gate_shape": "forward_observer"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "daily_news_structured_event_forward_observation_contract",
+        "reopen_condition": "More closed cash/SPY/QQQ replacement-value rows under this fixed observation contract, a production PIT LLM event scorer that writes the same evidence-span schema, or canonical-window clean-trade-news coverage.",
+        "score": 0.4773,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_post_repair_forward_supply_readiness",
+        "reopen_condition": "Reopen alpha activation only after the post-repair V/CVS cohort or later turn-of-month cohorts close and appear in the shared paper-sleeve replacement-value ledger with cash, SPY, and QQQ comparators.",
+        "score": 0.4761,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "baseline_earnings_dte_drift_attribution",
+        "reopen_condition": "['Resolve the canonical baseline version before retaining gross-margin or consensus alpha leads.', 'If PIT snapshot DTE is accepted as more production-faithful, update docs/backtesting.md and docs/current_state.md with the new three-window baseline.', 'If the old baseline remains canonical, isolate the snapshot DTE replay behind an explicit versioned backtest protocol.', 'Rerun exp-20260601-021 gr",
+        "score": 0.4678,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "gap_and_hold_qqq_confirmed_default_off_paper_sleeve",
+        "reopen_condition": "If revisited, use forward paper outcomes or a materially different free data edge, such as verified event/sector context. Do not just retune gap, close-location, QQQ/SPY lookback, or topN thresholds on the frozen windows.",
+        "score": 0.4678,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "iwm_breadth_thrust_stock_leadership_candidate_pool",
+        "reopen_condition": "A retry requires materially new PIT breadth evidence, such as actual advance/decline participation, options/borrow structure, or closed forward replacement-value rows from a shared default-off adapter.",
+        "score": 0.4678,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Genuine forward fault recovery: exp-20260724-002 covered transient HTTP 5xx retries, while this run exposed a distinct post-midnight completed-session/source-date contract failure that requested 2026-07-31 before that session and lost the 2026-07-30 calendar row.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_relation",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Genuine forward fault recovery: exp-20260724-002 covered transient HTTP 5xx retries, while this run exposed a distinct post-midnight completed-session/source-date contract failure that requested 2026-07-31 before that session and lost the 2026-07-30 calendar row.",
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_observer",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_relation",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The 58-of-58 404 run occurred at 00:08 ET while canonical market data still ended on the prior completed session, giving a deterministic reproduction and a narrow measurement-only fix.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_benchmark_date_missing_or_stale",
+      "source_file_date_mislabeled",
+      "holiday_or_midnight_boundary_regression",
+      "unintended_historical_backfill_change"
+    ],
+    "recorded_at": "2026-07-31T15:18:12+00:00",
+    "success_probability": 0.92
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "5ccc4caaf5a2b1df8a566cf10074234106ff915a0368f7d3ca53758a19962e0e",
+    "payload_hash": "5ccc4caaf5a2b1df8a566cf10074234106ff915a0368f7d3ca53758a19962e0e",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260731-001/before_measurement.json",
+    "after_result_file": "data/experiments/exp-20260731-001/after_measurement.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.92,
+      "brier_score": 0.0064,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "canonical_benchmark_date_missing_or_stale",
+        "source_file_date_mislabeled",
+        "holiday_or_midnight_boundary_regression",
+        "unintended_historical_backfill_change"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The clock was already America/New_York; the defect was the unmodeled completed-session boundary after local midnight, compounded by using each frame's latest close instead of one exact source session."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260731-001.json",
+  "single_causal_variable": "onclickmedia_completed_session_quote_date_contract_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260731-001.json",
+  "trial_family": "onclickmedia_forward_collection_fault_recovery",
+  "trial_variant_id": "v1_completed_session_calendar_plus_canonical_ohlcv_cap"
+}

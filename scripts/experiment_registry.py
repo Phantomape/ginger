@@ -256,10 +256,42 @@ def _build_alpha_promotion_claim_receipt(
     )
 
 
-def _require_alpha_promotion_claim_receipt_for_close(registry, ticket):
+def _is_never_claimed_duplicate_accounting_close(ticket, decision, realized_failure_mode):
+    """True only for the non-substantive abandonment of a reservation that was
+    never successfully claimed.
+
+    A promotion-lane reservation whose claim fails *inside* claim-receipt
+    construction (e.g. the receipt CAS per-file size cap) can otherwise neither
+    be claimed nor closed: every closeout path demands a receipt that only a
+    successful claim can produce (deadlock cases exp-20260804-002,
+    exp-20260814-001). The bypass is deliberately narrow: the ticket must still
+    be an unclaimed ``proposed`` reservation with no receipt, and the close must
+    be pure ``duplicate_reservation_accounting`` bookkeeping with a
+    rejected-flavored terminal status. Every substantive closeout (accepted,
+    observed_only, or any close of a claimed ticket) stays receipt-gated.
+    """
+
+    if str(ticket.get("status") or "") != "proposed":
+        return False
+    if ticket.get("claimed_at"):
+        return False
+    if ticket.get("alpha_promotion_claim_receipt"):
+        return False
+    if str(realized_failure_mode or "") != "duplicate_reservation_accounting":
+        return False
+    return str(decision or "").startswith("rejected")
+
+
+def _require_alpha_promotion_claim_receipt_for_close(
+    registry, ticket, *, decision=None, realized_failure_mode=None
+):
     """Block post-rollout proposed-to-terminal alpha closeout bypasses."""
 
     if not _alpha_promotion_required_for_lane(ticket.get("lane")):
+        return
+    if _is_never_claimed_duplicate_accounting_close(
+        ticket, decision, realized_failure_mode
+    ):
         return
     # Isolated/legacy registry users predate promotion admission and do not have
     # a repository root at which the receipt's content-addressed bytes can be
@@ -2330,15 +2362,26 @@ def update_result(
             f"{experiment_id} is already terminal ({exp.get('status')}); "
             "terminal results are immutable"
         )
-    # Close-time validation is independent from claim-time validation.  A
-    # promotion artifact changed after claim must not retain authority merely
-    # because the ticket was valid earlier.
-    _revalidate_alpha_promotion_for_claim(registry, exp)
-    _require_alpha_promotion_claim_receipt_for_close(registry, exp)
     decision = final_decision(
         judgement,
         status_override,
         experiment=exp,
+    )
+    # Close-time validation is independent from claim-time validation.  A
+    # promotion artifact changed after claim must not retain authority merely
+    # because the ticket was valid earlier.  The one exception is the
+    # non-substantive abandonment of a never-claimed reservation: it grants no
+    # authority, so it must not re-deadlock on promotion drift or on the claim
+    # receipt that a failed claim can never produce.
+    if not _is_never_claimed_duplicate_accounting_close(
+        exp, decision, realized_failure_mode
+    ):
+        _revalidate_alpha_promotion_for_claim(registry, exp)
+    _require_alpha_promotion_claim_receipt_for_close(
+        registry,
+        exp,
+        decision=decision,
+        realized_failure_mode=realized_failure_mode,
     )
     research_replay = _enforce_research_replay_result_ceiling(exp, decision)
     require_pre_run_prediction(

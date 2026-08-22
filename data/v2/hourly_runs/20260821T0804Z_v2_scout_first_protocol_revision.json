@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": null,
+  "run_started_at_basis": "The automation start instant was not captured before the protocol audit began; no start time was inferred.",
+  "run_finished_at": "2026-08-21T08:05:30Z",
+  "milestone": "protocol",
+  "work_unit": "v2_scout_first_two_lane_protocol_revision",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "fd5df2569340bb6d4976a55267e4fd3738f128f9",
+  "changed_files": [
+    "docs/quant_agent_protocol_v2.md",
+    "docs/research_pit_policy.md",
+    "docs/agent_experiment_protocol.md",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T0804Z_v2_scout_first_protocol_revision.json"
+  ],
+  "diagnosis": {
+    "observed_v2_hourly_receipts": 13,
+    "tracked_completed_build_units": 10,
+    "preserved_noop_receipts": 3,
+    "durable_decisions_before_this_run": 11,
+    "non_null_experiment_ids_before_this_run": 0,
+    "root_cause": "The protocol treated promotion-readiness milestones M0-M5 as an exclusive hourly scheduler even though research_pit/private_replay_scout already existed, so safe exploratory measurement was unreachable.",
+    "retained_hard_boundaries": [
+      "point-in-time and known-at integrity",
+      "outcome-blind complete declared source scope including losers and unmapped rows",
+      "experiment registration and trial accounting",
+      "observed_only result ceiling",
+      "trade_enabled=false and no broker/order authority"
+    ]
+  },
+  "protocol_changes": {
+    "scheduler": "M0-M9 is now the promotion-readiness dependency path; bounded research scouts run after the M1 safety kernel while promotion construction continues.",
+    "scout_scope": "An outcome-blind source-bounded frame may be used before full external-market coverage, with an experiment-local mapped/excluded/unmapped disposition manifest and mapped-only CandidatePool.",
+    "signal_decision_requirement": "A research-only DecisionRecord is required before outcome access whenever the scout measures security-level signals, ranking, or returns.",
+    "admission": "The existing promotion request and alpha_promotion_claim_receipt remain the only admission anchor; stage-required V2 records, the disposition manifest, and evaluation-input manifest enter the existing hash/CAS chain.",
+    "local_manifest_guard": "The first scout uses a source-specific check for row-count conservation, stable-row-hash uniqueness, mutually exclusive dispositions, and exact mapped-set/CandidatePool equality; no shared schema is built before the first measurement.",
+    "anti_starvation": "After two nonblocking construction units, an admission-ready scout outranks promotion-only infrastructure; lack of novelty, PIT, mapping, or real source touch still prevents reserving an ID.",
+    "closeout": "Only an integrity-complete positive lead may close registry status observed_only; negative, insufficient, or contaminated results close rejected with a precise artifact disposition.",
+    "promotion_boundary": "Canonical validation remains non-ladder validation_passed_not_promoted; shadow or higher still requires runtime parity and the paper/promotion review path.",
+    "documentation_and_test_burden": "Hourly receipt remains mandatory, while state/backlog/decision updates, full suites, and adversarial reviews occur only when their facts or risk boundary actually change."
+  },
+  "verification": [
+    ".venv/Scripts/python.exe -m pytest quant/test_alpha_promotion_v2.py -q -> 7 passed",
+    ".venv/Scripts/python.exe -m pytest quant/test_alpha_debate.py -q -k research_replay -> 3 passed, 31 deselected",
+    ".venv/Scripts/python.exe -m pytest quant/test_experiment_registry.py -q -k research_replay -> 3 passed, 62 deselected",
+    "scripts/experiment.py audit --lean-strict exited 0 with lean_strict_passed=true",
+    "git diff --check passed with only repository line-ending warnings",
+    "stale waterfall and ambiguous status phrase scans passed",
+    "decision log and all tracked V2 receipts parsed as JSON/JSONL with unique decision ids",
+    "final science and protocol-velocity reviews found P0=0 and P1=0; the tooling review's generic registry cross-hook and terminal close-hash guards remain explicit scout P2/promotion hardening"
+  ],
+  "scientific_credibility_impact": "Positive and claim-proportional: V2 can now generate registered, falsifiable observed-only evidence before production-grade infrastructure is complete, while known leakage, post-outcome selection, incomplete declared source scope, wrong clocks/mappings, missing trial accounting, and evidence-level escalation remain hard failures. Full-market, canonical, paper, and production claims were not weakened.",
+  "parity_impact": "No runtime or strategy parity implementation changed. Replay-only scouts may form observed-only leads, but canonical validation cannot enter the promotion ladder and shadow or higher still requires shared daily/replay runtime parity.",
+  "production_impact": "none",
+  "containment": "This was a zero-ID protocol-only work unit. No outcome data was evaluated, no strategy or runtime code changed, no broker call or order was made, and trade_enabled remains false.",
+  "accepted_nonblocking_limitations": [
+    "The generic experiment registry does not yet parse the full V2 cross-record chain; the first scout must run and receipt the focused V2/source-specific checks before claim.",
+    "Terminal closeout does not yet atomically enforce every code/result hash; an observed-only scout records and verifies them in its artifact/log/receipt, while a shared guard becomes mandatory on repeated use or promotion.",
+    "No real source-native frame or hypothesis was selected in this protocol-only work unit."
+  ],
+  "unrelated_untracked_files_preserved": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json"
+  ],
+  "next_step": "Immediately run one bounded, at-most-20-minute zero-ID scout preflight; if it passes, freeze the experiment-local disposition/CandidatePool/DecisionRecord and promotion request, then reserve the first V2 private_replay_scout in the same work unit.",
+  "user_decisions_needed": [
+    "Choose whether the V1 hourly alpha pipeline continues in parallel or freezes to settlement/read-only before V2 forward competition; this does not block the first V2 scout."
+  ],
+  "made_by": "edge-v2-automation"
+}

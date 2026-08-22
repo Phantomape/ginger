@@ -1,0 +1,125 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0064,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "canonical_benchmark_date_missing_or_stale",
+      "source_file_date_mislabeled",
+      "holiday_or_midnight_boundary_regression",
+      "unintended_historical_backfill_change"
+    ],
+    "predicted_success_probability": 0.92,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The clock was already America/New_York; the defect was the unmodeled completed-session boundary after local midnight, compounded by using each frame's latest close instead of one exact source session."
+  },
+  "causal_components": [
+    "completed_session_calendar_resolver",
+    "canonical_ohlcv_date_cap",
+    "source_quote_date_manifest_separation",
+    "boundary_regression_tests"
+  ],
+  "change_summary": "Repair OnclickMedia post-midnight forward collection by separating the run date from the completed source quote date, requiring exact canonical SPY/QQQ session anchors, and selecting all underlying prices from that same session.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "onclickmedia_completed_session_quote_date_contract_v1",
+  "component": "quant/run.py, quant/backfill_non_ohlcv.py, quant/daily_non_ohlcv_snapshot.py, quant/us_market_calendar.py, quant/test_us_market_calendar.py, quant/test_daily_non_ohlcv_snapshot.py, quant/test_run_daily_wiring.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260731-001",
+  "hypothesis": "Fault recovery: OnclickMedia daily forward collection should query the latest completed US equity session capped by the canonical SPY/QQQ OHLCV date, rather than the run calendar date, so a post-midnight run cannot request a future provider quote date and lose the just-completed forward snapshot.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "forward_observer_health",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260724-002"
+  ],
+  "new_evidence_type": "genuine_source_contract_fault_recovery",
+  "next_retry_requires": [],
+  "notes": "Observed 2026-07-31T04:08:28Z: 58/58 expiration-list HTTP 404, zero rows, summary SHA256 BEFFC3B6AEDAACCFC941BC31B83B612BA42E319EB574A0D8ABD93277E662BAE0, because the 00:08 ET run requested the not-yet-completed 2026-07-31 session and omitted 2026-07-30. The repair writes provider artifacts under the completed quote date while preserving the daily run as-of date, fails closed when exact canonical SPY/QQQ rows are absent, and leaves 404 non-retryable. 107 related tests plus py_compile passed; active Gate-1 SHA256 remains 4E9EF413126C947B9712FD0879B83C74160F787898860987D204BFC9D60F7731 with zero EV/PnL/trade/survival/drawdown delta. No network collection, strategy, ranking, sizing, exit, order, trade_enabled, paper/live, or candidate-outcome change occurred. Massive dividend restart remains the selected research-PIT alpha lead for a later comparator-map iteration.",
+  "parameters": {
+    "locked_variables": [
+      "signal_generation",
+      "candidate_ranking",
+      "sizing",
+      "exits",
+      "orders",
+      "trade_enabled",
+      "Gate1_metrics",
+      "OnclickMedia_5xx_bounded_retry"
+    ],
+    "single_causal_variable": "onclickmedia_completed_session_quote_date_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another OnclickMedia timezone, close-buffer, retry, 404-reclassification, or routine daily-materialization ID. The accepted contract already resolves the latest completed session, requires exact canonical anchors, and keeps non-transient 404 fail-closed; never fall back to each frame's latest or a stale close.",
+    "new_evidence_required": "A reproducible provider calendar or schema change, an official early/special-close rule not represented by the conservative completion boundary, or a natural scheduled run where exact SPY/QQQ session anchors exist but the repaired producer still selects the wrong quote date or writes zero rows. Routine healthy daily output consumes no experiment ID.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The clock was already America/New_York; the defect was the unmodeled completed-session boundary after local midnight, compounded by using each frame's latest close instead of one exact source session."
+  },
+  "prediction": {
+    "confidence_reason": "The 58-of-58 404 run occurred at 00:08 ET while canonical market data still ended on the prior completed session, giving a deterministic reproduction and a narrow measurement-only fix.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_benchmark_date_missing_or_stale",
+      "source_file_date_mislabeled",
+      "holiday_or_midnight_boundary_regression",
+      "unintended_historical_backfill_change"
+    ],
+    "recorded_at": "2026-07-31T15:18:12+00:00",
+    "success_probability": 0.92
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260731-001/before_measurement.json",
+    "data/experiments/exp-20260731-001/after_measurement.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-31T15:33:27+00:00",
+  "trial_family": "onclickmedia_forward_collection_fault_recovery",
+  "trial_variant_id": "v1_completed_session_calendar_plus_canonical_ohlcv_cap"
+}

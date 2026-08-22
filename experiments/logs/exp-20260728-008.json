@@ -1,0 +1,156 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "pagination_or_rate_limit_gap",
+      "provider_identity_conflict",
+      "decision_field_future_contamination",
+      "transaction_or_resume_failure",
+      "ticker_lifecycle_semantic_noise"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "provider_query_contract_mismatch",
+    "surprise_level": "very_low",
+    "surprise_note": "The live endpoint rejected declaration-date filters and explicit declaration-date sorting; the safe correction froze all 716736 rows under documented default ticker order and applied the declaration range locally, increasing source size from the preflight estimate without changing the hypothesis."
+  },
+  "causal_components": [
+    "raw_page_hash_chain",
+    "normalized_dividend_events",
+    "decision_safe_projection",
+    "readiness_only_touch_audit",
+    "fingerprint_coverage",
+    "focused_tests"
+  ],
+  "change_summary": "Freeze and verify the Massive dividend declaration research-PIT surface with a decision-safe projection and outcome-blind restart readiness; no strategy or production change.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "massive_dividend_declaration_research_surface_v1",
+  "component": "quant/massive_ohlcv_backfill.py, quant/test_massive_ohlcv_backfill.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, data/warehouse/massive_history.sqlite, data/alpha_search/massive_dividend_declaration_readiness_20260728.json, docs/frozen_families.jsonl",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260728-008",
+  "hypothesis": "Alpha-enabling Massive API /stocks/v1/dividends declaration surface: the predeclared first positive USD cash distribution after a 1095-day same-ticker gap clears outcome-blind touch density (about 40/22/31 unique ticker-date decisions across the standard windows) but cannot enter research-PIT D0 until exact dividend pages and decision-safe fields are hash-bound. Persist and audit that event surface while excluding distribution_type, frequency, split_adjusted_cash_amount, and historical_adjustment_factor from decisions, without changing strategy behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "massive_dividend_declaration_research_surface",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260614-017",
+    "exp-20260620-019",
+    "exp-20260728-002",
+    "exp-20260728-003",
+    "exp-20260728-004",
+    "exp-20260728-006"
+  ],
+  "new_evidence_type": "unprecedented_field_on_unsaturated_source",
+  "next_retry_requires": [
+    "Complete outcome-blind D0-D3 and model-diverse debate on the frozen 40/22/32 decision panel before requesting any return-aware work.",
+    "If promoted, reserve at most one separate research_pit private_replay_scout using next-open through H10 after cost versus the same-date cash-feasible core candidate or cash; result ceiling remains observed_only."
+  ],
+  "notes": "Accepted measurement repair only: 144 pages and 716736 provider rows hash-bound at 6cada394b8c4e90fff58c24c16c950edc139da94d00ca4ce6db9ce0f0c170630; network-free complete replay passed; old/mid/late unique touches were 40/22/32; no post-declaration price, return, or outcome was read. Alpha remains blocked pending D0-D3, model-diverse debate, and a separate private_replay_scout.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled_false",
+      "no_live_or_core_change",
+      "no_forward_return_or_outcome_access",
+      "research_pit_ceiling_observed_only",
+      "positive_usd_after_1095_day_same_ticker_gap",
+      "active_cs_from_latest_prior_verified_asof_snapshot",
+      "minimum_20_predecision_bars_close_3_median_dollar_volume_1m",
+      "top_2_per_declaration_day_by_liquidity",
+      "next_open_through_h10_after_cost_for_future_scout_only"
+    ],
+    "single_causal_variable": "Massive dividend declaration research-PIT source surface and outcome-blind capital-distribution-restart readiness",
+    "pit_tier": "research_pit",
+    "evidence_grade": "lead",
+    "result_ceiling": "observed_only",
+    "fixed_window_unique_touches": {
+      "late_strong": 32,
+      "mid_weak": 22,
+      "old_thin": 40
+    }
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another ID for dividend pagination, storage schema, query-shape/date-range retuning, decision-field expansion, response thresholds, or routine rematerialization. distribution_type, frequency, split_adjusted_cash_amount, and historical_adjustment_factor remain forbidden decision inputs.",
+    "new_evidence_required": "The next alpha action is not a measurement reopen: complete outcome-blind D0-D3 and model-diverse debate on this frozen panel, then at most one separately promoted research_pit private_replay_scout. Reopen this measurement family only for independently verified as-published dividend vintages or a genuine source-format/integrity fault.",
+    "realized_failure_mode": "provider_query_contract_mismatch",
+    "why_result_happened": "The live endpoint rejected declaration-date filters and explicit declaration-date sorting, so the safe contract froze all 716736 provider rows under documented default ticker order and applied the declaration range locally. Strong raw replay, network-free resume, and the 40/22/32 outcome-blind touch panel all passed without changing the hypothesis or reading a forward outcome."
+  },
+  "prediction": {
+    "confidence_reason": "Official date fields and the prior authorized Massive source contract make a decision-safe research surface feasible; an outcome-blind 49-page preflight found about 40/22/31 diverse touches without reading returns. Main risks are duplicate/corrected events, current-basis fields, and ticker-lifecycle ambiguity.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "pagination_or_rate_limit_gap",
+      "provider_identity_conflict",
+      "decision_field_future_contamination",
+      "transaction_or_resume_failure",
+      "ticker_lifecycle_semantic_noise"
+    ],
+    "recorded_at": "2026-07-28T22:26:44+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/alpha_search/massive_dividend_declaration_readiness_20260728.json",
+    "experiments/artifacts/exp-20260728-008_massive_dividend_declaration_surface.md",
+    "quant/massive_ohlcv_backfill.py",
+    "quant/test_massive_ohlcv_backfill.py"
+  ],
+  "reproduction_command": ".\\.venv\\Scripts\\python.exe -B quant\\massive_ohlcv_backfill.py audit-dividends --output data\\alpha_search\\massive_dividend_declaration_readiness_20260728.json; .\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_massive_ohlcv_backfill.py quant\\test_experiment_fingerprint.py -q; .\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict",
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-29T00:02:36+00:00",
+  "trial_family": "massive_dividend_declaration_research_surface",
+  "trial_variant_id": "exp-20260728-008"
+}

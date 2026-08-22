@@ -1,0 +1,491 @@
+{
+  "card_id": "itrc-e7ef9486ca30864c8970",
+  "conflicts": [],
+  "created_at": "2026-08-14T16:05:00Z",
+  "data_cutoff": "2026-08-14T15:16:11Z",
+  "decision": {
+    "candidate": {
+      "baseline": {
+        "policy": "Primary baseline is USD4000 zero-return cash at each fixed entry/exit clock. Secondary replacement baselines are USD4000 SPY and QQQ over the identical clock, each charged the same 35bp total round-trip cost as treatment; no comparator may be selected after results are visible."
+      },
+      "candidate_id": "cand-2a61935d81ccb09ae8fd",
+      "candidate_kind": "expectation_gap",
+      "created_at": "2026-08-14T16:05:00Z",
+      "created_by": "codex-alpha-automation",
+      "evidence_grade": "lead",
+      "execution_envelope": {
+        "borrow_dependency": "none; long-only cash-equity research attribution",
+        "capacity_constraint": "Maximum USD4000 per name, maximum three simultaneous positions, USD12000 cash reservation, maximum 10 percent of current NAV per name and maximum 15 percent roster concentration; no historical or live portfolio displacement claim",
+        "costs_and_carry": "USD4000 target notional with whole-share rounding; treatment, SPY and QQQ each pay 35bp total round-trip, cash pays zero, and 70bp total is the stress; no financing or borrow credit",
+        "execution_dependency": "SELECT-1 entry and exit row existence, deterministic whole-share rounding, missing-input fail-closed behavior and no market-order fill guarantee",
+        "intended_instrument": "PIT-active type=CS U.S. cash common stocks in a private research replay only; no ETF, option, leverage, inverse product, proxy or short treatment",
+        "liquidity_dependency": "Latest-five median dollar volume must be at least max(USD1000000, prior-20 median ending D-5), signal close at least USD3, and both next-session entry and fifth-session exit rows must exist; any missing or zero field fails closed",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "Signal is formed after completed session D using only latest-five, preceding-126 and prior-20 fields plus latest identity as_of<=D; enter the next SPY regular-session open and exit the fifth regular-session close",
+        "trade_enabled": false
+      },
+      "expectation_gap": {
+        "gap": {
+          "pricing_map": "cash_no_new_entry versus fixed persistent_ADTS_state at identical next-open H5 clock",
+          "selection_contract": "median5_ADTS>=prior126_q90; at least4of5>prior126_median; max_dynamic_z5<3; median5_DV>=max_USD1m_prior20; close_D>=open_D_minus4; top2; cooldown10; max_active3"
+        },
+        "gap_definition": "The observable price-revealed prior favors cash/no-new-entry unless persistent ADTS and participation identify a slow state whose costed H5 replacement value exceeds cash and both identical-clock index alternatives.",
+        "independent_evidence": [
+          {
+            "artifact": "data/alpha_search/massive_persistent_trade_size_field_readiness_20260814.json",
+            "claim": "A hash-bound source-authorized grouped-daily warehouse supports the fixed ADTS and participation predicate without post-signal fields.",
+            "known_at": "2026-08-14T15:16:11Z",
+            "source": "massive_persistent_adts_research_pit_20260814"
+          },
+          {
+            "artifact": "data/alpha_search/massive_reference_identity_readiness_20260814.json",
+            "claim": "Nineteen dated active-common-stock snapshots permit latest-as_of_at_or_before_D membership without current-map backfill.",
+            "known_at": "2026-08-14T15:16:11Z",
+            "source": "massive_reference_asof_identity_research_pit_20260814"
+          }
+        ],
+        "market_prior": {
+          "known_at": "2026-08-14T15:16:11Z",
+          "observable": true,
+          "provenance": {
+            "artifact": "data/alpha_search/massive_persistent_adts_price_prior_readiness_20260814.json",
+            "artifact_sha256": "a0be367d704da6d5c9a4ff0ac65036717e23f78220ea921667dfdaf410cec7d8"
+          },
+          "proxy_type": "price_revealed",
+          "source": "cash_feasible_core_price_prior_20260814",
+          "units": "same_USD4000_notional_H5_decision_clock",
+          "value": "cash_no_new_entry_with_same_clock_SPY_QQQ_price_path"
+        },
+        "schema_version": 1,
+        "transmission": {
+          "affected_tickers": [
+            "AACT",
+            "ACHV",
+            "ACLX",
+            "ACXP",
+            "ADN",
+            "ADVB",
+            "AGFY",
+            "AGH",
+            "ALTO",
+            "ALTS",
+            "ALUR",
+            "ANGH",
+            "ANRO",
+            "ANSC",
+            "ANVS",
+            "ARBB",
+            "ARTV",
+            "ASTI",
+            "ATEC",
+            "ATHA",
+            "ATPC",
+            "AVDX",
+            "AVR",
+            "BDMD",
+            "BDSX",
+            "BGLC",
+            "BGM",
+            "BLBX",
+            "BNGO",
+            "BNTC",
+            "BWA",
+            "BWB",
+            "CCEC",
+            "CDTX",
+            "CLPT",
+            "CLYM",
+            "CMRX",
+            "CNCK",
+            "CNVS",
+            "CPIX",
+            "CRML",
+            "CRVO",
+            "CRVS",
+            "CYD",
+            "DALN",
+            "DGXX",
+            "DNTH",
+            "DTST",
+            "EB",
+            "EDSA",
+            "ELAB",
+            "EQV",
+            "ETWO",
+            "EVEX",
+            "EWCZ",
+            "FBRX",
+            "FCAP",
+            "FFWM",
+            "FIG",
+            "FLGT",
+            "FOXX",
+            "FSFG",
+            "GB",
+            "GDC",
+            "GEG",
+            "GIFI",
+            "GLDD",
+            "GLSI",
+            "GLTO",
+            "HCSG",
+            "HCWB",
+            "HI",
+            "HIMS",
+            "HSII",
+            "HYAC",
+            "IDN",
+            "IHRT",
+            "IMRX",
+            "INDO",
+            "INHD",
+            "INNV",
+            "JVA",
+            "LCUT",
+            "LIDR",
+            "LIPO",
+            "LIVE",
+            "LSEA",
+            "LTBR",
+            "LUMN",
+            "LYEL",
+            "MAG",
+            "MBAV",
+            "METCB",
+            "MFH",
+            "MGRT",
+            "MKFG",
+            "MNTS",
+            "MODV",
+            "MOFG",
+            "MPAA",
+            "MXC",
+            "NAMM",
+            "NAUT",
+            "NCI",
+            "NDRA",
+            "NEON",
+            "NEOV",
+            "NKTR",
+            "NMRA",
+            "NPB",
+            "NPCE",
+            "NWPX",
+            "ORGO",
+            "PBPB",
+            "PKST",
+            "PL",
+            "PLMK",
+            "PMAX",
+            "PNBK",
+            "PPSI",
+            "PRA",
+            "PRCH",
+            "PRO",
+            "PRTG",
+            "PTGX",
+            "PUMP",
+            "PVLA",
+            "QLGN",
+            "QTTB",
+            "RAPP",
+            "RDUS",
+            "RGC",
+            "RLYB",
+            "RNA",
+            "ROLR",
+            "ROMA",
+            "SATL",
+            "SATS",
+            "SBET",
+            "SEE",
+            "SGHT",
+            "SHCO",
+            "SIDU",
+            "SIF",
+            "SLDB",
+            "SLP",
+            "SOBR",
+            "SPNS",
+            "SPNT",
+            "SST",
+            "STAA",
+            "STKS",
+            "STX",
+            "SVCO",
+            "TBN",
+            "TEX",
+            "TIXT",
+            "TLS",
+            "TNXP",
+            "TORO",
+            "TRML",
+            "TROO",
+            "TSAT",
+            "TSVT",
+            "TYGO",
+            "U",
+            "UAMY",
+            "ULY",
+            "VRCA",
+            "VTVT",
+            "WOW",
+            "XCUR",
+            "ZDGE",
+            "ZENA",
+            "ZIMV",
+            "ZNTL",
+            "ZURA"
+          ],
+          "catalyst": "a robust persistent change in reported dollar-per-transaction and dollar participation, with nonnegative tape and no one-day z>=3 event, may diffuse price discovery beyond D",
+          "expected_direction": "conditional positive H5 replacement value versus cash and identical-clock costed SPY and QQQ",
+          "half_life": "five regular sessions after the next-session entry; no persistence is assumed beyond H5"
+        }
+      },
+      "expected_horizon": "next_open_h5",
+      "falsifier": "Reject unless the fixed 183-row replay keeps at least five executable treatment touches in every standard window, treatment net value after 35bp total round-trip cost is positive versus zero-return cash and exceeds both same-clock 35bp-costed SPY and QQQ in aggregate, at least two of three windows are positive versus cash, the treatment remains positive versus cash under 70bp total cost, maximum ticker selection share stays at or below 15 percent, maximum concurrent positions stays at or below three, and every missing execution input fails closed. Any positive result remains observed_only because the sources are research_pit.",
+      "fingerprint": {
+        "component_sources": [
+          "massive_reference_asof_identity",
+          "ohlcv_warehouse"
+        ],
+        "data_source": "massive_full_market_ohlcv",
+        "decision_surface": "candidate_pool_top2_h5",
+        "economic_mechanism": "robust_persistent_reported_dollar_per_transaction_state_with_incomplete_price_discovery",
+        "execution_dependency": "next_session_rows_35bp_total_cost_max3_cash_reserved",
+        "expectation_proxy": "price_revealed",
+        "horizon": "next_open_h5",
+        "payoff_shape": "long_cash_equity_h5_replacement_value",
+        "portfolio_role": "orthogonal_research_candidate_pool_displacing_cash_no_new_entry"
+      },
+      "hypothesis": "A robust five-session state of elevated average reported dollar per transaction, sustained dollar participation and nonnegative tape, explicitly excluding every recent single-day z>=3 block outlier, may identify incomplete price discovery that persists through H5 relative to zero-return cash and identical-clock costed SPY and QQQ, while unsigned daily aggregates do not identify institutional accumulation.",
+      "next_machine_action": "run outcome-blind D0-D3",
+      "prediction": {
+        "confidence_reason": "The mechanism is distinct and touches are dense, but absent sign or identity, direct counterevidence on multi-day price pressure and unproved as-published vintages justify a low prior.",
+        "main_failure_modes": [
+          "H5_transmission_is_misspecified",
+          "cost_or_tail_impact_erases_replacement_value",
+          "price_component_drives_dollar_per_transaction",
+          "research_pit_vintage_ceiling",
+          "unsigned_aggregate_does_not_identify_direction",
+          "venue_or_reporting_mix_drives_ADTS",
+          "window_or_factor_concentration"
+        ],
+        "success_probability": 0.25
+      },
+      "production_impact": {
+        "alters_candidate_ranking": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "alters_signal_generation": false,
+        "alters_sizing": false,
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "reopen_condition": "If rejected, do not retune the q90, prior-126, four-of-five, dynamic-z, liquidity, tape, top-two, cooldown, H5, cost or capital thresholds on this roster. Reopen only with authorized PIT signed trade or venue evidence, immutable as-published Massive vintages, or at least 30 newly forward-settled H5 decisions over at least 20 decision dates under the unchanged formula with maximum ticker share at most 15 percent.",
+      "replacement_value_comparator": "USD4000 zero-return cash primary and identical-entry/exit USD4000 SPY and QQQ secondary, with treatment and both ETFs each charged 35bp total round-trip and a predeclared 70bp stress; report all comparators and never choose one after observing results.",
+      "schema_version": 1,
+      "search_queue": "exploration",
+      "source_readiness_snapshot": [],
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260814",
+        "massive_persistent_adts_research_pit_20260814",
+        "massive_reference_asof_identity_research_pit_20260814"
+      ],
+      "title": "Massive persistent ADTS state H5 research replay",
+      "treatment": {
+        "policy": "Use only the frozen SHA256 32b84531f926df5b7655a9475d0021bbbf9912075df79ae3bb0438b93a42cc6f roster generated by massive_persistent_adts_state_h5_v1: USD4000 per row, next-session open entry, fifth-session close exit, 35bp total round-trip cost, whole-share rounding, at most three simultaneous positions, USD12000 cash reservation, no post-signal selection input and missing rows fail closed."
+      },
+      "why_not_arbitraged": "The input is public end-of-day aggregate data and the condition is mechanically observable. Any residual edge can exist only if multi-day execution or reporting states diffuse slowly and remain costly or noisy to identify after controlling price participation and costs. Venue mix, daily aggregation, lack of sign and small-name capacity can erase it, so no institution or natural-bullish narrative is permitted."
+    },
+    "disposition": "test",
+    "next_machine_action": "run_d0_d3",
+    "rationale": "All four roles agree that the clean persistent reported-dollar-per-transaction state is economically distinct, outcome-blind, densely executable and falsifiable enough for a research-only replay. They also agree that it does not identify institutions, has no paper/live authority and remains capped at observed_only until immutable-vintage or sufficient forward evidence exists."
+  },
+  "outcome_blind": true,
+  "record_type": "investment_team_research_card",
+  "researchability": {
+    "basis": "The mechanism has a deterministic research-PIT cohort, a price-revealed market prior, distinct Massive market-data and as-of identity evidence, a mathematical exclusion from the prior one-day block family, 33/75/75 executable touches, fixed cash/SPY/QQQ comparators and a cash-feasible three-position envelope. It remains lead-grade because the data are unsigned daily aggregates, participant identity and venue mix are unobserved, immutable as-published vintages are unproved and forward settled rows are zero.",
+    "grade": "B",
+    "limitations": [
+      "Average dollar per reported transaction equals VWAP times volume divided by transaction count; it has no aggressor sign, participant identity, parent-child order linkage or venue decomposition.",
+      "VWAP price drift and exchange reporting conventions can change the measure without a change in economic parent-order size.",
+      "Massive grouped-daily and reference snapshots are research_pit because immutable as-published vintages and later vendor corrections are not proven.",
+      "The historical roster is replayable but is not a forward-settled surface; both Massive surfaces retain settled_count=0 and result_ceiling=observed_only.",
+      "A fixed 35bp total round-trip assumption may understate spread and impact for the least liquid names even with a USD1m median-dollar-volume floor.",
+      "The current USD12107.02 cash balance funds only three USD4000 research slots, so the roster embeds max_active_positions=3 and USD12000 reservation before any result access.",
+      "Production position control remains fail-closed and no paper/live ranking, sizing, exit or order path may change."
+    ]
+  },
+  "roles": {
+    "business_analyst": {
+      "conclusion": "Conditional TEST as a persistent reported-dollar-per-transaction state, not as institutional accumulation. Multi-day persistence can be consistent with gradual execution or a slow reporting/liquidity state, but the field is unsigned and can also reflect price, venue or reporting mix. The claim must fail unless it adds H5 replacement value beyond cash and costed SPY/QQQ.",
+      "evidence": [
+        {
+          "claim": "Massive defines n as the aggregate transaction count, v as volume and vw as VWAP, so vw times v divided by n is only average reported dollars per transaction.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "https://massive.com/docs/rest/stocks/aggregates/daily-market-summary",
+          "source_group": "massive_vendor_schema",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Account-level evidence supports order splitting as a source of persistent signed order flow, which makes a multi-session state economically plausible but does not identify the local unsigned aggregate.",
+          "known_at": "2023-11-08T00:00:00Z",
+          "source": "https://doi.org/10.1103/PhysRevLett.131.197401",
+          "source_group": "order_splitting_research",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Institutional attribution in stealth-trading research comes from audit-trail identity and does not support the rule that larger reported transactions necessarily mean institutions.",
+          "known_at": "2001-08-01T00:00:00Z",
+          "source": "https://www.sciencedirect.com/science/article/pii/S0304405X01000630",
+          "source_group": "nyse_audit_trail_research",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Exchange order-book reporting methods can split one economic order into one or multiple reported transactions, making average transaction size sensitive to reporting conventions.",
+          "known_at": "2014-03-19T00:00:00Z",
+          "source": "https://www.sec.gov/data-research/statistics-data-visualizations/order-book-reporting-methods-their-impact-some-market-activity-measures",
+          "source_group": "sec_market_structure",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "Direction, participant identity, venue mix, auction and odd-lot treatment, transaction-count definitions and the contribution of price drift are unresolved."
+    },
+    "financial_analyst": {
+      "conclusion": "Conditional TEST only under fixed capital accounting. Each treatment and ETF comparator uses USD4000 and 35bp total round-trip cost, cash is costless, and 70bp is the stress. At current cash the replay must cap concurrent positions at three and reserve USD12000; this is an attribution envelope, not evidence of live deployability.",
+      "evidence": [
+        {
+          "claim": "The final outcome-blind roster has 183 historical replay rows, touches 33/75/75, 177 unique tickers, maximum ticker share 1.093 percent and maximum inclusive concurrency of three.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "data/alpha_search/massive_persistent_trade_size_roster_20260814.json",
+          "source_group": "massive_policy_derived",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "Canonical OHLCV covers all 184 unique roster entry and exit dates for both SPY and QQQ using ticker-date existence only.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "data/alpha_search/massive_persistent_adts_price_prior_readiness_20260814.json",
+          "source_group": "canonical_ohlcv_comparators",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "The current daily state reports portfolio value USD60795.75 and starting cash USD12107.02; one USD4000 ticket is about 6.58 percent of NAV and 33.04 percent of cash.",
+          "known_at": "2026-08-14T04:20:15.728272Z",
+          "source": "data/daily/signals/quant/quant_signals_20260813.json",
+          "source_group": "broker_portfolio_daily_control",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "Current position control has ok_to_add_control_pass=false across twenty-one position rows because manual bracket orders are not broker-confirmed.",
+          "known_at": "2026-08-14T04:20:15Z",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "broker_portfolio_daily_control",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "The explicit source attestation permits local internal non-display research, backtesting, strategy development and derived retention, while withholding redistribution and any live authority.",
+          "known_at": "2026-07-28T06:05:00Z",
+          "source": "experiments/artifacts/exp-20260728-002_massive_source_contract.md",
+          "source_group": "massive_source_authorization",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "Whole-share rounding, next-open gaps and tail spread or impact can exceed the fixed research cost, especially near the USD1m liquidity floor; current controls prohibit live additions regardless of replay direction."
+    },
+    "industry_researcher": {
+      "conclusion": "Conditional TEST as a research-PIT private replay. The clean five-session median, four-of-five persistence, dollar-participation confirmation, nonnegative tape and max-dynamic-z-below-three contract separates a state from the prior one-day block family. Literature supports persistent order flow but also warns that daily imbalance need not create multi-day price pressure, so H5 is a falsifiable horizon rather than an assumed effect.",
+      "evidence": [
+        {
+          "claim": "Massive daily-market-summary fields provide aggregate transactions, volume and VWAP but no sign, initiator, venue, parent-child linkage, trade conditions, spread, depth, auction or odd-lot isolation.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "https://massive.com/docs/rest/stocks/aggregates/daily-market-summary",
+          "source_group": "massive_vendor_schema",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Nine years of account-level Tokyo Stock Exchange data quantitatively support order splitting as a source of persistent signed order flow, while those data are much richer than unsigned daily aggregates.",
+          "known_at": "2023-11-08T00:00:00Z",
+          "source": "https://doi.org/10.1103/PhysRevLett.131.197401",
+          "source_group": "order_splitting_research",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "London Stock Exchange order signs persist across many days, but splitting dominates herding most clearly at shorter horizons, weakening a strong claim that a five-day daily state identifies one metaorder.",
+          "known_at": "2011-08-08T00:00:00Z",
+          "source": "https://arxiv.org/abs/1108.1632",
+          "source_group": "order_flow_persistence_research",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "Taiwan order imbalance persists from day to day while aggregate price pressure shows little persistence beyond a day, providing direct counterevidence to an assumed H5 continuation.",
+          "known_at": "2004-06-01T00:00:00Z",
+          "source": "https://authors.library.caltech.edu/records/krptp-9ny02",
+          "source_group": "order_imbalance_counterevidence",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "The signal may capture venue or reporting mix, distribution, corporate events or liquidity fragmentation rather than gradual ownership transfer; horizon and direction uncertainty are high."
+    },
+    "risk_assessor": {
+      "conclusion": "Conditional TEST only if authoritative D0-D3 independently passes. The clean roster and exact three-primary-source registry cure the outcome-blind readiness issues, but source maturity remains research_pit, settled_count remains zero and production control is blocked. The maximum result is observed_only; no paper/live or strategy authority is granted.",
+      "evidence": [
+        {
+          "claim": "The hash-bound Massive readiness artifact declares research_pit, known_future_leakage=false, source-contract pass, 183 replay rows and zero forward-settled rows.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "data/alpha_search/massive_persistent_trade_size_field_readiness_20260814.json",
+          "source_group": "massive_contract_and_readiness",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "The identity surface permits only as_of, ticker, type and active from the latest snapshot at or before each signal date and excludes current reference rows and future descriptive revisions.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "data/alpha_search/massive_reference_identity_readiness_20260814.json",
+          "source_group": "massive_identity_contract",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "The explicit user attestation authorizes local internal non-display investment research, backtesting, strategy development and derived retention but not redistribution.",
+          "known_at": "2026-07-28T06:05:00Z",
+          "source": "experiments/artifacts/exp-20260728-002_massive_source_contract.md",
+          "source_group": "massive_source_authorization",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The prior q75/prior-60 H10 roster and all outcome-informed ticker exclusions were discarded after an accidental pilot-file exposure; the clean formula was independently regenerated and applies no ticker exclusion.",
+          "known_at": "2026-08-14T15:16:11Z",
+          "source": "data/alpha_search/alpha_automation_synthesis_20260814.json",
+          "source_group": "alpha_synthesis_governance",
+          "source_kind": "secondary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "Immutable vintages, later vendor corrections, unsigned direction, hidden factor exposure and tail execution costs can invalidate the research interpretation even if aggregate replacement value is positive."
+    }
+  },
+  "schema_version": 1,
+  "subject": {
+    "company": "PIT-active U.S. common-stock cross-section",
+    "research_question": "Does a robust five-session state of elevated average reported dollar per transaction, sustained dollar participation and nonnegative tape, while explicitly excluding every recent one-day z>=3 block outlier, identify H5 replacement value beyond cash and identical-clock costed SPY and QQQ?",
+    "tickers": [
+      "PIT_ACTIVE_US_COMMON_STOCK_ROSTER"
+    ]
+  },
+  "trade_enabled": false
+}

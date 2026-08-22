@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-04T15:09:40Z",
+  "mode": "outcome_blind_alpha_synthesis",
+  "baseline_universe": {
+    "as_of": "2026-08-03",
+    "core_trade_universe_count": 44,
+    "pilot_trade_universe_count": 13,
+    "observation_universe_count": 42,
+    "source": "data/daily/universe/universe_state_20260803.json"
+  },
+  "opportunity_cost_winner": "cash_no_new_core_entry",
+  "opportunity_cost_basis": {
+    "market_regime": "BULL",
+    "core_signals": 0,
+    "pilot_signals": 0,
+    "entry_slots_reported": 4,
+    "cash_usd": 14717.43,
+    "portfolio_positions": 18,
+    "portfolio_heat_pct": 4.2,
+    "position_control_ok_to_add": false,
+    "position_control_blockers": [
+      "manual_bracket_orders_not_broker_confirmed",
+      "stale_target"
+    ],
+    "sources": [
+      "data/daily/reports/report_20260803.txt",
+      "operator_inputs/open_positions.json",
+      "data/live_pilot/position_control/state.json"
+    ]
+  },
+  "evidence_surfaces_used": [
+    {
+      "surface": "price",
+      "source": "Massive grouped-daily canonical warehouse",
+      "pit_boundary": "canonical reader; current dividend settlement calendar ends 2026-07-24",
+      "readiness": "insufficient for any 2026-08-03 first-seen H10 settlement"
+    },
+    {
+      "surface": "flow",
+      "source": "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+      "pit_boundary": "forward rows are PIT from first materialization; historical vendor window is research-only",
+      "readiness": "13504 rows, 62 tickers, latest flow date 2026-08-03"
+    },
+    {
+      "surface": "derivatives",
+      "source": "data/non_ohlcv/options_forward/options_collection_quality_gate.json",
+      "pit_boundary": "usable quote dates only; quarantined dates excluded",
+      "readiness": "available for shadow context but no newly qualified settled cross-surface lane"
+    },
+    {
+      "surface": "event",
+      "source": "prediction-market post-fix daily snapshots plus Massive dividend-restart forward ledger",
+      "pit_boundary": "append-only first-seen rows; prediction-market remains research_pit and Massive history lacks canonical as-published vintages",
+      "readiness": "prediction-market has 196 unique settled post-fix candidates but only 1 decision date, top-query share 0.94898, top-ticker share 0.158163, 17 changed markets, and 9 markets with a move of at least 5pp; Massive has 177 candidates, 5 restart rows, and 0 selected decisions"
+    },
+    {
+      "surface": "positioning",
+      "source": "data/non_ohlcv/ortex/borrow_observer/latest_outcome_summary.json",
+      "pit_boundary": "observer-only; existing historical conflicts remain non-promotional",
+      "readiness": "7592 settled rows, but no legal new gate or newly matured registered lane"
+    },
+    {
+      "surface": "portfolio_exposure",
+      "source": "data/live_pilot/live_drift/state.json",
+      "pit_boundary": "2026-08-03 broker-session reconciliation",
+      "readiness": "18 of 18 positions reconciled; no core drift alert"
+    }
+  ],
+  "evidence_surfaces_missing": [
+    "machine-complete prediction-market quantitative reopen checks",
+    "prediction-market breadth of at least 10 decision dates with concentration and probability-change bars satisfied",
+    "machine-registered Massive dividend-restart reopen lane",
+    "at least 30 settled restart_after_observed_gap H10 decisions",
+    "selected target decisions that survive the active-common-stock membership gate",
+    "canonical as-published historical dividend vintages"
+  ],
+  "research_digest": {
+    "source": "data/research_digest/latest_digest.md",
+    "displayed_entries": 9,
+    "fresh_unconsumed_entries": 0,
+    "ledger_action": "none_no_duplicate_append",
+    "reason": "all displayed entries already have terminal decline or later terminal ledger dispositions"
+  },
+  "hypothesis_candidates": [
+    {
+      "budget": "exploration",
+      "hypothesis": "A material prediction-market probability repricing mapped through the frozen public-equity exposure map identifies an event-driven candidate whose next-open H10 replacement value exceeds cash and broad benchmarks.",
+      "decision_surface": "candidate_pool",
+      "baseline": "cash, SPY, and QQQ on the same decision dates",
+      "treatment": "the frozen prediction-market exposure map on post-fix first-seen candidates after a predeclared probability move",
+      "horizon": "10 completed market sessions",
+      "replacement_value": "candidate value versus cash, SPY, and QQQ",
+      "falsifier": "non-positive replacement value, chronological instability, or event/query/ticker concentration after the frozen reopen cohort matures",
+      "pit_tier": "research_pit",
+      "evidence_grade": "observer",
+      "result_ceiling": "observed_only",
+      "blocked_by": "only 1 of 10 decision dates, top-query share 94.9 percent above 50 percent, top-ticker share 15.8 percent above 15 percent, 17 of 20 changed markets, and 9 of 10 markets with at least a 5pp move"
+    },
+    {
+      "budget": "adjacent",
+      "hypothesis": "A positive cash dividend after at least a 1095-day observed gap identifies an issuer-level capital-return restart whose next-open to H10 return beats cash and broad benchmarks.",
+      "decision_surface": "candidate_pool",
+      "baseline": "cash, SPY, QQQ, and one same-entry-session core slot when available",
+      "treatment": "frozen top-2 liquid active-common-stock restart decisions at next regular open, H10 close",
+      "horizon": "10 completed market sessions",
+      "replacement_value": "treatment minus bound core-or-cash comparator, with SPY and QQQ secondary legs",
+      "falsifier": "non-positive replacement value, failure across chronological halves, excessive ticker concentration, or continued zero decisions after adequate calendar time",
+      "pit_tier": "research_pit",
+      "evidence_grade": "observer",
+      "result_ceiling": "observed_only",
+      "blocked_by": "0 of 30 settled restart decisions and no selected target decisions"
+    },
+    {
+      "budget": "exploitation",
+      "hypothesis": "The frozen intraday REDUCE_RISK action may preserve value when enough independent completed-close actions exist in both chronological halves.",
+      "decision_surface": "risk_allocation",
+      "baseline": "frozen HOLD_ONLY counterfactual",
+      "treatment": "unchanged machine REDUCE_RISK action",
+      "horizon": "next completed 15:55 ET close",
+      "replacement_value": "treatment value versus HOLD_ONLY",
+      "falsifier": "negative chronological-half value or positive-value ticker concentration above 40 percent",
+      "pit_tier": "canonical_pit",
+      "evidence_grade": "observer",
+      "result_ceiling": "canonical_gate_ladder",
+      "blocked_by": "37 of 48 active-action settlements and 10 of 12 first-half settlements"
+    }
+  ],
+  "selected_hypothesis": "prediction_market_postfix_probability_repricing_h10_replacement_value",
+  "economic_mechanism": "A material change in an event probability can aggregate dispersed information before issuer news is classified, but only if the frozen exposure map produces chronologically broad, non-concentrated public-equity decisions.",
+  "falsifier": "The frozen post-fix cohort reaches every breadth, concentration, and probability-change bar but fails cash and benchmark replacement or is unstable across chronological halves.",
+  "pit_tier": "research_pit",
+  "evidence_grade": "observer",
+  "result_ceiling": "observed_only",
+  "alpha_execution_decision": "park_no_outcome_read",
+  "measurement_blocker": "The selected prediction-market lane has a complete quantitative park contract in exp-20260718-002, but scripts/build_reopen_readiness.py reports only raw post-fix rows with no thresholds. The same registry also omits the newly parked Massive dividend-restart >=30-settlement lane. This makes legal alpha admission depend on manual recounts.",
+  "next_machine_action": "Reserve one batch measurement-repair ID to bind both accepted park contracts into the readiness builder, fail closed on missing or malformed ledgers, and verify current not-ready counters without reading return direction or changing either observer policy."
+}

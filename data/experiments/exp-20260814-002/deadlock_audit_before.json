@@ -1,0 +1,25 @@
+{
+  "record_type": "claim_receipt_deadlock_audit",
+  "experiment_id": "exp-20260814-002",
+  "phase": "before",
+  "deadlocked_tickets": [
+    {
+      "experiment_id": "exp-20260804-002",
+      "status": "proposed",
+      "claimed_at": null,
+      "receipt": null,
+      "age_days": 10,
+      "cause": "claim failed during claim-receipt construction; close paths require the receipt"
+    },
+    {
+      "experiment_id": "exp-20260814-001",
+      "status": "proposed",
+      "claimed_at": null,
+      "receipt": null,
+      "age_days": 0,
+      "cause": "claim_snapshot_source_too_large: surfaces bound 2.2GB data/warehouse/massive_history.sqlite; receipt CAS caps 64MB/file"
+    }
+  ],
+  "defect": "every closeout path (update_result, persist_self_registered_result) unconditionally requires alpha_promotion_claim_receipt for promotion lanes, but only a successful claim can produce the receipt; a never-claimed reservation whose claim deterministically fails is therefore unclosable and permanently pollutes the 7-day in-flight duplicate window, blocking re-freeze of the same candidate.",
+  "expected_value_score": 0.0
+}

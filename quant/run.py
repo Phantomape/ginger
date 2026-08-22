@@ -5626,6 +5626,29 @@ def main():
     }
     _accumulate_ohlcv_warehouse(extra_ohlcv_frames, "cached_extra")
 
+    # exp-20260813-001: refresh the moomoo daily short-volume archive BEFORE the
+    # enricher consumes it (producer-before-consumer). A failed refresh is
+    # explicit in the summary; the rule-v2 tag then fails closed (stale_archive,
+    # never ok) for entries beyond the staleness bound, so a frozen archive can
+    # no longer silently masquerade as fresh entry-time information.
+    try:
+        from moomoo_daily_short_volume_archive import (
+            refresh_moomoo_daily_short_volume_archive,
+        )
+
+        short_volume_archive_refresh_summary = (
+            refresh_moomoo_daily_short_volume_archive()
+        )
+        log.info(
+            "Moomoo short-volume archive refresh: status=%s new_rows=%s max_activity=%s",
+            short_volume_archive_refresh_summary.get("status"),
+            short_volume_archive_refresh_summary.get("new_rows"),
+            short_volume_archive_refresh_summary.get("max_activity_date_after"),
+        )
+    except Exception as e:
+        log.warning(f"Moomoo short-volume archive refresh unavailable: {e}")
+        short_volume_archive_refresh_summary = {"status": "error", "error": str(e)}
+
     try:
         from forward_replacement_value import enrich_all_sleeve_states
 
@@ -5689,6 +5712,9 @@ def main():
     trend_signals_dict["default_off_alpha_attribution"] = default_off_alpha_attribution
     trend_signals_dict["paper_sleeve_execution_contract"] = paper_sleeve_execution_contract
     trend_signals_dict["forward_replacement_value_summary"] = forward_replacement_value_summary
+    trend_signals_dict["short_volume_archive_refresh_summary"] = (
+        short_volume_archive_refresh_summary
+    )
     trend_signals_dict["form4_event_queue"] = form4_event_queue
     trend_signals_dict["form4_event_sleeve"] = form4_event_sleeve
     trend_signals_dict["sec_event_queue"] = sec_event_queue

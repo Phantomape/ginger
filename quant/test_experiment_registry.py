@@ -2063,3 +2063,102 @@ def test_looks_placeholder_word_boundary():
     assert _looks_placeholder("fill in later") is True
     assert _looks_placeholder("none") is True
     assert _looks_placeholder("") is True
+
+
+def _deadlocked_reservation_registry(tmp_path, experiment_id):
+    fixture = _research_claim_receipt_fixture(tmp_path)
+    ticket = fixture["ticket"]
+    ticket.update(
+        {
+            "experiment_id": experiment_id,
+            "owner": None,
+            "allowed_write_scope": [],
+            "locked_variables": [],
+        }
+    )
+    registry = {
+        "schema_version": 1,
+        "experiments": [ticket],
+        "_repo_root": str(tmp_path),
+        "_enforce_alpha_promotion": True,
+    }
+    judgement = {
+        "decision": "rejected",
+        "acceptance_reasons": [],
+        "before_metrics": {"expected_value_score": 1.0},
+        "after_metrics": {"expected_value_score": 1.0},
+        "delta_metrics": {"expected_value_score": 0.0},
+    }
+    return registry, ticket, judgement
+
+
+def test_never_claimed_duplicate_accounting_close_bypasses_claim_receipt(tmp_path):
+    registry, ticket, judgement = _deadlocked_reservation_registry(
+        tmp_path, "exp-20990101-105"
+    )
+    closed = update_result(
+        registry,
+        ticket["experiment_id"],
+        judgement,
+        "before.json",
+        "after.json",
+        status_override="rejected",
+        realized_failure_mode="duplicate_reservation_accounting",
+    )
+    assert closed["status"] == "rejected"
+    assert closed["result"]["decision"] == "rejected"
+
+
+def test_never_claimed_duplicate_accounting_close_requires_rejected_status(tmp_path):
+    registry, ticket, judgement = _deadlocked_reservation_registry(
+        tmp_path, "exp-20990101-106"
+    )
+    judgement["decision"] = "observed_only"
+    with pytest.raises(ValueError, match="cannot close without a successful claim"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "before.json",
+            "after.json",
+            status_override="observed_only",
+            realized_failure_mode="duplicate_reservation_accounting",
+        )
+    assert ticket["status"] == "proposed"
+
+
+def test_never_claimed_close_without_duplicate_mode_still_requires_receipt(tmp_path):
+    registry, ticket, judgement = _deadlocked_reservation_registry(
+        tmp_path, "exp-20990101-107"
+    )
+    with pytest.raises(ValueError, match="cannot close without a successful claim"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "before.json",
+            "after.json",
+            status_override="rejected",
+            realized_failure_mode="unrelated_failure",
+        )
+    assert ticket["status"] == "proposed"
+
+
+def test_claimed_ticket_duplicate_accounting_close_still_requires_receipt(tmp_path):
+    registry, ticket, judgement = _deadlocked_reservation_registry(
+        tmp_path, "exp-20990101-108"
+    )
+    ticket["status"] = "claimed"
+    ticket["claimed_at"] = "2099-01-01T00:01:00+00:00"
+    ticket["owner"] = "someone"
+    with pytest.raises(ValueError, match="claim"):
+        update_result(
+            registry,
+            ticket["experiment_id"],
+            judgement,
+            "before.json",
+            "after.json",
+            status_override="rejected",
+            realized_failure_mode="duplicate_reservation_accounting",
+        )
+    assert ticket["status"] == "claimed"

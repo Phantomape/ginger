@@ -1,0 +1,177 @@
+{
+  "admission_class": "research_replay",
+  "after_metrics": {
+    "expected_value_score": -15620.71,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-2a61935d81ccb09ae8fd",
+    "candidate_snapshot_hash": "d723d3a8399cc0ab4b73f8a71dad154299abc10e967239c78b27b62160954cbb",
+    "panel_hash": "e8aa9cc123005ede3230da2ebd7369e04526a6b33efba69f6b246a92562b4d07",
+    "panel_path": "data/alpha_search/qualified/alpha_automation_massive_persistent_adts_20260814_v3/panel.json",
+    "panel_sha256": "e9bfecbe8fd611676fed968149ca53eba5c52c42bdddae2e43d941e2c80b4da3",
+    "paper_live_eligible": false,
+    "preflight_hash": "6f53866a1adcb3b2a252afc1c8ed156b53cb47e5851f22b643e1100e57dea75c",
+    "promotion_hash": "03e45d97d66d2f65ec868bc24109a58462e76b8b54bbbc8cbc317ae4e9df8849",
+    "promotion_request_path": "data/alpha_search/qualified/alpha_automation_massive_persistent_adts_20260814_v3/promotion.json",
+    "promotion_request_sha256": "6b8c2bf427479138e4777a60017c95a5219fbd03e808194d8501370a8eac4dc7",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "lead",
+    "selection_scope_id": "scope-3165834ad34cf17eb81bf938",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "canonical_pit",
+        "readiness_hash": "8a31d834b92803e0851a06776c28513775b0bf621b52879c55626028866fa805",
+        "source_contract_hash": "5d9303c1fe7d1ac23c8dca917df83179fd36553fb72d0f8ff7c24e02eb0989ce",
+        "surface_id": "cash_feasible_core_price_prior_20260814"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "fb8475dd9e6441a818cc3743ad38735b49d3dc706ec75f9bcf4c5e01769cb27b",
+        "source_contract_hash": "649c4bb563d854b2d3e18d81b42abc93144dc52f3ba084cb8be1422069b6966a",
+        "surface_id": "massive_persistent_adts_research_pit_20260814"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "2f063d1f22b28aa7c202e643120ce530c666f19099f1f6f66c3e6a7ece7efab9",
+        "source_contract_hash": "0e1a0e58959a71e12460d1ae44873dd0b834f08d8b53e08a5fb688bf1f10f8a0",
+        "surface_id": "massive_reference_asof_identity_research_pit_20260814"
+      }
+    ]
+  },
+  "artifact_hashes": {
+    "after": {
+      "path": "data/experiments/exp-20260814-003/exp_20260814_003_adts_state_h5_replay.json",
+      "sha256": "8de68b9c7f2cb99c17392a056bed0cdf9dd3c74587a636fc7a73c8cb7f7d94f4"
+    },
+    "before": {
+      "path": "data/experiments/exp-20260814-003/scout_before.json",
+      "sha256": "fdfe45fd92c9d3ccde1beaeaceb1be4409c6c901495c677c10337fc810ab921f"
+    }
+  },
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": -15620.71,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": -15620.71,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "35bp_or_70bp_cost_erases_replacement_value",
+      "H5_transmission_is_too_long_or_too_short",
+      "price_component_mechanically_drives_dollar_per_transaction",
+      "research_pit_vintage_ceiling_blocks_canonical_use",
+      "unsigned_daily_aggregates_do_not_identify_direction",
+      "venue_and_reporting_mix_drive_ADTS",
+      "window_instability_or_hidden_factor_concentration"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": "unsigned_daily_aggregates_do_not_identify_direction",
+    "surprise_level": "low",
+    "surprise_note": "A robust multi-session elevated average-dollar-per-transaction state with sustained participation and nonnegative tape does not mark incomplete upward price discovery; on this universe it marks short-horizon exhaustion. The failure is not cost-driven: gross PnL before the 35bp charge is still around -13.1k, and every window is negative, so the sign of the mechanism is wrong, not its margin. This matches the adjacent exp-20260804-003 single-day block-outlier finding (negative drift inversion) on the same Massive grouped-daily source: both unsigned dollar-per-transaction shapes, single-day and persistent, resolve negative over the next five sessions."
+  },
+  "causal_components": [
+    "at least four of five ADTS observations above preceding-126 median",
+    "latest-five median ADTS at or above preceding-126 q90",
+    "latest-five median dollar participation no lower than max USD1m and prior-20 median",
+    "maximum recent dynamic prior-126 z below 3",
+    "maximum three simultaneous USD4000 research positions under USD12000 cash reservation",
+    "next-session entry and H5 exit existence",
+    "nonnegative five-session tape and USD3 minimum close",
+    "research-only observed-only ceiling with trade disabled",
+    "top-two daily ranking with ten-session ticker cooldown",
+    "zero-return cash plus same-clock costed SPY and QQQ replacement comparators"
+  ],
+  "change_summary": "Research-PIT private replay of the frozen persistent-ADTS state (massive_persistent_adts_state_h5_v1): 183 fixed roster rows, next-open entry, H5 close exit, USD4000 whole-share tickets, 35bp/70bp total costs, cash primary and same-clock 35bp-costed USD4000 SPY/QQQ secondary comparators. All execution inputs resolved fail-closed clean (0 contract failures; touches 33/75/75 exactly matched the outcome-blind preflight; max ticker share 1.09%; max concurrency 3). REJECTED: aggregate treatment net -15620.71 after 35bp vs cash 0.0, SPY +250.07, QQQ +1074.10; all three standard windows negative (old_thin -5746.15, mid_weak -1203.60, late_strong -8670.96); 70bp stress -18177.30. Zero of seven economic falsifier legs passed.",
+  "change_type": "private_replay_scout",
+  "changed_variable": "admit_robust_persistent_ADTS_state_instead_of_cash_no_new_entry",
+  "component": "data/alpha_search, data/experiments, experiments/tickets, experiments/cards, experiments/logs, experiments/manifests, quant/experiments, scripts/experiment_fingerprint.py",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": -15620.71
+  },
+  "experiment_id": "exp-20260814-003",
+  "hypothesis": "A robust five-session state of elevated average reported dollar per transaction, sustained participation and nonnegative tape, explicitly excluding every recent single-day z>=3 block outlier, may identify incomplete price discovery that persists through H5 relative to zero-return cash and identical-clock costed SPY and QQQ, while unsigned daily aggregates do not identify institutional accumulation.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "persistent_reported_dollar_per_transaction_state",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260804-003",
+    "exp-20260728-006"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Workflow context preserved for the next agent: this ticket consumed the v3 re-frozen bundle after the morning zero-ID run (claim-snapshot allowed-roots defect) and the v2 receipt-size defect (2.2GB sqlite binding; fixed by binding the compact warehouse identity manifest). The claim-receipt deadlock that trapped the abandoned v2 reservation exp-20260814-001 (and the 08-04 backlog ticket exp-20260804-002) was repaired in exp-20260814-002.",
+  "paper_live_eligible": false,
+  "parameters": {
+    "locked_variables": [
+      "massive_persistent_adts_state_h5_v1"
+    ],
+    "single_causal_variable": "massive_persistent_adts_state_h5_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune spans (5/126/20), quantiles (q90/median), z-thresholds, holding horizon, top-N, cooldown, cost assumptions, or ticker filters on this persistent-ADTS state; do not re-run the inverse (short/underweight) as a fresh long-short claim without a new evidence axis, since research_pit vintage and borrow economics were never part of this contract; do not re-freeze the same roster under a new bundle name. The unsigned ADTS axis on massive_full_market_ohlcv is now consumed in both single-day (exp-20260804-003) and persistent multi-session (this ticket) shapes.",
+    "new_evidence_required": "A genuinely different evidence axis on this source: signed or participant-attributed flow (trade-direction or venue attribution, a different data source), or settled forward rows under a PIT forward observer for a differently-shaped state, or immutable as-published vendor vintages that would lift the research_pit ceiling. A negative-side overlay claim (avoiding these states) would need its own outcome-blind touch-density preflight against executed entries, per AGENTS.md section 5.",
+    "realized_failure_mode": "unsigned_daily_aggregates_do_not_identify_direction",
+    "why_result_happened": "A robust multi-session elevated average-dollar-per-transaction state with sustained participation and nonnegative tape does not mark incomplete upward price discovery; on this universe it marks short-horizon exhaustion. The failure is not cost-driven: gross PnL before the 35bp charge is still around -13.1k, and every window is negative, so the sign of the mechanism is wrong, not its margin. This matches the adjacent exp-20260804-003 single-day block-outlier finding (negative drift inversion) on the same Massive grouped-daily source: both unsigned dollar-per-transaction shapes, single-day and persistent, resolve negative over the next five sessions."
+  },
+  "prediction": {
+    "confidence_reason": "The mechanism is economically distinct and densely executable, but literature counterevidence, absent sign or participant identity and research-PIT vintage uncertainty warrant a low prior and an observed-only ceiling.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "35bp_or_70bp_cost_erases_replacement_value",
+      "H5_transmission_is_too_long_or_too_short",
+      "price_component_mechanically_drives_dollar_per_transaction",
+      "research_pit_vintage_ceiling_blocks_canonical_use",
+      "unsigned_daily_aggregates_do_not_identify_direction",
+      "venue_and_reporting_mix_drive_ADTS",
+      "window_instability_or_hidden_factor_concentration"
+    ],
+    "recorded_at": "2026-08-14T16:36:16+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260814-003/scout_before.json",
+    "data/experiments/exp-20260814-003/exp_20260814_003_adts_state_h5_replay.json"
+  ],
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "secondary_windows": [],
+  "selected_evidence_grade": "lead",
+  "status": "rejected",
+  "timestamp": "2026-08-14T16:39:05+00:00",
+  "trial_family": "massive_multi_session_adts_state_research_replay",
+  "trial_variant_id": "massive_persistent_adts_state_h5_v1"
+}

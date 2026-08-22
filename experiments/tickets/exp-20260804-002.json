@@ -61,7 +61,7 @@
   "change_type": "private_replay_scout",
   "changed_variable": "private_replay_scout_block_print_absorption_replacement_value_v1",
   "claimed_at": null,
-  "completed_at": null,
+  "completed_at": "2026-08-14T16:33:27+00:00",
   "created_at": "2026-08-04T16:38:49+00:00",
   "evaluation_windows": [],
   "experiment_id": "exp-20260804-002",
@@ -185,7 +185,7 @@
       "blocked": false,
       "matches": [],
       "override_accepted": false,
-      "rule": "AGENTS.md \u00a77 \u5e76\u53d1\u91cd\u590d reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
       "threshold": 0.65,
       "window_days": 7
     },
@@ -242,7 +242,7 @@
       "blocked": false,
       "max_probes": 3,
       "override_accepted": false,
-      "rule": "AGENTS.md \u00a72.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
       "source": "massive_full_market_ohlcv",
       "streak": 1,
       "streak_experiments": [
@@ -256,7 +256,7 @@
       "blocked": false,
       "matches": [],
       "override_accepted": false,
-      "rule": "AGENTS.md \u00a72.4 \u6392\u540d/\u679a\u4e3e\u6e05\u5355\u6d88\u8d39: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling \u2014 not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
     },
     "reopen_condition_guard": {
       "applicable": true,
@@ -280,7 +280,7 @@
       "per_source_count": 0,
       "recent_cross_surface_count": 0,
       "recent_experiments": [],
-      "rule": "AGENTS.md \u00a72.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
       "window_days": 7
     },
     "saturated_source_axis": {
@@ -328,10 +328,46 @@
     "payload_hash": "2b7a1432b744196e15deceeabc923584e805dc0f5fdb58a26ab5e3038fe39f53",
     "schema_version": 1
   },
-  "result": null,
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "admission_class": "research_replay",
+    "selected_evidence_grade": "lead",
+    "result_ceiling": "observed_only",
+    "paper_live_eligible": false,
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.2,
+      "brier_score": 0.04,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "order_splitting_erases_block_signal",
+        "chronological_window_instability",
+        "spy_qqq_secondary_hurdle_not_beaten",
+        "double_cost_stress_failure",
+        "event_heterogeneity_buybacks_index_flows",
+        "vendor_aggregate_vintage_contract_failure"
+      ],
+      "realized_failure_mode": "duplicate_reservation_accounting",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "Reservation deadlocked by tooling, not by evidence; no calibration signal."
+    }
+  },
   "revision_manifest_file": "experiments/manifests/exp-20260804-002.json",
   "single_causal_variable": "massive_block_print_absorption_h10_v1",
-  "status": "proposed",
+  "status": "rejected",
   "ticket_file": "experiments/tickets/exp-20260804-002.json",
   "trial_family": "massive_block_print_absorption_research_replay",
   "trial_variant_id": "exp-20260804-002"

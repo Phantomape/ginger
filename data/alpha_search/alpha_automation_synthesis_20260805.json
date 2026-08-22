@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-05T15:21:00Z",
+  "data_cutoff": "2026-08-05T15:21:00Z",
+  "outcome_blind": true,
+  "baseline_universe": [
+    "44 current core candidates",
+    "13 current pilot candidates"
+  ],
+  "opportunity_cost_winner": "PLTR",
+  "evidence_surfaces_used": [
+    "canonical OHLCV and 2026-08-04 daily quant signal",
+    "official issuer and SEC disclosures known by cutoff",
+    "Moomoo daily capital-flow forward archive",
+    "current broker portfolio and position-control snapshot"
+  ],
+  "evidence_surfaces_missing": [
+    "canonical multi-window PLTR treatment touch matrix",
+    "settled paired disclosure-flow replacement-value rows",
+    "current factor and covariance exposure manifest",
+    "broad flow coverage beyond the 62-ticker archive"
+  ],
+  "research_digest": {
+    "artifact": "data/research_digest/latest_digest.md",
+    "fresh_entries": 0,
+    "action": "none; all nine displayed entries were already terminally declined in the consumption ledger"
+  },
+  "hypothesis_candidates": [
+    {
+      "candidate": "PLTR official-disclosure plus flow confirmation",
+      "queue": "exploration",
+      "baseline": "current cash-feasible core ranking over the 57-name tradeable pool",
+      "treatment": "require a source-dated positive issuer disclosure, same-session price breadth, and positive Moomoo capital flow",
+      "expected_horizon": "next open to H10 and H20",
+      "replacement_value_comparator": "cash, SPY, QQQ, and the displaced baseline core candidate",
+      "falsifier": "fewer than five independent touches per canonical window, no incremental value over the strongest constituent, concentration above 40%, or evidence that the event was already fully price-revealed"
+    },
+    {
+      "candidate": "APP post-earnings drawdown plus flow stabilization",
+      "queue": "adjacent",
+      "baseline": "unconditioned drawdown candidate",
+      "treatment": "positive disclosure plus positive flow during a post-earnings drawdown",
+      "expected_horizon": "H10",
+      "replacement_value_comparator": "cash, SPY, QQQ, and the displaced slot",
+      "falsifier": "no incremental replacement value, fewer than five touches, or existing portfolio exposure removes diversification benefit"
+    },
+    {
+      "candidate": "AVGO execution-aware rank-two replacement",
+      "queue": "exploitation",
+      "baseline": "current rank-one PLTR candidate",
+      "treatment": "prefer the lower-extension rank-two candidate after explicit execution and overlap accounting",
+      "expected_horizon": "H10 and H20",
+      "replacement_value_comparator": "PLTR, cash, SPY, and QQQ",
+      "falsifier": "no net replacement advantage across windows or semiconductor concentration erases the benefit"
+    }
+  ],
+  "selected_hypothesis": "PLTR official-disclosure plus flow confirmation",
+  "economic_mechanism": "A large, source-dated growth and guidance update can remain under-incorporated only when independent same-session capital flow confirms durable demand rather than a transient gap; the current price signal supplies the observable market prior.",
+  "falsifier": "Reject or park unless the machine finds at least five independent touches in each canonical window, canonical PIT timing, a valid novelty axis, and incremental replacement value over cash, SPY, QQQ, and the displaced core candidate.",
+  "pit_tier": "research_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "run_d0_d3",
+  "portfolio_constraint": "Signal-level comparison only; position control currently blocks new entries because manual bracket orders are not broker-confirmed.",
+  "historical_outcomes_accessed_for_selection": false
+}

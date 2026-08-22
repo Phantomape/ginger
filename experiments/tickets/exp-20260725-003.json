@@ -1,0 +1,814 @@
+{
+  "acceptance_rule": "Measurement repair only: 100 strict cohorts with fewer than 20 settled REDUCE_RISK actions or fewer than five in either chronological half remains not_ready; a balanced 100/20/5/5 fixture is ready; the current canonical lane reports 94/10/8/2 and no strategy, order, PnL, or source-ledger behavior changes.",
+  "allowed_write_scope": [
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "quant/experiments/",
+    "data/experiments/",
+    "data/reopen_readiness.json",
+    "experiments/logs/",
+    "experiments/cards/",
+    "experiments/manifests/",
+    "experiments/tickets/",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md"
+  ],
+  "baseline_result_file": "data/reopen_readiness.json",
+  "card_file": "experiments/cards/exp-20260725-003.md",
+  "causal_components": [
+    "strict completed-close cohort selection",
+    "settled REDUCE_RISK action counting",
+    "chronological-half power checks",
+    "fail-closed readiness status",
+    "regression tests",
+    "reproducible closeout artifact"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "intraday_reduce_risk_action_power_readiness_v1",
+  "claimed_at": "2026-07-25T11:13:44+00:00",
+  "completed_at": "2026-07-25T11:29:13+00:00",
+  "created_at": "2026-07-25T11:12:30+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260725-003",
+  "experiment_uid": "expuid-9665feb3780f4b90",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260725-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-25T11:12:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_reduce_risk_power_readiness"
+  },
+  "hypothesis": "Alpha hypothesis: deterministic machine-default intraday REDUCE_RISK may add positive next-close replacement value, but promotion readiness is untrustworthy because the canonical builder can report ready at 100 strict cohorts while the exp-20260725-002 frozen power contract of at least 20 settled REDUCE_RISK actions and at least five in each chronological half still fails; bind those outcome-blind action counts to readiness without changing decisions or outcomes.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "outcome_rule_version",
+    "execution_rule_version",
+    "aggregation_rule_version",
+    "100_strict_cohort_threshold",
+    "20_settled_reduce_risk_threshold",
+    "5_per_chronological_half_threshold",
+    "no_pnl_or_return_input",
+    "trade_enabled_false"
+  ],
+  "mechanism_family": "intraday_triage_counterfactual_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/constants.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "quant/portfolio_engine.py",
+    "quant/backtester.py",
+    "quant/run.py",
+    "operator_inputs/open_positions.json",
+    "data/daily/intraday/backtests/outcome_ledgers/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260714-010",
+    "exp-20260725-001",
+    "exp-20260725-002"
+  ],
+  "new_evidence_type": "fault_recovery_semantic_relevance_defect",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "score": 0.6203,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "broad_market_forward_maturation",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "score": 0.6188,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "fundamental_growth_rs_forward_readiness",
+        "score": 0.6185,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.375,
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "score": 0.6182,
+        "status": "has_accepted",
+        "trials": 8
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "forward_replacement_value",
+      "field_tags": [
+        "action",
+        "actions",
+        "add",
+        "alpha",
+        "at",
+        "because",
+        "bind",
+        "blind",
+        "builder",
+        "but",
+        "can",
+        "canonical",
+        "changing",
+        "chronological",
+        "close",
+        "cohorts",
+        "contract",
+        "counterfactual",
+        "counts",
+        "decisions",
+        "deterministic",
+        "each",
+        "exp",
+        "fails",
+        "five",
+        "frozen",
+        "guard",
+        "half",
+        "hypothesis",
+        "in",
+        "intraday",
+        "is",
+        "least",
+        "machine",
+        "may",
+        "measurement",
+        "of",
+        "or",
+        "outcome",
+        "outcomes",
+        "positive",
+        "power",
+        "promotion",
+        "readiness",
+        "ready",
+        "reduce",
+        "reopen",
+        "replacement",
+        "report",
+        "risk",
+        "settled",
+        "still",
+        "strict",
+        "those",
+        "to",
+        "triage",
+        "untrustworthy",
+        "value",
+        "while",
+        "without"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.6203,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "broad_market_forward_maturation",
+        "reopen_condition": "Populate the candidate universe feed, then collect closed 20d replacement-value outcomes versus paper cash or displaced core slots.",
+        "score": 0.619,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "vcp_forward_replacement_value_readiness",
+        "reopen_condition": "['nonzero_forward_candidate_rows_in_production_snapshots', 'at_least_20_closed_forward_vcp_outcomes', 'positive_non_concentrated_replacement_value_vs_cash_or_core']",
+        "score": 0.6188,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "fundamental_growth_rs_forward_readiness",
+        "reopen_condition": "Do not reserve another fundamental_growth_rs forward-readiness ID until at least 20 enriched closed rows exist for a watchlist-lead refresh, and do not test activation envelope until at least 60 enriched closed rows exist with positive cash/SPY/QQQ replacement value and diversified ticker concentration.",
+        "score": 0.6185,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.375,
+        "data_source": "forward_replacement_value",
+        "family_key": "default_off_forward_replacement_value_activation_readiness",
+        "reopen_condition": "At least 20 closed rows for one diversified helper/source family to justify a watchlist lead, and at least 60 closed rows with positive replacement value versus cash, SPY, and QQQ for an activation-envelope experiment.",
+        "score": 0.6182,
+        "status": "has_accepted",
+        "trials": 8
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "forward_replacement_value",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "forward_replacement_value",
+      "trials": 0
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "success_probability": 0.95,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "action_field_semantics_ambiguous",
+      "chronological_split_mismatch",
+      "legacy_fixture_breakage",
+      "source_ledger_mutation"
+    ],
+    "confidence_reason": "The latest accepted exp-20260725-002 closeout froze the 100 strict cohort and 20 settled active-action power bars before any fresh promotion, while the builder currently checks only 100 and the canonical outcome ledger exposes deterministic final_action fields; the repair is outcome-direction blind and narrowly testable.",
+    "recorded_at": "2026-07-25T11:11:39+00:00"
+  },
+  "prior_trial_count": 2,
+  "reservation_intent": {
+    "key": "4c86cc47db10d7d7f162760e79c8d66d162f24c4ee484b9397d1984f56175e7a",
+    "payload_hash": "4c86cc47db10d7d7f162760e79c8d66d162f24c4ee484b9397d1984f56175e7a",
+    "schema_version": 1
+  },
+  "result": {
+    "accepted": true,
+    "accepted_alpha": false,
+    "accepted_measurement_repair": true,
+    "decision": "accepted_measurement_repair",
+    "artifact": "data/experiments/exp-20260725-003/exp_20260725_003_intraday_reduce_risk_power_readiness.json",
+    "log": "experiments/logs/exp-20260725-003.json",
+    "gate4": {
+      "passed": true,
+      "evaluation": "measurement_contract_only",
+      "before_metrics": {
+        "expected_value_score": 6.2057,
+        "total_pnl": 130992.36,
+        "trade_count": 49,
+        "minimum_survival_rate": 0.8116,
+        "worst_max_drawdown_pct": 0.0889
+      },
+      "after_metrics": {
+        "expected_value_score": 6.2057,
+        "total_pnl": 130992.36,
+        "trade_count": 49,
+        "minimum_survival_rate": 0.8116,
+        "worst_max_drawdown_pct": 0.0889
+      },
+      "delta_metrics": {
+        "expected_value_score": 0.0,
+        "total_pnl": 0.0,
+        "trade_count": 0,
+        "minimum_survival_rate": 0.0,
+        "worst_max_drawdown_pct": 0.0
+      },
+      "acceptance_rule": "Measurement repair only: 100 strict cohorts with fewer than 20 settled REDUCE_RISK actions or fewer than five in either chronological half remains not_ready; a balanced 100/20/5/5 fixture is ready; the current canonical lane reports 94/10/8/2 and no strategy, order, PnL, or source-ledger behavior changes."
+    },
+    "headline_metrics": {
+      "expected_value_score": 6.2057,
+      "total_pnl": 130992.36,
+      "trade_count": 49,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "production_impact": {
+      "shared_policy_changed": false,
+      "backtester_adapter_changed": false,
+      "run_adapter_changed": false,
+      "strategy_behavior_changed": false,
+      "trade_enabled": false,
+      "orders_changed": false,
+      "ranking_sizing_exits_or_risk_budget_changed": false,
+      "source_ledger_changed": false,
+      "replay_only": false,
+      "live_ready": false,
+      "summary": "Readiness governance only; no trading or outcome semantics changed."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The readiness builder carried the original total-cohort threshold but did not ingest the active-action power bar frozen by the later accepted closeout.",
+      "forbidden_near_neighbor_retry": "Do not reserve another readiness-only or threshold-retune ID on this intraday surface, and do not weaken completed-close, active-action, or chronological-balance checks.",
+      "new_evidence_required": "The alpha lane reopens only after the same canonical ledger reaches at least 100 strict cohorts, 20 settled REDUCE_RISK actions, and five actions in each chronological half, followed by a fresh verified D0-D3 scope."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260725-003.json",
+  "single_causal_variable": "intraday_reduce_risk_action_power_readiness_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260725-003.json",
+  "trial_family": "intraday_triage_reopen_readiness_guard",
+  "trial_variant_id": "reduce_risk_action_power_v1",
+  "schema": "intraday_reduce_risk_power_readiness_result_v1",
+  "timestamp": "2026-07-25T11:29:13Z",
+  "decision": "accepted_measurement_repair",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_hypothesis": "Deterministic machine-default intraday REDUCE_RISK may add positive next-close replacement value versus semantic override and hold.",
+  "implementation_mode": "measurement_repair",
+  "calibration": {
+    "actual_decision": "accepted_measurement_repair",
+    "actual_success": 1,
+    "predicted_success_probability": 0.95,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "expected_ev_delta": 0.0,
+    "actual_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "predicted_failure_modes": [
+      "action_field_semantics_ambiguous",
+      "chronological_split_mismatch",
+      "legacy_fixture_breakage",
+      "source_ledger_mutation"
+    ],
+    "realized_failure_mode": null,
+    "predicted_failure_mode_hit": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The canonical final_action field reproduced the frozen 94/10/8/2 preflight and all fail-closed boundary fixtures behaved as predicted."
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "cash-feasible 47-ticker core",
+      "current 12-position broker account",
+      "accepted default-off observers and sleeves",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash / no new executable core entry",
+    "evidence_surfaces_used": [
+      "canonical price and cash Gate-1",
+      "intraday completed-close ledger",
+      "Moomoo flow",
+      "options and borrow positioning",
+      "event and estimate-revision ledgers",
+      "portfolio exposure and live controls",
+      "research digest and reopen registry"
+    ],
+    "evidence_surfaces_missing": [
+      "100 strict intraday next-close settlements",
+      "20 settled REDUCE_RISK actions with at least five per half",
+      "mature flow-options paired settlements",
+      "actual estimate-revision cash conflicts and H5/H10/H20 outcomes",
+      "settled prediction-market outcomes",
+      "PIT-bound spread, impact, or LOB history"
+    ],
+    "hypothesis_candidates": [
+      "machine-default intraday REDUCE_RISK versus semantic override and hold",
+      "deep-drawdown price stabilization plus flow absorption and put positioning",
+      "timestamp-safe estimate-revision expectation gap at actual cash conflicts"
+    ],
+    "selected_hypothesis": "machine-default intraday REDUCE_RISK, parked",
+    "economic_mechanism": "deterministic risk reduction may avoid adverse next-close paths, but neutral rows cannot identify the active treatment",
+    "falsifier": "fewer than 20 settled active reductions, fewer than five in either chronological half, nonpositive replacement value, or tail/concentration failure",
+    "evidence_grade": "lead_parked",
+    "next_machine_action": "continue routine settlement without IDs; only after 100/20/5/5 build a fresh outcome-blind D0-D3 scope and promotion request",
+    "research_digest_disposition": "all ten displayed entries were already terminal; no duplicate ledger append"
+  },
+  "before": {
+    "schema": "intraday_reduce_risk_power_readiness_before_v1",
+    "experiment_id": "exp-20260725-003",
+    "captured_at": "2026-07-25T11:12:30Z",
+    "accepted_alpha": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false,
+    "active_gate1_reference": {
+      "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+      "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+      "aggregate_expected_value_score": 6.2057,
+      "aggregate_total_pnl_usd": 130992.36,
+      "trade_count": 49,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "source_identity": {
+      "builder_path": "scripts/build_reopen_readiness.py",
+      "builder_sha256": "0520c784b20277ca5351da470d5bbdbfa2d416031670c03fd8b67272f1111248",
+      "readiness_path": "data/reopen_readiness.json",
+      "readiness_sha256": "53fd9fdb6400071f194083c879853e816c435fedce9b818a966fdd6969340b07",
+      "outcome_ledger_path": "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+      "outcome_ledger_sha256": "cff5e825c533d63e98e3cc558a67a689b3e864060db229e78cc695acbe48b78b",
+      "scorecard_path": "data/daily/intraday/backtests/latest_scorecard.json",
+      "scorecard_sha256": "fc9536c57c3d33813c37626184ebba0369f23e0c53430c471b44b8ebb31b03df"
+    },
+    "intraday_lane": {
+      "counters": {
+        "raw_primary_next_close_rows": 137,
+        "effective_next_close_rows": 118,
+        "raw_closed_next_close_rows": 113,
+        "effective_closed_next_close_rows": 94,
+        "raw_strict_completed_next_close_settlements": 113,
+        "strict_effective_next_close_settlements": 94,
+        "duplicate_economic_rows_excluded": 19,
+        "incomplete_closed_effective_rows_excluded": 0
+      },
+      "thresholds": {
+        "strict_effective_next_close_settlements": 100
+      },
+      "status": "not_ready",
+      "missing_power_contract": {
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "source": "exp-20260725-002 alpha_synthesis and post_run_reflection"
+      }
+    },
+    "defect": {
+      "false_ready_possible": true,
+      "description": "The before builder returned ready whenever strict_effective_next_close_settlements reached 100, even if the selected REDUCE_RISK treatment still had fewer than 20 settled actions or fewer than five actions in either chronological half.",
+      "outcome_direction_read": false
+    }
+  },
+  "after": {
+    "intraday_lane": {
+      "counters": {
+        "raw_primary_next_close_rows": 137,
+        "effective_next_close_rows": 118,
+        "raw_closed_next_close_rows": 113,
+        "effective_closed_next_close_rows": 94,
+        "raw_strict_completed_next_close_settlements": 113,
+        "strict_effective_next_close_settlements": 94,
+        "duplicate_economic_rows_excluded": 19,
+        "incomplete_closed_effective_rows_excluded": 0,
+        "strict_effective_next_close_reduce_risk_settlements": 10,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 8,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 2
+      },
+      "thresholds": {
+        "strict_effective_next_close_settlements": 100,
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 5
+      },
+      "checks": {
+        "strict_effective_next_close_settlements": false,
+        "strict_effective_next_close_reduce_risk_settlements": false,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": true,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": false
+      },
+      "status": "not_ready",
+      "threshold_source": "exp-20260714-010 frozen reopen contract (100 effective primary next-close economic cohorts), corrected by exp-20260725-001 to require a completed 15:55 ET five-minute close bar, and strengthened by exp-20260725-002 to require 20 settled REDUCE_RISK actions with at least five in each chronological half",
+      "counter_source": "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+      "note": "Readiness is outcome-direction blind. Closed rows with missing, malformed, or pre-15:55 ET horizon_time are excluded; early-close sessions fail closed until calendar-aware close semantics are implemented. Power checks use only decision chronology and final_action; they do not read PnL or returns."
+    },
+    "insufficient_power_fixture": {
+      "counters": {
+        "raw_primary_next_close_rows": 100,
+        "effective_next_close_rows": 100,
+        "raw_closed_next_close_rows": 100,
+        "effective_closed_next_close_rows": 100,
+        "raw_strict_completed_next_close_settlements": 100,
+        "strict_effective_next_close_settlements": 100,
+        "duplicate_economic_rows_excluded": 0,
+        "incomplete_closed_effective_rows_excluded": 0,
+        "strict_effective_next_close_reduce_risk_settlements": 10,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 5
+      },
+      "thresholds": {
+        "strict_effective_next_close_settlements": 100,
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 5
+      },
+      "checks": {
+        "strict_effective_next_close_settlements": true,
+        "strict_effective_next_close_reduce_risk_settlements": false,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": true,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": true
+      },
+      "status": "not_ready",
+      "threshold_source": "exp-20260714-010 frozen reopen contract (100 effective primary next-close economic cohorts), corrected by exp-20260725-001 to require a completed 15:55 ET five-minute close bar, and strengthened by exp-20260725-002 to require 20 settled REDUCE_RISK actions with at least five in each chronological half",
+      "counter_source": "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+      "note": "Readiness is outcome-direction blind. Closed rows with missing, malformed, or pre-15:55 ET horizon_time are excluded; early-close sessions fail closed until calendar-aware close semantics are implemented. Power checks use only decision chronology and final_action; they do not read PnL or returns."
+    },
+    "balanced_power_fixture": {
+      "counters": {
+        "raw_primary_next_close_rows": 100,
+        "effective_next_close_rows": 100,
+        "raw_closed_next_close_rows": 100,
+        "effective_closed_next_close_rows": 100,
+        "raw_strict_completed_next_close_settlements": 100,
+        "strict_effective_next_close_settlements": 100,
+        "duplicate_economic_rows_excluded": 0,
+        "incomplete_closed_effective_rows_excluded": 0,
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 10,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 10
+      },
+      "thresholds": {
+        "strict_effective_next_close_settlements": 100,
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 5
+      },
+      "checks": {
+        "strict_effective_next_close_settlements": true,
+        "strict_effective_next_close_reduce_risk_settlements": true,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": true,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": true
+      },
+      "status": "ready",
+      "threshold_source": "exp-20260714-010 frozen reopen contract (100 effective primary next-close economic cohorts), corrected by exp-20260725-001 to require a completed 15:55 ET five-minute close bar, and strengthened by exp-20260725-002 to require 20 settled REDUCE_RISK actions with at least five in each chronological half",
+      "counter_source": "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+      "note": "Readiness is outcome-direction blind. Closed rows with missing, malformed, or pre-15:55 ET horizon_time are excluded; early-close sessions fail closed until calendar-aware close semantics are implemented. Power checks use only decision chronology and final_action; they do not read PnL or returns."
+    },
+    "unbalanced_power_fixture": {
+      "counters": {
+        "raw_primary_next_close_rows": 100,
+        "effective_next_close_rows": 100,
+        "raw_closed_next_close_rows": 100,
+        "effective_closed_next_close_rows": 100,
+        "raw_strict_completed_next_close_settlements": 100,
+        "strict_effective_next_close_settlements": 100,
+        "duplicate_economic_rows_excluded": 0,
+        "incomplete_closed_effective_rows_excluded": 0,
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 18,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 2
+      },
+      "thresholds": {
+        "strict_effective_next_close_settlements": 100,
+        "strict_effective_next_close_reduce_risk_settlements": 20,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": 5
+      },
+      "checks": {
+        "strict_effective_next_close_settlements": true,
+        "strict_effective_next_close_reduce_risk_settlements": true,
+        "first_half_strict_effective_next_close_reduce_risk_settlements": true,
+        "second_half_strict_effective_next_close_reduce_risk_settlements": false
+      },
+      "status": "not_ready",
+      "threshold_source": "exp-20260714-010 frozen reopen contract (100 effective primary next-close economic cohorts), corrected by exp-20260725-001 to require a completed 15:55 ET five-minute close bar, and strengthened by exp-20260725-002 to require 20 settled REDUCE_RISK actions with at least five in each chronological half",
+      "counter_source": "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+      "note": "Readiness is outcome-direction blind. Closed rows with missing, malformed, or pre-15:55 ET horizon_time are excluded; early-close sessions fail closed until calendar-aware close semantics are implemented. Power checks use only decision chronology and final_action; they do not read PnL or returns."
+    }
+  },
+  "checks": {
+    "current_lane_matches_rebuilt_lane": true,
+    "current_counts_match_frozen_preflight": true,
+    "current_lane_remains_not_ready": true,
+    "current_outcome_ledger_byte_identical": true,
+    "current_scorecard_byte_identical": true,
+    "active_gate1_byte_identical": true,
+    "100_total_10_active_fails_closed": true,
+    "100_total_20_active_balanced_is_ready": true,
+    "100_total_20_active_unbalanced_fails_closed": true,
+    "readiness_reads_no_pnl_or_return": true
+  },
+  "gate1": {
+    "passed": true,
+    "baseline_artifact": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "baseline_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "note": "Measurement-only repair; the cash-feasible strategy anchor is unchanged."
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields": [
+      "outcome_rule_version",
+      "primary_ticker_day_decision",
+      "horizon",
+      "status",
+      "horizon_time",
+      "final_action",
+      "decision_timestamp",
+      "execution_time",
+      "ticker",
+      "observation_id"
+    ],
+    "signal_sentinel_fields": "not_applicable_no_signal_or_position_path_changed"
+  },
+  "gate3": {
+    "passed": true,
+    "strategy_filter_changed": false,
+    "minimum_survival_rate": 0.8116
+  },
+  "gate4": {
+    "passed": true,
+    "evaluation": "measurement_contract_only",
+    "before_metrics": {
+      "expected_value_score": 6.2057,
+      "total_pnl": 130992.36,
+      "trade_count": 49,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "after_metrics": {
+      "expected_value_score": 6.2057,
+      "total_pnl": 130992.36,
+      "trade_count": 49,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "total_pnl": 0.0,
+      "trade_count": 0,
+      "minimum_survival_rate": 0.0,
+      "worst_max_drawdown_pct": 0.0
+    },
+    "acceptance_rule": "Measurement repair only: 100 strict cohorts with fewer than 20 settled REDUCE_RISK actions or fewer than five in either chronological half remains not_ready; a balanced 100/20/5/5 fixture is ready; the current canonical lane reports 94/10/8/2 and no strategy, order, PnL, or source-ledger behavior changes."
+  },
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0,
+    "minimum_survival_rate": 0.0,
+    "worst_max_drawdown_pct": 0.0
+  },
+  "headline_metrics": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "strategy_behavior_changed": false,
+    "trade_enabled": false,
+    "orders_changed": false,
+    "ranking_sizing_exits_or_risk_budget_changed": false,
+    "source_ledger_changed": false,
+    "replay_only": false,
+    "live_ready": false,
+    "summary": "Readiness governance only; no trading or outcome semantics changed."
+  },
+  "acceptance_basis": "The canonical lane now binds the previously recorded 100/20/5/5 outcome-blind power contract, reproduces the real 94/10/8/2 counts, passes balanced and fail-closed boundary fixtures, and preserves every strategy/source artifact byte-for-byte.",
+  "rejection_reason": "current_lane_matches_rebuilt_lane",
+  "post_run_reflection": {
+    "why_result_happened": "The readiness builder carried the original total-cohort threshold but did not ingest the active-action power bar frozen by the later accepted closeout.",
+    "forbidden_near_neighbor_retry": "Do not reserve another readiness-only or threshold-retune ID on this intraday surface, and do not weaken completed-close, active-action, or chronological-balance checks.",
+    "new_evidence_required": "The alpha lane reopens only after the same canonical ledger reaches at least 100 strict cohorts, 20 settled REDUCE_RISK actions, and five actions in each chronological half, followed by a fresh verified D0-D3 scope."
+  },
+  "next_retry_requires": [
+    "No retry of this measurement repair; regression tests own the guard.",
+    "Fresh alpha promotion only after the canonical 100/20/5/5 power bars."
+  ],
+  "source_hashes": {
+    "before": {
+      "builder": "0520c784b20277ca5351da470d5bbdbfa2d416031670c03fd8b67272f1111248",
+      "readiness": "53fd9fdb6400071f194083c879853e816c435fedce9b818a966fdd6969340b07",
+      "outcome_ledger": "cff5e825c533d63e98e3cc558a67a689b3e864060db229e78cc695acbe48b78b",
+      "scorecard": "fc9536c57c3d33813c37626184ebba0369f23e0c53430c471b44b8ebb31b03df",
+      "active_baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+    },
+    "after": {
+      "builder": "584aa80e51b53de49e842443a129bf703e314885e833708a8084089c3d29498d",
+      "tests": "38e06693207fa1c8fcce2a3a1ad0c97ae79c3f76f4cfe1120fb7bde1329a8984",
+      "readiness": "1031c229b57d72776dd7714983478719286627f1171bf3cfc13fb49f7050dfe6",
+      "outcome_ledger": "cff5e825c533d63e98e3cc558a67a689b3e864060db229e78cc695acbe48b78b",
+      "scorecard": "fc9536c57c3d33813c37626184ebba0369f23e0c53430c471b44b8ebb31b03df",
+      "active_baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+    }
+  },
+  "changed_files": [
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "quant/experiments/exp_20260725_003_intraday_reduce_risk_power_readiness.py",
+    "data/experiments/exp-20260725-003/before_readiness.json",
+    "data/experiments/exp-20260725-003/exp_20260725_003_intraday_reduce_risk_power_readiness.json",
+    "data/reopen_readiness.json",
+    "experiments/logs/exp-20260725-003.json",
+    "experiments/cards/exp-20260725-003.md",
+    "experiments/manifests/exp-20260725-003.json",
+    "experiments/tickets/exp-20260725-003.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md"
+  ],
+  "related_files": [
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "quant/experiments/exp_20260725_003_intraday_reduce_risk_power_readiness.py",
+    "data/experiments/exp-20260725-003/before_readiness.json",
+    "data/experiments/exp-20260725-003/exp_20260725_003_intraday_reduce_risk_power_readiness.json",
+    "data/reopen_readiness.json",
+    "experiments/logs/exp-20260725-003.json",
+    "experiments/cards/exp-20260725-003.md",
+    "experiments/manifests/exp-20260725-003.json",
+    "experiments/tickets/exp-20260725-003.json",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "docs/alpha_context_pack.md",
+    "docs/current_state_snapshot.md",
+    "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+    "data/daily/intraday/backtests/latest_scorecard.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_build_reopen_readiness.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_reopen_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260725_003_intraday_reduce_risk_power_readiness.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "lean_quality_passed": true,
+  "artifact": "data/experiments/exp-20260725-003/exp_20260725_003_intraday_reduce_risk_power_readiness.json",
+  "log": "experiments/logs/exp-20260725-003.json",
+  "reopen_condition": "The alpha lane reopens only after the same canonical ledger reaches at least 100 strict cohorts, 20 settled REDUCE_RISK actions, and five actions in each chronological half, followed by a fresh verified D0-D3 scope.",
+  "updated_at": "2026-07-25T11:29:13+00:00"
+}

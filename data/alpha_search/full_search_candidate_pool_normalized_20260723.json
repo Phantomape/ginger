@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "data_cutoff": "2026-07-23T16:46:02Z",
+  "selection_pool_complete": true,
+  "queue_budgets": {
+    "exploration": 0,
+    "adjacent": 1,
+    "exploitation": 0
+  },
+  "candidates": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "plain_event_lead",
+      "candidate_id": "cand-cd1b86e579b9c423f316",
+      "search_queue": "adjacent",
+      "hypothesis": "When two or more already-fixed candidate sources compete for one cash-feasible slot, choosing the highest standalone candidate score can overpay for correlated exposure and execution impact; a frozen net-replacement allocator that subtracts only predeclared incremental exposure and liquidity-cost penalties may improve portfolio-level replacement value without creating a new signal.",
+      "fingerprint": {
+        "data_source": "portfolio_exposure_state",
+        "component_sources": [
+          "ohlcv_warehouse",
+          "portfolio_exposure_state"
+        ],
+        "expectation_proxy": "unidentified",
+        "economic_mechanism": "marginal_portfolio_replacement_value_after_exposure_and_impact",
+        "decision_surface": "allocator",
+        "payoff_shape": "capacity_adjusted_portfolio_diversification",
+        "horizon": "fixed_per_source_hold",
+        "execution_dependency": "cash_feasible_same_slot_conflict_with_point_in_time_costs",
+        "portfolio_role": "portfolio_diversifier"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "execution_capacity_context_20260722",
+        "portfolio_exposure_context_unbound_20260722"
+      ],
+      "expectation_gap": null,
+      "why_not_arbitraged": "Standalone candidate scores are produced on different source clocks and do not price the marginal correlation, crowding, spread, or participation cost of the exact slot they displace; any edge must come from that pre-decision portfolio externality, not from refitting the underlying signals.",
+      "falsifier": "The mechanism is falsified if it changes fewer than five actual same-slot choices in any canonical window, cannot bind point-in-time exposure and cost fields, or fails to improve net replacement value while preserving drawdown and concentration relative to the current cash-feasible one-slot allocator.",
+      "baseline": {
+        "policy": "Use the current one-slot cash-feasible allocator and its existing candidate ordering without a portfolio-correlation or impact penalty.",
+        "universe": "already-fixed eligible candidates competing for the same cash-feasible slot"
+      },
+      "treatment": {
+        "policy": "Within an actual same-slot conflict only, choose the candidate with the highest frozen standalone score minus predeclared incremental exposure-correlation, spread, and participation-impact penalties; preserve every source's entry, exit, horizon, notional cap, and eligibility rule."
+      },
+      "replacement_value_comparator": "The exact candidate or cash displaced by the current cash-feasible one-slot allocator, plus SPY and QQQ context under identical capital and cost constraints.",
+      "expected_horizon": "fixed_per_source_hold",
+      "execution_envelope": {
+        "borrow_dependency": "none; this allocator cannot create short positions",
+        "capacity_constraint": "one existing cash-feasible slot with unchanged per-source notional caps",
+        "costs_and_carry": "canonical cash-equity costs plus one frozen nonlinear-impact stress function",
+        "intended_instrument": "the original liquid cash equity emitted by each fixed source",
+        "liquidity_dependency": "point-in-time spread, ADV, and planned participation rate must be available for every changed choice",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "all exposure and cost features must be known before the same decision clock as the baseline allocator",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Cost- and correlation-adjusted one-slot replacement allocator",
+      "created_at": "2026-07-23T16:47:00Z",
+      "created_by": "codex-full-alpha-search-contract-normalization-replay-20260723",
+      "prediction": {
+        "success_probability": 0.08,
+        "main_failure_modes": [
+          "core_opportunity_cost_not_beaten",
+          "duplicate_or_frozen",
+          "no_candidate_overlap",
+          "pit_or_source_failure"
+        ],
+        "confidence_reason": "The economic mechanism is distinct from trend selection, but the portfolio exposure and nonlinear-cost surfaces are not yet bound to historical decisions, allocator conflicts remain under the registered reopen count, and nearby covariance/allocator overlays are frozen."
+      },
+      "reopen_condition": "Bind sanitized point-in-time exposure and spread/impact fields to at least 20 settled same-slot conflict decisions, while proving that the proposed allocator is a genuinely different decision mechanism rather than a covariance-weight or source-priority retune.",
+      "next_machine_action": "Run opposite-runtime challenge and outcome-blind D0-D3 only; do not reserve an experiment unless the source binding and history veto both pass.",
+      "research_refs": [
+        "res-20260721-anticipatory-optimization-needs-a-control-gap-le",
+        "res-20260721-correlation-aware-portfolio-evaluation",
+        "res-20260721-cost-aware-optimization-is-a-capacity-surface",
+        "res-20260721-nonlinear-market-impact-and-turnover-discipline"
+      ]
+    }
+  ]
+}

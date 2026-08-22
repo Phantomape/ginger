@@ -1,0 +1,126 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0196,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "pending_receipt_too_permissive",
+      "resume_still_posts_duplicate_job",
+      "expired_state_reused",
+      "health_drops_last_success",
+      "strict_audit_fails"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The poll-budget loss was reproduced as predicted; review additionally exposed transient GET and crash-window duplicate-POST paths, so the accepted repair journals the receipt before polling rather than only persisting the final pending result."
+  },
+  "causal_components": [
+    "validated pending-job receipt",
+    "same-run-date resume-before-repost",
+    "bounded TTL and official-host checks",
+    "pending health continuity",
+    "focused daily-wiring tests"
+  ],
+  "change_summary": "Persist and strictly validate a durable same-run-date USAspending async job receipt before polling, then resume submitted, polling, or finished-download phases before any new POST.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "usaspending_async_pending_job_resume_and_health_contract",
+  "component": "quant/usaspending_obligation_observer.py, quant/test_usaspending_obligation_observer.py, quant/run.py, quant/test_run_daily_wiring.py, docs/production_backtest_parity_matrix.md, data/experiments/, quant/experiments/, experiments/artifacts/",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260729-008",
+  "hypothesis": "Fault recovery: the accepted USAspending official daily producer loses the validated async job continuation after its bounded status-poll budget is exhausted, so later runs start duplicate jobs while forward first-seen evidence starves; persist and strictly revalidate a bounded same-run-date continuation, resume it before POSTing again, and keep pending or invalid jobs fail-closed without changing any alpha rule, ranking, sizing, exits, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "usaspending_obligation_forward_producer_fault_recovery",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260727-003"
+  ],
+  "new_evidence_type": "measurement_fault_recovery",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair. The production regression was a pending USAspending export whose bounded poll budget expired without preserving status_url, file identity, request binding, or phase, leaving the forward observer starved and causing later calls to create duplicate jobs. The producer now atomically journals a validated receipt immediately after POST; revalidates exact request, same run date, official HTTPS hosts, filename, bounded status history, monotonic UTC clocks, and 24-hour TTL; resumes submitted, polling, and finished-awaiting-download phases; and quarantines invalid, expired, terminal-failed, malformed-ZIP, or backward-clock state. Transient status/download failures retain the receipt. Daily coverage exposes request/poll/resume health. 187 focused tests and pycompile passed. Gate-1 remains exp-20260715-010 with SHA256 4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731 and unchanged aggregate EV 6.2057, PnL 130992.36, 49 trades, minimum survival 0.8116, worst drawdown 0.0889. No live network refresh or order was attempted; no signal, entry, eligibility, first_seen, ranking, sizing, exit, order, PIT, or trade_enabled behavior changed. Alpha evaluation remains parked until 75 settled eligible events across 15 first-seen dates and 3 mapped tickers, max ticker share 30 percent, with complete cash/SPY/QQQ outcomes.",
+  "parameters": {
+    "locked_variables": [
+      "positive federal_action_obligation",
+      "base_and_all_options_value <= 0",
+      "transaction-key dedupe",
+      "next-session-open outcome contract",
+      "trade_enabled false",
+      "current snapshot not historical PIT"
+    ],
+    "single_causal_variable": "usaspending_async_pending_job_resume_and_health_contract"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune the poll count or TTL, weaken official-host/request binding, or reserve another routine USAspending producer-materialization ID.",
+    "new_evidence_required": "A new reproducible source, schema, retrieval-clock, or producer-health regression; alpha evaluation still requires 75 settled eligible events across 15 dates and 3 mapped tickers with bounded concentration and complete replacements.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The poll-budget loss was reproduced as predicted; review additionally exposed transient GET and crash-window duplicate-POST paths, so the accepted repair journals the receipt before polling rather than only persisting the final pending result."
+  },
+  "prediction": {
+    "confidence_reason": "The regression is directly reproduced in the 2026-07-28 production log and latest summary: polling ended running with no manifest/hash, while the producer already validates official URLs and immutable snapshots. Persisting that already validated continuation should recover the same job without touching strategy behavior; the main risk is accepting stale or tampered resume state.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "pending_receipt_too_permissive",
+      "resume_still_posts_duplicate_job",
+      "expired_state_reused",
+      "health_drops_last_success",
+      "strict_audit_fails"
+    ],
+    "recorded_at": "2026-07-29T15:10:48+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260729-008/before_measurement.json",
+    "data/experiments/exp-20260729-008/after_measurement.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-29T15:41:11+00:00",
+  "trial_family": "usaspending_obligation_forward_producer_fault_recovery",
+  "trial_variant_id": "resumable_async_job_v2"
+}

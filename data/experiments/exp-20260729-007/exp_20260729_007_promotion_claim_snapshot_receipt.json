@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "artifact_type": "promotion_claim_snapshot_receipt_closeout",
+  "experiment_id": "exp-20260729-007",
+  "generated_at": "2026-07-29T07:01:27.924797+00:00",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair",
+  "accepted": true,
+  "accepted_alpha": false,
+  "alpha_hypothesis": "The legitimately reopened entity-theme Axis-C cohort should show broad positive H10 replacement value versus cash, SPY, and QQQ.",
+  "alpha_result": {
+    "experiment_id": "exp-20260729-006",
+    "decision": "rejected",
+    "settled_rows": 73275,
+    "query_groups_beating_spy_and_qqq": 3,
+    "required_query_groups": 4,
+    "strategy_behavior_changed": false
+  },
+  "measurement_hypothesis": "Claim-time content-addressed research artifacts allow historical promotion validation after live indexes advance without weakening pre-claim live validation or immutable tamper detection.",
+  "before_measurement": "data/experiments/exp-20260729-007/before_measurement.json",
+  "after_measurement": "data/experiments/exp-20260729-007/after_measurement.json",
+  "gate1_metrics_unchanged": {
+    "expected_value_score": 6.2057,
+    "total_pnl": 130992.36,
+    "total_trades": 49,
+    "survival_rate": 0.8116,
+    "max_drawdown_pct": 0.0889
+  },
+  "target_contract_passed": true,
+  "repository_lean_strict_passed": true,
+  "repository_global_strict_passed": false,
+  "global_strict_exception": "16 historical post-enforcement tickets missing prediction and 70 historical closed tickets missing calibration were present before and after; AGENTS.md forbids retroactive backfill and uses lean-strict as the end-of-turn gate.",
+  "production_impact": {
+    "strategy_logic_changed": false,
+    "signals_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "orders_changed": false,
+    "trade_enabled_changed": false,
+    "paper_or_live_changed": false
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_alpha_debate.py quant\\test_experiment_registry.py quant\\test_alpha_promotion_v2.py -q",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260729_007_promotion_claim_snapshot_receipt.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "data_cutoff": "2026-07-22T17:45:20Z",
+  "selection_pool_complete": true,
+  "queue_budgets": {
+    "exploration": 0,
+    "adjacent": 1,
+    "exploitation": 0
+  },
+  "candidates": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "plain_event_lead",
+      "candidate_id": "cand-7b9e2a4d8c1f6035aa12",
+      "search_queue": "adjacent",
+      "title": "Cost- and correlation-adjusted one-slot replacement allocator",
+      "created_at": "2026-07-22T17:47:00Z",
+      "created_by": "codex-full-alpha-search-20260722",
+      "hypothesis": "When two or more already-fixed candidate sources compete for one cash-feasible slot, choosing the highest standalone candidate score can overpay for correlated exposure and execution impact; a frozen net-replacement allocator that subtracts only predeclared incremental exposure and liquidity-cost penalties may improve portfolio-level replacement value without creating a new signal.",
+      "fingerprint": {
+        "data_source": "portfolio_exposure_state",
+        "component_sources": [
+          "ohlcv_warehouse",
+          "portfolio_exposure_state"
+        ],
+        "expectation_proxy": "unidentified",
+        "economic_mechanism": "marginal_portfolio_replacement_value_after_exposure_and_impact",
+        "decision_surface": "allocator",
+        "payoff_shape": "capacity_adjusted_portfolio_diversification",
+        "horizon": "fixed_per_source_hold",
+        "execution_dependency": "cash_feasible_same_slot_conflict_with_point_in_time_costs",
+        "portfolio_role": "portfolio_diversifier"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "portfolio_exposure_context_unbound_20260722",
+        "execution_capacity_context_20260722"
+      ],
+      "expectation_gap": null,
+      "why_not_arbitraged": "Standalone candidate scores are produced on different source clocks and do not price the marginal correlation, crowding, spread, or participation cost of the exact slot they displace; any edge must come from that pre-decision portfolio externality, not from refitting the underlying signals.",
+      "falsifier": "The mechanism is falsified if it changes fewer than five actual same-slot choices in any canonical window, cannot bind point-in-time exposure and cost fields, or fails to improve net replacement value while preserving drawdown and concentration relative to the current cash-feasible one-slot allocator.",
+      "baseline": {
+        "universe": "already-fixed eligible candidates competing for the same cash-feasible slot",
+        "policy": "Use the current one-slot cash-feasible allocator and its existing candidate ordering without a portfolio-correlation or impact penalty."
+      },
+      "treatment": {
+        "policy": "Within an actual same-slot conflict only, choose the candidate with the highest frozen standalone score minus predeclared incremental exposure-correlation, spread, and participation-impact penalties; preserve every source's entry, exit, horizon, notional cap, and eligibility rule."
+      },
+      "replacement_value_comparator": "The exact candidate or cash displaced by the current cash-feasible one-slot allocator, plus SPY and QQQ context under identical capital and cost constraints.",
+      "expected_horizon": "fixed_per_source_hold",
+      "execution_envelope": {
+        "intended_instrument": "the original liquid cash equity emitted by each fixed source",
+        "liquidity_dependency": "point-in-time spread, ADV, and planned participation rate must be available for every changed choice",
+        "costs_and_carry": "canonical cash-equity costs plus one frozen nonlinear-impact stress function",
+        "borrow_dependency": "none; this allocator cannot create short positions",
+        "capacity_constraint": "one existing cash-feasible slot with unchanged per-source notional caps",
+        "timing_constraint": "all exposure and cost features must be known before the same decision clock as the baseline allocator",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [],
+      "prediction": {
+        "success_probability": 0.08,
+        "main_failure_modes": [
+          "no_candidate_overlap",
+          "duplicate_or_frozen",
+          "pit_or_source_failure",
+          "core_opportunity_cost_not_beaten"
+        ],
+        "confidence_reason": "The economic mechanism is distinct from trend selection, but the portfolio exposure and nonlinear-cost surfaces are not yet bound to historical decisions, allocator conflicts remain under the registered reopen count, and nearby covariance/allocator overlays are frozen."
+      },
+      "reopen_condition": "Bind sanitized point-in-time exposure and spread/impact fields to at least 20 settled same-slot conflict decisions, while proving that the proposed allocator is a genuinely different decision mechanism rather than a covariance-weight or source-priority retune.",
+      "next_machine_action": "Run opposite-runtime challenge and outcome-blind D0-D3 only; do not reserve an experiment unless the source binding and history veto both pass.",
+      "research_refs": [
+        "res-20260721-correlation-aware-portfolio-evaluation",
+        "res-20260721-anticipatory-optimization-needs-a-control-gap-le",
+        "res-20260721-cost-aware-optimization-is-a-capacity-surface",
+        "res-20260721-nonlinear-market-impact-and-turnover-discipline"
+      ],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": false,
+        "entry_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false,
+        "orders_changed": false,
+        "replay_only": false,
+        "trade_enabled": false,
+        "daily_snapshot_exposed": false,
+        "live_realism_evaluated": false,
+        "live_ready": false,
+        "parity_test_added": false
+      }
+    }
+  ]
+}

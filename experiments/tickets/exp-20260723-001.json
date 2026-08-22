@@ -1,0 +1,295 @@
+{
+  "acceptance_rule": "Focused mailbox/debate/promotion regression passes, model-diverse Codex receipts fail closed on same-model or reused-run identities, legacy cross-provider proofs remain valid, and experiment.py audit --lean-strict passes.",
+  "allowed_write_scope": [
+    "scripts/agent_mailbox.py",
+    "scripts/alpha_debate.py",
+    "scripts/experiment_registry.py",
+    "quant/test_agent_mailbox.py",
+    "quant/test_alpha_debate.py",
+    "docs/agent_mailbox.md",
+    "docs/alpha_search_architecture.md",
+    "README.md",
+    "data/experiments"
+  ],
+  "baseline_result_file": "data\\alpha_search\\exp-20260722-002_after.json",
+  "card_file": "experiments/cards/exp-20260723-001.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "model_diverse_codex_debate_identity_contract_v1",
+  "claimed_at": "2026-07-23T03:36:23+00:00",
+  "completed_at": "2026-07-23T03:48:49+00:00",
+  "created_at": "2026-07-23T03:35:37+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260723-001",
+  "experiment_uid": "expuid-2712e37140054d62",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260723-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-23T03:35:37+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "model_diverse_codex_debate"
+  },
+  "hypothesis": "Replace the mandatory Codex-Claude alpha debate dependency with an auditable model-diverse Codex mode: initiator, challenger, and verifier remain distinct receipt-bound runs, at least two requested model identities are present, challenger differs from initiator, and the existing cross-provider mode remains valid; no strategy, order, ranking, sizing, exit, or live behavior changes.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled",
+    "orders",
+    "entry",
+    "ranking",
+    "sizing",
+    "exit",
+    "live_config"
+  ],
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/run.py",
+    "quant/backtester.py",
+    "operator_inputs",
+    "data/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260722-002"
+  ],
+  "new_evidence_type": "user_requested_same_provider_model_diversity",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "alpha",
+        "an",
+        "are",
+        "at",
+        "auditable",
+        "behavior",
+        "bound",
+        "challenger",
+        "changes",
+        "claude",
+        "codex",
+        "contract",
+        "cross",
+        "debate",
+        "dependency",
+        "differs",
+        "distinct",
+        "diverse",
+        "existing",
+        "exit",
+        "from",
+        "governance",
+        "identities",
+        "identity",
+        "initiator",
+        "least",
+        "live",
+        "mandatory",
+        "measurement",
+        "mode",
+        "model",
+        "no",
+        "or",
+        "order",
+        "present",
+        "provider",
+        "ranking",
+        "receipt",
+        "remain",
+        "remains",
+        "replace",
+        "requested",
+        "runs",
+        "sizing",
+        "strategy",
+        "tooling",
+        "two",
+        "valid",
+        "verifier"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.1711,
+        "status": "frozen",
+        "trials": 4
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_component_attribution",
+        "reopen_condition": "['Do not promote raw alpha_score top-N, score weights, or component gates from this run alone.', 'A valid retry needs non-OHLCV component monotonicity, replacement value versus same-day alternatives, and regime/cost controls.']",
+        "score": 0.1703,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_free_data_cross_source_consensus_candidate_ranking",
+        "reopen_condition": null,
+        "score": 0.164,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "expectation_true_ranking_replacement_attribution",
+        "reopen_condition": "If promising, create a separate default-off or strategy Gate 1-4 experiment with shared production-visible ranking logic. If not promising, do not promote this simple additive expectation/residual component; pivot to PEAD eligibility or richer expectation fields.",
+        "score": 0.1638,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "full_universe_alpha_score_candidate_pool_risk_adjusted_ranking",
+        "reopen_condition": "Forward replacement-value rows, a shared production/replay alpha_score adapter, or a materially new component-level ranking field. Do not mine nearby alpha_score risk formulas on the same frozen replay.",
+        "score": 0.1638,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "The accepted exp-20260722-002 gate already binds executable hashes, participants, roles, and run IDs; this change extends the identity predicate to requested_model diversity without touching trading behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "model_identity_not_attested",
+      "legacy_cross_provider_regression",
+      "native_codex_model_launch_mismatch"
+    ],
+    "recorded_at": "2026-07-23T03:34:18+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260723-001/before.json",
+    "after_result_file": "data/experiments/exp-20260723-001/after.json",
+    "delta_metrics": {
+      "expected_value_score": 0.0,
+      "sharpe": 0.0,
+      "sharpe_daily": 0.0,
+      "total_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trade_count": 0,
+      "survival_rate": 0.0,
+      "total_pnl": 0.0
+    },
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": 0.0,
+      "ev_prediction_error": 0.0,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": 0.0,
+      "pnl_prediction_error": 0.0,
+      "predicted_failure_modes": [
+        "model_identity_not_attested",
+        "legacy_cross_provider_regression",
+        "native_codex_model_launch_mismatch"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The existing-channel verifier needed cursor seeding so it would read its own opener instead of the first challenger brief."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260723-001.json",
+  "single_causal_variable": "model_diverse_codex_debate_identity_contract_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260723-001.json",
+  "trial_family": "model_diverse_codex_debate_contract",
+  "trial_variant_id": "exp-20260723-001"
+}

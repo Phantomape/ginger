@@ -1,0 +1,226 @@
+{
+  "card_id": "itrc-6205934129c5f855d176",
+  "conflicts": [],
+  "created_at": "2026-08-05T15:28:00Z",
+  "data_cutoff": "2026-08-05T15:21:00Z",
+  "decision": {
+    "candidate": {
+      "baseline": {
+        "policy": "Use the current cash-feasible core ranking over the frozen 57-name tradeable pool without a disclosure-plus-flow condition."
+      },
+      "candidate_id": "cand-162fef10408de379ce00",
+      "candidate_kind": "plain_event_lead",
+      "created_at": "2026-08-05T15:28:00Z",
+      "created_by": "codex-alpha-automation",
+      "evidence_grade": "lead",
+      "execution_envelope": {
+        "borrow_dependency": "none; long-only research lead",
+        "capacity_constraint": "At most one existing core replacement slot and no production allocation",
+        "costs_and_carry": "Repository cash-equity commissions and slippage at identical notional; no financing credit",
+        "intended_instrument": "PLTR common stock only; no option, leverage, inverse product, or proxy mapping",
+        "liquidity_dependency": "Existing canonical equity liquidity and gap-cancel rules must pass at the next regular-session open",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "Issuer disclosure, session-close price signal and daily flow must all be known before next-open entry",
+        "trade_enabled": false
+      },
+      "expectation_gap": null,
+      "expected_horizon": "next_open_h10_h20",
+      "falsifier": "Reject or park if any surface is not PIT for the decision clock, if there are fewer than five independent executable touches in every canonical window, if the treatment adds no value over event-only and price-only constituents, if no valid novelty axis survives prior fingerprints, if PLTR exceeds 40% of positive contribution, or if it fails cash, SPY, QQQ and displaced-core replacement comparators after costs.",
+      "fingerprint": {
+        "component_sources": [
+          "moomoo_capital_flow_day",
+          "ohlcv_warehouse",
+          "palantir_investor_relations",
+          "sec_filings"
+        ],
+        "data_source": "palantir_investor_relations",
+        "decision_surface": "ranking",
+        "economic_mechanism": "official_disclosure_price_flow_convergence",
+        "execution_dependency": "long_only_cash_equity_next_open_with_existing_costs",
+        "expectation_proxy": "unidentified",
+        "horizon": "next_open_h10_h20",
+        "payoff_shape": "post_disclosure_underreaction_replacement_value",
+        "portfolio_role": "core_candidate_replacement_research_lead"
+      },
+      "hypothesis": "For Palantir, a source-dated positive quarterly disclosure that already has a price-revealed core signal may retain post-disclosure underreaction only when same-session Moomoo daily capital flow is positive; evaluated outcome-blind at next-open H10 and H20, the treatment must add replacement value over cash, SPY, QQQ and the displaced baseline core candidate.",
+      "next_machine_action": "run outcome-blind D0-D3",
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "replacement_value_comparator": "Zero-return cash, identical-interval SPY and QQQ, and the exact baseline core candidate displaced at the same slot, timing, costs and notional.",
+      "schema_version": 1,
+      "search_queue": "exploration",
+      "source_readiness_snapshot": [],
+      "surface_ids": [
+        "moomoo_flow_forward_unsettled_20260805",
+        "pltr_official_disclosure_snapshot_20260805",
+        "pltr_price_event_snapshot_20260805",
+        "portfolio_constraint_snapshot_20260805"
+      ],
+      "title": "PLTR official-disclosure and capital-flow convergence lead",
+      "treatment": {
+        "policy": "After the official quarterly disclosure and current session close are known, require the existing PLTR price-revealed core signal and positive same-session Moomoo daily capital flow; enter only at the next regular-session open, evaluate fixed H10 and H20 horizons, and never alter production or place an order."
+      },
+      "why_not_arbitraged": "The issuer disclosure is public and the price moved sharply, so most information may already be consumed. Any residual edge must come from genuinely PIT, independently informative flow rather than the widely observed headline or a mechanical post-gap reaction, and must survive opportunity-cost and concentration constraints."
+    },
+    "disposition": "test",
+    "next_machine_action": "run_d0_d3",
+    "rationale": "All four roles completed with source-dated evidence and agree the mechanism is explicit enough to submit as a lead, while reserving PIT, touch density, novelty, constituent ablation and replacement value entirely to the machine preflight."
+  },
+  "outcome_blind": true,
+  "record_type": "investment_team_research_card",
+  "researchability": {
+    "basis": "Issuer and SEC primary sources are available and the current price, flow, and portfolio snapshots are hash-bound, but the proposed treatment has only one current ticker-date and no canonical multi-window touch matrix.",
+    "grade": "B",
+    "limitations": [
+      "No settled paired disclosure-flow replacement-value rows.",
+      "No PIT valuation snapshot or Q2 GAAP statements in the frozen pack.",
+      "No competitor win-loss, retention, customer-concentration, factor, or covariance evidence.",
+      "Current position control blocks new entries until manual bracket orders are broker-confirmed."
+    ]
+  },
+  "roles": {
+    "business_analyst": {
+      "conclusion": "PLTR's growth, gross margins and net-cash position are consistent with a scalable software platform, but the frozen evidence does not establish switching costs, retention, contract durability or capital-allocation returns. Disclosure plus price plus flow is economically coherent only as a lead because flow may distinguish durable absorption from a transient gap; it is not an admission or trade decision.",
+      "evidence": [
+        {
+          "claim": "The Q2 2026 issuer release reports 93% year-over-year total revenue growth, 149% U.S. commercial revenue growth, and raised full-year guidance.",
+          "known_at": "2026-08-03T23:59:59Z",
+          "source": "https://investors.palantir.com/news-details/2026/Palantir-Reports-Q2-2026-U-S--Comm-Revenue-Growth-of-149-YY-and-Revenue-Growth-of-93-YY-Raises-FY-2026-Revenue-Guidance-to-82-YY-Growth-and-U-S--Comm-Revenue-Guidance-to-134-YY-Crushing-Consensus-Expectations/",
+          "source_group": "issuer_ir_release",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The Q1 2026 10-Q reports $1.633 billion quarterly revenue, 85% growth, 87% gross margin, no outstanding debt, and an undrawn $500 million revolver.",
+          "known_at": "2026-05-04T21:59:38Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000028/pltr-20260331.htm",
+          "source_group": "sec_filing",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The 2025 annual report reports 56% revenue growth, 82% gross margin, and $7.2 billion of cash, cash equivalents, and short-term Treasury securities.",
+          "known_at": "2026-02-17T11:14:19Z",
+          "source": "https://investors.palantir.com/files/2025%20FY%20PLTR%2010-K.pdf",
+          "source_group": "sec_annual_report",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "Customer retention, cohort expansion, backlog, contract duration, customer concentration, switching costs, government-versus-commercial unit economics, dilution and reinvestment returns remain unverified; flow may be late or mechanically induced by the price jump."
+    },
+    "financial_analyst": {
+      "conclusion": "FY2025 through Q1 2026 shows accelerating revenue, improving GAAP margins, strong operating cash flow and net cash, while the Q2 release points to further acceleration. The frozen pack lacks Q2 GAAP statements and PIT valuation inputs, so financial quality supports only a lead and cannot establish valuation or a margin of safety.",
+      "evidence": [
+        {
+          "claim": "The Q2 2026 issuer release reports 93% year-over-year total revenue growth, 149% U.S. commercial growth, and higher full-year guidance.",
+          "known_at": "2026-08-03T23:59:59Z",
+          "source": "https://investors.palantir.com/news-details/2026/Palantir-Reports-Q2-2026-U-S--Comm-Revenue-Growth-of-149-YY-and-Revenue-Growth-of-93-YY-Raises-FY-2026-Revenue-Guidance-to-82-YY-Growth-and-U-S--Comm-Revenue-Guidance-to-134-YY-Crushing-Consensus-Expectations/",
+          "source_group": "issuer_ir_release",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The Q1 2026 SEC filing reports $1.633 billion revenue, about 85% growth, 87% GAAP gross margin, about 46.2% GAAP operating margin, $899 million operating cash flow, about $8.03 billion cash and marketable securities, and no outstanding debt.",
+          "known_at": "2026-05-04T21:59:38Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000028/pltr-20260331.htm",
+          "source_group": "sec_filing",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The FY2025 annual report reports $4.475 billion revenue, 56% growth, 82% GAAP gross margin, $2.134 billion operating cash flow, $684 million stock-based compensation, $7.2 billion liquidity, and no debt.",
+          "known_at": "2026-02-17T11:14:19Z",
+          "source": "https://investors.palantir.com/files/2025%20FY%20PLTR%2010-K.pdf",
+          "source_group": "sec_annual_report",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "The Q2 snapshot lacks GAAP margins, cash flow, stock compensation and share count; issuer IR and SEC are separate source groups but share issuer provenance, and the outcome-blind pack intentionally omits price and market value, so valuation multiples and margin of safety are unavailable."
+    },
+    "industry_researcher": {
+      "conclusion": "The disclosure supports unusually strong commercial demand, but the frozen evidence does not establish relative share or a durable moat versus hyperscalers, data-cloud and lakehouse platforms, systems integrators, or customer-built and open-source substitutes. Moomoo flow is a separate measurement surface yet remains an endogenous reaction to the same disclosure and price shock; it can confirm investor absorption, not customer demand.",
+      "evidence": [
+        {
+          "claim": "The Q2 2026 issuer release reports 93% total revenue growth and 149% U.S. commercial growth, supporting strong current demand but not competitor-relative share.",
+          "known_at": "2026-08-03T23:59:59Z",
+          "source": "https://investors.palantir.com/news-details/2026/Palantir-Reports-Q2-2026-U-S--Comm-Revenue-Growth-of-149-YY-and-Revenue-Growth-of-93-YY-Raises-FY-2026-Revenue-Guidance-to-82-YY-Growth-and-U-S--Comm-Revenue-Guidance-to-134-YY-Crushing-Consensus-Expectations/",
+          "source_group": "issuer_ir_release",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The Q1 2026 filing reports 53% of revenue from government customers and 47% from commercial customers, while warning that government budgets, timing, priorities and regulation make awards difficult to predict.",
+          "known_at": "2026-05-04T21:59:38Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000028/pltr-20260331.htm",
+          "source_group": "sec_filing",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The frozen synthesis lacks settled paired disclosure-flow rows, broad flow coverage, a canonical touch matrix and factor or covariance exposure, so flow independence and diversification value remain unproven.",
+          "known_at": "2026-08-05T15:21:00Z",
+          "source": "data/alpha_search/alpha_automation_synthesis_20260805.json",
+          "source_group": "local_frozen_synthesis",
+          "source_kind": "secondary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "The pack has no competitor win-loss, market-share, pricing, retention, government backlog or concentration, customer switching-cost, AI-regulatory, or geopolitical evidence; substitute classes and industry dependencies remain unvalidated mechanism hypotheses."
+    },
+    "risk_assessor": {
+      "conclusion": "The proposed lead is exposed to already-priced risk, single-ticker concentration, government-contract uncertainty, dilution and governance risk, and an immediate portfolio execution block. The current price snapshot has only one PLTR ticker-date and the flow surface has zero settled paired rows, so the evidence should fail closed unless D0-D3 independently establishes PIT timing, density, novelty and constituent-level incrementality.",
+      "evidence": [
+        {
+          "claim": "The current PLTR quant signal followed a 12.07% signal-day open-to-close gain and 10.66 percentage points of same-day outperformance versus SPY; post-earnings continuation was not confirmed, making already-priced and gap risk material.",
+          "known_at": "2026-08-05T04:24:02Z",
+          "source": "data/daily/signals/quant/quant_signals_20260804.json",
+          "source_group": "local_quant_snapshot",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "Current position control reports ok_to_add_control_pass=false because manual bracket orders are not broker-confirmed; no new entry is presently execution-eligible.",
+          "known_at": "2026-08-05T04:24:02Z",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "live_position_control",
+          "source_kind": "secondary"
+        },
+        {
+          "claim": "The Q1 2026 filing says many customer and government contracts can be terminated for convenience and that government budgets, spending priorities and regulation make awards uncertain.",
+          "known_at": "2026-05-04T21:59:38Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000028/pltr-20260331.htm",
+          "source_group": "sec_filing",
+          "source_kind": "primary"
+        },
+        {
+          "claim": "The Q1 filing reports $201.6 million of quarterly stock-based compensation and a founder voting structure that can retain effective control over major stockholder matters.",
+          "known_at": "2026-05-04T21:59:38Z",
+          "source": "https://www.sec.gov/Archives/edgar/data/1321655/000132165526000028/pltr-20260331.htm",
+          "source_group": "sec_filing",
+          "source_kind": "primary"
+        }
+      ],
+      "status": "complete",
+      "uncertainty": "No PIT valuation or factor-covariance surface is bound, the treatment is a one-date single-ticker lead, flow may be an endogenous price reaction, and the current portfolio's technology and AI overlap is not fully factor-normalized."
+    }
+  },
+  "schema_version": 1,
+  "subject": {
+    "company": "Palantir Technologies Inc.",
+    "research_question": "Can an official quarterly disclosure combined with the existing price-revealed signal and same-session Moomoo capital flow become a testable post-disclosure underreaction lead?",
+    "tickers": [
+      "PLTR"
+    ]
+  },
+  "trade_enabled": false
+}

@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260729-002",
+  "generated_at": "2026-07-29T02:30:11+00:00",
+  "lane": "measurement_repair",
+  "decision": "accepted",
+  "accepted_alpha": false,
+  "single_causal_variable": "finra_short_interest_broad_producer_before_coverage_health_contract_v1",
+  "baseline": {
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "aggregate": {
+      "expected_value_score_sum": 6.2057,
+      "total_pnl_sum": 130992.36,
+      "trade_count_sum": 49,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    }
+  },
+  "before": {
+    "coverage_record": {
+      "artifact_status": {
+        "finra_short_interest_rows": {
+          "kind": "json",
+          "path": "data/non_ohlcv/finra_short_interest/rows.json",
+          "required": false,
+          "row_count": 46514,
+          "status": "present"
+        },
+        "finra_short_interest_source_files": {
+          "kind": "json",
+          "path": "data/non_ohlcv/finra_short_interest/source_files.json",
+          "required": false,
+          "row_count": 5,
+          "status": "present"
+        }
+      },
+      "date_key": "20260727",
+      "errors": [],
+      "experiment_id": null,
+      "generated_at": "2026-07-28T03:06:34+00:00",
+      "invalid_required": [],
+      "mode": "daily",
+      "pit_status": {
+        "freshness_max_staleness_days": 21,
+        "overall": "finra_archive_stale",
+        "pit_safe": true,
+        "publication_date_min": "2024-08-26",
+        "settlement_date_min": "2024-08-15"
+      },
+      "production_impact": {
+        "alters_candidate_ranking": false,
+        "alters_orders": false,
+        "alters_signal_generation": false,
+        "alters_sizing": false,
+        "backtester_adapter_changed": false,
+        "replay_only": true,
+        "run_adapter_changed": true,
+        "shared_policy_changed": false
+      },
+      "record_type": "data_source_coverage",
+      "required_missing": [],
+      "row_counts": {
+        "finra_short_interest_rows": 46514,
+        "finra_source_file_records": 5,
+        "finra_ticker_count": 1442
+      },
+      "schema_version": 2,
+      "source_name": "finra_short_interest",
+      "source_watermarks": {
+        "publication_date_max": "2026-07-10",
+        "settlement_date_max": "2026-06-30"
+      },
+      "status": "partial",
+      "trade_date": "2026-07-27"
+    },
+    "archive_updated_at": "2026-07-28T03:34:19+00:00",
+    "fault": "coverage generated before the active FINRA producer; same-run manifest retained the previous publication watermark"
+  },
+  "after": {
+    "read_only_rebuilt_coverage": {
+      "schema_version": 2,
+      "record_type": "data_source_coverage",
+      "source_name": "finra_short_interest",
+      "experiment_id": "exp-20260729-002",
+      "trade_date": "2026-07-27",
+      "date_key": "20260727",
+      "mode": "daily",
+      "generated_at": "2026-07-29T02:30:11+00:00",
+      "status": "partial",
+      "artifact_status": {
+        "finra_short_interest_rows": {
+          "path": "data/non_ohlcv/finra_short_interest/rows.json",
+          "kind": "json",
+          "required": false,
+          "status": "present",
+          "row_count": 46568
+        },
+        "finra_short_interest_source_files": {
+          "path": "data/non_ohlcv/finra_short_interest/source_files.json",
+          "kind": "json",
+          "required": false,
+          "status": "present",
+          "row_count": 5
+        }
+      },
+      "row_counts": {
+        "finra_short_interest_rows": 46568,
+        "finra_source_file_records": 5,
+        "finra_ticker_count": 1442,
+        "finra_latest_settlement_ticker_count": 54,
+        "finra_latest_publication_ticker_count": 54
+      },
+      "cohort_density": {
+        "latest_settlement_date": "2026-07-15",
+        "latest_settlement_ticker_count": 54,
+        "latest_publication_date": "2026-07-24",
+        "latest_publication_ticker_count": 54,
+        "archive_ticker_count": 1442,
+        "latest_settlement_fraction_of_archive": 0.037448,
+        "minimum_fraction_required": 0.5,
+        "status": "sparse"
+      },
+      "source_watermarks": {
+        "publication_date_max": "2026-07-24",
+        "settlement_date_max": "2026-07-15"
+      },
+      "pit_status": {
+        "overall": "finra_latest_cohort_sparse",
+        "pit_safe": true,
+        "publication_date_min": "2024-08-26",
+        "settlement_date_min": "2024-08-15",
+        "freshness_max_staleness_days": 21
+      },
+      "errors": [],
+      "required_missing": [],
+      "invalid_required": [],
+      "production_impact": {
+        "shared_policy_changed": false,
+        "backtester_adapter_changed": false,
+        "run_adapter_changed": true,
+        "replay_only": true,
+        "alters_signal_generation": false,
+        "alters_candidate_ranking": false,
+        "alters_sizing": false,
+        "alters_orders": false
+      }
+    },
+    "main_order_contract": {
+      "refresh_lineno": 805,
+      "coverage_lineno": 809,
+      "sleeve_lineno": 1967,
+      "producer_before_coverage_before_sleeve": true,
+      "uses_broad_ingest_universe": true
+    },
+    "health_contract": "refresh broad FINRA archive -> append central coverage -> default-off sleeve consumes the same fresh archive",
+    "trade_enabled": false
+  },
+  "checks": {
+    "baseline_identity_unchanged": true,
+    "same_run_lag_reproduced": true,
+    "producer_precedes_coverage": true,
+    "broad_ingest_scope_wired": true,
+    "latest_cohort_density_machine_visible": true,
+    "current_sparse_cohort_fails_closed": true,
+    "strategy_behavior_unchanged_by_contract": true
+  },
+  "verification": {
+    "focused_tests": "7 passed",
+    "related_tests": "83 passed",
+    "py_compile": "passed",
+    "ruff": "not installed in workspace environment",
+    "gate_1_to_4": "not rerun: measurement-only source health; baseline hash and all signal/ranking/sizing/order policies are locked",
+    "expected_value_score_delta": 0.0,
+    "pnl_delta_usd": 0.0,
+    "trade_count_delta": 0
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "cash-feasible Gate-1 core universe",
+      "Massive dated active common stocks",
+      "current 17-position account",
+      "accepted observers",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash_abstain",
+    "evidence_surfaces_used": [
+      "canonical cold+hot price",
+      "Moomoo flow",
+      "Onclick options",
+      "SEC/Form4 events",
+      "portfolio exposure",
+      "FINRA short-interest source health",
+      "research digest"
+    ],
+    "evidence_surfaces_missing": [
+      "authorized external model-diverse review receipt for the frozen Massive dividend-restart lead"
+    ],
+    "hypothesis_candidates": [
+      "Massive first positive USD cash distribution after a 1095-day gap",
+      "intraday REDUCE_RISK after 20 settled halves",
+      "Form4 sale-overhang after 25 closed rows"
+    ],
+    "selected_hypothesis": "Massive dividend-restart research-PIT scout, frozen before outcomes",
+    "economic_mechanism": "a resumed cash distribution can reveal a durable capital-return regime change, but only a preregistered model-diverse challenge may promote the frozen lead",
+    "falsifier": "fixed next-open H10 replacement value does not beat same-date cash/core and SPY/QQQ after costs, or panel identity/PIT checks fail",
+    "pit_tier": "research_pit",
+    "evidence_grade": "lead",
+    "result_ceiling": "observed_only",
+    "next_machine_action": "obtain explicit authorization for the configured external Codex reviewer before promotion; do not access candidate outcomes"
+  },
+  "remaining_nonblocking_health_debt": [
+    "FINRA source_files history is overwritten by each refresh rather than merged",
+    "settlement-age freshness can lead official publication timing",
+    "address only in a bounded multi-observer health batch, not a one-off alpha retry"
+  ],
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": true,
+    "default_off_measurement_only": true,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_orders": false
+  }
+}

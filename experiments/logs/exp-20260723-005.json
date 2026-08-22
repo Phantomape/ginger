@@ -1,0 +1,145 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": null,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 0,
+    "brier_score": 0.6724,
+    "calibration_direction": "overconfident",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "options_history_absent",
+      "run_wiring_conflict",
+      "shared_helper_parity_failure"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "surprise_level": "high",
+    "surprise_note": "The first reserve completed after its output was not yet visible; list_experiments later confirmed both IDs."
+  },
+  "causal_components": [
+    "shared selector",
+    "stable-PIT flow contract",
+    "forward options contract",
+    "run.py daily wiring",
+    "lifecycle ledger",
+    "three-window fail-closed replay",
+    "parity tests",
+    "execution envelope"
+  ],
+  "change_summary": "Duplicate reservation accounting only; exp-20260723-004 owns the shared observer implementation.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "shared_default_off_deep_drawdown_flow_put_stabilization_observer_v1",
+  "component": "quant/core_drawdown_flow_put_stabilization_paper_sleeve.py, quant/test_core_drawdown_flow_put_stabilization_paper_sleeve.py, quant/run.py, quant/test_run_daily_wiring.py, quant/experiments, data/experiments, data/paper_sleeves/core_drawdown_flow_put_stabilization, experiments",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "rejected",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-005",
+  "hypothesis": "Alpha-enabling daily-pipeline wiring: add one shared default-off deep-drawdown plus owner-authorized stable-PIT Moomoo flow plus forward near-put-OI plus price-stabilization observer and wire its snapshot and lifecycle materialization into quant/run.py so future rows land automatically without per-day experiment IDs; the identical selector also produces a fail-closed canonical three-window coverage replay, while live orders, core ranking, sizing, and exits remain unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_observer_measurement_plumbing",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260721-001",
+    "exp-20260702-019",
+    "exp-20260617-004",
+    "exp-20260706-006"
+  ],
+  "new_evidence_type": "automatic_run_pipeline_wiring_for_new_shared_forward_observer",
+  "next_retry_requires": [
+    "Do not retry this duplicate reservation; exp-20260723-004 is the sole owner of the frozen observer",
+    "Performance evaluation belongs to exp-20260723-004 and requires at least 20 independent closed forward decisions plus its frozen secondary checks, or an authorized exact-date PIT option archive covering the canonical windows"
+  ],
+  "notes": "The first asynchronous reservation completed after the initial tool yield; the retry created this duplicate. No strategy, code, data pipeline, or order behavior changed under exp-20260723-005.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled",
+      "live_orders",
+      "core_entry",
+      "core_ranking",
+      "core_sizing",
+      "core_exits"
+    ],
+    "single_causal_variable": "shared_default_off_deep_drawdown_flow_put_stabilization_observer_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not implement, reopen, or reserve another copy of this ticket; exp-20260723-004 is the sole owner of the frozen observer.",
+    "new_evidence_required": "None for this duplicate. Performance evaluation belongs to exp-20260723-004 and remains closed until its quantitative forward-evidence contract is met or an authorized exact-date PIT option archive covers the canonical windows.",
+    "realized_failure_mode": "duplicate_reservation_accounting",
+    "why_result_happened": "The first reserve completed after its output was not yet visible; list_experiments later confirmed both IDs."
+  },
+  "prediction": {
+    "confidence_reason": "The prior proxy runner already proves data schemas are readable, while the implementation is default-off and the decisive expected result is a fail-closed coverage report rather than a positive alpha claim.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "options_history_absent",
+      "run_wiring_conflict",
+      "shared_helper_parity_failure"
+    ],
+    "recorded_at": "2026-07-23T05:20:01+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "Duplicate reservation accounting only: exp-20260723-004 owns the identical hypothesis and all implementation; this ID is excluded from substantive trial accounting.",
+  "related_files": [
+    "data/experiments/exp-20260723-005/before.json",
+    "data/experiments/exp-20260723-005/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "rejected",
+  "timestamp": "2026-07-23T05:21:35+00:00",
+  "trial_family": "deep_drawdown_flow_put_stabilization_shared_observer",
+  "trial_variant_id": "exp-20260723-005"
+}

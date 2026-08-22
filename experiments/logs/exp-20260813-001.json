@@ -1,0 +1,115 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0625,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "opend_unavailable_blocks_refresh",
+      "archive_schema_drift",
+      "retag_regression_on_prefreeze_rows",
+      "builder_overcorrection_false_not_ready"
+    ],
+    "predicted_success_probability": 0.75,
+    "realized_failure_mode": "frozen_input_silent_consumption_plus_sdk_unbounded_reconnect",
+    "surprise_level": "low",
+    "surprise_note": "The boundary smoke test itself surfaced a second live defect: OpenQuoteContext never fails fast on an unreachable OpenD, so the naive try/except unavailable path could hang the daily run for minutes to forever; a raw TCP probe was required. Also the strict vintage counter restarting at 0 (not 13) was initially counterintuitive - the refreshed archive supplies CLOSER activity dates collected today, so pre-freeze entries now resolve to collected_after_entry rows."
+  },
+  "causal_components": [
+    "tag rule v2 staleness fail-closed;true source activity and vintage fields;incremental daily archive refresh module;run.py producer-before-consumer wiring;readiness lane strict rebind"
+  ],
+  "change_summary": "Frozen-input fault recovery: moomoo daily short-volume broad archive (frozen at 2026-06-22 for 52 days) now has an incremental daily refresher wired into run.py before the forward replacement-value enricher; tag rule v2 fails closed (stale_archive) beyond 5 calendar days staleness and records true source_activity_date/collected_at vintage; reopen readiness lane short_volume_q5_soft_tilt rebound to strict fresh+collected_before_entry Q5 counts, eliminating this morning's false ready (raw 20/20 -> strict 0/20 not_ready). Archive +1836 rows through 2026-08-12; pre-freeze percentiles invariant; boundary smoke found and fixed a second real defect (moomoo SDK constructor hangs unbounded on dead port; bounded TCP preflight added).",
+  "change_type": "measurement_repair",
+  "changed_variable": "forward_short_volume_tag_frozen_archive_fail_closed_staleness_daily_refresh_v1",
+  "component": "quant/forward_replacement_value.py, quant/moomoo_daily_short_volume_archive.py, quant/run.py, scripts/build_reopen_readiness.py, data/non_ohlcv/moomoo_daily_short_volume_broad/, data/paper_sleeves/, data/reopen_readiness.json, data/experiments/, experiments/, docs/experiment_log.jsonl, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260813-001",
+  "hypothesis": "Fault recovery (frozen-input silent consumption, 7th case of the AGENTS section-6 class): the moomoo daily short-volume broad archive has been frozen at activity_date 2026-06-22 since its one-time 2026-06-23 collection, while the forward replacement-value enricher kept stamping entry_short_volume_status=ok on 45 post-freeze settled rows (7 of the 20 counted Q5 rows) using percentiles up to 52 days stale and writing entry_short_volume_asof_date as the entry date instead of the true source activity date; the reopen readiness builder counted those stale tags and flipped short_volume_q5_soft_tilt to a FALSE ready this morning. Repair: tag rule v2 with fail-closed staleness and true source_activity_date/collected-vintage fields, an incremental daily archive refresh wired into the daily run before the enricher consumes the index, and the readiness lane rebound to strict fresh vintage-valid Q5 counts so the reopen counter is honest.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260626-018",
+    "exp-20260716-007",
+    "exp-20260728-001",
+    "exp-20260804-001"
+  ],
+  "new_evidence_type": "fault_recovery_frozen_input",
+  "next_retry_requires": [],
+  "notes": "No strategy/order/ranking/sizing/exit change; tag is read-only context. Fault recovery exempt from saturation counting per AGENTS 2.4. Fingerprint routed to forward_replacement_value/forward_attribution which matches the true face. Strict counter restarts at 0 because the 2026-06-23 one-time collection is collected_after_entry for nearly all historical rows - permanent vintage loss from the freeze. Next: counter accrues only via daily refresh; do not re-reserve Q5 soft tilt until strict 20/0.40; pending 6-observer batch content-identity audit still open (since 08-01).",
+  "parameters": {
+    "locked_variables": [
+      "Q5 percentile construction (exp-20260625-018 parity)",
+      "SHORT_VOLUME_MIN_TRAILING_OBS=30",
+      "quintile cut",
+      "archive schema"
+    ],
+    "single_causal_variable": "forward_short_volume_tag_frozen_archive_fail_closed_staleness_daily_refresh_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-reserve any short_volume Q5 soft-tilt / clean-flow / downweight probe until the STRICT reopen counter (status ok AND vintage collected_before_entry) reaches q5_settled>=20 with max ticker share <=0.40 on data/reopen_readiness.json; do not relax SHORT_VOLUME_MAX_STALENESS_CALENDAR_DAYS or reinterpret collected_after_entry rows as PIT-valid to shortcut the counter; do not re-tag the 2026-06-23 one-time collection into a fresher vintage (impossible by construction, append-only).",
+    "new_evidence_required": "Calendar accrual of daily-refresh settled Q5 rows (collected_before_entry, staleness<=5d) to 20/0.40; OR a genuinely new PIT borrow fee/utilization/loan-availability source. Separately, the pending single batch measurement repair auditing ALL remaining observers for input-content-identity fail-closed freshness (open since 08-01) now has a 7th confirmed case shape to test against.",
+    "realized_failure_mode": "frozen_input_silent_consumption_plus_sdk_unbounded_reconnect",
+    "why_result_happened": "The boundary smoke test itself surfaced a second live defect: OpenQuoteContext never fails fast on an unreachable OpenD, so the naive try/except unavailable path could hang the daily run for minutes to forever; a raw TCP probe was required. Also the strict vintage counter restarting at 0 (not 13) was initially counterintuitive - the refreshed archive supplies CLOSER activity dates collected today, so pre-freeze entries now resolve to collected_after_entry rows."
+  },
+  "prediction": {
+    "confidence_reason": "Machine-verified: archive max activity_date 2026-06-22 vs 45 tagged settled rows entering after it; enricher line 510 stamps asof as entry date; builder counts raw ok tags; same frozen-input class as exp-20260728-001 with an existing capital-flow refresh template, so the main risk is OpenD availability rather than diagnosis.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "opend_unavailable_blocks_refresh",
+      "archive_schema_drift",
+      "retag_regression_on_prefreeze_rows",
+      "builder_overcorrection_false_not_ready"
+    ],
+    "recorded_at": "2026-08-13T16:17:49+00:00",
+    "success_probability": 0.75
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260813-001/before_false_ready_state.json",
+    "data/experiments/exp-20260813-001/after_honest_state.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-13T16:35:06+00:00",
+  "trial_family": "forward_short_volume_tag_integrity",
+  "trial_variant_id": "frozen_archive_staleness_fail_closed_v1"
+}

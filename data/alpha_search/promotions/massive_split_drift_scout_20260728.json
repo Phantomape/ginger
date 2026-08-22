@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_experiment_promotion_request",
+  "proposal": {
+    "lane": "alpha_search",
+    "hypothesis": "Research-PIT private replay scout: buying active common stocks at the next session open after an official conventional forward stock-split execution date (frozen conventional-ratio predicate; as-of month-start identity; trailing-20 median dollar volume >= $1M; close >= $3; top-2 per execution date; fixed 10-session hold; round-trip costs on $4,000 paper notional) produces after-cost replacement value above the same-date cash-feasible core candidate when one exists and cash otherwise; result ceiling observed_only, descriptive lead only.",
+    "change_type": "private_replay_scout",
+    "single_causal_variable": "massive_forward_split_execution_drift_v2_next_open_10_session_replacement_value",
+    "causal_components": [
+      "comparator: same-date cash-feasible core candidate's identical costed next-open-to-10-session value when present; else zero-return cash; SPY and QQQ reported separately",
+      "date-cluster block bootstrap interval on aggregate replacement value reported descriptively; a positive result whose interval includes zero closes as a descriptive lead only and may not be labeled stable alpha",
+      "decision clock: execution-date New York close with next-session-open entry; execution-date observability is a research assumption and any clock-ambiguous row is voided; not re-classified",
+      "double-cost stress; max single-ticker positive share <= 50%; top-five share <= 60%; contribution HHI <= 0.35",
+      "frozen conventional-ratio predicate: split_to/split_from in {n:1 for n in 2..50; 3:2; 5:4; 4:3; 5:2; 7:2} exactly; six nonconventional rows (MDU; LEN; FTV; HON; DD; TTSH) excluded outcome-blind before any return was read",
+      "identity: research-PIT month-start as-of active common-stock membership with future vendor revisions quarantined; no current-reference or FIGI input",
+      "no strategy; shared-policy; order; sizing; or exit-rule change; trade_enabled=false; result ceiling observed_only per docs/research_pit_policy.md",
+      "touch density frozen at 8/5/8 (21 touches); W2 sits exactly at the five-touch floor and any further semantic exclusion voids the candidate at preflight"
+    ],
+    "mechanism_family": "forward_split_execution_event_drift",
+    "trial_family": "massive_forward_split_execution_drift_research_replay",
+    "changed_variable": "private_replay_scout_forward_split_drift_replacement_value_v2",
+    "prediction": {
+      "confidence_reason": "The split-event surface is genuinely new with zero prior trials and all windows clear the outcome-blind touch floor under the purified predicate, but conventional forward splits are scarce (21 touches, W2 at the floor), the post-split drift literature is mixed and announcement-anchored, and the treatment must beat the accepted core hurdle after costs.",
+      "expected_ev_delta": null,
+      "expected_pnl_delta": null,
+      "main_failure_modes": [
+        "chronological_window_instability",
+        "core_opportunity_cost_not_beaten",
+        "double_cost_stress_failure",
+        "no_after_cost_replacement_edge",
+        "split_or_identity_contract_failure",
+        "thin_sample",
+        "ticker_concentration"
+      ],
+      "success_probability": 0.2
+    }
+  },
+  "proposal_hash": "7b7bead51621b2127059be0fa2bfbccfb27e851a75e098bdf107bbfc55f591ff",
+  "panel_path": "data/alpha_search/massive_split_drift_panel_v22_20260728.json",
+  "panel_sha256": "a2b9f2feff50c94861b8eccb6293210eaa508ca5386208585d98d3767005e8a4",
+  "panel_hash": "3fb406207da1fe31aca9e0df10c224422ea0a030ee3b2db7022bc6e1ed5f05f7",
+  "scope_manifest_path": "data/alpha_search/massive_split_drift_scope_v22_20260728.json",
+  "scope_manifest_sha256": "5cfcb5c9653ae06731b5b8b8db8356b2ac42749de7047aa1b32a3d8cefcb3288",
+  "scope_manifest_hash": "02263454b4e1954e0451f1dded5377b41cb3120bb92a49643e512e838932f2d6",
+  "surface_registry_path": "data/alpha_search/massive_split_drift_surfaces_v2_20260728.json",
+  "surface_registry_sha256": "fc4d2e1bc99f9e10c1fc2f1bcd661bb732d2c8b1729cd99d62587815137e4778",
+  "surface_registry_hash": "c1445d005c0f58b0f44e69cd11272b4f2bfdf16944989ea8ac147c9af6ce401a",
+  "prior_fingerprints_path": "data/alpha_search/massive_split_drift_prior_fingerprints_final_20260728.json",
+  "prior_fingerprints_sha256": "aadeb8d5358758e9d61f1814523dbca45c98773a44fc6738d654a8855f54df55",
+  "prior_fingerprint_snapshot_hash": "9df65559950df5960ff9a98d407a340053682dbc0637888d45dbd4e3c78b9ed1",
+  "debate_artifact_path": "data/alpha_search/massive_split_drift_debate_lock_20260728.json",
+  "debate_artifact_sha256": "45fd9f10c5ebbf396667e0e5cb166770165edb2b2931fe024adc7bf2af8c3c12",
+  "debate_hash": "bd844f153ceb73f4c91229907746f9f88db63132f955353b380b5deff1740ca3",
+  "selection_scope_id": "scope-02263454b4e1954e0451f1dd",
+  "candidate_id": "cand-18ea7bbda2c85f2ad14a",
+  "candidate_snapshot_hash": "fc80965b51356684268fb0cc601cfa7f44f4bfe918238ecbaa0654be67cef1b9",
+  "preflight_hash": "1eb5ee9f9b46a63475db6e523b2647c861f0676763944872b0fd7ffd16c8b338",
+  "final_candidate_pool_hash": "c1407a0206726099d4a86704232aee46994208b2b082ec6d1d49f9a9d70317e4",
+  "research_refs": [],
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "promotion_hash": "9a59043e13fd3c19b7fb62e615d27b2262b90e3ee62b3f9e5126a0d24f427993",
+  "admission_class": "research_replay",
+  "selected_evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "paper_live_eligible": false,
+  "source_readiness_bindings": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "pit_status": "canonical_pit",
+      "source_contract_hash": "fc59e51da44def80db18e55f60dc2ef2cbfb708301be4b22e6361d79ac115c38",
+      "readiness_hash": "5985390fc588088ff30ac18fe267dd51c05efa5b1bf95f73ada94178f615a11f"
+    },
+    {
+      "surface_id": "massive_full_market_ohlcv_research_pit_20260728",
+      "pit_status": "research_pit",
+      "source_contract_hash": "db4d1fb7e697eb676d930164a76889b18fc7ebf8eb47c2d11af44eb7018ec339",
+      "readiness_hash": "236dca7ec511426c9eb9fee6dcd01fb8f01ebda5c0517806c57129b81d1bf030"
+    },
+    {
+      "surface_id": "massive_reference_asof_identity_research_pit_20260728",
+      "pit_status": "research_pit",
+      "source_contract_hash": "8a8095e70bed88180ca7807def4bd73b87574910ca81df9085bf235b0c926eb9",
+      "readiness_hash": "b13ca56f21c0b3429e0d007d60c97dba9244159f317f01f7e3bb5aa52fa17dc8"
+    }
+  ]
+}

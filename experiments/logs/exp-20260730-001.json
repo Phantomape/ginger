@@ -1,0 +1,129 @@
+{
+ "after_metrics": {
+  "expected_value_score": 6.2057,
+  "max_drawdown_pct": 0.0889,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": 0.8116,
+  "total_pnl": 130992.36,
+  "total_return_pct": null,
+  "trade_count": 49,
+  "win_rate": null
+ },
+ "alpha_promotion": null,
+ "before_metrics": {
+  "expected_value_score": 6.2057,
+  "max_drawdown_pct": 0.0889,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": 0.8116,
+  "total_pnl": 130992.36,
+  "total_return_pct": null,
+  "trade_count": 49,
+  "win_rate": null
+ },
+ "calibration": {
+  "actual_decision": "accepted",
+  "actual_ev_delta": 0.0,
+  "actual_pnl_delta": 0.0,
+  "actual_success": 1,
+  "brier_score": 0.0144,
+  "calibration_direction": "directionally_calibrated",
+  "ev_prediction_error": 0.0,
+  "expected_ev_delta": 0.0,
+  "expected_pnl_delta": 0.0,
+  "pnl_prediction_error": 0.0,
+  "predicted_failure_mode_hit": false,
+  "predicted_failure_modes": [
+   "cross_date_receipt_too_permissive",
+   "old_pending_job_allows_duplicate_post",
+   "recovered_snapshot_not_consumed",
+   "completed_journal_replayed",
+   "health_remains_in_memory_only",
+   "strict_audit_fails"
+  ],
+  "predicted_success_probability": 0.88,
+  "realized_failure_mode": "none",
+  "surprise_level": "very_low",
+  "surprise_note": "The prior accepted async-resume contract was correct only when caller run_date matched the receipt, and the existing daily coverage mutation was not durably rewritten to the dated snapshot."
+ },
+ "causal_components": [
+  "cross-date receipt validation",
+  "resume before current POST",
+  "recovered snapshot consumption",
+  "completed journal lifecycle",
+  "persisted daily snapshot health"
+ ],
+ "change_summary": "Drain validated USAspending receipts across UTC dates, consume recovered snapshots before current-day POST, retire completed journals, and persist producer health into the dated daily snapshot.",
+ "change_type": "identity_or_measurement_repair",
+ "changed_variable": "usaspending_cross_date_pending_job_drain_and_persisted_health",
+ "component": "quant/usaspending_obligation_observer.py, quant/test_usaspending_obligation_observer.py, quant/run.py, quant/test_run_daily_wiring.py, docs/production_backtest_parity_matrix.md, data/experiments/, quant/experiments/, experiments/artifacts/",
+ "date_range": {},
+ "decision": "accepted",
+ "delta_metrics": {
+  "expected_value_score": 0.0,
+  "max_drawdown_pct": 0.0,
+  "survival_rate": 0.0,
+  "total_pnl": 0.0,
+  "trade_count": 0
+ },
+ "experiment_id": "exp-20260730-001",
+ "hypothesis": "Fault recovery: a validated USAspending async download receipt can remain running across the UTC date boundary, but the accepted producer filters continuation by the caller run_date, so the next daily run ignores a still-valid job, can duplicate POST, and loses an irreplaceable forward calendar snapshot. Drain the single TTL-valid journal by its own frozen run_date and request before any current-day POST, consume the recovered dated snapshot, retire the completed receipt, then continue the current day; persist the existing fail-closed producer health into the dated non-OHLCV snapshot without changing signals, ranking, sizing, exits, or orders.",
+ "llm_metrics": {
+  "used_llm": false
+ },
+ "market_regime_summary": {},
+ "mechanism_family": "usaspending_obligation_forward_producer_fault_recovery",
+ "multiple_testing_risk_bucket": "minimal",
+ "nearby_prior_experiments": [
+  "exp-20260727-003",
+  "exp-20260729-008"
+ ],
+ "new_evidence_type": "measurement_fault_recovery",
+ "next_retry_requires": [],
+ "notes": "Accepted measurement repair only. Deterministic producer and daily-wiring contract passed 103 focused regressions; lean-strict passed; Gate-1 hash and strategy behavior are unchanged. No live network or production observer state was touched. Validate the real receipt and durable health entry on the next scheduled daily run.",
+ "parameters": {
+  "locked_variables": [
+   "positive federal_action_obligation",
+   "base_and_all_options_value <= 0",
+   "transaction-key dedupe",
+   "next-session-open outcome contract",
+   "trade_enabled false",
+   "current snapshot not historical PIT"
+  ],
+  "single_causal_variable": "usaspending_cross_date_pending_job_drain_and_persisted_health"
+ },
+ "post_run_reflection": {
+  "forbidden_near_neighbor_retry": "Do not reserve another routine USAspending producer-materialization or resume-retune ID; do not retune TTL/poll budgets or weaken official-host/frozen-request binding. Cross-date drain is now part of the accepted contract.",
+  "new_evidence_required": "A new reproducible source, schema, retrieval-clock, or producer-health regression at a boundary not covered by the cross-date drain contract; alpha evaluation still requires the settled-event thresholds declared in exp-20260729-008.",
+  "realized_failure_mode": "none",
+  "why_result_happened": "The prior accepted async-resume contract was correct only when caller run_date matched the receipt, and the existing daily coverage mutation was not durably rewritten to the dated snapshot."
+ },
+ "prediction": {
+  "confidence_reason": "The real 2026-07-29 receipt is validated, official-host-bound, younger than 24 hours, and still running after 15 polls; the accepted same-date resume contract makes the date mismatch directly reproducible. The repair is an idempotent producer orchestration change with no strategy inputs.",
+  "expected_ev_delta": 0.0,
+  "expected_pnl_delta": 0.0,
+  "main_failure_modes": [
+   "cross_date_receipt_too_permissive",
+   "old_pending_job_allows_duplicate_post",
+   "recovered_snapshot_not_consumed",
+   "completed_journal_replayed",
+   "health_remains_in_memory_only",
+   "strict_audit_fails"
+  ],
+  "recorded_at": "2026-07-30T15:21:20+00:00",
+  "success_probability": 0.88
+ },
+ "prior_trial_count": 2,
+ "rejection_reason": null,
+ "related_files": [
+  "data/experiments/exp-20260730-001/before_measurement.json",
+  "data/experiments/exp-20260730-001/after_measurement.json"
+ ],
+ "research_refs": [],
+ "secondary_windows": [],
+ "status": "accepted",
+ "timestamp": "2026-07-30T15:33:52+00:00",
+ "trial_family": "usaspending_obligation_forward_producer_fault_recovery",
+ "trial_variant_id": "cross_date_pending_drain_v3"
+}

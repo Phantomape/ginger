@@ -1,0 +1,127 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "hot_overlay_attach_failure",
+      "overlay_precedence_error",
+      "recent_candidate_tickers_missing_in_hot"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The repair recovered exactly 50 stale-edge rows; all 44 residual misses were verified non-trading dates absent from both stores."
+  },
+  "causal_components": [],
+  "change_summary": "Route options-forward settlement through the canonical cold-plus-hot OHLCV overlay and expose attach status.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "options_forward_ohlcv_overlay_reader",
+  "component": "scripts/run_options_forward_ledger.py, quant/test_run_daily_wiring.py, quant/experiments/exp_20260727_001_options_forward_hot_overlay_settlement.py, data/experiments/exp-20260727-001/exp_20260727_001_options_forward_hot_overlay_settlement.json, data/experiments/exp-20260727-001/options_forward_before_summary.json, data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger.jsonl, data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger_report.json, data/experiments/exp-20260727-001/options_forward_after/options_collection_quality_gate.json, data/experiments/exp-20260727-001/options_forward_after/options_quarantined_quote_dates.json, experiments/cards/exp-20260727-001.md, experiments/manifests/exp-20260727-001.json, experiments/tickets/exp-20260727-001.json, experiments/logs/exp-20260727-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "accepted_alpha": false,
+  "artifact": "data/experiments/exp-20260727-001/exp_20260727_001_options_forward_hot_overlay_settlement.json",
+  "decision": "accepted",
+  "decision_detail": "accepted_measurement_repair",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260727-001",
+  "hypothesis": "Alpha-enabling fault recovery: the daily options-forward settlement mislabels 50 of 241 candidate rows as signal_date_missing_in_ohlcv because its default reader uses the cold warehouse ending 2026-06-15 while the canonical hot overlay reaches 2026-07-24; the other 44 missing rows fall on non-trading dates absent from both stores. Reading the canonical cold-plus-hot overlay should restore truthful forward settlement for the flow-versus-options disagreement alpha hypothesis without changing candidate formation, option tags, return formulas, signals, ranking, sizing, exits, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "options_forward_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260709-017",
+    "exp-20260704-017",
+    "exp-20260721-001"
+  ],
+  "new_evidence_type": "upstream_storage_topology_fault_recovery",
+  "next_retry_requires": [
+    "A new measurement-repair ID requires a reproduced overlay attach or hot-precedence failure.",
+    "A separate flow-options alpha attribution remains parked until at least 10 additional genuine forward PIT dates and 20 settled paired disagreement decisions."
+  ],
+  "notes": "Accepted measurement repair only: candidates 241 and scoring-allowed 30 unchanged; missing outcomes 94 to 44; H5/H10/H20 closed 14/12/9 to 25/25/19; 79 focused tests passed; no signal, ranking, sizing, exit, or order change.",
+  "parameters": {
+    "locked_variables": [
+      "options_forward settlement reads canonical cold-plus-hot OHLCV overlay"
+    ],
+    "single_causal_variable": "options_forward settlement reads canonical cold-plus-hot OHLCV overlay"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune options tags or infer flow-options alpha from the newly settled outcomes; this experiment changed measurement only.",
+    "new_evidence_required": "Another repair needs a reproduced overlay regression. Alpha attribution needs at least 10 additional genuine forward PIT dates and 20 settled paired disagreement decisions.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The repair recovered exactly 50 stale-edge rows; all 44 residual misses were verified non-trading dates absent from both stores."
+  },
+  "prediction": {
+    "confidence_reason": "The existing accepted autowire explicitly expected warehouse coverage beyond 2026-06-15; warehouse_main_hot.sqlite now reaches 2026-07-24, and the repository already has a tested canonical overlay reader used by other forward settlement surfaces. The main risk is an attach or coverage gap, not alpha logic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "hot_overlay_attach_failure",
+      "overlay_precedence_error",
+      "recent_candidate_tickers_missing_in_hot"
+    ],
+    "recorded_at": "2026-07-27T03:18:45+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/non_ohlcv/options_forward/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260727-001/options_forward_before_summary.json",
+    "data/experiments/exp-20260727-001/options_forward_after/options_forward_candidate_ledger_report.json",
+    "data/experiments/exp-20260727-001/exp_20260727_001_options_forward_hot_overlay_settlement.json"
+  ],
+  "settlement_metrics": {
+    "candidate_count_before_after": [241, 241],
+    "scoring_allowed_before_after": [30, 30],
+    "missing_before_after": [94, 44],
+    "closed_h5_before_after": [14, 25],
+    "closed_h10_before_after": [12, 25],
+    "closed_h20_before_after": [9, 19]
+  },
+  "tests": {
+    "quant/test_run_daily_wiring.py": "61 passed",
+    "quant/test_ohlcv_warehouse.py": "18 passed"
+  },
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-27T03:33:43+00:00",
+  "trial_family": "options_forward_hot_overlay_settlement",
+  "trial_variant_id": "cold_plus_hot_overlay_v1"
+}

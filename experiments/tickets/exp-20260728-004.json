@@ -1,0 +1,336 @@
+{
+  "acceptance_rule": "All 19 predeclared month-start decision dates from 2024-10-02 through 2026-04-01 have complete official date-bound active=true type=CS reference snapshots with at least 1000 unique tickers each, exact raw-byte hashes, bounded all-page pagination, no duplicate (as_of,ticker), and network-free idempotent resume; snapshot dates are the identity availability clock and current reference rows are excluded; focused tests and lean audit pass; Gate-1 hash and must-not-touch production files remain unchanged; no price outcome, return, strategy, order, or production behavior is read or changed.",
+  "allowed_write_scope": [
+    "quant/massive_ohlcv_backfill.py",
+    "quant/test_massive_ohlcv_backfill.py",
+    "data/alpha_search/synthesis_pass_20260728_0212.json",
+    "data/alpha_search/massive_asof_identity_readiness_20260728.json",
+    "data/warehouse/massive_history.sqlite",
+    "data/warehouse/massive_history.sqlite-wal",
+    "data/warehouse/massive_history.sqlite-shm",
+    "data/warehouse/massive_history.sqlite-journal"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260728-004.md",
+  "causal_components": [
+    "official_date_parameter",
+    "active_common_stock_asof_snapshots",
+    "hash_bound_pagination",
+    "unique_ticker_identity",
+    "idempotent_resume",
+    "fail_closed_coverage_audit"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "massive_full_market_ohlcv research-PIT effective-dated identity",
+  "claimed_at": "2026-07-28T09:19:16+00:00",
+  "completed_at": "2026-07-28T11:03:14+00:00",
+  "created_at": "2026-07-28T09:18:49+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260728-004",
+  "experiment_uid": "expuid-d455a4bd9f0e42fc",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260728-004",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-28T09:18:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "massive_asof_identity_surface_v3"
+  },
+  "hypothesis": "Alpha-enabling massive_full_market_ohlcv identity measurement repair: use the official date query on /v3/reference/tickers to freeze hash-bound active common-stock as-of snapshots for all 19 standard-window month-start decision dates; each (as_of,ticker) maps to exactly one provider identity, current reference rows never enter replay, resume is idempotent, and no return or production behavior is read or changed.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled_false",
+    "no_live_or_core_change",
+    "no_return_inspection",
+    "unadjusted_bars",
+    "research_pit_ceiling_observed_only",
+    "production_warehouse_untouched",
+    "active_common_stock_only",
+    "fixed_19_month_start_dates",
+    "current_reference_excluded"
+  ],
+  "mechanism_family": "massive_full_market_ohlcv",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "operator_inputs/open_positions.json",
+    "data/daily/orders"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260728-002",
+    "exp-20260728-003",
+    "exp-20260727-005"
+  ],
+  "new_evidence_type": "unprecedented_asof_date_field_on_unsaturated_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "massive_full_market_ohlcv",
+      "field_tags": [
+        "active",
+        "all",
+        "alpha",
+        "as",
+        "asof",
+        "behavior",
+        "bound",
+        "changed",
+        "common",
+        "current",
+        "date",
+        "dated",
+        "dates",
+        "decision",
+        "each",
+        "effective",
+        "enabling",
+        "enter",
+        "exactly",
+        "freeze",
+        "full",
+        "hash",
+        "idempotent",
+        "identity",
+        "is",
+        "maps",
+        "market",
+        "massive",
+        "measurement",
+        "month",
+        "never",
+        "no",
+        "of",
+        "official",
+        "on",
+        "one",
+        "or",
+        "pit",
+        "provider",
+        "query",
+        "read",
+        "reference",
+        "repair",
+        "research",
+        "resume",
+        "return",
+        "rows",
+        "snapshots",
+        "standard",
+        "start",
+        "stock",
+        "surface",
+        "ticker",
+        "tickers",
+        "to",
+        "use",
+        "window"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "massive_full_market_ohlcv",
+        "family_key": "massive_split_normalization",
+        "reopen_condition": "Freeze an effective-dated research-PIT identity surface that maps each candidate (ticker, trade_date) to exactly one lifecycle without current-reference leakage; then complete outcome-blind D0-D3, model-diverse debate, and a separate private_replay_scout promotion request.",
+        "score": 0.4924,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "massive_full_market_ohlcv",
+        "family_key": "massive_full_market_source_ingestion",
+        "reopen_condition": "Reach 520 complete grouped_daily checkpoints spanning 2024-07-29 through 2026-07-24, then freeze an outcome-blind D0-D3 candidate panel and pass effective-dated identity/split checks before reserving the separate no-core replay alpha hypothesis.",
+        "score": 0.4869,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "ohlcv_relation",
+        "family_key": "turn_of_month_post_repair_forward_supply_readiness",
+        "reopen_condition": "Reopen alpha activation only after the post-repair V/CVS cohort or later turn-of-month cohorts close and appear in the shared paper-sleeve replacement-value ledger with cash, SPY, and QQQ comparators.",
+        "score": 0.0317,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_universe_membership_ledger",
+        "family_key": "legacy_core_pit_universe_measurement_repair",
+        "reopen_condition": "A genuinely new point-in-time membership source with delisted/acquired names, or at least 60 clean settled broad-forward rows across at least 20 distinct tickers for a prospective covariance/replacement-value test.",
+        "score": 0.0299,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "forward_replacement_value",
+        "family_key": "forward_replacement_stock_vs_etf_diversification",
+        "reopen_condition": "Need materially more closed forward rows from default-off paper sleeves, or a separate shared helper that generates fresh stock-diversified forward evidence, before any activation or allocation test.",
+        "score": 0.0267,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Unprecedented field on the unsaturated massive_full_market_ohlcv source with only two prior measurement trials: the official /v3/reference/tickers date parameter supplies decision-date active membership and was explicitly required by exp-20260728-003 before the no-core research replay.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "massive_full_market_ohlcv",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Unprecedented field on the unsaturated massive_full_market_ohlcv source with only two prior measurement trials: the official /v3/reference/tickers date parameter supplies decision-date active membership and was explicitly required by exp-20260728-003 before the no-core research replay.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "massive_full_market_ohlcv",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The official Massive documentation and a live outcome-blind 2024-10-02 probe confirm that date returns point-in-time active common-stock rows; 520 grouped days and split events are already frozen. Remaining risk is bounded pagination, identity uniqueness, rate limits, and safe integration in the dirty shared worktree.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "historical_date_plan_or_schema_mismatch",
+      "pagination_date_drift",
+      "duplicate_asof_ticker_identity",
+      "response_revision_on_resume",
+      "current_reference_leakage",
+      "rate_limit",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T09:18:05+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 2,
+  "reservation_intent": {
+    "key": "ea71000540fe38bdb410fa02b3a97b3dace3a2d3e2b649828fe31fa6a9179f35",
+    "payload_hash": "ea71000540fe38bdb410fa02b3a97b3dace3a2d3e2b649828fe31fa6a9179f35",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [
+      "All 19 predeclared month-start dates completed with 9,834-10,095 unique active common-stock ticker-date membership rows per date, bounded 10-11 page chains, exact raw hashes, and zero duplicate (as_of,ticker) rows.",
+      "The official date/active query semantics provide historical membership; 98,616 post-decision descriptive revisions are provenance-only and candidate decisions are restricted to as_of, ticker, type, and active.",
+      "A network-free readiness audit reproduced status=ready, all 48 focused tests passed, lean-strict audit passed, and the active Gate-1 hash remained 4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731."
+    ],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/alpha_search/massive_asof_identity_readiness_20260728.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.82,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "historical_date_plan_or_schema_mismatch",
+        "pagination_date_drift",
+        "duplicate_asof_ticker_identity",
+        "response_revision_on_resume",
+        "current_reference_leakage",
+        "rate_limit",
+        "dirty_worktree_overlap"
+      ],
+      "realized_failure_mode": "duplicate_asof_ticker_identity",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "The dated endpoint returned post-decision descriptive revisions; future rows were quarantined before identity comparison and excluded from candidate decisions."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260728-004.json",
+  "single_causal_variable": "Massive effective-dated research-PIT as-of identity surface",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260728-004.json",
+  "trial_family": "massive_asof_identity_surface",
+  "trial_variant_id": "official_month_start_active_cs_snapshots_v1"
+}

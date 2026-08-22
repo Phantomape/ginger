@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "as_of_et": "2026-07-21 22:28 ET",
+  "baseline_universe": [
+    "AAPL", "AMD", "AMZN", "APP", "AVGO", "BKNG", "CAT", "COIN", "CRDO", "CVX",
+    "DDOG", "DE", "DINO", "DIS", "GE", "GOOG", "GS", "HOOD", "ISRG", "JPM", "LLY",
+    "MA", "MCD", "META", "MSFT", "MU", "NFLX", "NOW", "NVDA", "NVO", "PLTR", "RKLB",
+    "RTX", "SNOW", "SPOT", "TSLA", "TSM", "UNH", "V", "XOM"
+  ],
+  "opportunity_cost_winner": {
+    "ticker": "CASH",
+    "reason": "OpenD is unavailable outside RTH, no ticker has an eligible add state, and fallback prices cannot establish cross-sectional execution quality."
+  },
+  "evidence_surfaces_used": [
+    {
+      "surface": "price",
+      "source": "fast_info_fallback",
+      "coverage": "10/10 held positions",
+      "pit_boundary": "overnight quote semantics are ambiguous; not a substitute for OpenD market microstructure"
+    },
+    {
+      "surface": "event",
+      "source": "current_news_and_official_investor_relations",
+      "coverage": "MU and SNDK memory-demand and earnings context",
+      "pit_boundary": "public before decision time"
+    },
+    {
+      "surface": "portfolio_exposure",
+      "source": "latest_reconciled_broker_snapshot",
+      "coverage": "10 positions; cash 54.9%; heat 2.5%",
+      "pit_boundary": "positions are reconciled but current OpenD quote context is unavailable"
+    },
+    {
+      "surface": "external_research_digest",
+      "source": "data/research_digest/latest_digest.md",
+      "coverage": "10 fresh entries consumed",
+      "pit_boundary": "hypothesis context only; grants no decision or novelty exemption"
+    }
+  ],
+  "evidence_surfaces_missing": [
+    {
+      "surface": "opend_price_and_flow",
+      "reason": "OpenD unavailable, 0/17 requests successful"
+    },
+    {
+      "surface": "overnight_derivatives_and_spreads",
+      "reason": "no verified live options surface, bid-ask spread, or depth"
+    },
+    {
+      "surface": "positioning",
+      "reason": "borrow data remains missing or stale and FINRA short interest is settlement-lagged"
+    },
+    {
+      "surface": "current_cross_sectional_execution",
+      "reason": "session changed from RTH to overnight and reliable live universe-wide quotes are unavailable"
+    }
+  ],
+  "hypothesis_candidates": [
+    {
+      "name": "rth_confirmed_memory_continuation",
+      "baseline": "buy MUU or SNXX in overnight trading after a 24%-29% daily move",
+      "treatment": "wait for the next RTH OpenD snapshot and require MU/SNDK plus QQQ/SMH VWAP confirmation before any paper add review",
+      "expected_horizon": "1d_to_5d",
+      "replacement_value": "cash and unchanged existing positions",
+      "falsifier": "overnight buyers receive better after-cost 1d-5d returns than RTH-confirmed entries across settled forward rows"
+    },
+    {
+      "name": "underlying_before_leverage",
+      "baseline": "map positive MU/SNDK fundamentals directly into two leveraged ETF additions",
+      "treatment": "evaluate unlevered MU or SNDK separately from any leveraged-instrument mapping",
+      "expected_horizon": "5d_to_20d",
+      "replacement_value": "cash or unlevered underlying exposure",
+      "falsifier": "leveraged mapping improves after-cost replacement value without worse drawdown or path decay"
+    }
+  ],
+  "selected_hypothesis": "rth_confirmed_memory_continuation",
+  "economic_mechanism": "A broad memory rebound can persist, but overnight execution after an extreme one-day move has adverse spread and reversal risk; RTH sponsorship must be observed rather than inferred from fallback prices.",
+  "falsifier": "Verified overnight depth and settled outcomes show that waiting for RTH consistently sacrifices more continuation than it avoids in spread, reversal, and leverage decay.",
+  "evidence_grade": "lead",
+  "next_machine_action": "At the next RTH run, require OpenD available, MU/SNDK above RTH VWAP, QQQ/SMH confirmation, and an explicit ADD_REVIEW_ELIGIBLE state before reconsidering; otherwise keep add cap at zero.",
+  "production_impact": "none_advisory_only",
+  "orders_placed": false
+}

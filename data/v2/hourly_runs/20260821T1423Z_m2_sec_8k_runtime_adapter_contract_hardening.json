@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T14:08:31Z",
+  "run_finished_at": "2026-08-21T14:23:15Z",
+  "milestone": "M2",
+  "work_unit": "m2_sec_8k_runtime_adapter_contract_hardening",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "e207535488644ea6d21dbd7ef485c74074aac03f",
+  "selection_rationale": {
+    "priority": "P1 containment outranks the next construction task. Independent read-only reviews of the newly committed adapter identified implicit manifest/as_of selection and a validate-then-reread envelope identity gap.",
+    "chosen_unit": "Harden the source-bounded adapter contract before any Engine-0 or scout consumer can depend on it.",
+    "scout_lane": "Outcome-blind audit found no richer one-attributable-hypothesis axis: exact 8-K occurrence is authorized, causally clocked, mapped, and nonzero, but remains a coarse discovery surface without item/text semantics. No outcome values were read and no experiment ID was reserved.",
+    "scope_boundary": "SEC 8-K membership identity/parity only; no strategy, candidate, ranking, returns, broker, order, allocation, scheduler, production, paper/live, or canonical change."
+  },
+  "implementation": {
+    "adapter_contract": "v2_sec_8k_runtime_universe_adapter_v2",
+    "explicit_inputs": [
+      "committed manifest_id",
+      "timezone-aware as_of"
+    ],
+    "identity_binding": "Canonical input identity binds source bundle, envelope, coverage, manifest, universe definition, normalized as_of, and shared reader contract; the adapter snapshot binds that identity plus the exact membership snapshot.",
+    "envelope_consistency": "The adapter strictly parses and hashes one envelope before full graph validation, then requires the validator to report that exact envelope, manifest, and coverage identity. It never consumes an unchecked second copy.",
+    "shared_reader": "Daily and replay exports are true aliases of one adapter, which calls read_v2_universe_membership exactly once. Consumer labels and filesystem paths do not enter the result identity.",
+    "error_surface": "Wrong manifest, missing/naive/out-of-range as_of, source/envelope/ledger/coverage tamper, boundary escalation, NaN/Infinity, overflowed JSON numbers, and default-on state fail closed with stable adapter errors.",
+    "parity_scope": {
+      "adapter_parity_status": "daily_replay_verified_research_only",
+      "source_manifest_parity_status": "contract_only_unwired",
+      "external_universe_coverage_status": "unverified",
+      "pit_tier": "research_pit",
+      "result_ceiling": "observed_only",
+      "paper_live_eligible": false,
+      "authority": "research_only",
+      "trade_enabled": false
+    }
+  },
+  "persisted_graph_verification": {
+    "manifest_id": "manifest-sec-8k-5d94cc360a607d28",
+    "manifest_hash": "852f1eae21701bd52d3fe3519f4b9d5fc6909fff0266f2d1c958ac39e4bb0fac",
+    "membership_count": 111,
+    "input_identity_sha256": "3736728c7caf3410ec20d73fa46882d045caa67d863079ab3361368a029c8d07",
+    "adapter_snapshot_hash": "58e219f9dbdc09416e3f45acc84b5ea1289fae35fd17630456a411e4be814e71",
+    "daily_replay_byte_identical": true,
+    "equivalent_as_of_inputs": [
+      "2026-08-21T12:56:35.571910Z",
+      "2026-08-21T05:56:35.571910-07:00"
+    ]
+  },
+  "verification": [
+    "22 SEC materializer/runtime-adapter tests passed in 4.84s.",
+    "258 complete quant/test_v2*.py tests passed in 22.08s.",
+    "Checked-in 111-membership SEC graph produced byte-identical daily/replay summaries and exact canonical hashes across equivalent UTC offsets.",
+    "Target runtime and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "All 23 observed V2 hourly receipts and 18 durable decision rows parsed; decision IDs were unique.",
+    "Production V2 default-on scan found zero non-test trade_enabled=True assignments.",
+    "git diff --check passed with line-ending warnings only.",
+    "Two independent final reviews reported no remaining P0, P1, or P2 findings."
+  ],
+  "changed_files": [
+    "quant/v2_sec_8k_runtime_adapter.py",
+    "quant/test_v2_sec_8k_universe.py",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1423Z_m2_sec_8k_runtime_adapter_contract_hardening.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive: runtime membership can no longer silently choose a manifest or clock, consume a post-validation envelope copy, conflate source and adapter parity, or serialize non-finite input. Exact data identity now remains attributable across daily and replay consumers.",
+  "parity_impact": "Positive but bounded to source-graph-to-membership consumption. The adapter proves deterministic research-only daily/replay behavior for one exact SEC frame; Engine-0, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Connect the explicit-identity adapter to the next Engine-0/default-off observation harness.",
+    "Add a richer authorized SEC item/text semantic axis or another registered source axis before reserving a scout on more than coarse exact-8-K occurrence.",
+    "Optimize O(n^2) full-history population validation before market-scale use.",
+    "Establish a repository-external append anchor before canonical eligibility."
+  ],
+  "next_step": "Connect adapter v2 to the Engine-0/default-off observation harness using an explicit manifest_id and as_of; if a richer admission-ready source axis appears first, perform bounded zero-ID preflight before reservation.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

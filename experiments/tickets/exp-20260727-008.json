@@ -1,0 +1,292 @@
+{
+  "acceptance_rule": "Accept only as measurement repair if the failed baseline is pinned, the SDK import observes repo-local APPDATA, caller APPDATA is restored on success and failure, a live read-only OpenD proof returns nonzero requested ticker context without SDK ACL error, focused tests and lean-strict audit pass, and no strategy or order behavior changes.",
+  "allowed_write_scope": [
+    "quant/intraday_moomoo.py",
+    "quant/test_intraday_moomoo.py"
+  ],
+  "baseline_result_file": "data/daily/intraday/market_data/intraday_opend_context_20260727_1303ET.json",
+  "card_file": "experiments/cards/exp-20260727-008.md",
+  "causal_components": [
+    "reuse established SDK APPDATA redirect around advisory import",
+    "restore caller APPDATA",
+    "focused regression",
+    "live read-only OpenD proof"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "intraday advisory moomoo SDK import environment only",
+  "claimed_at": "2026-07-27T18:14:44+00:00",
+  "completed_at": "2026-07-27T18:18:47+00:00",
+  "created_at": "2026-07-27T18:14:32+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260727-008",
+  "experiment_uid": "expuid-30c3a01a80b346cc",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260727-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-27T18:14:32+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_advisory_opend_sdk_appdata_redirect"
+  },
+  "hypothesis": "Fault recovery: the live advisory intraday OpenD capture imports the moomoo SDK under system APPDATA, reproducing permission-denied failures on six consecutive dates and returning 0 of 18 requested tickers on 2026-07-27. Reusing the established repo-local APPDATA redirect around this distinct consumer's import should restore advisory market context while leaving trade_enabled false and strategy, ranking, sizing, exits, and orders unchanged.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled=false",
+    "strategy behavior",
+    "entry and exit logic",
+    "ranking",
+    "sizing",
+    "orders",
+    "canonical Gate-1 baseline"
+  ],
+  "mechanism_family": "intraday_advisory_production_visibility",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/intraday_triage.py",
+    "operator_inputs/open_positions.json"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260711-024"
+  ],
+  "new_evidence_type": "fault_recovery_distinct_live_consumer_six_day_sdk_acl_outage",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "intraday_advisory",
+      "field_tags": [
+        "advisory",
+        "appdata",
+        "around",
+        "capture",
+        "consecutive",
+        "consumer",
+        "context",
+        "dates",
+        "denied",
+        "distinct",
+        "enabled",
+        "established",
+        "exits",
+        "failures",
+        "false",
+        "fault",
+        "import",
+        "imports",
+        "intraday",
+        "leaving",
+        "live",
+        "local",
+        "market",
+        "moomoo",
+        "of",
+        "on",
+        "opend",
+        "orders",
+        "permission",
+        "ranking",
+        "recovery",
+        "redirect",
+        "repo",
+        "reproducing",
+        "requested",
+        "restore",
+        "returning",
+        "reusing",
+        "s",
+        "sdk",
+        "should",
+        "six",
+        "sizing",
+        "strategy",
+        "system",
+        "this",
+        "tickers",
+        "trade",
+        "unchanged",
+        "under",
+        "visibility",
+        "while"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_contract",
+        "reopen_condition": "New snapshots generated with advisory_shadow_actions and later closed forward outcomes/replacement value; quote_time_et or broker bar IDs remain useful before any executable action contract.",
+        "score": 0.4643,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_native_advisory_shadow_action_contract",
+        "reopen_condition": "A valid retry needs new advisory snapshots with later settled outcomes or replacement-value rows, true quote timestamps or broker bar IDs, or non-empty real pending_actions rows.",
+        "score": 0.4643,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_review_quote_capture_provenance",
+        "reopen_condition": "Future intraday alpha promotion needs newly generated snapshots with capture_time_et, real pending action or existing-rule trigger semantics, and closed forward outcomes/replacement value. This repair alone is not alpha evidence.",
+        "score": 0.464,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_state_forward_outcome_settlement",
+        "reopen_condition": "Future promotion needs more closed forward rows, real quote timestamps or broker bar IDs, explicit pending action/order semantics, and a shared default-off helper with daily parity.",
+        "score": 0.4636,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "intraday_advisory",
+        "family_key": "intraday_advisory_shadow_action_forward_outcome",
+        "reopen_condition": "Reopen only after current h1/h3 settled rows materially exceed 141/117 under the same fixed helper, or after true quote timestamps or broker bar IDs, materially larger native primary-action coverage, and slot-reuse/replacement-value accounting are available.",
+        "score": 0.4633,
+        "status": "frozen",
+        "trials": 3
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "intraday_advisory",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": true,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "allocator_source",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "intraday_advisory",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha",
+  "prediction": {
+    "confidence_reason": "The failure names the SDK import-time system APPDATA log path, while two existing consumers already recover the identical root cause with a repo-local import wrapper.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "shared helper coupling",
+      "caller APPDATA not restored",
+      "OpenD unavailable for a reason independent of the SDK log ACL"
+    ],
+    "recorded_at": "2026-07-27T18:13:44+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "57dcca5bfee67358a5ba2538b56fcc343b1de2819813963fafb1703086acdcd4",
+    "payload_hash": "57dcca5bfee67358a5ba2538b56fcc343b1de2819813963fafb1703086acdcd4",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260727-008/before_intraday_opend_context.json",
+    "after_result_file": "data/experiments/exp-20260727-008/after_intraday_opend_context.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.95,
+      "brier_score": 0.0025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "shared helper coupling",
+        "caller APPDATA not restored",
+        "OpenD unavailable for a reason independent of the SDK log ACL"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "A settlement consumer already had this import-time workaround, but the separate live advisory consumer bypassed it and failed for six consecutive captures; the repair confirms the fault was path-specific rather than an OpenD outage."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260727-008.json",
+  "single_causal_variable": "intraday_advisory_opend_import_appdata_redirect_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260727-008.json",
+  "trial_family": "intraday_advisory_opend_capture_fault_recovery",
+  "trial_variant_id": "live_capture_shared_appdata_contract_v1"
+}

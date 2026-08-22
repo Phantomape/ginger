@@ -1,0 +1,312 @@
+{
+  "acceptance_rule": "Accept only if cumulative entry-identity rows persist idempotently, 10d/20d outcomes use canonical cold+hot OHLCV with cash/SPY/QQQ fields, summary counts the cumulative ledger, missing producer or stale input fails closed, focused tests pass, and strategy metrics are unchanged by construction.",
+  "allowed_write_scope": [
+    "quant/form4_sale_overhang_context.py",
+    "quant/candidate_decision_training_ledger.py",
+    "quant/test_form4_sale_overhang_context.py",
+    "quant/test_candidate_decision_training_ledger.py",
+    "scripts/build_reopen_readiness.py",
+    "quant/test_build_reopen_readiness.py",
+    "data/reopen_readiness.json",
+    "quant/experiments/exp_20260728_007_form4_sale_overhang_forward_settlement.py",
+    "data/experiments/exp-20260728-007/exp_20260728_007_form4_sale_overhang_forward_settlement.json",
+    "experiments/cards/exp-20260728-007.md",
+    "experiments/manifests/exp-20260728-007.json",
+    "experiments/tickets/exp-20260728-007.json",
+    "experiments/logs/exp-20260728-007.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260728-007.md",
+  "causal_components": [
+    "immutable_decision_ledger",
+    "canonical_10d_20d_settlement",
+    "fail_closed_producer_health"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "Form4 forward observer measurement plumbing only",
+  "claimed_at": "2026-07-28T21:16:35+00:00",
+  "completed_at": "2026-07-28T21:34:21+00:00",
+  "created_at": "2026-07-28T21:16:16+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260728-007",
+  "experiment_uid": "expuid-bae6556516444401",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260728-007",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-28T21:16:16+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "form4_sale_overhang_forward_settlement"
+  },
+  "hypothesis": "Form 4 sale-overhang observer is structurally starved: daily status=ok context snapshots never acquire immutable decision identity or canonical 10/20-session cash/SPY/QQQ settlements, so closed_forward_rows remains zero despite mature contexts. Wire a cumulative PIT decision ledger, canonical cold+hot settlement, and fail-closed health without changing signals, ranking, sizing, exits, or orders.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "Form4 overhang thresholds",
+    "lookback",
+    "buckets",
+    "reopen gate",
+    "Gate-1 strategy baseline"
+  ],
+  "mechanism_family": "observer_forward_health_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "production signal generation",
+    "ranking",
+    "sizing",
+    "exit policy",
+    "orders",
+    "trade_enabled"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260629-003",
+    "exp-20260629-005",
+    "exp-20260707-018"
+  ],
+  "new_evidence_type": "genuine_forward_observer_fault_recovery",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "form4_insider",
+      "field_tags": [
+        "a",
+        "acquire",
+        "canonical",
+        "cash",
+        "changing",
+        "closed",
+        "cold",
+        "context",
+        "contexts",
+        "cumulative",
+        "daily",
+        "decision",
+        "despite",
+        "exits",
+        "fail",
+        "form",
+        "form4",
+        "forward",
+        "health",
+        "hot",
+        "identity",
+        "immutable",
+        "is",
+        "ledger",
+        "logger",
+        "mature",
+        "never",
+        "observer",
+        "ok",
+        "or",
+        "orders",
+        "overhang",
+        "pit",
+        "qqq",
+        "ranking",
+        "remains",
+        "repair",
+        "rows",
+        "sale",
+        "session",
+        "settlement",
+        "settlements",
+        "signals",
+        "sizing",
+        "snapshots",
+        "so",
+        "spy",
+        "starved",
+        "status",
+        "structurally",
+        "wire",
+        "wiring",
+        "without",
+        "zero"
+      ],
+      "gate_shape": "allocator_source"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_overhang_forward_context_logger",
+        "reopen_condition": "Prospectively logged Form4 context rows must close with cash/SPY/QQQ replacement value: at least 25 closed rows, at least 8 high-sale-overhang rows, and max single-ticker share <=40%.",
+        "score": 0.5009,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_overhang_shared_daily_context_logger",
+        "reopen_condition": "Use the new run.py daily wiring to collect prospective context rows; reopen alpha response only after the shared helper has at least 25 closed rows, at least 8 high-sale-overhang rows, cash/SPY/QQQ replacement values, and max single-ticker share <=40%, or after a distinct new data source/gate shape.",
+        "score": 0.5009,
+        "status": "has_accepted",
+        "trials": 4
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_overhang_reopen_governance",
+        "reopen_condition": "Materially more settled Form4 sale-overhang forward rows that satisfy the explicit reopen gate, or a distinct new data source/gate shape, before any alpha-lane retry.",
+        "score": 0.4845,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "accepted_core_form4_selling_overhang_risk_attribution",
+        "reopen_condition": "Explicit Form 144 plan/float context, executive ownership and compensation provenance, or prospectively closed forward rows from a shared default-off Form4 context logger.",
+        "score": 0.4817,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "form4_insider",
+        "family_key": "form4_sale_absorption_leadership_candidate_pool",
+        "reopen_condition": "A retry needs materially new PIT evidence, such as forward daily replacement value on sale clusters, explicit post-sale ownership-retention context, or a shared default-off daily Form 4 sale-absorption adapter with non-replay observations. Pure threshold, role, 10b5-1, or liquidity retunes stay frozen.",
+        "score": 0.4643,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "form4_insider",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": true,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_observer",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "form4_insider",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "Read-only audit found 622 context rows and 146 canonical closed rows but zero join producer; clean helper/test files and existing canonical overlay reader make the repair bounded.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "retrospective_rows_misclassified_as_forward",
+      "future_context_leakage",
+      "non_idempotent_append",
+      "consumer_before_producer",
+      "partial_comparator_settlement"
+    ],
+    "recorded_at": "2026-07-28T21:15:32+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 3,
+  "reservation_intent": {
+    "key": "ba97cdc1242215bb3230edd04be6926b2933fb29cc6acfa601d96272322b9450",
+    "payload_hash": "ba97cdc1242215bb3230edd04be6926b2933fb29cc6acfa601d96272322b9450",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.85,
+      "brier_score": 0.0225,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "retrospective_rows_misclassified_as_forward",
+        "future_context_leakage",
+        "non_idempotent_append",
+        "consumer_before_producer",
+        "partial_comparator_settlement"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The zero settled count was a missing cumulative join/settlement producer, not normal horizon immaturity; all 622 historical contexts therefore remain ineligible for forward evidence."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260728-007.json",
+  "single_causal_variable": "form4_sale_overhang_forward_settlement_wiring_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260728-007.json",
+  "trial_family": "form4_sale_overhang_forward_context_logger",
+  "trial_variant_id": "settlement_wiring_v1"
+}

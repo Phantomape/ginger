@@ -1,0 +1,118 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "network_refresh_not_fail_soft",
+      "coverage_still_precedes_producer",
+      "cohort_density_miscomputed",
+      "dirty_scope_overlap"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [
+    "precoverage_archive_refresh",
+    "broad_ingest_ticker_scope",
+    "latest_settlement_cohort_density"
+  ],
+  "change_summary": "Accepted FINRA source-health measurement repair: refresh the broad-ingest archive before central coverage registration and fail closed on sparse latest settlements; no alpha or trading behavior changed.",
+  "change_type": "measurement_repair",
+  "changed_variable": "finra_short_interest_broad_producer_before_coverage_health_contract_v1",
+  "component": "quant/run.py, quant/non_ohlcv_coverage.py, quant/test_run_daily_wiring.py, quant/test_non_ohlcv_coverage.py, quant/experiments/exp_20260729_002_finra_source_health_order.py, data/experiments/exp-20260729-002/exp_20260729_002_finra_source_health_order.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260729-002",
+  "hypothesis": "Fault recovery: the daily FINRA short-interest coverage row is generated before the active source producer refreshes the archive, so same-run health is one cycle stale and historical unique-ticker count hides latest-settlement cohort sparsity. Refreshing the authorized archive against the existing broad-ingest universe before coverage registration, plus exposing latest-settlement cohort density, should make same-run PIT health truthful without changing signals, ranking, sizing, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "forward_observer_health_producer_before_consumer",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260616-020",
+    "exp-20260725-004",
+    "exp-20260728-001"
+  ],
+  "new_evidence_type": "fault_recovery_finra_same_run_manifest_lag",
+  "next_retry_requires": [],
+  "notes": "Artifact: data/experiments/exp-20260729-002/exp_20260729_002_finra_source_health_order.json. Reproduced 03:06Z coverage at 46514 rows/publication 2026-07-10 versus 03:34Z archive at 46568/publication 2026-07-24. Focused 7/7 and related 83/83 tests passed; py_compile passed; ruff is not installed. Current latest cohort is 54/1442 and now reports partial/sparse. Massive dividend-restart lead remains frozen before outcomes because external model review was not authorized.",
+  "parameters": {
+    "locked_variables": [
+      "core_signal_policy",
+      "candidate_ranking",
+      "position_sizing",
+      "orders",
+      "sec_ftd_finra_policy",
+      "Gate_1_anchor"
+    ],
+    "single_causal_variable": "finra_short_interest_broad_producer_before_coverage_health_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another ID for routine FINRA refreshes, daily coverage materialization, cohort-density threshold retunes, or any FINRA alpha/join retry. The daily pipeline now owns refresh and health registration; frozen FINRA alpha lanes remain frozen.",
+    "new_evidence_required": "Reopen measurement work only for an independently observed source-format, official-publication-clock, provenance/content-identity, or producer-order regression that persists after this repair. Remaining source_files-history and publication-clock debt must be handled in one bounded multi-observer health batch, not a FINRA-only ID.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The active SEC FTD + FINRA sleeve refreshed the shared archive 28 minutes after the central coverage row was appended. Moving the existing refresh ahead of coverage and measuring the latest settlement cohort fixed the deterministic control-flow defect without touching any trading policy."
+  },
+  "prediction": {
+    "confidence_reason": "Exact 27-minute same-run timestamp split reproduces the fault; the shared refresh helper already exists and later sleeve naturally reuses a fresh archive.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "network_refresh_not_fail_soft",
+      "coverage_still_precedes_producer",
+      "cohort_density_miscomputed",
+      "dirty_scope_overlap"
+    ],
+    "recorded_at": "2026-07-29T02:21:28+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-29T02:30:52+00:00",
+  "trial_family": "measurement_repair",
+  "trial_variant_id": "exp-20260729-002"
+}

@@ -829,6 +829,14 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "split_execution_date",
         "massive stock split",
         "massive_forward_split",
+        # Average-dollar-per-transaction (ADTS) state hypotheses consume the
+        # same authorized Massive grouped-daily source (exp-20260804-003 lane;
+        # persistent-state variant 2026-08-14). Compound spellings only: bare
+        # "transaction" or "dollar" is ordinary prose.
+        "adts",
+        "dollar per transaction",
+        "average dollar trade size",
+        "reported dollar per transaction",
     )),
     ("companyfacts_ratio", (
         "companyfacts", "sbc", "accrual", "accruals", "capex", "depreciation", "amortization",

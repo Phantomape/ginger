@@ -1,0 +1,149 @@
+{
+  "admission_class": "settled_forward_attribution",
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": {
+    "admission_class": "settled_forward_attribution",
+    "candidate_id": "cand-e10f97517622897d7777",
+    "candidate_snapshot_hash": "9ce87a1ea7432348362b2105e6901a139d29fb335a84bd6ea33b275968d2956e",
+    "panel_hash": "2e9c7307aab5a9a4ccf767e270865ed7ea493f1b603b66cd9d1c074d7a9170d7",
+    "panel_path": "data/alpha_search/news_propagation_forward_selection_panel_20260815.json",
+    "panel_sha256": "77b480c3b7fc7709f7ec8fa02428558ce967dcb5feb5c051792189e81c294deb",
+    "paper_live_eligible": false,
+    "preflight_hash": "eec364e677ef6eaa1909ba0ed917bc0fe28ef11798509a248b0f578274e77365",
+    "promotion_hash": "c547be3a0a136a8b5b45e953506f312e17c7633cfa36e247b0010f4ca07a58c2",
+    "promotion_request_path": "data/alpha_search/promotions/news_propagation_650row_re_read_20260815.json",
+    "promotion_request_sha256": "6f6cd255fe0cb226f8ca1b4ecdc15cfbaefe2bb7a738743ed0a537d7c6f21dcb",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "observed_only",
+    "selection_scope_id": "scope-5f37e6b88bd638a194ff9f83",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "49eb86503ad23153fe6ff570daeeebcce4684a7bdf57138320f16fa3392407e1",
+        "source_contract_hash": "b542947af6fe1e2db0d42845c0b072485a1df969763278339d5061d39a0cdc52",
+        "surface_id": "news_event_exposure_forward_20260815"
+      },
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "880ab66c8fd28aed4c09318511ecc3fc2fdabd5519651940c19f8a4a129fa157",
+        "source_contract_hash": "e2850b89aeb37bee43b68fff46fae726ce801f83d651ad94f4ee2feb60ea805b",
+        "surface_id": "news_exposure_spy_settlement_forward_20260815"
+      }
+    ]
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "event_concentration_too_high",
+      "half_window_instability",
+      "separation_below_pair_cost_bar",
+      "separation_decay_with_scale",
+      "ticker_concentration_too_high"
+    ],
+    "predicted_success_probability": 0.15,
+    "realized_failure_mode": "half_window_instability",
+    "surprise_level": "very_low",
+    "surprise_note": "Both predicted kill modes fired together: the event-level bar missed at 90.2bp vs 100bp AND the previously-stable chronological halves broke (first half -91bp, second half +245bp), so the separation is now regime-concentrated in the recent half rather than merely under-sized."
+  },
+  "causal_components": [
+    "section 2.4 axis (c) quantitative reopen: closed negative-side out-of-replay rows grew 433 -> 655 (+51.27% and +222 absolute) against the 650-row bar declared at the 2026-08-08 re-park; the machine-counted data/reopen_readiness.json lane news_propagation_negative_side reads ready and no legacy family blocks D3 (top near-neighbor 0.4976 < 0.55 WARN) so no waiver proof is attached per the exp-20260810-001 rule",
+    "cohort frozen outcome-blind in data/alpha_search/news_propagation_forward_readiness_20260815.json (ledger sha256 recorded) before any excess value was read; polarity / relation taxonomy / exposure join / 10-session SPY-excess settlement are exactly the wired observer contract with no retune and no per-relation-type sub-verdicts",
+    "frozen viability falsifier: pair-sleeve build qualifies ONLY if event-level separation (mean of per-event mean excess_10d negative minus positive) > 100bp AND row-level pooled mean separation > 45bp; the five exp-20260807-001 confirmation bars (floors event-level direction row-level mean+median direction both chronological halves 40% event/ticker concentration caps) are re-verified for direction stability; the tilt shape stays dead on the same-morning outcome-blind touch join (1/0/0 vs >= 5 per window) and no touch bar is re-read",
+    "no strategy / shared-policy / order / ranking / sizing / exit-rule change; trade_enabled=false; result ceiling observed_only; a viability pass promotes nothing by itself and only qualifies the pair sleeve for its own shared-paper-first experiment with a full two-leg execution envelope",
+    "if any viability bar fails then re-park the lane at >= 983 closed negative-side rows (+50%/+10 from 655) and sync scripts/build_reopen_readiness.py lane_news_propagation_negative_side in this same ticket AFTER close per the 2026-08-07 close-first-then-rebaseline ordering rule"
+  ],
+  "change_summary": "650-row attribution re-read REJECTED: pair viability V1 failed (event-level 90.2bp <= 100bp) and confirmation F4 failed (half1 -91.0bp / half2 +245.2bp); V2 row-mean 61.2bp and concentration caps passed; lane re-parked at >= 983 closed negative-side rows",
+  "change_type": "observed_only_attribution",
+  "changed_variable": "news_propagation_pair_viability_650row_re_read_v1",
+  "component": "quant/experiments/exp_20260815_001_news_propagation_pair_viability_650row.py, data/experiments/exp-20260815-001/exp_20260815_001_news_propagation_pair_viability_650row.json, experiments/cards/exp-20260815-001.md, experiments/manifests/exp-20260815-001.json, experiments/tickets/exp-20260815-001.json, experiments/logs/exp-20260815-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260815-001",
+  "hypothesis": "Contract-mandated 650-row attribution re-read of the news_propagation_negative_side lane: on the frozen out-of-replay cohort of closed second-order observer rows (event_date >= 2026-07-01; 655 negative-side rows across 72 events and 24 event dates versus 812 positive-side control rows across 83 events; next-open-to-10-session-close SPY-excess settlement exactly as materialized per row by the run.py-wired daily observer), decide the frozen pair-sleeve viability bars declared at the 2026-08-08 re-park: the dollar-neutral polarity pair qualifies for a shared-paper-first build ONLY if event-level separation exceeds 100bp AND row-level mean separation exceeds 45bp, with the five exp-20260807-001 confirmation bars re-verified for direction stability; no polarity definition, relation taxonomy, horizon, settlement, matching, or cost-constant change; result ceiling observed_only.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "news_second_order_propagation",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260807-001"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Frozen 20260815 cohort: 655 negative rows / 72 events / 24 dates vs 812 positive control rows / 83 events. Event-level separation 90.16bp (below the 100bp two-leg cost bar), row-level mean 61.18bp / median 82.04bp (above the 45bp bar), half1 -91.01bp HALF-REVERSED, half2 +245.24bp, max event share 4.2%, max ticker share 8.5% (AMBA). Both sides remain weak vs SPY on medians (neg -24.4bp, pos -106.5bp): still a relative rotation signal only. The 2026-08-07 all-bars-pass read at 433 rows now looks like the favorable half of a regime-dependent effect; the first-half reversal at 655 rows means the separation is not time-stable and the pair shape stays unbuildable at current magnitude.",
+  "paper_live_eligible": false,
+  "parameters": {
+    "locked_variables": [
+      "news_propagation_pair_viability_650row_re_read_v1"
+    ],
+    "single_causal_variable": "news_propagation_pair_viability_650row_re_read_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-run this polarity-separation attribution read on a same-week refresh of the same ledger; do not re-slice the same out-of-replay cohort by relation_type, theme, first-order ticker, horizon, matching, or response shape to hunt a passing subset; do not retune the 100bp/45bp viability bars or the cost constants they derive from; do not treat the second-half +245bp as a standalone regime discovery and reserve a half-window-conditioned variant - that is exactly the post-hoc slice the frozen contract forbids. The tilt shape stays dead outcome-blind (1/0/0 touches, structurally uncovered windows).",
+    "new_evidence_required": "Another attribution re-read of this face needs >= 983 closed negative-side out-of-replay rows (+50% and >= +10 absolute from 655), machine-counted by scripts/build_reopen_readiness.py lane news_propagation_negative_side (synced 650 -> 983 in this same ticket after close). Because F4 half-stability BROKE at 655 rows, the next read must also re-verify both chronological halves positive before any viability question is asked; a pair build additionally still needs event-level > 100bp with row-mean > 45bp, and any executable-tilt revival needs a PIT-safe historical transmission surface delivering >= 5 executed-entry touches per canonical window.",
+    "realized_failure_mode": "half_window_instability",
+    "why_result_happened": "Both predicted kill modes fired together: the event-level bar missed at 90.2bp vs 100bp AND the previously-stable chronological halves broke (first half -91bp, second half +245bp), so the separation is now regime-concentrated in the recent half rather than merely under-sized."
+  },
+  "prediction": {
+    "confidence_reason": "The confirmed separation at 433 rows was +88.2bp event-level and +47.2bp row-mean; passing needs >100bp and >45bp simultaneously. The row bar was marginally cleared before but the event bar needs the separation to STRENGTHEN as rows grow, whereas diffuse cross-sectional effects typically decay toward the mean with scale, so success is set below one in five.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "event_concentration_too_high",
+      "half_window_instability",
+      "separation_below_pair_cost_bar",
+      "separation_decay_with_scale",
+      "ticker_concentration_too_high"
+    ],
+    "recorded_at": "2026-08-15T16:31:03+00:00",
+    "success_probability": 0.15
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260815-001/exp_20260815_001_news_propagation_pair_viability_650row.json",
+    "data/experiments/exp-20260815-001/exp_20260815_001_news_propagation_pair_viability_650row.json"
+  ],
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "secondary_windows": [],
+  "selected_evidence_grade": "observed_only",
+  "status": "rejected",
+  "timestamp": "2026-08-15T16:33:38+00:00",
+  "trial_family": "news_event_second_order_exposure_forward_validation",
+  "trial_variant_id": "exp-20260815-001"
+}

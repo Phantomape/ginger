@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cat_pead_price_event_snapshot_20260806",
+      "data_source": "revision_expectation",
+      "component_sources": [
+        "earnings_snapshot",
+        "ohlcv_warehouse",
+        "quant_daily_signal"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "candidate_pool",
+        "event"
+      ],
+      "artifacts": [
+        "data/daily/signals/quant/quant_signals_20260805.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 1,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "pre_event_consensus_plus_price_revealed",
+        "field": "latest_eps_surprise_and_signal_day_price_context",
+        "source": "quant_daily_signal"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Bind canonical as-known earnings-consensus and price vintages, then establish at least five executable treatment touches in every standard window before any Gate claim.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-06T15:12:04Z",
+      "artifact_snapshot_hashes": {
+        "data/daily/signals/quant/quant_signals_20260805.json": "0b44c18ba705d40704ad24dedc1d339706719be2a9b597c44aa6ac961c84c291"
+      },
+      "research_pit_basis": "The selected current CAT row carries a source transition known_at before the proposed next-open decision, and the frozen daily signal artifact is hash-bound. Historical replay would use only earnings-event and consensus values whose known_at is no later than each simulated next-open decision; immutable as-published consensus/vendor vintages remain unverified.",
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "cat_operating_quality_snapshot_20260806",
+      "data_source": "caterpillar_investor_relations",
+      "component_sources": [
+        "caterpillar_investor_relations",
+        "sec_filings"
+      ],
+      "roles": [
+        "event",
+        "independent_evidence",
+        "fundamental"
+      ],
+      "artifacts": [
+        "data/alpha_search/alpha_automation_cat_q2_source_snapshot_20260806.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 1,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Acquire the source-dated Caterpillar Q2 2026 release or filing with backlog, dealer-inventory and margin fields, then bind canonical historical known-at vintages and a multi-window touch matrix.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-06T15:12:04Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/alpha_automation_cat_q2_source_snapshot_20260806.json": "8ea631eede513333939302d8bf305682aab674753f354c0fff656eef249b9956"
+      },
+      "research_pit_basis": "Issuer releases use their publication time and SEC filings use accepted_at as the decision timestamp, with every bound document known no later than the simulated next-open decision. The current frozen pack intentionally does not substitute Q1 fields for missing Q2 fields; immutable as-published historical operating-quality vintages and the current Q2 primary detail remain unverified.",
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "cat_flow_missing_context_20260806",
+      "data_source": "moomoo_capital_flow_day",
+      "component_sources": [
+        "moomoo_capital_flow_day"
+      ],
+      "roles": [
+        "flow",
+        "missing_independent_evidence"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "CAT must appear in the forward flow archive and the lane must satisfy its full paired-settlement, decision-date and concentration contract; this missing surface grants no novelty.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-06T04:13:52Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json": "38407b7ee5a84fc52faf0ed20d60e82dc604e306c7e9ddb6a541a160667cb5b2",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl": "40347f90cccfc6d9b028fa96cb3786928aa9c41beab45fdaedda1f786c537349"
+      }
+    },
+    {
+      "surface_id": "derivatives_positioning_readiness_context_20260806",
+      "data_source": "reopen_readiness",
+      "component_sources": [
+        "options_forward_ledger",
+        "finra_short_volume"
+      ],
+      "roles": [
+        "derivatives",
+        "positioning",
+        "missing_independent_evidence"
+      ],
+      "artifacts": [
+        "data/reopen_readiness.json"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "No registered derivatives or positioning lane is ready and no CAT-matched decision evidence is bound; satisfy each lane's full frozen contract before reuse.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-05T16:48:06Z",
+      "artifact_snapshot_hashes": {
+        "data/reopen_readiness.json": "f8d9d3f6035a97a965b82ac6b0f5f2d23f2bcf6341821ef7223826a7d8cbda83"
+      }
+    },
+    {
+      "surface_id": "portfolio_constraint_snapshot_20260806",
+      "data_source": "broker_portfolio",
+      "component_sources": [
+        "broker_positions",
+        "live_position_control"
+      ],
+      "roles": [
+        "portfolio_exposure",
+        "opportunity_cost",
+        "execution_constraint"
+      ],
+      "artifacts": [
+        "operator_inputs/open_positions.json",
+        "data/live_pilot/position_control/state.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 18,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Use only as current opportunity-cost and execution context; it grants no alpha novelty and new-entry control must pass before any future order eligibility.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-06T04:14:32Z",
+      "artifact_snapshot_hashes": {
+        "operator_inputs/open_positions.json": "b62a99de090b5778000677be5fd9acc644e9538115d6e260c5c0f25f64ae4066",
+        "data/live_pilot/position_control/state.json": "d41303c5bbd0aaf8725c20c5e8f099a8da38f12eb5329a68ac3352cfe3ac980a"
+      }
+    }
+  ]
+}

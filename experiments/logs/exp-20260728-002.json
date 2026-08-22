@@ -1,0 +1,138 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "rate_limit_or_plan_mismatch",
+      "reference_pagination_gap",
+      "ticker_identity_collision",
+      "split_adjustment_leakage",
+      "credential_leak",
+      "dirty_worktree_overlap"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "Massive preserves case-sensitive provider symbols and one FIGI can span multiple ticker/listing lifecycles; ticker uppercasing and FIGI-only identity both caused real-data collisions, so staging now keys exact provider ticker plus listing boundaries."
+  },
+  "causal_components": [
+    "authorized_source_contract",
+    "isolated_staging_schema",
+    "unadjusted_grouped_daily_backfill",
+    "inactive_reference_metadata",
+    "resumable_checkpoint",
+    "hash_bound_manifest",
+    "credential_non_persistence"
+  ],
+  "change_summary": "Added an isolated, authorized Massive research-PIT full-market warehouse with unadjusted grouped bars, active/inactive listing metadata, exact raw-response hashes, transactional checkpoints, bounded retry, and credential hygiene.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "new independent Massive full-market research-PIT source surface",
+  "component": "quant/massive_ohlcv_backfill.py, quant/test_massive_ohlcv_backfill.py, scripts/experiment_fingerprint.py, quant/test_experiment_fingerprint.py, .env.example, .gitignore, data/alpha_search/massive_full_market_synthesis_20260728.json, data/warehouse/massive_history.sqlite, data/warehouse/massive_history.sqlite-wal, data/warehouse/massive_history.sqlite-shm",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260728-002",
+  "hypothesis": "Alpha-enabling new-source repair: an authorized Massive API date-native full-market staging warehouse with unadjusted grouped daily bars, inactive/reference metadata, resumable checkpoints, and hash-bound provenance removes the current-survivor blocker for a later no-core research-PIT replay without changing production behavior.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "massive_full_market_ohlcv",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260627-019",
+    "exp-20260717-003",
+    "exp-20260727-006"
+  ],
+  "new_evidence_type": "new_independent_data_source",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair only; accepted_alpha=false. Source contract and real data passed: 13025 active plus 23289 inactive listing rows, 22783 with delisting timestamps, ANSS/DFS/HES recovered, and 116846 staged daily rows in the frozen manifest while the resumable 2024-07-29..2026-07-24 backfill continues. PIT tier remains research_pit, outcome reading and Gates 2-4 were intentionally not run, result ceiling is observed_only, and production/live behavior is unchanged. Pre-reservation fingerprint was other; the same experiment adds and tests massive_full_market_ohlcv classification for the post-close frozen-family rebuild.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled_false",
+      "no_live_or_core_change",
+      "no_outcome_reading",
+      "adjusted_false",
+      "research_pit_ceiling_observed_only",
+      "production_warehouse_untouched"
+    ],
+    "single_causal_variable": "massive_research_pit_full_market_source_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another Massive source-plumbing ID merely to change pagination, storage fields, or thresholds while this same resumable backfill completes; routine completion uses the existing job and no new ID.",
+    "new_evidence_required": "Reach 520 complete grouped_daily checkpoints spanning 2024-07-29 through 2026-07-24, then freeze an outcome-blind D0-D3 candidate panel and pass effective-dated identity/split checks before reserving the separate no-core replay alpha hypothesis.",
+    "realized_failure_mode": null,
+    "why_result_happened": "Massive preserves case-sensitive provider symbols and one FIGI can span multiple ticker/listing lifecycles; ticker uppercasing and FIGI-only identity both caused real-data collisions, so staging now keys exact provider ticker plus listing boundaries."
+  },
+  "prediction": {
+    "confidence_reason": "API schema and inactive/delisted recovery already passed outcome-blind preflight; remaining risks are bounded transport, identity, and provenance engineering.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "rate_limit_or_plan_mismatch",
+      "reference_pagination_gap",
+      "ticker_identity_collision",
+      "split_adjustment_leakage",
+      "credential_leak",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T06:04:35+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/experiments/exp-20260728-002/after_source_surface.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-28T06:47:04+00:00",
+  "trial_family": "massive_full_market_source_ingestion",
+  "trial_variant_id": "unadjusted_grouped_daily_inactive_master_v1"
+}

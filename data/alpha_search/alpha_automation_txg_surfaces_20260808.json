@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "txg_broad_market_price_snapshot_20260808",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse",
+        "quant_daily_signal"
+      ],
+      "roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "candidate_pool"
+      ],
+      "artifacts": [
+        "data/alpha_search/alpha_automation_txg_candidate_snapshot_20260808.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 51,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "current_broad_market_rank_score_volume_ratio_and_60d_high_proximity",
+        "source": "quant_daily_signal"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Current TXG row is snapshot-only and replacement value is pending; bind a canonical PIT multi-window touch matrix with at least five executable treatment decisions in every standard window before any Gate claim.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-08T15:15:53Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/alpha_automation_txg_candidate_snapshot_20260808.json": "8cafed292250e909464c48384967a6005d7fa94bd342232c1a6cffded697fa57"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "txg_utilization_consumables_source_roots_20260808",
+      "data_source": "issuer_investor_relations",
+      "component_sources": [
+        "10x_genomics_investor_relations",
+        "sec_filings",
+        "nih_reporter"
+      ],
+      "roles": [
+        "event",
+        "independent_evidence",
+        "fundamental",
+        "industry_relation"
+      ],
+      "artifacts": [
+        "data/alpha_search/alpha_automation_txg_candidate_snapshot_20260808.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 1,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Bind source-dated installed-base, instrument placement, consumables pull-through and independent utilization observations across at least five executable decisions in every standard window using canonical as-known vintages.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-08T15:15:53Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/alpha_automation_txg_candidate_snapshot_20260808.json": "8cafed292250e909464c48384967a6005d7fa94bd342232c1a6cffded697fa57"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "txg_derivatives_revision_missing_context_20260808",
+      "data_source": "reopen_readiness",
+      "component_sources": [
+        "options_forward_ledger",
+        "estimate_revision_forward",
+        "form4_sale_overhang_forward"
+      ],
+      "roles": [
+        "derivatives",
+        "positioning",
+        "missing_independent_evidence"
+      ],
+      "artifacts": [
+        "data/reopen_readiness.json"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "No registered derivatives, revisions or positioning lane is ready for this TXG decision; satisfy each lane's complete frozen settlement, breadth and concentration contract before reuse.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-07T16:28:21Z",
+      "artifact_snapshot_hashes": {
+        "data/reopen_readiness.json": "dc114888ace0e634879fe857b1257db773124ff8ad2a30f45dd2edaf5ca5ff2a"
+      }
+    },
+    {
+      "surface_id": "portfolio_constraint_snapshot_20260808",
+      "data_source": "broker_portfolio",
+      "component_sources": [
+        "broker_positions",
+        "live_position_control"
+      ],
+      "roles": [
+        "portfolio_exposure",
+        "opportunity_cost",
+        "execution_constraint"
+      ],
+      "artifacts": [
+        "operator_inputs/open_positions.json",
+        "data/live_pilot/position_control/state.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 20,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Use only as current opportunity-cost and execution context; it grants no alpha novelty, and new-entry control must pass before any future order eligibility.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-08T04:11:33Z",
+      "artifact_snapshot_hashes": {
+        "operator_inputs/open_positions.json": "b05acc778773405254b43ca1d47c55151eac4ed675a3e44d8b2e896a876c3b87",
+        "data/live_pilot/position_control/state.json": "a6e35cee401f22ce71c0468216b428f538d49a12c3e6e7d3ad4622526229944b"
+      }
+    }
+  ]
+}

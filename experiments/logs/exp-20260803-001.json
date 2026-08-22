@@ -1,0 +1,124 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "canonical_projection_omits_decision_field",
+      "legacy_state_false_alert",
+      "raw_provenance_lost",
+      "completed_session_clock_regression"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "volatile_request_metadata_poisoned_raw_page_identity",
+    "surprise_level": "very_low",
+    "surprise_note": "Boundary review also found that a regressed clock required a monotonic persisted session anchor to prevent recounting an already observed session after recovery."
+  },
+  "causal_components": [
+    "canonical_decision_content_hash",
+    "raw_retrieval_provenance_hash",
+    "completed_session_freshness_dedup",
+    "legacy_state_migration",
+    "boundary_tests"
+  ],
+  "change_summary": "Stabilized Massive dividend-restart decision-content identity and completed-session freshness accounting without changing alpha, settlement, or trading policy.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "massive_dividend_restart_content_freshness_identity_v2",
+  "component": "quant/massive_dividend_restart_forward_observer.py, quant/test_massive_dividend_restart_forward_observer.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260803-001",
+  "hypothesis": "Fault recovery: two natural massive_dividend_restart_forward observer runs consumed the same 144-page, 717741-row, 414079-positive-USD, max-2026-07-31 decision surface with zero new decisions on rerun, yet volatile raw-page metadata changed content_identity and left the unchanged counter at zero; hashing the canonical decision-safe row projection while retaining raw retrieval provenance separately, and advancing freshness only once per distinct completed US-equity session, should restore fail-closed stale-input detection without changing candidates, gates, entry, ranking, sizing, exits, settlement, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "forward_observer_health",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260802-003",
+    "exp-20260802-002"
+  ],
+  "new_evidence_type": "reproducible_production_forward_health_fault",
+  "next_retry_requires": [
+    "An independently observed Massive source-format, pagination, content-identity, or completed-session clock fault that persists under the repaired contract",
+    "For alpha promotion rather than repair: complete observer first-build ID 2 and accumulate at least 30 settled restart_after_observed_gap H10 decisions"
+  ],
+  "notes": "Accepted measurement repair. Deterministic boundary coverage passed; Gate 1 unchanged; Gates 2-4 are not applicable because no signal or execution semantics changed.",
+  "parameters": {
+    "locked_variables": [
+      "gap_days",
+      "recency_window",
+      "entry_rule",
+      "liquidity_gate",
+      "price_gate",
+      "top2_policy",
+      "h10_settlement",
+      "trade_enabled"
+    ],
+    "single_causal_variable": "massive_dividend_restart_content_freshness_identity_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another ID to tweak the canonical projection, raw-provenance format, three-session threshold, completion buffer, or same-session handling without a new naturally observed fault. Routine observer runs and unchanged-session accrual occupy no experiment IDs.",
+    "new_evidence_required": "A new natural Massive source-format, pagination, content-identity, or completed-session clock failure that survives this repaired contract. Separately, alpha promotion still requires observer first-build ID 2 plus at least 30 settled restart_after_observed_gap H10 decisions or canonical as-published dividend vintages.",
+    "realized_failure_mode": "volatile_request_metadata_poisoned_raw_page_identity",
+    "why_result_happened": "The repair succeeded because the production fault was deterministic: raw response request_id metadata changed page digests while the 144-page decision surface and all decision outputs stayed fixed. Canonical row-multiset hashing removed that volatility, separate provenance retained auditability, and completed-session dedup restored the intended calendar cadence. Boundary review additionally found and fixed the need for a monotonic session anchor after clock regression."
+  },
+  "prediction": {
+    "confidence_reason": "The faulty comparison is present in code, two persisted natural coverage receipts reproduce it, and Massive raw payloads explicitly contain a volatile request_id; the repair is deterministic and module-local.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "canonical_projection_omits_decision_field",
+      "legacy_state_false_alert",
+      "raw_provenance_lost",
+      "completed_session_clock_regression"
+    ],
+    "recorded_at": "2026-08-03T15:14:02+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260803-001/identity_before.json",
+    "data/experiments/exp-20260803-001/identity_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-03T15:26:55+00:00",
+  "trial_family": "massive_dividend_restart_forward_observer_content_freshness_fault_recovery",
+  "trial_variant_id": "exp-20260803-001"
+}

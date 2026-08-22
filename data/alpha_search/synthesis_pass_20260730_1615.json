@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "recorded_at": "2026-07-30T16:15:00Z",
+  "actor": "claude-scheduled-alpha",
+  "experiment_id_reserved": false,
+  "baseline_universe": [
+    "cash-feasible 47-ticker core (Gate-1 anchor exp-20260715-010, EV 6.2057)",
+    "current broker account held positions (intraday triage population)",
+    "accepted default-off observers and sleeves",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash / no new executable core entry; the only matured evidence today is a risk-allocation counterfactual on already-held positions, which competes with holding unchanged exposure rather than with a new entry",
+  "evidence_surfaces_used": [
+    "data/reopen_readiness.json rebuilt 2026-07-30T16:10:12Z (12 lanes)",
+    "intraday triage counterfactual outcome ledger v2 (canonical, append-only, prospective decisions)",
+    "moomoo intraday 5m price (settlement clock)",
+    "research digest latest_digest.md (generated 2026-07-27; all displayed entries already terminal in ledger)",
+    "list_experiments in-flight check (no open tickets in last 7 days)"
+  ],
+  "evidence_surfaces_missing": [
+    "flow_options_lead paired settlements (7/10 forward PIT dates)",
+    "exit_lifecycle advisory maturity (193/212 settled, 17/21 hard-stop, 24/30 advisory)",
+    "entity_theme axis-c regrowth (76606/109913 after 2026-07-29 consumption)",
+    "form4 sale-overhang closed forward rows (0/25 post-effective-date)",
+    "estimate revision settled h5/h10/h20 (0/30 each) and actual cash conflicts (0/10)",
+    "prediction-market post-fix settlements (0 settled, earliest ~early Aug)"
+  ],
+  "hypothesis_candidates": [
+    "machine-default intraday REDUCE_RISK vs no-adjustment next-close replacement value (parked lead; lane intraday_triage_completed_close_settlement is READY: 142 strict cohorts, 24 active reductions, halves 9/15)",
+    "exit-lifecycle advisory promotion (blocked: 193/212, 17/21, 24/30 not met)",
+    "flow-options disagreement lead (blocked: 6-7/10 forward PIT dates, paired settlements unverified)"
+  ],
+  "selected_hypothesis": "machine-default intraday REDUCE_RISK vs no-adjustment, consuming the only ready reopen lane under the frozen exp-20260714-010 / exp-20260725-001/002/003 contract with the unchanged predeclared falsifier from the aborted 2026-07-24 scope",
+  "economic_mechanism": "a deterministic exit-breach state on an already-held position predicts adverse continuation into the next regular close often enough that an immediate machine-default exposure reduction at the next eligible 5m bar adds cost-adjusted value versus carrying the unchanged position",
+  "falsifier": "reject unless: >=20 active machine-default reductions with >=5 per chronological half; costed active mean and median positive; both half means positive; max ticker action-count share <=35% and positive-value share <=40%; every leave-one-ticker-out total positive; double one-way cost total positive (frozen 2026-07-24, before outcomes were readable at current maturity)",
+  "pit_tier": "canonical_pit",
+  "pit_note": "decisions are immutable prospective forward rows with timezone-aware timestamps, settled by the canonical v2 outcome contract; evaluation is read-only attribution so the machine result remains observed_only regardless of direction",
+  "evidence_grade": "observed_only",
+  "result_ceiling": "observed_only",
+  "outcome_blind_status": "action labels, timestamps, and counts read; no return, PnL, MFE/MAE, or counterfactual value fields read before reserve",
+  "outcome_blind_counters": {
+    "strict_effective_next_close_settlements": 142,
+    "machine_default_reduce_risk": 24,
+    "machine_default_reduce_risk_first_half": 9,
+    "machine_default_reduce_risk_second_half": 15,
+    "final_vs_machine_default_mismatch_on_reduce": 0,
+    "max_active_ticker_action_count_share": 0.25
+  },
+  "touch_density_preflight": "treatment population is 24 settled active reductions with >=5 in each chronological half; the frozen 20/5/5 power bar is the density contract and is met outcome-blind",
+  "research_digest_disposition": "digest generated 2026-07-27; all displayed entries carry terminal ledger states (declined/parked); no fresh entry requires consumption today; no duplicate ledger append",
+  "signal_execution_separation": "treatment only reduces an existing held long at the recorded fraction and fixed one-way cost; no instrument mapping, leverage, entry, order, or sizing change; any future default-off helper requires a separate shared-paper experiment",
+  "next_machine_action": "build fresh outcome-blind D0-D3 scope (never reusing the superseded 2026-07-24 panel), freeze panel and promotion, reserve exactly one observed_only attribution ID, evaluate only the frozen robustness bars, then close and sync any new reopen bar into scripts/build_reopen_readiness.py in the same ticket"
+}

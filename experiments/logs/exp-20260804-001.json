@@ -1,0 +1,125 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "first_seen_cutoff_drift",
+      "cross_query_duplicate_inflation",
+      "probability_transition_double_count",
+      "summary_ledger_misalignment",
+      "unrelated_lane_regression"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none_observed",
+    "surprise_level": "very_low",
+    "surprise_note": "The raw post-fix settled count already exceeded 60, but the complete contract exposed severe date/query concentration; independent review also caught a pre-first-seen leakage edge and incomplete nested Massive summary alignment before closeout."
+  },
+  "causal_components": [
+    "prediction_market_postfix_first_seen_dedup_and_full_thresholds",
+    "massive_dividend_restart_settlement_registration",
+    "fail_closed_health_and_schema_checks",
+    "regression_tests"
+  ],
+  "change_summary": "Accepted alpha-enabling batch measurement repair: prediction-market post-fix readiness now binds the full frozen 60/10/3/15%/50%/20/10 contract to first-persisted market IDs and canonical deduplicated settled decisions, while Massive dividend-restart is registered at 0/30 from unique healthy aligned settlement events. Both lanes fail closed on malformed, missing, stale-identity, duplicate, or summary-misaligned inputs; no strategy behavior changed.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "forward_reopen_readiness_registry_completeness_v2",
+  "component": "scripts/build_reopen_readiness.py, quant/test_build_reopen_readiness.py, data/reopen_readiness.json, data/alpha_search/synthesis_pass_20260804_0809.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260804-001",
+  "hypothesis": "Alpha evaluation is unreliable because the canonical reopen builder understates two accepted parked forward contracts: prediction-market post-fix reports raw rows with no quantitative bars, while Massive dividend-restart is absent entirely; binding both contracts to outcome-blind canonical ledgers in one batch prevents premature alpha probes and repeated manual recounts without changing either policy.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260721-004",
+    "exp-20260718-002",
+    "exp-20260803-002"
+  ],
+  "new_evidence_type": "accepted_park_contract_registry_fault_recovery",
+  "next_retry_requires": [
+    "Prediction-market may reopen only when the canonical builder reports all seven frozen bars true at once: >=60 unique settled candidates, >=10 observed decision dates, >=3 query groups, max ticker share <=15%, max query share <=50%, >=20 markets with any probability change, and >=10 markets with a >=5pp move.",
+    "Massive dividend-restart may reopen only at >=30 unique healthy aligned settled restart_after_observed_gap decisions, or with canonical as-published dividend vintages as a genuinely new evidence axis.",
+    "Another readiness repair ID requires a natural schema, producer-health, or counter-identity failure; daily recounts and threshold restatements are forbidden."
+  ],
+  "notes": "Outcome-blind synthesis selected prediction-market repricing but the machine recount shows it remains parked: 196 unique settled candidates, 1/10 decision dates, 3/3 query groups, top ticker 15.8163% > 15%, top query 94.898% > 50%, 17/20 changed markets, and 9/10 >=5pp markets. Massive remains 0/30 because no restart decision was selected; existing target-row membership/gate eligibility, not warehouse freshness alone, explains zero decisions. Active Gate-1 SHA256 stayed 4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731. Gate 4 was not run because this repair cannot alter signals, ranking, sizing, exits, orders, or trade_enabled. Final targeted suite: 26 passed; independent re-review verdict SHIP.",
+  "parameters": {
+    "locked_variables": [
+      "prediction_market_cutoff_20260718",
+      "prediction_market_60_10_3_0p15_0p50_20_10_bars",
+      "massive_restart_30_bar",
+      "source_rows",
+      "outcome_values",
+      "observer_policies"
+    ],
+    "single_causal_variable": "forward_reopen_readiness_registry_completeness_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve daily prediction-market or Massive readiness audits, count raw post-fix settled rows as sufficient evidence, retune either frozen bar, or open another observer-plumbing ID. The canonical builder is now the single no-ID readiness check.",
+    "new_evidence_required": "Prediction-market requires every frozen 60/10/3/15%/50%/20/10 check simultaneously; Massive requires >=30 unique healthy aligned settled restart decisions or canonical as-published dividend vintages. A further measurement repair requires an actual schema, identity, or producer-health regression.",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "The two accepted park conditions existed only in prose, so the old builder exposed a misleading raw prediction-market count and no Massive lane. Binding the exact contracts revealed that prediction-market quantity is already ample but chronology and concentration are not, while Massive has no selected restart decisions. Independent review caught and removed pre-first-seen leakage, identity-normalization, and nested-summary alignment failure paths before acceptance."
+  },
+  "prediction": {
+    "confidence_reason": "Both accepted closeouts state exact quantitative bars and append-only canonical inputs already exist; the repair is deterministic and outcome-blind, with the main risk concentrated in faithfully reproducing first-seen and duplicate semantics rather than in unknown market behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "first_seen_cutoff_drift",
+      "cross_query_duplicate_inflation",
+      "probability_transition_double_count",
+      "summary_ledger_misalignment",
+      "unrelated_lane_regression"
+    ],
+    "recorded_at": "2026-08-04T15:21:26+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260804-001/readiness_registry_before.json",
+    "data/experiments/exp-20260804-001/readiness_registry_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-04T15:39:01+00:00",
+  "trial_family": "forward_reopen_readiness_registry_completeness",
+  "trial_variant_id": "exp-20260804-001"
+}

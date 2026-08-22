@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260728-001",
+  "timestamp": "2026-07-28T04:32:35Z",
+  "lane": "measurement_repair",
+  "status": "accepted_measurement_repair",
+  "decision": "accepted_measurement_repair_drugsfda_forward_producer_health",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "proof_passed": true,
+  "hypothesis": "The accepted Drugs@FDA observer silently starved because daily wiring repeatedly parsed a frozen 2026-07-10 ZIP while rewriting the retrieval clock and reporting status=ok; an official bounded producer, immutable dated manifest, manifest-bound first-seen clock, and fail-closed health contract should restore prospective collection without changing strategy behavior.",
+  "single_causal_variable": "drugsfda_official_daily_snapshot_producer_health_v2",
+  "related_experiments": [
+    "exp-20260713-006",
+    "exp-20260727-003"
+  ],
+  "prediction": {
+    "success_probability": 0.9,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "realized_failure_modes": []
+  },
+  "pre_run_questions": {
+    "money_hypothesis": "A locally first-seen original NDA/BLA approval may mark regulatory de-risking and improve the listed sponsor's next-open through 10-session replacement value; this experiment repairs only the prospective event producer.",
+    "history_and_novelty": "exp-20260713-006 accepted the observer but daily production stayed pinned to its seed ZIP. Fourteen calendar days later the surface still had zero forward rows and status=ok. No open Drugs@FDA ticket existed; novelty nearest score was 0.4967 and the fault-recovery guard passed.",
+    "single_policy_bundle": "Fixed official download, bounded timeout and size, immutable daily ZIP plus manifest, manifest retrieval clock, producer-before-consumer wiring, fail-closed health, and explicit zero-event heartbeat; all alpha rules are locked.",
+    "acceptance": "A real unconfigured run must validate and freeze the current official source, consume it at the manifest clock, append previously unseen applications once, reuse the same daily artifacts idempotently, expose healthy zero-event output distinctly from starvation, pass focused tests and audit, and leave Gate-1 identity unchanged.",
+    "reproducibility": "Use the reproduction commands against the frozen 2026-07-28 ZIP and manifest.",
+    "opportunity_cost": "Cash/no new executable entry remains the current cross-sectional winner; no alpha reopen lane has gate-ready settled evidence.",
+    "cross_surface_boundary": "Price, flow, derivatives, events, positioning, and portfolio exposure were synthesized. The Drugs@FDA producer fault directly blocked calendar-time evidence accumulation, so measurement repair displaced an otherwise premature alpha experiment."
+  },
+  "fault_reproduction": {
+    "before_artifact": "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/before_producer_health.json",
+    "before_status": "ok",
+    "before_source_data_last_updated": "2026-07-10",
+    "before_observed_at": "2026-07-28T03:07:24Z",
+    "before_source_snapshot_mtime_utc": "2026-07-13T11:46:26.338Z",
+    "calendar_days_without_producer_refresh": 14,
+    "before_parsed_application_count": 5793,
+    "before_ledger_row_count": 5793,
+    "before_forward_event_count": 0,
+    "root_cause": "quant/run.py only checked for the fixed seed ZIP and reparsed it. It never acquired a current official vintage, and persist_drugsfda_approval_observer used the process clock on each rerun, so source freshness and process success diverged."
+  },
+  "live_smoke": {
+    "run_date": "2026-07-27",
+    "official_download_url": "https://www.fda.gov/media/89850/download?attachment",
+    "producer_mode": "official_daily_drugsfda_download",
+    "requested_at_utc": "2026-07-28T04:32:17Z",
+    "retrieved_at_utc": "2026-07-28T04:32:18Z",
+    "source_last_modified": "Mon, 27 Jul 2026 12:45:10 GMT",
+    "snapshot_path": "data/non_ohlcv/drugsfda_approval_observer/raw/drugsatfda_20260727.zip",
+    "manifest_path": "data/non_ohlcv/drugsfda_approval_observer/raw/snapshot_manifest_20260727.json",
+    "source_snapshot_bytes": 6051413,
+    "archive_table_count": 12,
+    "required_table_rows": {
+      "Applications.txt": 29233,
+      "Products.txt": 51568,
+      "Submissions.txt": 193095
+    },
+    "recovery_observation": {
+      "local_calendar_date": "2026-07-27",
+      "original_utc_label": "2026-07-28",
+      "artifact_status": "quarantined_from_daily_raw_paths_to_keep_the_real_20260728_slot_open",
+      "snapshot_path": "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/utc_labelled_smoke/drugsatfda_20260728.zip",
+      "manifest_path": "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/utc_labelled_smoke/snapshot_manifest_20260728.json",
+      "retrieved_at_utc": "2026-07-28T04:24:24Z",
+      "status": "ok",
+      "heartbeat_status": "fresh_success_new_forward",
+      "parsed_application_count": 5800,
+      "rows_appended": 7,
+      "new_forward_event_count": 7,
+      "forward_event_count_total": 7,
+      "ledger_row_count": 5800
+    },
+    "canonical_local_date_run": {
+      "status": "ok",
+      "download_status": "downloaded",
+      "retrieved_at_utc": "2026-07-28T04:32:18Z",
+      "snapshot_sha256_matches_recovery_observation": true,
+      "parsed_application_count": 5800,
+      "rows_appended": 0,
+      "new_forward_event_count": 0,
+      "forward_event_count_total": 7,
+      "heartbeat_status": "fresh_success_zero_forward",
+      "zero_event_heartbeat": true
+    },
+    "same_date_rerun": {
+      "status": "ok",
+      "download_status": "reused_immutable_snapshot",
+      "retrieved_at_utc_unchanged": true,
+      "snapshot_hash_unchanged": true,
+      "manifest_hash_unchanged": true,
+      "rows_appended": 0,
+      "new_forward_event_count": 0,
+      "forward_event_count_total": 7,
+      "heartbeat_status": "fresh_success_zero_forward",
+      "zero_event_heartbeat": true
+    },
+    "new_forward_first_seen_dates": [
+      "2026-07-28T04:24:24Z"
+    ],
+    "next_local_run_date_slot_20260728_unoccupied": true,
+    "candidate_eligible_rows": 0,
+    "mapped_ticker_rows": 0,
+    "trade_enabled": false,
+    "strategy_behavior_changed": false,
+    "alters_signal_generation": false,
+    "alters_candidate_ranking": false,
+    "alters_sizing": false,
+    "alters_exits": false,
+    "alters_orders": false
+  },
+  "checks": {
+    "fixed_official_https_host_only": true,
+    "bounded_timeout_30_seconds": true,
+    "bounded_snapshot_32_mib": true,
+    "zip_and_required_tables_validated": true,
+    "immutable_daily_snapshot_and_manifest_frozen": true,
+    "manifest_retrieval_clock_equals_observer_clock": true,
+    "source_rows_positive": true,
+    "first_live_run_restored_forward_rows": true,
+    "same_date_rerun_idempotent": true,
+    "local_calendar_date_boundary_preserved": true,
+    "premature_utc_labelled_artifacts_quarantined": true,
+    "fresh_zero_event_heartbeat_distinct_from_starvation": true,
+    "missing_or_unverified_input_fails_health_closed": true,
+    "explicit_local_override_preserved_without_claiming_fresh_health": true,
+    "strategy_behavior_unchanged": true,
+    "focused_pytest_66_passed": true,
+    "py_compile_passed": true,
+    "git_diff_check_passed": true,
+    "gate1_baseline_hash_unchanged": true
+  },
+  "gate1": {
+    "reference": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "experiment_id": "exp-20260715-010",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "aggregate": {
+      "expected_value_score_sum": 6.2057,
+      "total_pnl_sum": 130992.36,
+      "trade_count_sum": 49,
+      "positive_ev_windows": 3,
+      "minimum_survival_rate": 0.8116,
+      "worst_max_drawdown_pct": 0.0889
+    },
+    "passed": true
+  },
+  "gate2": {
+    "required_source_contract": [
+      "Applications.txt: ApplNo, ApplType, SponsorName",
+      "Products.txt: ApplNo, DrugName, ActiveIngredient",
+      "Submissions.txt: ApplNo, SubmissionType, SubmissionStatus, SubmissionStatusDate"
+    ],
+    "manifest_contract": [
+      "run_date",
+      "requested_at_utc",
+      "retrieved_at_utc",
+      "raw_file_sha256",
+      "raw_file_size_bytes",
+      "required_table_rows",
+      "frozen"
+    ],
+    "signal_sentinels": "entry_date and target_price remain null because this is an observer-only source; canonical signal contracts are untouched.",
+    "passed": true
+  },
+  "gate3": {
+    "new_filter_added": false,
+    "signals_generated_delta": 0,
+    "signals_survived_delta": 0,
+    "survival_rate_changed": false,
+    "passed": true
+  },
+  "gate4": {
+    "decision": "accepted_measurement_repair",
+    "measurement_repair_only": true,
+    "accepted_alpha": false,
+    "strategy_ev_delta": 0.0,
+    "strategy_pnl_delta": 0.0,
+    "strategy_trade_delta": 0,
+    "passed": true
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "active cash-feasible core universe (47-name Gate-1 reference; 46-name current daily core)",
+      "1228-name current broad PIT observation pool",
+      "17 open broker positions plus cash",
+      "current default-off paper sleeves",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash/no new executable entry",
+    "evidence_surfaces_used": [
+      "canonical cold-plus-hot OHLCV prices",
+      "Moomoo capital flow",
+      "PIT-safe options forward structures",
+      "Drugs@FDA and other event observers",
+      "FINRA and borrow positioning",
+      "open-position exposure, cash, position control, and live drift",
+      "research digest"
+    ],
+    "evidence_surfaces_missing": [
+      "Drugs@FDA contemporaneous public-sponsor ticker mapping and settled replacement outcomes",
+      "20 closed core drawdown flow-put decisions",
+      "prediction-market post-fix settled outcomes",
+      "estimate-revision cash conflicts and H5/H10/H20 settlements"
+    ],
+    "hypothesis_candidates": [
+      {
+        "name": "Drugs@FDA first-seen original-approval de-risking",
+        "baseline": "same-date cash, SPY, QQQ, and executable alternatives without a locally first-seen approval",
+        "treatment": "manifest-timestamped first local observation of an original approved NDA/BLA after audited sponsor mapping",
+        "horizon": "next-session open through 10 trading sessions",
+        "replacement_value": "cash, SPY, QQQ, and the same-day displaced candidate",
+        "falsifier": "nonpositive replacement value after at least 30 prospective approvals across 20 approval dates with complete mapping/outcomes, or excessive sponsor concentration",
+        "grade": "observer"
+      },
+      {
+        "name": "core drawdown flow-put stabilization",
+        "baseline": "current deep-drawdown core candidate pool",
+        "treatment": "positive same-day capital-flow stabilization plus next-session liquid put absorption",
+        "horizon": "10 trading sessions",
+        "replacement_value": "cash, SPY, QQQ, and displaced core slot",
+        "falsifier": "fewer than 20 closed decisions, nonpositive chronological halves, or concentration above 40 percent",
+        "grade": "observer"
+      },
+      {
+        "name": "estimate-revision cash-conflict ranking",
+        "baseline": "accepted candidates without a timestamp-safe revision expectation conflict",
+        "treatment": "revision direction and expectation residual evaluated at the decision timestamp",
+        "horizon": "5, 10, and 20 trading sessions",
+        "replacement_value": "cash and the same-day unselected candidate",
+        "falsifier": "no conflicts or nonpositive replacement value after the frozen settlement threshold",
+        "grade": "observer"
+      }
+    ],
+    "selected_hypothesis": "Drugs@FDA first-seen original-approval de-risking observer; this iteration validates only its producer health",
+    "economic_mechanism": "An original approval can remove a binary regulatory risk and improve near-term revenue visibility, but only a contemporaneous local-first-seen timestamp can test that mechanism without publication leakage.",
+    "falsifier": "The frozen 30-approval, 20-date mapped replacement-value contract fails, or outcomes remain concentrated and nonpositive.",
+    "pit_tier": "canonical_pit",
+    "evidence_grade": "observer",
+    "result_ceiling": "canonical_gate_ladder",
+    "next_machine_action": "Continue the automatic daily producer and health heartbeat; do not reserve an alpha ID until mapping and settled-row readiness satisfy the existing reopen contract."
+  },
+  "research_digest_review": {
+    "path": "data/research_digest/latest_digest.md",
+    "fresh_entries_since_last_run": 0,
+    "displayed_entries": 9,
+    "displayed_status": "declined_no_expectation_proxy",
+    "decision": "No ledger append because every displayed entry already had a terminal consumption row and the latest mechanism scan reported no_new_lead."
+  },
+  "readiness": {
+    "legal_alpha_reopen_count": 0,
+    "drugsfda_forward_rows": 7,
+    "drugsfda_first_seen_dates": 1,
+    "drugsfda_distinct_approval_dates": 6,
+    "drugsfda_mapped_public_tickers": 0,
+    "drugsfda_settled_rows": 0,
+    "reopen_condition": "At least 30 prospective first-seen approvals across at least 20 approval dates with contemporaneous public-sponsor mapping and complete next-open/10-session cash/SPY/QQQ outcomes, or an independently auditable official historical PIT archive.",
+    "reopened": false
+  },
+  "source_hashes": {
+    "gate1_baseline": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "snapshot_zip": "3ebcebe825899232ccba419009086dd85bfb2f5141540ea02a2af7b52c71aae8",
+    "snapshot_manifest": "a5939630c1d524dd120fa5a9c7c1a404dd8e1ca6d8852ba19e9f5ee1f0e7da23",
+    "observer_ledger": "0da8594e8321d03da2be8e9c8790198013d21be486f62466dfb14f5dc35a9098",
+    "observer_state": "e1db03388183758d231e618f2a4447f567b2523d976ff13eefe1318a30e08595",
+    "latest_summary": "59b76da39a28e2db06243ce47ac66eb37b0abf78f9cad4e00c51b2387a01215a",
+    "producer_health": "a2038eede0397970f911fc3267d5ee4d7e06510be9b282961ed48e887665d2e5",
+    "quarantined_utc_labelled_snapshot": "3ebcebe825899232ccba419009086dd85bfb2f5141540ea02a2af7b52c71aae8",
+    "quarantined_utc_labelled_manifest": "e45ed40877c292e73ca52129e1f3fe53ead03ead8abe7132e16a758888b5db32"
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_changed": false,
+    "run_adapter_changed": true,
+    "daily_source_producer_restored": true,
+    "fail_closed_health_added": true,
+    "default_off_observer_only": true,
+    "trade_enabled": false,
+    "signals_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "orders_changed": false
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The parser and append-only ledger were sound, but production confused reparsing a static seed with refreshing the source. A current official snapshot immediately exposed seven applications that had never been locally observed.",
+    "irrecoverable_gap": "The missing July 14-27 daily vintages cannot be reconstructed as forward evidence. The seven recovered rows become valid only at the 2026-07-28 manifest retrieval clock, never at their historical approval dates.",
+    "forbidden_near_neighbor_retry": "Do not backdate the seven recovered applications, treat approval dates as availability, infer ticker mappings from sponsor names without an audited relation, relax the source/manifest health contract, or claim alpha from these unsettled rows.",
+    "new_evidence_required": "No further producer ID is needed unless a real source, schema, retrieval-clock, or health regression occurs. Alpha evaluation remains parked until the frozen mapped and settled replacement-value threshold passes."
+  },
+  "changed_files": [
+    "quant/drugsfda_approval_observer.py",
+    "quant/test_drugsfda_approval_observer.py",
+    "quant/run.py",
+    "quant/test_run_daily_wiring.py",
+    "docs/production_backtest_parity_matrix.md",
+    "data/non_ohlcv/drugsfda_approval_observer/raw/drugsatfda_20260727.zip",
+    "data/non_ohlcv/drugsfda_approval_observer/raw/snapshot_manifest_20260727.json",
+    "data/non_ohlcv/drugsfda_approval_observer/state.json",
+    "data/non_ohlcv/drugsfda_approval_observer/ledger.jsonl",
+    "data/non_ohlcv/drugsfda_approval_observer/latest_summary.json",
+    "data/non_ohlcv/drugsfda_approval_observer/producer_health/latest.json",
+    "data/non_ohlcv/drugsfda_approval_observer/producer_health/producer_health_20260727.json",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/utc_labelled_smoke/drugsatfda_20260728.zip",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/utc_labelled_smoke/snapshot_manifest_20260728.json",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/utc_labelled_smoke/producer_health_20260728.json",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/utc_labelled_smoke/quarantine_note.json",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/before_producer_health.json",
+    "data/non_ohlcv/drugsfda_approval_observer/exp-20260728-001/after_producer_health.json"
+  ],
+  "validation": {
+    "pytest": "66 passed in 2.12s",
+    "py_compile": "passed",
+    "git_diff_check": "passed",
+    "lean_strict": "passed"
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_drugsfda_approval_observer.py quant\\test_run_daily_wiring.py -q",
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\drugsfda_approval_observer.py quant\\test_drugsfda_approval_observer.py quant\\run.py quant\\test_run_daily_wiring.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0009,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "tight-cap fixture cannot isolate JSON-only trimming",
+      "shared subset changes rank order",
+      "ledger mutates",
+      "concurrent research-pit repair conflicts"
+    ],
+    "predicted_success_probability": 0.97,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The predicted JSON-only byte-cap truncation reproduced exactly; no failure mode occurred and the fix required only rerendering Markdown from JSON's stricter retained subset."
+  },
+  "causal_components": [
+    "shared retained subset",
+    "ordered entry-id parity",
+    "reported-count parity",
+    "focused regression test"
+  ],
+  "change_summary": "Synchronize Markdown and JSON research-digest byte-cap trimming to one ordered retained subset and add regression coverage.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "digest retained candidate subset",
+  "component": "scripts/build_research_digest.py, scripts/test_build_research_digest.py, data/research_digest/latest_digest.md, data/research_digest/latest_digest.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260727-007",
+  "hypothesis": "Fault recovery: exp-20260727-002 enlarged the machine-readable research digest payload, and independent byte-cap trimming now publishes ten ranked entries in Markdown but only nine in JSON. A single shared retained subset must keep human and machine alpha synthesis inputs identical without changing ledger state, candidate ranking, strategy behavior, or orders.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "research_digest_candidate_input_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260727-002",
+    "exp-20260721-006"
+  ],
+  "new_evidence_type": "regression_reproduction_human_machine_digest_divergence",
+  "next_retry_requires": [
+    "A newly reproduced human-machine digest divergence after a future schema or byte-cap change; do not spend another ID on formatting or payload growth while ordered entry-id parity remains covered."
+  ],
+  "notes": "Accepted measurement repair only: reproduced 10 Markdown versus 9 JSON rows before; after repair both publish the same ordered 9 IDs, md=3792 bytes, json=8021 bytes, ledger/map/Gate-1 hashes unchanged, latest mechanism scan preserved, 11 focused plus 24 cross-pipeline tests passed, no strategy or order behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "research digest rank order",
+      "ledger status",
+      "8192-byte cap",
+      "strategy behavior"
+    ],
+    "single_causal_variable": "research digest human-machine shown-set parity under byte caps"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not independently trim, rank, or consume Markdown and JSON digest candidates; do not add more payload fields without retaining the ordered entry-id parity assertion.",
+    "new_evidence_required": "Only another reproduced cross-format candidate divergence under a changed schema or cap justifies reopening this repair surface.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "exp-20260727-002 added machine-only provenance fields, so JSON crossed the shared 8192-byte cap first and popped one row after Markdown had already been rendered. Rerendering Markdown from JSON's stricter retained subset restored one canonical ordered candidate list."
+  },
+  "prediction": {
+    "confidence_reason": "The live artifact reproduces a deterministic 10-versus-9 divergence immediately after exp-20260727-002 added JSON provenance fields; synchronizing to the stricter retained subset is small, strategy-neutral, and directly testable, while the main risk is preserving all existing uncommitted generator work.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "tight-cap fixture cannot isolate JSON-only trimming",
+      "shared subset changes rank order",
+      "ledger mutates",
+      "concurrent research-pit repair conflicts"
+    ],
+    "recorded_at": "2026-07-27T17:15:07+00:00",
+    "success_probability": 0.97
+  },
+  "prior_trial_count": 2,
+  "rejection_reason": null,
+  "related_files": [
+    "scripts/build_research_digest.py",
+    "scripts/test_build_research_digest.py",
+    "data/research_digest/latest_digest.md",
+    "data/research_digest/latest_digest.json",
+    "data/research_digest/ledger.jsonl",
+    "docs/alpha_external_research_map.md",
+    "data/reopen_readiness.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "timestamp": "2026-07-27T17:18:52+00:00",
+  "trial_family": "research_digest_dual_output_parity",
+  "trial_variant_id": "exp-20260727-007",
+  "measurement_evidence": {
+    "before": {
+      "markdown_shown": 10,
+      "json_shown": 9,
+      "ordered_entry_ids_match": false
+    },
+    "after": {
+      "markdown_shown": 9,
+      "json_shown": 9,
+      "ordered_entry_ids_match": true,
+      "markdown_bytes": 3792,
+      "json_bytes": 8021,
+      "latest_mechanism_scan_status": "no_new_lead",
+      "latest_mechanism_scan_run_id": "mechanism_scan_20260727_001"
+    },
+    "identity_checks": {
+      "research_ledger_sha256": "40142DE7315207C5DE1980C7EBF4E4CA77F1389C2542BC59CF4798C788655D8F",
+      "research_map_sha256": "B31192E3942EDB025FF3202F226FF73F1EFE19DE78643AC1B28C5D285A838811",
+      "gate1_sha256": "4E9EF413126C947B9712FD0879B83C74160F787898860987D204BFC9D60F7731",
+      "all_unchanged": true
+    }
+  },
+  "gate1": {
+    "passed": true,
+    "reference": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "aggregate_expected_value_score": 6.2057,
+    "aggregate_total_pnl": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "gate2": {
+    "passed": true,
+    "required_fields": [
+      "entry_id",
+      "title",
+      "status",
+      "latest_mechanism_scan"
+    ],
+    "signal_sentinels": "entry_date and target_price remain untouched because this repair does not enter the signal path"
+  },
+  "gate3": {
+    "passed": true,
+    "new_filter_added": false,
+    "survival_rate_applicable": false
+  },
+  "gate4": {
+    "passed": true,
+    "decision": "accepted_measurement_repair",
+    "accepted_alpha": false,
+    "strategy_behavior_changed": false,
+    "expected_value_score_delta": 0.0,
+    "total_pnl_delta": 0.0,
+    "trade_count_delta": 0
+  },
+  "production_impact": {
+    "shared_policy_changed": false,
+    "backtester_adapter_changed": false,
+    "run_adapter_changed": false,
+    "replay_only": false,
+    "trade_enabled": false,
+    "daily_snapshot_exposed": false,
+    "live_realism_evaluated": false,
+    "live_ready": false,
+    "parity_test_added": true,
+    "signals_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exits_changed": false,
+    "orders_changed": false
+  },
+  "alpha_synthesis": {
+    "baseline_universe": [
+      "47-name cash-feasible static core comparator",
+      "PIT broad-market forward membership",
+      "current 12-position account",
+      "accepted default-off sleeves",
+      "cash",
+      "SPY",
+      "QQQ"
+    ],
+    "opportunity_cost_winner": "cash / no executable new entry",
+    "evidence_surfaces_used": [
+      "price",
+      "Moomoo flow",
+      "options",
+      "events",
+      "positioning",
+      "portfolio exposure",
+      "research digest",
+      "reopen registry"
+    ],
+    "evidence_surfaces_missing": [
+      "60 clean broad-forward settlements across 20 tickers",
+      "20 independent flow-put closes",
+      "20 settled paired flow-options disagreements",
+      "10 actual revision cash conflicts and 30 H5/H10/H20 settlements",
+      "authorized historical PIT security master with delisting and acquisition coverage"
+    ],
+    "hypothesis_candidates": [
+      "broad-universe fresh attention without crowded execution flow",
+      "Form 4 sale overhang versus flow-put stabilization",
+      "deterministic intraday REDUCE_RISK versus hold"
+    ],
+    "selected_hypothesis": "No alpha lane is gate-ready; repair the digest input-identity regression before future synthesis.",
+    "economic_mechanism": "Broad attention, insider distribution, flow absorption, and downside-option crowding may separate information shocks from forced-selling exhaustion, but current forward cohorts are not settled enough to identify replacement value.",
+    "falsifier": "The registered forward cohorts fail cash/SPY/QQQ replacement value, chronological-half, per-window density, or concentration checks after their exact reopen bars mature.",
+    "evidence_grade": "observer",
+    "next_machine_action": "Continue producer-before-consumer forward collection without alpha IDs; reopen only when a registered threshold fully passes."
+  },
+  "research_digest": {
+    "fresh_entries": 0,
+    "ledger_append_required": false,
+    "displayed_entries_already_terminal": 10,
+    "disposition": "All displayed entries were previously declined; no duplicate ledger event was appended."
+  },
+  "acceptance_basis": "The repair reduces both outputs to the same stricter ordered subset, preserves the 8192-byte cap and scan provenance, leaves all source/ledger/Gate-1 identities unchanged, and passes focused plus cross-pipeline tests.",
+  "changed_files": [
+    "scripts/build_research_digest.py",
+    "scripts/test_build_research_digest.py",
+    "data/research_digest/latest_digest.md",
+    "data/research_digest/latest_digest.json",
+    "data/reopen_readiness.json",
+    "experiments/logs/exp-20260727-007.json",
+    "experiments/tickets/exp-20260727-007.json",
+    "experiments/manifests/exp-20260727-007.json",
+    "experiments/cards/exp-20260727-007.md",
+    "docs/experiment_registry.json"
+  ],
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest scripts\\test_build_research_digest.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\build_research_digest.py",
+    ".\\.venv\\Scripts\\python.exe -B -m pytest quant\\test_alpha_search_cli.py quant\\test_build_reopen_readiness.py -q",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "record_type": "outcome_blind_execution_endpoint_preflight",
+  "recorded_at": "2026-07-29T03:20:21Z",
+  "candidate_lineage": "cand-d3d84780295914d0f19a",
+  "source_readiness_artifact": "data/alpha_search/massive_dividend_declaration_readiness_20260728.json",
+  "source_readiness_sha256": "656064b54c04c775c819fe6209cc353e492a2473c90f496b5e4f67000ca73916",
+  "canonical_price_reader": "quant.ohlcv_warehouse.load_warehouse_ohlcv_frames",
+  "canonical_cold_path": "data/warehouse/warehouse_main.sqlite",
+  "canonical_hot_overlay_path": "data/warehouse/warehouse_main_hot.sqlite",
+  "query_contract": "For each frozen selected (ticker, declaration_date), inspect only ordered session dates strictly after declaration_date through the tenth row. Do not read OHLCV magnitudes, returns, outcomes, Gate metrics, or candidate results.",
+  "required_endpoint_contract": "A treatment row is executable only when the canonical cold-plus-hot overlay contains a next-session row and ten ordered post-declaration session dates; entry is the first row's open and H10 exit is the tenth row's close in the later replay.",
+  "input_selected_count": 94,
+  "endpoint_ready_count": 89,
+  "endpoint_ready_by_window": {
+    "old_thin": 39,
+    "mid_weak": 21,
+    "late_strong": 29
+  },
+  "minimum_per_window": 5,
+  "all_window_floors_pass": true,
+  "voided_before_return_access": [
+    {
+      "ticker": "ABL",
+      "declaration_date": "2025-11-06",
+      "window": "late_strong",
+      "post_declaration_session_count_capped_at_10": 0,
+      "reason": "no_next_session_row"
+    },
+    {
+      "ticker": "COOP",
+      "declaration_date": "2025-09-19",
+      "window": "mid_weak",
+      "post_declaration_session_count_capped_at_10": 0,
+      "reason": "no_next_session_row"
+    },
+    {
+      "ticker": "FTW",
+      "declaration_date": "2026-04-14",
+      "window": "late_strong",
+      "post_declaration_session_count_capped_at_10": 8,
+      "reason": "missing_h10_endpoint"
+    },
+    {
+      "ticker": "MAG",
+      "declaration_date": "2025-03-24",
+      "window": "old_thin",
+      "post_declaration_session_count_capped_at_10": 0,
+      "reason": "no_next_session_row"
+    },
+    {
+      "ticker": "STNE",
+      "declaration_date": "2026-04-14",
+      "window": "late_strong",
+      "post_declaration_session_count_capped_at_10": 8,
+      "reason": "missing_h10_endpoint"
+    }
+  ],
+  "exact_roster_rule": "The replay roster is the 94 frozen readiness selections minus exactly the five sorted (ticker, declaration_date) keys above; no further row may be added, dropped, substituted, or repaired after return access.",
+  "comparator_slot_rule": "Within each declaration date, order executable treatment rows by their already-frozen liquidity rank and ticker. Match the first treatment slot to the one actual same-date cash-feasible core slot when present and not the same ticker; otherwise match it to cash. Match every additional treatment slot to cash. A core slot and its return may be consumed at most once. A same-ticker treatment/core collision is matched to cash and may not manufacture replacement value against itself.",
+  "outcome_accessed": false,
+  "price_magnitudes_accessed": false,
+  "trade_enabled": false,
+  "paper_live_eligible": false,
+  "pit_tier": "research_pit",
+  "result_ceiling": "observed_only"
+}

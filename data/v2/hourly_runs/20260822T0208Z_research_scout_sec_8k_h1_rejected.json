@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-22T01:47:00Z",
+  "run_finished_at": "2026-08-22T02:08:06Z",
+  "milestone": "research_scout_lane",
+  "work_unit": "first_v2_bounded_sec_8k_h1_scout",
+  "outcome": "completed_rejected",
+  "experiment_id": "exp-20260822-001",
+  "trade_enabled": false,
+  "source_commit": "bb63b97ea9e2c455def31d218e1c400a45efa2b6",
+  "selection_rationale": {
+    "user_direction": "The user explicitly prioritized running an experiment and authorized temporarily looser scout standards.",
+    "chosen_axis": "Use the newly frozen official SEC 2026-08-20 exact-8-K complete source frame rather than retrying the previously rejected contract-relation surface.",
+    "single_hypothesis": "The equal-weight set of all mapped issuers in the complete prior-day exact-8-K frame has positive after-cost 2026-08-21 RTH open-to-close return and positive excess versus SPY and QQQ.",
+    "relaxed_dimensions": [
+      "one cross-section is sufficient for a bounded scout",
+      "a weak fixed zero-excess prior is sufficient",
+      "Engine-0 and market-wide universe coverage are not scout prerequisites"
+    ],
+    "preserved_guards": [
+      "outcome-blind freeze before price access",
+      "complete 219-row source disposition and 111-security mapped set",
+      "hash-bound promotion, reservation, and claim",
+      "one fixed treatment, horizon, cost, comparators, and acceptance rule",
+      "observed-only result ceiling and paper_live_eligible=false",
+      "trade_enabled=false"
+    ]
+  },
+  "outcome_access_containment": {
+    "status": "clean_post_claim_outcome_access",
+    "outcomes_accessed_before_freeze": false,
+    "outcomes_accessed_before_reservation": false,
+    "outcomes_accessed_before_claim": false,
+    "frozen_at": "2026-08-22T01:58:09Z",
+    "reserved_at": "2026-08-22T02:00:49Z",
+    "claimed_at": "2026-08-22T02:01:48Z",
+    "detail": "Only source rows, mappings, quota, schema, and novelty metadata were read before freeze. Moomoo open/close outcomes were requested only after the claimed ticket revalidated the frozen artifact identities."
+  },
+  "experiment_result": {
+    "candidate_count": 111,
+    "usable_security_count": 111,
+    "missing_or_error_count": 0,
+    "round_trip_cost_bps": 10.0,
+    "mean_after_cost_return": 0.003060817971089958,
+    "median_after_cost_return": -0.001925069380203536,
+    "positive_name_share": 0.42342342342342343,
+    "spy_open_to_close_return": -0.0004307812805951494,
+    "qqq_open_to_close_return": -0.002502691441913729,
+    "mean_excess_vs_spy": 0.0034915992516851074,
+    "mean_excess_vs_qqq": 0.005563509413003687,
+    "passed_predicates": [
+      "usable_security_count_gte_60",
+      "mean_after_cost_return_positive",
+      "mean_excess_vs_spy_positive",
+      "mean_excess_vs_qqq_positive"
+    ],
+    "failed_predicates": [
+      "median_after_cost_return_positive",
+      "positive_name_share_gt_half"
+    ],
+    "decision": "rejected",
+    "interpretation": "The positive mean was not broad: fewer than half of names were positive and the median name lost money after cost."
+  },
+  "artifact_identities": {
+    "result_artifact_sha256": "ec828033d5319edeafd818a4981957008455270b7ab45c4f4098802d3eb33c0c",
+    "raw_query_artifact_sha256": "491e2aa833c3af410b005229035ade529ddc37fd66f0c0f007b04571a87f3a32",
+    "ticket_sha256": "b9c79e1cf00e90c63c24b2c64b18a534f6ff6cf3888879c0d4a188f6c4b13085",
+    "manifest_sha256": "12ebb7ae356f5a8247202b9661a6aa4c59e6a504ef98bcc4fe9df31c59283681",
+    "preflight_report_sha256": "ffe5ccb4af34c7890935c163e42a38864f019d9b7cec31898695b8a89d27bffb",
+    "promotion_request_sha256": "34e90b09bf8c8cf461ed247af062b0094865c664fd2bc62b3d1bd724cbdf58e7",
+    "promotion_hash": "02b9014cbf8b12353c19661199b524cf08e127a91a274382d11c12e26192a289"
+  },
+  "verification": [
+    "The candidate pool conserved the complete frozen SEC frame: 219 rows = 116 mapped + 91 unmapped + 12 excluded, yielding 111 deduplicated mapped securities.",
+    "Promotion preflight D0, D1, D2, and D3 passed before reservation.",
+    "The ticket was reserved and claimed before any price outcome query.",
+    "The experiment runner revalidated the claim receipt hashes for candidate_pool.json and market_data_recipe.json.",
+    "The Moomoo historical-K quota was checked before 113 RTH daily requests; 111 candidates plus SPY and QQQ returned usable bars.",
+    "The runner compiled and completed without changing the frozen acceptance rule.",
+    "scripts/experiment.py audit --lean-strict exited 0 with lean_strict_passed=true."
+  ],
+  "changed_files": [
+    "scripts/prepare_v2_sec_8k_event_drift_scout.py",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/source_disposition_manifest.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/candidate_pool.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/market_data_recipe.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/decision_record.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/evidence_surfaces.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/prior_fingerprints.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/selection_scope.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/selection_panel.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/promotion_request.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/preflight_report.json",
+    "quant/experiments/exp_20260822_001_sec_8k_event_drift_h1.py",
+    "data/experiments/exp-20260822-001/moomoo_rth_daily_query_results.json",
+    "data/experiments/exp-20260822-001/exp_20260822_001_sec_8k_event_drift_h1.json",
+    "experiments/tickets/exp-20260822-001.json",
+    "experiments/cards/exp-20260822-001.md",
+    "experiments/manifests/exp-20260822-001.json",
+    "experiments/logs/exp-20260822-001.json",
+    "docs/experiment_registry.json",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260822T0208Z_research_scout_sec_8k_h1_rejected.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json",
+    "data/v2/hourly_runs/20260822T0203Z_noop_concurrent_v2_scout_containment_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive: the project moved from infrastructure-only work to a real, preregistered bounded scout and accepted a negative result without post-outcome threshold changes. The temporary admission relaxation did not weaken outcome containment or trading boundaries.",
+  "parity_impact": "none; this was an observed-only private replay and did not establish Engine-0, scheduler, production/backtest, execution, canonical, paper, live, or trading parity.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "This complete-frame H1 mechanism is rejected on the frozen 2026-08-20 frame because breadth and median predicates failed.",
+    "A same-frame near-neighbor retry is prohibited; another SEC frame must be independently frozen before outcome access or a genuinely independent pre-outcome event-sign source must be added.",
+    "Canonical or paper/live promotion still requires market-wide PIT coverage, Engine-0, runtime parity, forward evidence, and the repository-external append anchor."
+  ],
+  "next_step": "Do not tune this frame. Prefer a later independently frozen complete SEC frame or a pre-outcome independent event-sign axis for the next bounded scout; otherwise return to the authorized promotion backlog.",
+  "user_decisions_needed": [],
+  "made_by": "codex-edge-v2-experiment"
+}

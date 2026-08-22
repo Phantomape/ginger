@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "data_cutoff": "2026-07-21T17:14:00Z",
+  "selection_pool_complete": true,
+  "queue_budgets": {
+    "adjacent": 1,
+    "exploitation": 1,
+    "exploration": 1
+  },
+  "candidates": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-fb98566f716d882e09a7",
+      "search_queue": "exploration",
+      "title": "Prediction-market prior versus official confirmation",
+      "created_at": "2026-07-21T17:14:10Z",
+      "created_by": "alpha_search_phase1_5_integrity_replay",
+      "hypothesis": "For an independently mapped official event, a timestamp-safe official confirmation that implies a materially higher state probability than the still-observed prediction-market prior creates H5-H20 equity repricing after the confirmation clock.",
+      "fingerprint": {
+        "data_source": "prediction_market_event",
+        "component_sources": [
+          "prediction_market_event",
+          "sec_official_event"
+        ],
+        "expectation_proxy": "direct_implied_probability",
+        "economic_mechanism": "official_confirmation_probability_gap",
+        "decision_surface": "candidate_pool",
+        "payoff_shape": "event_drift",
+        "horizon": "H5-H20",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "orthogonal_event_sleeve"
+      },
+      "surface_ids": [
+        "prediction_market_event_probability_observer",
+        "sec_official_event_evidence"
+      ],
+      "expectation_gap": {
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "direct_implied_probability",
+          "source": "prediction_market_event",
+          "known_at": "2026-07-20T20:00:00Z",
+          "units": "probability",
+          "provenance": "Frozen market identifier and quoted probability are required per observation."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "official-event-contract-v1",
+            "source": "sec_official_event",
+            "known_at": "2026-07-20T20:00:00Z",
+            "state": "official_condition_confirmed",
+            "provenance": "Timestamped official filing or release; no market return fields."
+          }
+        ],
+        "gap_definition": "Frozen calibrated state probability minus the contemporaneous direct implied probability.",
+        "transmission": {
+          "affected_tickers": [],
+          "expected_direction": "sign_of_probability_gap",
+          "catalyst": "Official confirmation becomes public after the frozen market-prior timestamp.",
+          "half_life": "H5-H20",
+          "causal_steps": [
+            "official state changes",
+            "cash-flow distribution changes",
+            "mapped equity reprices"
+          ]
+        }
+      },
+      "why_not_arbitraged": "The edge, if any, depends on point-in-time entity exposure mapping and distinct probability shocks rather than on generic event sentiment.",
+      "falsifier": "No usable issuer overlap, no independent probability shock, or no monotone replacement value after exact timestamp alignment falsifies the mechanism.",
+      "baseline": {
+        "universe": "current tradable observation universe",
+        "policy": "Do not admit candidates from this event-state mapping."
+      },
+      "treatment": {
+        "policy": "Admit only predeclared issuer mappings whose independent official state implies a calibrated probability gap after the recorded prior timestamp."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate under identical capital constraints.",
+      "expected_horizon": "H5-H20",
+      "execution_envelope": {
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "predeclared ADV and spread floor",
+        "costs_and_carry": "canonical cash-equity cost model",
+        "borrow_dependency": "none for long mapping; any short mapping is a separate hypothesis",
+        "capacity_constraint": "default-off paper notional cap",
+        "timing_constraint": "no earlier than next tradable session after both timestamps",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "evidence_grade": "lead",
+      "prediction": {
+        "success_probability": 0.12,
+        "main_failure_modes": [
+          "no_candidate_overlap",
+          "already_priced",
+          "duplicate_or_frozen"
+        ],
+        "confidence_reason": "The prior is observable, but event independence, exposure mapping, and reopen counts are not ready."
+      },
+      "reopen_condition": "Meet the registered prediction-market post-repair count and prove at least 10 independent official-event issuer overlaps under one frozen map.",
+      "next_machine_action": "Do not reserve an experiment; cluster distinct probability shocks and audit the registered reopen condition.",
+      "production_impact": {
+        "trade_enabled": false,
+        "orders_changed": false,
+        "entry_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false
+      }
+    },
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-ecb99b450542c0cdc11c",
+      "search_queue": "adjacent",
+      "title": "Consensus revision versus positioning disagreement",
+      "created_at": "2026-07-21T17:14:10Z",
+      "created_by": "alpha_search_phase1_5_integrity_replay",
+      "hypothesis": "A large timestamp-safe analyst-consensus revision that is not yet corroborated by persistent Moomoo main-flow positioning identifies either a delayed confirmation trade or an avoid signal, with direction fixed before any return is read.",
+      "fingerprint": {
+        "data_source": "analyst_estimate_revision",
+        "component_sources": [
+          "analyst_estimate_revision",
+          "moomoo_capital_flow"
+        ],
+        "expectation_proxy": "explicit_consensus",
+        "economic_mechanism": "consensus_positioning_disagreement",
+        "decision_surface": "ranking",
+        "payoff_shape": "cross_sectional_expectation_convergence",
+        "horizon": "H5-H20",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "diversifying_expectation_gap_sleeve"
+      },
+      "surface_ids": [
+        "estimate_revision_consensus_observer",
+        "moomoo_capital_flow_day_observer"
+      ],
+      "expectation_gap": {
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "explicit_consensus",
+          "source": "analyst_estimate_revision",
+          "known_at": "2026-07-20T20:00:00Z",
+          "units": "estimate_revision",
+          "provenance": "Frozen same-event analyst estimate and revision timestamps."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "moomoo-flow-state-v1",
+            "source": "moomoo_capital_flow",
+            "known_at": "2026-07-20T20:00:00Z",
+            "state": "persistent_positioning_confirmation_or_disagreement",
+            "provenance": "Archived DAY rows with honest vendor_asof; raw rows are not independent decisions."
+          }
+        ],
+        "gap_definition": "Predeclared sign and magnitude disagreement between explicit consensus revision and normalized positioning confirmation.",
+        "transmission": {
+          "affected_tickers": [],
+          "expected_direction": "frozen_confirmation_or_avoidance_mapping",
+          "catalyst": "Next earnings release or guidance update resolves the consensus-positioning disagreement.",
+          "half_life": "H5-H20",
+          "causal_steps": [
+            "consensus changes",
+            "positioning lags or contradicts",
+            "resolution reprices expectations"
+          ]
+        }
+      },
+      "why_not_arbitraged": "Consensus and broker flow have different clocks and coverage; a usable gap requires honest as-of alignment and cash-conflict accounting.",
+      "falsifier": "The sign mapping fails a predeclared placebo, candidate overlap stays below 20 independent decisions, or costs erase the conditional spread.",
+      "baseline": {
+        "universe": "current eligible candidate pool",
+        "policy": "Use the existing core ranking without consensus-flow disagreement."
+      },
+      "treatment": {
+        "policy": "Apply one frozen ranking or avoidance response to the predeclared consensus-flow disagreement state."
+      },
+      "replacement_value_comparator": "The displaced eligible core candidate plus cash, SPY, and QQQ.",
+      "expected_horizon": "H5-H20",
+      "execution_envelope": {
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "same eligible-universe liquidity floor as baseline",
+        "costs_and_carry": "canonical cash-equity costs plus turnover accounting",
+        "borrow_dependency": "none for long/avoid mapping",
+        "capacity_constraint": "default-off paper cap and one decision per issuer clock",
+        "timing_constraint": "next session after both consensus and flow timestamps",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "evidence_grade": "observer",
+      "prediction": {
+        "success_probability": 0.18,
+        "main_failure_modes": [
+          "no_candidate_overlap",
+          "wrong_transmission_mapping",
+          "duplicate_or_frozen"
+        ],
+        "confidence_reason": "Both inputs exist, but the Moomoo member surface is parked and raw flow has already failed as a standalone source."
+      },
+      "reopen_condition": "At least 20 independent timestamp-aligned candidate decisions with closed replacement values and a non-inert cash-conflict comparison.",
+      "next_machine_action": "Do not reserve an experiment; quantify independent overlap and audit whether this is distinct from the parked Moomoo flow family.",
+      "production_impact": {
+        "trade_enabled": false,
+        "orders_changed": false,
+        "entry_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false
+      }
+    },
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-c0da7d6c3657fd93d4c6",
+      "search_queue": "exploitation",
+      "title": "Muted price response after a consensus revision",
+      "created_at": "2026-07-21T17:14:10Z",
+      "created_by": "alpha_search_phase1_5_integrity_replay",
+      "hypothesis": "A timestamp-safe analyst estimate revision whose contemporaneous price-revealed response is unusually muted relative to its frozen calibration identifies underreaction that converges over H5-H20.",
+      "fingerprint": {
+        "data_source": "ohlcv_warehouse",
+        "component_sources": [
+          "analyst_estimate_revision",
+          "ohlcv_warehouse"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "muted_price_response_to_consensus_revision",
+        "decision_surface": "candidate_pool",
+        "payoff_shape": "post_revision_drift",
+        "horizon": "H5-H20",
+        "execution_dependency": "liquid_cash_equity_next_session",
+        "portfolio_role": "expectation_underreaction_sleeve"
+      },
+      "surface_ids": [
+        "estimate_revision_consensus_observer",
+        "ohlcv_price_revealed_context"
+      ],
+      "expectation_gap": {
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "ohlcv_warehouse",
+          "known_at": "2026-07-20T20:00:00Z",
+          "units": "normalized_pre_event_response",
+          "provenance": "Only bars known by the decision clock; OHLCV context is not claimed as a new source."
+        },
+        "independent_evidence": [
+          {
+            "evidence_id": "estimate-revision-state-v1",
+            "source": "analyst_estimate_revision",
+            "known_at": "2026-07-20T20:00:00Z",
+            "state": "timestamp_safe_consensus_revision",
+            "provenance": "Same-event revision ledger, independent of the price path used as prior."
+          }
+        ],
+        "gap_definition": "Frozen calibrated price response to a given consensus revision minus the observed response by the entry clock.",
+        "transmission": {
+          "affected_tickers": [],
+          "expected_direction": "sign_of_revision_when_response_is_muted",
+          "catalyst": "Subsequent analyst dissemination or earnings confirmation closes the response gap.",
+          "half_life": "H5-H20",
+          "causal_steps": [
+            "consensus changes",
+            "price response is incomplete",
+            "later attention closes the gap"
+          ]
+        }
+      },
+      "why_not_arbitraged": "The hypothesis requires exact revision clocks, same-event lineage, and a calibration conditioned on prior price response rather than a generic momentum filter.",
+      "falsifier": "Date-shift and ticker-shuffle placebos match the exact mapping, or the effect disappears after the current core opportunity cost and canonical costs.",
+      "baseline": {
+        "universe": "current eligible candidate pool",
+        "policy": "Use current core candidates without the revision-response state."
+      },
+      "treatment": {
+        "policy": "Admit one candidate per issuer clock only when the frozen revision-response gap is present."
+      },
+      "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate on identical dates.",
+      "expected_horizon": "H5-H20",
+      "execution_envelope": {
+        "intended_instrument": "liquid cash equity only",
+        "liquidity_dependency": "same ADV and spread floor as current core",
+        "costs_and_carry": "canonical cost and turnover model",
+        "borrow_dependency": "none",
+        "capacity_constraint": "default-off paper cap with one decision per issuer clock",
+        "timing_constraint": "next tradable session after revision and price-prior cutoff",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "evidence_grade": "lead",
+      "prediction": {
+        "success_probability": 0.22,
+        "main_failure_modes": [
+          "already_priced",
+          "wrong_transmission_mapping",
+          "core_opportunity_cost"
+        ],
+        "confidence_reason": "This uses an explicit expectation proxy and an existing independent revision surface, but both calibration and source readiness remain incomplete."
+      },
+      "reopen_condition": "At least 30 independent revision clocks, 10 tickers, and 10 actual core cash-conflict comparisons under a frozen calibration.",
+      "next_machine_action": "Build an outcome-blind overlap and clock audit only; no return read and no experiment reservation.",
+      "production_impact": {
+        "trade_enabled": false,
+        "orders_changed": false,
+        "entry_rules_changed": false,
+        "ranking_changed": false,
+        "sizing_changed": false,
+        "exit_rules_changed": false
+      }
+    }
+  ]
+}

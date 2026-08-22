@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "as_of_et": "2026-07-21 23:11 ET",
+  "supersedes": "data/daily/intraday/decisions/intraday_synthesis_20260721_2228ET.json",
+  "baseline_universe": ["DDOG", "DINO", "HOOD", "META", "MU", "MUU", "NFLX", "QQQ", "RKLB", "SMH", "SNDK", "SNXX", "SPY", "UNH"],
+  "opportunity_cost_winner": {
+    "ticker": "CASH",
+    "reason": "OpenD is healthy, but no held ticker is add-review eligible outside RTH and both leveraged memory ETFs fail trend or sector confirmation."
+  },
+  "evidence_surfaces_used": [
+    {"surface":"price","source":"moomoo_opend_overnight","coverage":"17/17 requested tickers","pit_boundary":"23:11 ET live overnight snapshot; DINO uses latest-price fallback"},
+    {"surface":"flow","source":"latest_moomoo_capital_flow_day","coverage":"through 2026-07-20","pit_boundary":"no verified overnight capital-distribution history"},
+    {"surface":"derivatives","source":"options_forward","coverage":"latest observer snapshot","pit_boundary":"default-off and under-settled; not decision-authorizing"},
+    {"surface":"event","source":"current_news_and_official_ir","coverage":"MU and SNDK demand and earnings context","pit_boundary":"public before decision time"},
+    {"surface":"portfolio_exposure","source":"moomoo_opend_real_account","coverage":"10 positions; cash 54.9%; heat 2.5%","pit_boundary":"current broker collection 2026-07-22T03:10Z"}
+  ],
+  "evidence_surfaces_missing": [
+    {"surface":"overnight_verified_flow_and_depth","reason":"OpenD quotes are available, but the policy has no validated overnight VWAP/depth execution gate"},
+    {"surface":"positioning","reason":"borrow and short-interest surfaces remain missing, stale, or settlement-lagged"}
+  ],
+  "hypothesis_candidates": [
+    {
+      "name":"rth_confirmed_memory_continuation",
+      "baseline":"add MUU or SNXX after a 22%-29% session move in overnight trading",
+      "treatment":"wait for RTH and require underlying plus QQQ/SMH confirmation before paper add review",
+      "expected_horizon":"1d_to_5d",
+      "replacement_value":"cash and unchanged existing positions",
+      "falsifier":"settled rows show overnight continuation entries outperform RTH-confirmed entries after spread, reversal, and leverage-decay costs"
+    },
+    {
+      "name":"underlying_before_leverage",
+      "baseline":"map positive memory fundamentals directly into two correlated 2x ETF additions",
+      "treatment":"evaluate MU or SNDK separately before any leveraged-instrument allocation",
+      "expected_horizon":"5d_to_20d",
+      "replacement_value":"cash or unlevered underlying",
+      "falsifier":"leveraged mapping improves after-cost return without worse drawdown or path decay"
+    }
+  ],
+  "selected_hypothesis":"rth_confirmed_memory_continuation",
+  "economic_mechanism":"The rebound may continue, but overnight chasing after an extreme daily move exposes the account to spread, reversal, and daily-reset path risk without a validated execution edge.",
+  "falsifier":"Verified settled outcomes show a durable after-cost advantage for overnight adds over RTH-confirmed entries.",
+  "evidence_grade":"lead",
+  "next_machine_action":"Re-run during RTH with OpenD; reconsider only if the policy emits ADD_REVIEW_ELIGIBLE after MU/SNDK and QQQ/SMH confirmation.",
+  "production_impact":"none_advisory_only",
+  "orders_placed":false
+}

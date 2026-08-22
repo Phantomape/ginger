@@ -1,0 +1,1170 @@
+================================================================================
+SYSTEM MESSAGE
+================================================================================
+
+Execution memory rule: if section 4 has pending_unexecuted_actions for a ticker, that prior REDUCE/EXIT was already advised but open_positions still shows it was not executed. Repeat that action with decision_mode="pending_unexecuted_action" until the share count reconciles.
+
+你是一个交易组合的灾难检测器。
+
+量化系统已完成所有技术分析、风控过滤、仓位计算和持仓管理决策。
+
+你的唯一职责：
+检查是否有 T1 负面新闻（财报不及预期、FDA拒绝、破产、诉讼、重大监管处罚等）
+否决第 3a 节中的买入信号。
+
+无 T1 负面新闻 → 信号默认通过。你不需要"确认"信号。
+有 T1 负面新闻 → 否决该信号，说明具体哪条新闻、为什么构成灾难风险。
+
+你不做以下决策（均由代码预计算，不可覆盖）：
+- 持仓管理：所有 HOLD/REDUCE/EXIT 已由代码决定（见第 4 节 position_states + suggested_reduce_pct）
+- 边际信号筛选：不存在"需要新闻确认"的信号，R:R < 2.0 已被代码过滤
+- 交易频率控制：由代码层限制
+
+新闻分层（第 2 节每条新闻含 tier 字段）：
+- T1（硬事件）：财报、业绩指引、FDA、并购、破产、高管变动 → 可触发否决
+- T2（可信媒体事实报道）：Reuters、Bloomberg、WSJ → 仅供参考
+- T3（观点/分析）：Seeking Alpha、分析师评级 → 噪音，完全忽略
+
+持仓决策规则（代码已决定，你直接输出，不需要判断）：
+| position_state  | 动作                                        |
+|-----------------|---------------------------------------------|
+| TARGET_EXIT     | EXIT full target_price exit (code-decided)  |
+| ATR_EXIT        | EXIT full ATR stop exit (code-decided)       |
+| CRITICAL_EXIT   | EXIT 全仓（代码已决定）                     |
+| HIGH_REDUCE     | REDUCE（用 suggested_reduce_pct，代码已决定）|
+| HOLD            | HOLD（代码已决定）                          |
+
+CRITICAL 持仓存在时：new_trade 必须为 "NO NEW TRADE"。
+
+================================================================================
+USER MESSAGE
+================================================================================
+
+今天是 Jul. 30, 2026, 09:09 PM EST
+
+你收到以下信息：
+
+1) 当前持仓（手动录入，可能为近似值）：
+{
+    "account": "moomoo_futusg",
+    "source": "moomoo_open_positions",
+    "portfolio_value_usd": 54138.8014,
+    "cash_usd": 14890.96,
+    "currency": "USD",
+    "untagged_tickers": [
+        "BKNG",
+        "MSFT",
+        "MU",
+        "NOW",
+        "TSM"
+    ],
+    "positions": [
+        {
+            "ticker": "AMD",
+            "direction": "long",
+            "shares": 2.0,
+            "avg_cost": 486.86,
+            "entry_date": "2026-07-27",
+            "target_price": 584.23,
+            "stop_price": 440.25,
+            "opened_by_strategy": "legacy",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 995.08,
+            "unrealized_pl": 21.36,
+            "position_id": 6491329785472741618,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "BKNG",
+            "direction": "long",
+            "shares": 4.0,
+            "avg_cost": 186.73,
+            "entry_date": "2026-07-27",
+            "target_price": 224.08,
+            "stop_price": 183.2,
+            "opened_by_strategy": "sleeve",
+            "sleeve": "paper",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 775.04,
+            "unrealized_pl": 28.12,
+            "position_id": 1225778247503865176,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "DDOG",
+            "direction": "long",
+            "shares": 15.0,
+            "avg_cost": 257.603,
+            "entry_date": "2026-07-08",
+            "target_price": 309.12,
+            "stop_price": 252.79,
+            "opened_by_strategy": "state_surface",
+            "sleeve": "state_surface",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Opened 2026-07-08 mirroring the 2026-07-07 cross-sleeve overlap: state_surface rank-4 pending (score 0.914) AND alpha_score_market_regime candidate (0.57, capacity-rejected); discretionary live mirror of the paper signal",
+            "source": "moomoo",
+            "market_val": 4091.85,
+            "unrealized_pl": 227.8,
+            "position_id": 7632815698707742162,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "DINO",
+            "direction": "long",
+            "shares": 60.0,
+            "avg_cost": 88.273,
+            "entry_date": "2026-07-16",
+            "target_price": 105.93,
+            "stop_price": 87.62,
+            "opened_by_strategy": "revision_surprise_low_extension",
+            "sleeve": "revision_surprise_low_extension",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Operator bought 40 DINO shares on 2026-07-16 as a discretionary live mirror of the default-off revision_surprise_low_extension paper pending entry. The sleeve remains trade_enabled=false and forward gate blocked, so this must not be counted as a policy-conformant live fill without separate admission/execution attribution.",
+            "source": "moomoo",
+            "market_val": 5546.4,
+            "unrealized_pl": 250.04,
+            "position_id": 318522979113203200,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "GOOG",
+            "direction": "long",
+            "shares": 8.0,
+            "avg_cost": 333.209,
+            "entry_date": "2026-07-29",
+            "target_price": 399.85,
+            "stop_price": 323.02,
+            "opened_by_strategy": "legacy",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 2722.8,
+            "unrealized_pl": 57.13,
+            "position_id": 4616647482975693099,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "MCD",
+            "direction": "long",
+            "shares": 6.0,
+            "avg_cost": 272.495,
+            "entry_date": "2026-07-27",
+            "target_price": 326.99,
+            "stop_price": 260.86,
+            "opened_by_strategy": "moomoo_capital_flow",
+            "sleeve": "moomoo_capital_flow",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Opened 2026-07-08 mirroring the moomoo_capital_flow paper sleeve fill of 2026-07-07 (paper entry 283.94); note the source signal was full-stack REJECTED (exp-20260702-019), sleeve runs forward-accumulation only",
+            "source": "moomoo",
+            "market_val": 1614.9,
+            "unrealized_pl": -20.07,
+            "position_id": 5025531777523043462,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "MSFT",
+            "direction": "long",
+            "shares": 6.0,
+            "avg_cost": 393.66,
+            "entry_date": "2026-07-27",
+            "target_price": 472.39,
+            "stop_price": 429.44,
+            "opened_by_strategy": "sleeve",
+            "sleeve": "paper",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 2683.56,
+            "unrealized_pl": 321.6,
+            "position_id": 5449802315896139660,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "MU",
+            "direction": "long",
+            "shares": 3.0,
+            "avg_cost": 955.25,
+            "entry_date": "2026-07-22",
+            "target_price": 1146.3,
+            "stop_price": 769.22,
+            "opened_by_strategy": "sleeve",
+            "sleeve": "paper",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 2688.42,
+            "unrealized_pl": -177.33,
+            "position_id": 3858461352207730137,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "NFLX",
+            "direction": "long",
+            "shares": 10.0,
+            "avg_cost": 70.039,
+            "entry_date": "2026-07-20",
+            "target_price": 84.05,
+            "stop_price": 69.03,
+            "opened_by_strategy": "discretionary",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Operator bought 5 shares on 2026-07-20 as a discretionary post-earnings bottom-fishing position; no strategy-generated entry and must not be counted as a policy-conformant live fill",
+            "source": "moomoo",
+            "market_val": 729.0,
+            "unrealized_pl": 28.61,
+            "position_id": 1665085191210887652,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "NOW",
+            "direction": "long",
+            "shares": 5.0,
+            "avg_cost": 107.79,
+            "entry_date": "2026-07-27",
+            "target_price": 129.35,
+            "stop_price": 99.27,
+            "opened_by_strategy": "sleeve",
+            "sleeve": "paper",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 545.95,
+            "unrealized_pl": 7.0,
+            "position_id": 3063494782984568280,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "NVDA",
+            "direction": "long",
+            "shares": 12.0,
+            "avg_cost": 194.358,
+            "entry_date": "2026-07-28",
+            "target_price": 233.23,
+            "stop_price": 186.31,
+            "opened_by_strategy": "legacy",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 2370.96,
+            "unrealized_pl": 38.66,
+            "position_id": 1205093071369121154,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "RKLB",
+            "direction": "long",
+            "shares": 25.0,
+            "avg_cost": 68.117,
+            "entry_date": "2026-07-20",
+            "target_price": 81.74,
+            "stop_price": 55.81,
+            "opened_by_strategy": "discretionary",
+            "sleeve": "discretionary",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Operator bought 5 shares on 2026-07-20 as a discretionary deep-drawdown bottom-fishing position; no strategy-generated entry and must not be counted as a policy-conformant live fill",
+            "source": "moomoo",
+            "market_val": 1650.25,
+            "unrealized_pl": -52.6786,
+            "position_id": 2429400737116646521,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "SPY",
+            "direction": "long",
+            "shares": 5.0,
+            "avg_cost": 733.526,
+            "entry_date": "2026-07-29",
+            "target_price": 880.23,
+            "stop_price": 731.53,
+            "opened_by_strategy": "discretionary_live_canary",
+            "sleeve": "low_deployment_etf",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Operator bought 10 SPY shares on 2026-07-15 as a discretionary limited-live canary informed by the accepted default-off low-deployment ETF cash-substitute sleeve; this was not an automated strategy order and must not be counted as a policy-conformant forward fill without separate admission/execution attribution.",
+            "source": "moomoo",
+            "market_val": 3721.85,
+            "unrealized_pl": 54.22,
+            "position_id": 979423846917469027,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "TSM",
+            "direction": "long",
+            "shares": 3.0,
+            "avg_cost": 377.763,
+            "entry_date": "2026-07-29",
+            "target_price": 453.32,
+            "stop_price": 386.48,
+            "opened_by_strategy": "sleeve",
+            "sleeve": "paper",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 1239.0,
+            "unrealized_pl": 105.71,
+            "position_id": 8235543500659171766,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "UNH",
+            "direction": "long",
+            "shares": 10.0,
+            "avg_cost": 427.34,
+            "entry_date": "2026-07-08",
+            "target_price": 512.81,
+            "stop_price": 403.28,
+            "opened_by_strategy": "finra_otc_internalization",
+            "sleeve": "finra_otc_internalization",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "Opened 2026-07-08 mirroring the finra_otc_internalization paper fill of 2026-07-07 (paper entry 424.16); also an alpha_score_market_regime candidate (0.56) same day. Source signal was REJECTED as alpha (exp-20260706-018), sleeve runs forward-accumulation only",
+            "source": "moomoo",
+            "market_val": 4214.5,
+            "unrealized_pl": -58.9,
+            "position_id": 2978454292040381792,
+            "position_group": "positions"
+        },
+        {
+            "ticker": "APP",
+            "direction": "long",
+            "shares": 5.0,
+            "avg_cost": 400.0,
+            "entry_date": "2026-07-29",
+            "target_price": 480.0,
+            "stop_price": 363.37,
+            "opened_by_strategy": "legacy",
+            "sleeve": "legacy",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 2020.55,
+            "unrealized_pl": 20.55,
+            "position_id": 966674831694330713,
+            "position_group": "observations"
+        },
+        {
+            "ticker": "META",
+            "direction": "long",
+            "shares": 3.0,
+            "avg_cost": 568.147,
+            "entry_date": "2026-07-29",
+            "target_price": 681.78,
+            "stop_price": 511.58,
+            "opened_by_strategy": "legacy",
+            "sleeve": "legacy",
+            "slot_policy": "no_core_slot",
+            "risk_notes": "",
+            "source": "moomoo",
+            "market_val": 1637.73,
+            "unrealized_pl": -66.71,
+            "position_id": 8164780757910206301,
+            "position_group": "observations"
+        }
+    ],
+    "account_snapshot_status": "current_broker_account",
+    "account_values_as_of": "2026-07-31",
+    "broker_execution_ledger": {
+        "status": "ok_with_reconciliation_gaps",
+        "collection_id": "moomoo-20260731T040522845825Z-affccb74850b",
+        "state_path": "D:\\Github\\ginger\\data\\live_pilot\\broker_execution\\state.json",
+        "production_impact": "measurement_only"
+    }
+}
+
+2) 近期精选股票新闻（过去 72 小时，仅自选股）：
+[
+  {
+    "source": "google_news",
+    "title": "AMD Stock And 2 Consumer Tech Picks Riding The AI Spending Split - simplywall.st",
+    "summary": "AMD Stock And 2 Consumer Tech Picks Riding The AI Spending Split&nbsp;&nbsp;simplywall.st",
+    "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQMXI0Z3NfclBjM3Z4RUh4N2VmOVpPQWJEdkhQMEExZ2N1emFMOFlUakdIamdUWTlRSGNOWUNYNGVldjhRZDQyLTllUWlZV1pYZ0YxdXdrY0ZyTXM5Qy1nbDZzQjVzYXdVTEg2VG9SeGJKak03ejRoWnZyTDNGSzYwVjQxd3ZUUUI4bC12VUh5ZUlBSmlFQVpWanBJZHM5ZFlpb1RpWmNBWmxKVjVVU2VzaUExbUM4cE9USnVTaWdaZXEzQWhyUEJnUy1YOGQ0cGxqYURQMUY4X3FubHBEZ0VZ0gHkAUFVX3lxTE4tRGFCc0o4T01oOTF3ZXVtVG10RUlxNkZUd2dhTFluUlNUUXktRXVNNVI0T2VxTEQ2XzdadHhKSEM2cml6TWlQUy1LRElTSENXZjFYUk5Jbm55cWY3enQ0amZCZGJ5eUhyY2dMMk0yNkE5emxwVjVUNzcwbUJmUFhLaVg2WWdOMWVnOGpGRUtaZEN6eENYcW8wdWNXZC15VFRXbm9GcFdSRXJYQXJLemVaVmZ0NThKZjR6UjNQSEdjSEJTZEQ2eEFwc0hNUlotc2pWQ2FEM0k3REdYNmdWUHlvM09GaQ?oc=5",
+    "published_at": "2026-07-31T03:38:35+00:00",
+    "tickers": [
+      "AMD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "AMD"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Analysts Lower SoFi Price Targets Amid Mixed Q2 Results - Intellectia AI",
+    "summary": "Analysts Lower SoFi Price Targets Amid Mixed Q2 Results&nbsp;&nbsp;Intellectia AI",
+    "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOWWJVUURVdlVvSndicWpRUTRocG1TOGN1NGljV0VYM3hScGx0bTgwM21KNkZTYVR0T1lwbFZmOWZESEpScWhfWkNXV08tSFdKT3JVLVlGWXBkLU1JT19UZXptb3hRcWVIeVh1ZERIRkllU1JjVkVYdlRLb3dtM00wWjR2MWduM1lMcmRGZVBQVzRMZUk?oc=5",
+    "published_at": "2026-07-31T03:14:32+00:00",
+    "tickers": [
+      "SOFI"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=SOFI+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "SOFI"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Cathie Wood Snaps Up $14.3 Million of Meta Stock After Post-Earnings Selloff, Ark Sheds Caterpillar Share - Benzinga",
+    "summary": "Cathie Wood Snaps Up $14.3 Million of Meta Stock After Post-Earnings Selloff, Ark Sheds Caterpillar Share&nbsp;&nbsp;Benzinga",
+    "url": "https://news.google.com/rss/articles/CBMigAJBVV95cUxQVDFXOUNfajloeFUzVm5KSTVyUkp3ajh3RTFJd0pKdjZnU2pnOE9yaWgwSWs0ZThzTGYxUEJQRWhYZHpQLVB1cEdwSkN2MzlWMUlZX2FFSlFfdVE3MVRWeVNxOE5RNUp3UU1iTUhsVVo5RU9DbDJEVkZoZVVhc3oyZ0dnLTM0NzJnYXNNMFJHT05lalBlUjFyYTlGX1hYckk0amhYTnJMTUF2V05CZWhkbWJ3REI3SDN5bjNRYkd0dEZPbzdIcWpCc0tIMU5DQ2xadGI2YTROdlRCTlFRSGdYQ05aSVg5d1VKMURYX2pxTURMdWtLbG1RY3Bxck9FYmhn?oc=5",
+    "published_at": "2026-07-31T03:10:19+00:00",
+    "tickers": [
+      "META"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=META+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "META"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Coinbase (COIN) Q2 2026 Earnings Call Transcript - The Globe and Mail",
+    "summary": "Coinbase (COIN) Q2 2026 Earnings Call Transcript&nbsp;&nbsp;The Globe and Mail",
+    "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQWDFCTUY1YnhLTU5ZamFwTUhPUlNBSXh2MHdKeEVQdFEzVzdRdUdWTjFDUWtlQlpyNV9vU2ZodUw4Q2JROTJDV09JazZEYzN2UjBMZ1I5RklBUkY2MmpMa3ZfQ05YYVdvaXctWS1EdEtISkJuMkxJakRoMUk5dFp2bTZjTnVlcGR0WjJTU2FLc1ZadTBJUmJfaFFqNkk5OEl0ZHRHOVNWZ0tkVEUzanNlUlpZTlgxbDQtcGNPdUMxVlBFM0V6ZFdramVSTFVjZw?oc=5",
+    "published_at": "2026-07-31T01:24:10+00:00",
+    "tickers": [
+      "COIN"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=COIN+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "COIN"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "AMD Stock Nears $500 on MSFT Azure and Analyst Upgrade but Earnings Test Looms Soon - FXLeaders",
+    "summary": "AMD Stock Nears $500 on MSFT Azure and Analyst Upgrade but Earnings Test Looms Soon&nbsp;&nbsp;FXLeaders",
+    "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOV1Z3ZkpWYzJPM3dEX2JKSThsaXY4TkxhTjRtVklFNWlwN3dwUGJEZDExTVFtUTB3SFpuM2VsWEdieUxZU2pfRWVNaEVfNTRhTS11Mk5rTjY0aTFXSnpBOTUwNzI1UEFWb1hteGlnLVdILUhfQjVOdEszMkkwdmVFYjZIM0xKbG9uT0ppZ1AyLXNmbVJSMnVVN0ptMXlrQVRBazJQRGN1WFU0YnIwbUhrYVJGSU8wRzJWQVJGblJkZmk0REk?oc=5",
+    "published_at": "2026-07-30T23:20:33+00:00",
+    "tickers": [
+      "MSFT",
+      "AMD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=AMD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "AMD"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Here's What Key Metrics Tell Us About Roblox (RBLX) Q2 Earnings - Yahoo Finance",
+    "summary": "Here's What Key Metrics Tell Us About Roblox (RBLX) Q2 Earnings&nbsp;&nbsp;Yahoo Finance",
+    "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOZjhnVWl2Q0xULWVKcy1wVjJlczVoeDNqQzBCa3BOWHFrbm9fQ195dzBJR0toT3ljdWwyZXFVVWd0MnNYa3RlUFRNZUNQRUNueTZJYkl3VkNac29GSWItRWZmaTNIMTB3NjlUc1VJSmJhNVlScDVrR1gxR216MzJvSko4MzdFMnJzNGZZNVFGZ00wSXFu?oc=5",
+    "published_at": "2026-07-30T23:00:03+00:00",
+    "tickers": [
+      "RBLX"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=RBLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "RBLX"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Vertiv (NYSE:VRT) Trading Up 2% on Better-Than-Expected Earnings - marketbeat.com",
+    "summary": "Vertiv (NYSE:VRT) Trading Up 2% on Better-Than-Expected Earnings&nbsp;&nbsp;marketbeat.com",
+    "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNbU02V0JYZ3V0bUpzWkktTl9JMm9nTGJRTzBGVmJ1R1BrY3haeF9iWEx6c21paFFYVXFnS3M2cnVqdnlUX2FxNk9abEdxeG4tZk9VN0hlWEdhWWljNTZfa1ZCOUwxUVVpUmlaTHVaWEdwVlhVb1llaVg5VjNsR2J5cEE5RERKWm9rR2x6b2ZHRlpPY0NWX1ZCcWIwMWl5d2RES18yTDE1QVJkSXh5RWo5ZS01aW8?oc=5",
+    "published_at": "2026-07-30T21:21:37+00:00",
+    "tickers": [
+      "VRT"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=VRT+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "VRT"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "sec",
+    "title": "8-K - Apple Inc. (0000320193) (Filer)",
+    "summary": "Filed: 2026-07-30 AccNo: 0000320193-26-000018 Size: 417 KB\nItem 2.02: Results of Operations and Financial Condition\nItem 9.01: Financial Statements and Exhibits",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/0000320193-26-000018-index.htm",
+    "published_at": "2026-07-30T16:30:28-04:00",
+    "tickers": [
+      "AAPL"
+    ],
+    "raw_source": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=8-K&company=&dateb=&owner=exclude&start=0&count=100&output=atom",
+    "source_metadata": {
+      "filing_type": "8-K",
+      "sec_cik": "0000320193",
+      "sec_company_name": "Apple Inc.",
+      "sec_filing_form": "8-K",
+      "sec_filer_role": "Filer",
+      "sec_ticker": "AAPL",
+      "sec_company_title": "Apple Inc."
+    },
+    "filing_type": "8-K",
+    "sec_cik": "0000320193",
+    "sec_company_name": "Apple Inc.",
+    "tier": "T3"
+  },
+  {
+    "source": "sec",
+    "title": "8-K - Lumentum Holdings Inc. (0001633978) (Filer)",
+    "summary": "Filed: 2026-07-30 AccNo: 0001628280-26-051078 Size: 140 KB\nItem 5.02: Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers",
+    "url": "https://www.sec.gov/Archives/edgar/data/1633978/000162828026051078/0001628280-26-051078-index.htm",
+    "published_at": "2026-07-30T16:23:56-04:00",
+    "tickers": [
+      "LITE"
+    ],
+    "raw_source": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=8-K&company=&dateb=&owner=exclude&start=0&count=100&output=atom",
+    "source_metadata": {
+      "filing_type": "8-K",
+      "sec_cik": "0001633978",
+      "sec_company_name": "Lumentum Holdings Inc.",
+      "sec_filing_form": "8-K",
+      "sec_filer_role": "Filer",
+      "sec_ticker": "LITE",
+      "sec_company_title": "Lumentum Holdings Inc."
+    },
+    "filing_type": "8-K",
+    "sec_cik": "0001633978",
+    "sec_company_name": "Lumentum Holdings Inc.",
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "TSLA Stock Rebounds From Key $300 Support as Tesla-SpaceX Merger and Robotaxi Optimism Returns - FXLeaders",
+    "summary": "TSLA Stock Rebounds From Key $300 Support as Tesla-SpaceX Merger and Robotaxi Optimism Returns&nbsp;&nbsp;FXLeaders",
+    "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOYnNjb1d3RXNzSEd0c2FHc0wxWWUzYmdxZ3hPVU1mcTFfS1R6VC1BbzhGaHNNMmk4Um43aTJOTmxLLXdoRkJCQTlJUVlXNmJpZVFjeFNVTGxjdzN5aEFuZGxPVnZvdHF5eV9wM1hfR3RZbTBvN1FwTE9MMjJZMG9NRU1YaWx5MjFiaHZDaEt6M1JvNzhIZ3JoZGs1eERmOE15OC1zbV9pd1ZaYzlVaFp5Q2xfa3g0R19lRUxpdlNPODBfQ0M2VGgwQ3A2U1hQZEp1N2c?oc=5",
+    "published_at": "2026-07-30T18:01:27+00:00",
+    "tickers": [
+      "TSLA"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=TSLA+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "TSLA"
+      ]
+    },
+    "tier": "T1"
+  },
+  {
+    "source": "google_news",
+    "title": "BE Stock Soars To Best Day This Year \u2014 Mizuho Upgrades Bloom Energy To 'Outperform,' Sees 48% Upside On Cheap Valuation - Yahoo Finance",
+    "summary": "BE Stock Soars To Best Day This Year \u2014 Mizuho Upgrades Bloom Energy To 'Outperform,' Sees 48% Upside On Cheap Valuation&nbsp;&nbsp;Yahoo Finance",
+    "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPNk5jOWtTMGZocUpUSmZHREJmVVZzaTkxUE1FME5oc2phemdyS0tYZXR2dTdRNGlmVzZUbTg2bWx1bUVTNi1Fa2xWS2dLelYzMUVYbzRUZlVlczlXTmV0bGF6NUZsSTdPaUcwRHZ4ODBlMjg0TkVQLUQ0VDRCOVRzdmhmWnR1THVSdC1ITGt1YUdUZFVwa19J?oc=5",
+    "published_at": "2026-07-30T17:58:18+00:00",
+    "tickers": [
+      "BE"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=BE+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "BE"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Netflix slides to 52-week low following Q2 earnings: What's next for the stock? (NFLX:NASDAQ) - Seeking Alpha",
+    "summary": "Netflix slides to 52-week low following Q2 earnings: What's next for the stock? (NFLX:NASDAQ)&nbsp;&nbsp;Seeking Alpha",
+    "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNTXV5UXFoQkRtM1p1YkRGeXE3MGl3OF9ReS1oS1g5QXlZaDA2NWYwVTFVN3FSb2xuRWNsOUFucXhxYWloSUVJcndoMUQ5djNJY01QUzhGYjkzVjMzdDB3Tk92ZExKbU56RTZRSHJ0Qlk2ZlktMGF1NTRYMTktcDh2dVlvQ1lFQ19TTVoxZURoWVFzYlM4SnVtMkxNa0pXbzJRMmpyNE5EUGRVRkZibzg4TUR3RzM?oc=5",
+    "published_at": "2026-07-30T17:58:14+00:00",
+    "tickers": [
+      "NFLX"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=NFLX+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "NFLX"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Intel Corporation Stock (INTC) Opinions on Earnings Beat and Restructuring - quiverquant.com",
+    "summary": "Intel Corporation Stock (INTC) Opinions on Earnings Beat and Restructuring&nbsp;&nbsp;quiverquant.com",
+    "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQUzcyOUoxN0d4bWRYMXVFQ2ExbzVkdVZUR0xwa1BqNVNfemI1eFhUTUVQNmpDQThya0FmZWcyclRXUGtyQTl5N3hPdGhnd0VmODdiZ1dBb195LTJNVm1xME4ybTJFVzdPWlN1QVRxSXltY2NSREpxa2pJQ3hYSXl6WUlzRkZhTjhUZWNvRU1KeloyNjYwSjVIZ2VNQUR6ZU8zTmR6Vzd2TlJGTGRLbjhiNg?oc=5",
+    "published_at": "2026-07-30T17:37:00+00:00",
+    "tickers": [
+      "INTC"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=INTC+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "INTC"
+      ]
+    },
+    "tier": "T1"
+  },
+  {
+    "source": "google_news",
+    "title": "Will Dividend Strength and Softer Sales Expectations Change McDonald's (MCD) Long-Term Investment Narrative? - Yahoo Finance Singapore",
+    "summary": "Will Dividend Strength and Softer Sales Expectations Change McDonald's (MCD) Long-Term Investment Narrative?&nbsp;&nbsp;Yahoo Finance Singapore",
+    "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQZFJic0VacTAwOFlibEhPNGFvemhUc1FfNDZzZ0R6bkZxS2gxX3VUSmxySnQxdDdYNkxWaV9LR3VqR2hwSjFSOHFHWFQwUmVuaHNzTzFfY09Kdmp3NENxdzF5THVKczhUQjIyQVVHRVhWWXQxWHJ5N3pKeHlrNnNrSkt1S3l0aDB4VTBSaWxYcEZFS1M3UTVn?oc=5",
+    "published_at": "2026-07-30T16:09:26+00:00",
+    "tickers": [
+      "MCD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=MCD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "MCD"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Microsoft stock soars 15% after strong earnings, Copilot super app is coming this quarter - Neowin",
+    "summary": "Microsoft stock soars 15% after strong earnings, Copilot super app is coming this quarter&nbsp;&nbsp;Neowin",
+    "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNRDlxNjdtRUFwekFlNkxRbTNneUROM1VrMmFJQXJadmx3Skc3UHVXd05ldllVOU1oWWJCQlI3UFEwcnRtb01DR25zenNDSUx2bGRqaFVHWWFsTG1vNnhsYUl1Y1BjSmJLU3hwOV8xQlI4UDA1VklsNFQ0R01YR0hIeWl6N08yY3ZxTHpybE1tUW9yQUxYS2h0dGdQc1dXSHZ4ckI1cktzeGFiek9OR3VPLVJGSU51NEXSAbYBQVVfeXFMUDhUNnpOSW1EQ2tVUUgwd2ZUSWprYW9TZTFUZVh2U1Q4Q1Q4T19YaEw1MTlDUHBwRXByU2IwWFZQSmsxay1jT1RHeHNfVGFHbU1nN0g2YjF3a2hjbC11ckRmaEhKa2hCdTF5Yk5QclFZbVN4SDBabUt0NGNlVlNORll3UFhjdFZpQ1BGbmU0eGx6Z0lLLUtXVENEVlZkeGFIRThBRUF1RmZJRDQ0UjU3RFo0aEk0TFE?oc=5",
+    "published_at": "2026-07-30T15:49:00+00:00",
+    "tickers": [
+      "APP"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "APP"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "GE Vernova gains as investors refocus on raised guidance and strong power demand - quiverquant.com",
+    "summary": "GE Vernova gains as investors refocus on raised guidance and strong power demand&nbsp;&nbsp;quiverquant.com",
+    "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOekNuc19ta09OTVpTUFFqWlA2c2ZITVMydldKQW1OTVduZ3lUVlBtUjQ1WUs4a3RSbjlDcDZ2UGM2ODktQjBmLVI5TXU1Yi0yM3A2T1RtVG9qTWFBTDFtZ2RadG5BeWJCc09FVjdaSWdEOTg5QkxOYTFPLTlCZnRRQ3V2cUltUEFyMzJoa3hBblRlOWdoY29yYmFUOHlMVGF1YnJoTUVhTXg1YUd1RjRVaFpicw?oc=5",
+    "published_at": "2026-07-30T14:56:00+00:00",
+    "tickers": [
+      "GE"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=GEV+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "GEV"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Lite Strategy Repurchases 13% of Outstanding Shares Since December, Increasing Litecoin Backing Per Share - The Manila Times",
+    "summary": "Lite Strategy Repurchases 13% of Outstanding Shares Since December, Increasing Litecoin Backing Per Share&nbsp;&nbsp;The Manila Times",
+    "url": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxOOFJNQi1CNGdUNV9PaHZOaHZScDNQX2YtZUNpQ1B4bHRZY3B0bnZHU2NWNE92MENMQkZmNUJKeENrWFpLLTUyc0RrdU1DMkN6VHdQYnBYTmZoMDZvcFRFN3NmWEM2akNIX3F5WkVDVkZvTE5IenREMzFodzM5SmIyR1JaRWF4WGV2ekhEcUp2bER1S3JLRDRLMnFXY0x6a0xFeGRGWlk0RTVhR3IxXzJjcFVWYkc5eHprYjB5WGVHT0RxWTFlNzZ0d2tRWGZUM05Rd0tmSEdWNnZwdHBCbGt0SnZNV1c4bEgwdFVxTUJUWm9YdE8yTTRqU3h4aFlBbHNkSG43VDFabkvSAY4CQVVfeXFMTzVFT19zUkNad1ZnV3piVm5FR1Bvck5OY3FGTGRqUk55YnNfdDVKbXdHZ0V6YnU1WXNmbHpJWWNNUV85WDVjMHdLcFc2VlB4RkJPc3pYYXhFQXB6Z1NTbFgwUDFrNHFrZ3dZWU1xZHM4NU9fVkNkWEtSU3pIcGVHWHRwVFBiU3dUSnVNZVVrVFl5Tkw0TGNqbTFfVjI2M2ptN0NXRUhvNnd2UjVOSEExQkE5c281WERhNkNCRDNuOWx6M0pXVThQOC1VSUtvSmxKN2hOdnJkT243eWEyZk9qeFNZSEl1U045ZWxmTWo3UUI5ODhRbHh4RUNfbnl4Z25ZZFhDNk1nQkZKR21qNjl3?oc=5",
+    "published_at": "2026-07-30T12:45:35+00:00",
+    "tickers": [
+      "LITE"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=LITE+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "LITE"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Applied Digital (NASDAQ: APLD) Beats Revenue Forecasts On Surging AI Data Center Demand - foreignpolicyjournal.com",
+    "summary": "Applied Digital (NASDAQ: APLD) Beats Revenue Forecasts On Surging AI Data Center Demand&nbsp;&nbsp;foreignpolicyjournal.com",
+    "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNV04yeGlxS01Vc1dyTkE4Tk9oTWRVcXhFbl8tSFJDejhOblpLQU5nblNzY2s0Z002amNZd2lxZXhfN3pCQ0FCSERZSzB6X2Z4NnBtXzlTZHVHSUZ3Wkh5UjdzdU04R194enZNc2o5Sl9nVWhobDFHNlRoRVFwcl9TUTFYamhtc0ZnN1Zsek8xQXk3U1RvOVFZenY2THN3TVZOdDZRNnBxLWluR3ByMXEyZUZ1UmtmV0N0MUFEYWNOSldRbWFRQ2R4dTE2bTAzQQ?oc=5",
+    "published_at": "2026-07-29T17:50:00+00:00",
+    "tickers": [
+      "APLD"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=APLD+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "APLD"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "SNDK, WDC Stocks Topple As Blowout Memory Earnings Don\u2019t Surprise Enough \u2014 Retail Pounces On The Dip - Stocktwits",
+    "summary": "SNDK, WDC Stocks Topple As Blowout Memory Earnings Don\u2019t Surprise Enough \u2014 Retail Pounces On The Dip&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxQU3U3NWh3Y2l6OEVIRzhJTlhjNVBPZ2p5NE5VQndaZWs1MW56VnlTTVRLR3VQS1VBVWJZdFhXTlZ5X294b0h5Y0J3NmUyRWhGb0ZwRkg5Umh4RnpKUk1tS0J1dkUzbTB6cDdfTG1LY3JlY2V4YjBfR2xhRHpkbjJ6QW5NTVpnSFBkd1d2OGJiRV8tX3JIX0ZJRmVpUTBXeXlsV2o4cmRzOE1tRWdxLVlrMHZnMGNLRV9ZdTVlSkF2SEd2bUE1TFNwUFBBblFPRERyUHRVV0ZZbVRhNkpaT1Q2WWt5RUlUSm9jS1BTQzV0U3dmMFE?oc=5",
+    "published_at": "2026-07-29T12:52:32+00:00",
+    "tickers": [
+      "WDC"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=WDC+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "WDC"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "MU, SNDK, WDC, Memory Stocks Plunge After SK Hynix Issues Weak Forecast: Analyst Says \u2018Estimates Are BS In Exponential Growth\u2019 - Stocktwits",
+    "summary": "MU, SNDK, WDC, Memory Stocks Plunge After SK Hynix Issues Weak Forecast: Analyst Says \u2018Estimates Are BS In Exponential Growth\u2019&nbsp;&nbsp;Stocktwits",
+    "url": "https://news.google.com/rss/articles/CBMikgJBVV95cUxQVHR5dmVmZEZDZmpubGhUZVVJdGdsbS1OYlFiZGk4M2c5djd0M1hmWF9iRUpfNDhoNmtjOVVzMVhhamN3dFlhX1ZQMHFieFBXRlVLcEpoeXZQUFN6cXpkMzVOWjdOVkwzUFo1OUlEdjdFbHpjeUphYkJVUzM1RDdHLUJZX0tFMUFjS1RJV3NNRFFsWlpPdmVCYk9MMnhId1FGREVUd2ZtZ2x4MG1ZNVN2eWhzZTFGc21KQzRvczduTTZqVDlsM2N4SncyT3o5N3RNcmJMQlRtRDFra3VtQ2QzZTVhWkY4c1RCMnNCZUtucWhWdnVMQ2ZsYUpGTS0wb2QwZEhLQ3ZrNGsta2tRbVdvUS13?oc=5",
+    "published_at": "2026-07-29T06:49:53+00:00",
+    "tickers": [
+      "MU",
+      "WDC"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=WDC+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "WDC"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Alphabet (NASDAQ:GOOG) Stock Rating Upgraded by Phillip Securities - marketbeat.com",
+    "summary": "Alphabet (NASDAQ:GOOG) Stock Rating Upgraded by Phillip Securities&nbsp;&nbsp;marketbeat.com",
+    "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNdEZWMHB3MlpyQlFjNDlvVF90dU9uNmlCeXZEblE4UWJZN2ZpRml2UWVmdVdrQ2RmeE1zdnEtSjBuaGl5cmVPTlhvZnBCOGxxa2lDVHFjWFoyMk9FM3lIcTdLU0NFVkdreDdSRjNFaGttSUJKbFkxVGZKQkRxbElMemtVWUQtbGQzNWxaanNJMXZsMXpGcmF0eE1BLTZ1VW92c1pnaF9uaVI2RzM0dWh3VWR3cTFOdndL?oc=5",
+    "published_at": "2026-07-28T10:33:44+00:00",
+    "tickers": [
+      "GOOG"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=GOOG+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "GOOG",
+        "GOOGL"
+      ]
+    },
+    "tier": "T3"
+  },
+  {
+    "source": "google_news",
+    "title": "Apple (AAPL) Faces Crypto Wallet Lawsuit Over App Store Negligence - simplywall.st",
+    "summary": "Apple (AAPL) Faces Crypto Wallet Lawsuit Over App Store Negligence&nbsp;&nbsp;simplywall.st",
+    "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxORmFfQmFMbE9MRDIxSDVlVHpCY0hpMzFTeFNjNHl3RldKMW1nczZ5MjNUNXZNTVNFdGRKSTRDUS1mWjN3YUZidDA1eW1TR25KcER3Wlc3YkdmakZXTkxqeklicWx6NHRtdDZlOGhZSklHS1NEVGthalJreTh1WHpPdG1tc1hoUkJMUnFZU0pqOXZ4Z3pfZFgtSGJPeHVhcFY4T0FlcWpNWi03T0hCMGQ5ZTNXN05oMWNWZGtuONIBwgFBVV95cUxPcXZHTi1JZFpRNjNGR3g2VVNkMlNnZlBKa0hlbUY3SVIwRElSWGhUYUFFZEdseTlCakdmTXU4TEZHS3o5WkV4VUVGaGZJR0N4cmtqVUVubkhTWl95WjhMb0x3cWVuX0VYTmVmeEREZGYzbXB2Zy1Pbk5OUUNJUGI1ZDJLMTcydmQ5RlQxTmxDbmQzSlhzNzBrZmhpSDh1NjBmUzlHMThIS0ptR3dqdU5UWkFEeWNtT3EzT2JqZTVIV0lnZw?oc=5",
+    "published_at": "2026-07-28T02:21:11+00:00",
+    "tickers": [
+      "AAPL",
+      "APP"
+    ],
+    "raw_source": "https://news.google.com/rss/search?q=APP+stock&hl=en-US&gl=US&ceid=US:en",
+    "source_metadata": {
+      "keywords": [
+        "APP"
+      ]
+    },
+    "tier": "T3"
+  }
+]
+
+news_quality_summary: {"T1": 2, "T2": 0, "T3": 20, "has_actionable_news": true, "note": ""}
+
+--------------------------------------------------------------------------------
+
+
+
+3a) 量化信号 QUANT SIGNALS：今日无满足条件的量化信号。
+
+
+
+4) POSITION MANAGEMENT (pre-computed - use these directly):
+{
+  "account_state": "NORMAL",
+  "new_trade_locked": false,
+  "lock_reason": "",
+  "position_states": {
+    "AMD": "HOLD",
+    "APP": "HOLD",
+    "BKNG": "HOLD",
+    "DDOG": "HOLD",
+    "DINO": "HOLD",
+    "GOOG": "HOLD",
+    "MCD": "HOLD",
+    "META": "HOLD",
+    "MSFT": "HOLD",
+    "MU": "HOLD",
+    "NFLX": "HOLD",
+    "NOW": "HOLD",
+    "NVDA": "HOLD",
+    "RKLB": "HOLD",
+    "SPY": "HOLD",
+    "TSM": "HOLD",
+    "UNH": "HOLD"
+  },
+  "pending_unexecuted_actions": [],
+  "entry_intent_audit": {
+    "purpose": "conservative_entry_top_up_readiness",
+    "accepted_intended_share_fields": [
+      "original_shares",
+      "intended_shares",
+      "target_shares",
+      "signal_suggested_shares",
+      "planned_entry_shares"
+    ],
+    "non_legacy_positions": 12,
+    "positions_with_intended_shares": 0,
+    "coverage_pct": 0.0,
+    "missing_intended_share_tickers": [
+      "BKNG",
+      "DDOG",
+      "DINO",
+      "MCD",
+      "MSFT",
+      "MU",
+      "NFLX",
+      "NOW",
+      "RKLB",
+      "SPY",
+      "TSM",
+      "UNH"
+    ],
+    "invalid_intended_share_fields": [],
+    "underfilled_positions": []
+  },
+  "suggested_reduce_pct": {},
+  "bear_emergency_stops": {},
+  "current_prices": {
+    "AMD": 485.39,
+    "APP": 403.87,
+    "BKNG": 193.24,
+    "DDOG": 268.56,
+    "DINO": 92.44,
+    "GOOG": 333.68,
+    "MCD": 268.44,
+    "META": 539.03,
+    "MSFT": 451.1,
+    "MU": 874.66,
+    "NFLX": 73.17,
+    "NOW": 110.07,
+    "NVDA": 195.04,
+    "RKLB": 64.68,
+    "SPY": 741.69,
+    "TSM": 403.31,
+    "UNH": 421.47
+  },
+  "accounting": {
+    "portfolio_value_usd": 53829.21,
+    "equity_market_value_usd": 38938.25,
+    "cash_usd": 14890.96,
+    "cash_source": "explicit_cash_usd",
+    "cash_is_inferred": false,
+    "warnings": []
+  },
+  "market_regime": {
+    "regime": "BULL",
+    "note": "Both SPY and QQQ are above their 200-day MA. Trend is bullish. New long positions are permitted.",
+    "indices": {
+      "SPY": {
+        "ticker": "SPY",
+        "close": 741.69,
+        "ma200": 696.96,
+        "above_ma": true,
+        "pct_from_ma": 0.0642,
+        "momentum_10d_pct": -0.012
+      },
+      "QQQ": {
+        "ticker": "QQQ",
+        "close": 683.55,
+        "ma200": 643.39,
+        "above_ma": true,
+        "pct_from_ma": 0.0624,
+        "momentum_10d_pct": -0.0317
+      }
+    }
+  },
+  "portfolio_heat": {
+    "portfolio_value_usd": 53829.21,
+    "total_at_risk_usd": 2174.89,
+    "portfolio_heat_pct": 0.0404,
+    "max_heat_pct": 0.08,
+    "can_add_new_positions": true,
+    "heat_note": "Heat 4.0% < 8% cap \u2014 new positions permitted",
+    "position_breakdown": [
+      {
+        "ticker": "AMD",
+        "shares": 2.0,
+        "current_price": 485.39,
+        "hard_stop": 428.44,
+        "effective_stop": 428.44,
+        "effective_stop_source": "default",
+        "at_risk_usd": 113.91,
+        "at_risk_pct": 0.0021
+      },
+      {
+        "ticker": "BKNG",
+        "shares": 4.0,
+        "current_price": 193.24,
+        "hard_stop": 164.32,
+        "effective_stop": 182.23,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 44.04,
+        "at_risk_pct": 0.0008
+      },
+      {
+        "ticker": "DDOG",
+        "shares": 15.0,
+        "current_price": 268.56,
+        "hard_stop": 226.69,
+        "effective_stop": 249.01,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 293.25,
+        "at_risk_pct": 0.0054
+      },
+      {
+        "ticker": "DINO",
+        "shares": 60.0,
+        "current_price": 92.44,
+        "hard_stop": 77.68,
+        "effective_stop": 87.45,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 299.4,
+        "at_risk_pct": 0.0056
+      },
+      {
+        "ticker": "GOOG",
+        "shares": 8.0,
+        "current_price": 333.68,
+        "hard_stop": 293.22,
+        "effective_stop": 316.94,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 133.92,
+        "at_risk_pct": 0.0025
+      },
+      {
+        "ticker": "MCD",
+        "shares": 6.0,
+        "current_price": 268.44,
+        "hard_stop": 239.8,
+        "effective_stop": 260.14,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 49.8,
+        "at_risk_pct": 0.0009
+      },
+      {
+        "ticker": "MSFT",
+        "shares": 6.0,
+        "current_price": 451.1,
+        "hard_stop": 346.42,
+        "effective_stop": 427.25,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 143.1,
+        "at_risk_pct": 0.0027
+      },
+      {
+        "ticker": "MU",
+        "shares": 3.0,
+        "current_price": 874.66,
+        "hard_stop": 840.62,
+        "effective_stop": 840.62,
+        "effective_stop_source": "default",
+        "at_risk_usd": 102.12,
+        "at_risk_pct": 0.0019
+      },
+      {
+        "ticker": "NFLX",
+        "shares": 10.0,
+        "current_price": 73.17,
+        "hard_stop": 61.63,
+        "effective_stop": 69.24,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 39.3,
+        "at_risk_pct": 0.0007
+      },
+      {
+        "ticker": "NOW",
+        "shares": 5.0,
+        "current_price": 110.07,
+        "hard_stop": 94.86,
+        "effective_stop": 99.84,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 51.15,
+        "at_risk_pct": 0.001
+      },
+      {
+        "ticker": "NVDA",
+        "shares": 12.0,
+        "current_price": 195.04,
+        "hard_stop": 171.04,
+        "effective_stop": 183.78,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 135.12,
+        "at_risk_pct": 0.0025
+      },
+      {
+        "ticker": "RKLB",
+        "shares": 25.0,
+        "current_price": 64.68,
+        "hard_stop": 59.94,
+        "effective_stop": 59.94,
+        "effective_stop_source": "default",
+        "at_risk_usd": 118.43,
+        "at_risk_pct": 0.0022
+      },
+      {
+        "ticker": "SPY",
+        "shares": 5.0,
+        "current_price": 741.69,
+        "hard_stop": 645.5,
+        "effective_stop": 728.38,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 66.55,
+        "at_risk_pct": 0.0012
+      },
+      {
+        "ticker": "TSM",
+        "shares": 3.0,
+        "current_price": 403.31,
+        "hard_stop": 332.43,
+        "effective_stop": 375.14,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 84.51,
+        "at_risk_pct": 0.0016
+      },
+      {
+        "ticker": "UNH",
+        "shares": 10.0,
+        "current_price": 421.47,
+        "hard_stop": 376.06,
+        "effective_stop": 402.82,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 186.5,
+        "at_risk_pct": 0.0035
+      },
+      {
+        "ticker": "APP",
+        "shares": 5.0,
+        "current_price": 403.87,
+        "hard_stop": 352.0,
+        "effective_stop": 364.18,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 198.45,
+        "at_risk_pct": 0.0037
+      },
+      {
+        "ticker": "META",
+        "shares": 3.0,
+        "current_price": 539.03,
+        "hard_stop": 499.97,
+        "effective_stop": 500.58,
+        "effective_stop_source": "atr",
+        "at_risk_usd": 115.35,
+        "at_risk_pct": 0.0021
+      }
+    ]
+  },
+  "sector_concentration": {
+    "Technology": 0.385,
+    "Unknown": 0.133,
+    "Healthcare": 0.078,
+    "ETF": 0.069,
+    "Consumer Discretionary": 0.044,
+    "Communication Services": 0.014
+  },
+  "sizing_note": "shares = floor(portfolio_value_usd * 0.01 / (entry_price - stop_price))",
+  "data_warnings": [
+    "ENTRY_TOP_UP blind for ['BKNG', 'DDOG', 'DINO', 'MCD', 'MSFT', 'MU', 'NFLX', 'NOW', 'RKLB', 'SPY', 'TSM', 'UNH']: add one intended-share field (original_shares, intended_shares, target_shares, signal_suggested_shares, planned_entry_shares) to open_positions.json so conservative initial buys can be audited against the original signal size."
+  ],
+  "positions_requiring_attention": []
+}
+
+任务 A — 新仓位：
+- 先读第 4 节 new_trade_locked 字段。若为 true → "NO NEW TRADE"，跳至任务 B
+- 从第 3a 节读取量化信号（已通过所有代码层门控）
+- 若无信号 → "NO NEW TRADE"
+- 检查第 2 节新闻：是否有 T1 负面新闻否决该信号？
+  - 有 T1 负面 → "NO NEW TRADE"，在 veto_check 中说明具体新闻
+  - 无 T1 负面 → 信号通过，生成交易（所有数值直接使用第 3a 节预计算值）
+- 生成交易时必须 echo 第 3a 节的 strategy 字段（trend_long / breakout_long / earnings_event_long）
+
+任务 A2 — 加仓动作：
+- 读取第 3a-add 节 add-on actions（若存在）
+- 这不是新开仓，不受 new_trade_locked 影响；它是代码层 follow-through 加仓
+- 若无 T1 灾难新闻否决该 ticker → 原样输出到 add_on_trades
+- 若有 T1 灾难新闻 → 不输出该加仓，并在 add_on_vetoes 写明新闻和理由
+
+任务 B — 现有持仓审查（全部照搬代码决策）：
+- 读第 4 节 position_states 和 suggested_reduce_pct
+- CRITICAL_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- TARGET_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- ATR_EXIT → EXIT，shares_to_sell = null，decision_mode = "forced_rule"
+- HIGH_REDUCE → REDUCE，shares_to_sell = 总股数 × suggested_reduce_pct / 100（向下取整），decision_mode = "forced_rule"
+- HOLD → HOLD，shares_to_sell = null，decision_mode = "forced_rule"
+- pending_unexecuted_actions overrides HOLD: repeat the prior REDUCE/EXIT with decision_mode = "pending_unexecuted_action"
+- position_actions 必须包含所有持仓
+
+输出格式（仅输出合法 JSON，前后不要有任何文字）：
+
+{
+  "new_trade":
+    "NO NEW TRADE"
+    OR
+    {
+      "ticker": "string",
+      "signal_source": "quant",
+      "veto_check": "PASS — 无T1负面新闻" 或 "VETO — [具体新闻和理由]",
+      "direction": "long",
+      "confidence": 0到1之间的数字,
+      "entry_price": 数字（直接使用第 3a 节值）,
+      "stop_price": 数字（直接使用第 3a 节值）,
+      "target_price": 数字（直接使用第 3a 节值）,
+      "shares_to_buy": 整数（直接使用第 3a 节 sizing.shares_to_buy）,
+      "strategy": "string（照搬第3a节值：trend_long / breakout_long / earnings_event_long）",
+      "invalid_if": "使逻辑无效的具体条件"
+    },
+
+  "add_on_trades": [
+    {
+      "ticker": "string",
+      "action": "ADD",
+      "shares_to_buy": 整数,
+      "fill_timing": "next_session_open",
+      "decision_mode": "code_followthrough_addon",
+      "reason": "照搬第3a-add节代码理由"
+    }
+  ],
+
+  "add_on_vetoes": [
+    {
+      "ticker": "string",
+      "reason": "T1灾难新闻否决理由"
+    }
+  ],
+
+  "position_actions": [
+    {
+      "ticker": "string",
+      "current_position": "long",
+      "action": "HOLD | REDUCE | EXIT",
+      "reason": "照搬第4节代码决策理由",
+      "exit_rule_triggered": "NONE | HARD_STOP | ATR_STOP | TRAILING_STOP | SIGNAL_TARGET | PROFIT_TARGET | PROFIT_LADDER_50 | PROFIT_LADDER_30 | TIME_STOP | APPROACHING_HARD_STOP",
+      "shares_to_sell": 整数或null,
+      "decision_mode": "forced_rule | pending_unexecuted_action",
+      "suggested_new_stop": 数字或null
+    }
+  ]
+}
+
+重要说明：
+- 只输出 JSON，不要 markdown 代码块
+- action=REDUCE 时 shares_to_sell 为必填（= 总股数 × suggested_reduce_pct / 100，向下取整）
+- action=HOLD 或 EXIT 时 shares_to_sell 必须为 null
+- 若无新交易，new_trade 设为字符串 "NO NEW TRADE"
+- 若无加仓动作，add_on_trades 设为空数组 []
+- 若无加仓否决，add_on_vetoes 设为空数组 []
+- position_actions 必须包含所有持仓——即使操作为 HOLD
+

@@ -1,0 +1,374 @@
+{
+  "acceptance_rule": "Use AGENTS.md Gate 4.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260730_003_intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v2.py",
+    "data/experiments/exp-20260730-003/exp_20260730_003_intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v2.json",
+    "experiments/cards/exp-20260730-003.md",
+    "experiments/manifests/exp-20260730-003.json",
+    "experiments/tickets/exp-20260730-003.json",
+    "experiments/logs/exp-20260730-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_promotion": {
+    "admission_class": "settled_forward_attribution",
+    "candidate_id": "cand-ea93e2c4d56f8f8b731a",
+    "candidate_snapshot_hash": "215cea34fede50dd584227599f2f2383cbafa511ee0d5e00e88d595aca3a80ec",
+    "panel_hash": "74492d43185c19ff82d10e8ee9a041496d055c8434bf265c5d31136e52f9869d",
+    "panel_path": "data/alpha_search/intraday_reduce_risk_selection_panel_20260730.json",
+    "panel_sha256": "d60ac0e879e7fa1094ca68b6c6278203ff7f7850a9b15375020d55244f77d3e1",
+    "paper_live_eligible": false,
+    "preflight_hash": "8a3ddc37d7aa81dde375a521e2836739431cb88e6dae794b6ab32e6dc60cf912",
+    "promotion_hash": "24e1bb7ec627ef464a04107e1ec6314fa9ce58eb6cfc248df3604e79d7f4a387",
+    "promotion_request_path": "data/alpha_search/promotions/intraday_reduce_risk_scout_20260730.json",
+    "promotion_request_sha256": "3039c5e7fbb3c1ea3ac8cd0c0c97762d4de7e1b390ce2d1611d36b5cf8fb8621",
+    "research_refs": [
+      "res-20260721-model-monitoring-needs-power-and-tail-geometry"
+    ],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "observed_only",
+    "selection_scope_id": "scope-b1e68c24427b8484c41585c6",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "4967a7d28e5da471ad24c7625478dffb2cdebc0294c0621223ae51aeee924319",
+        "source_contract_hash": "65b6f1fcf2898d43d71d04a775d40d543ddb08933a8fcbc3a53ecc2b7506c6a8",
+        "surface_id": "intraday_machine_action_forward_20260724"
+      },
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "d128d08d8f8fd9348cee530dd024bdb93469deac9d0b83ff0d9eca111d42a058",
+        "source_contract_hash": "2cc070a72f79c740e580096c57a753c75415197cfd6b852501781bc710afa901",
+        "surface_id": "intraday_price_revealed_forward_20260724"
+      }
+    ]
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260730-003.md",
+  "causal_components": [
+    "treatment population fixed to exactly the settled active machine-default REDUCE_RISK strict effective next-close cohorts in the frozen 20260729 outcome ledger (24 outcome-blind); neutral rows are context only and never enter power or concentration denominators",
+    "frozen next-eligible-five-minute execution and completed-15:55-ET next-close settlement under outcome rule v2 and cohort aggregation rule v1",
+    "fail closed per active row unless decision timestamp and machine-default action origin are present and execution time is strictly after the decision timestamp",
+    "frozen result bars from the predeclared 2026-07-24 candidate: at least 20 active actions with at least five per chronological half; costed active mean and median positive; both half means positive; max ticker action-count share at most 35 percent; max ticker positive-value share at most 40 percent; every leave-one-ticker-out total positive; double one-way cost total positive",
+    "amendment-lineage child of the aborted 2026-07-24 candidate: only source readiness snapshot and next machine action changed; hypothesis / falsifier / baseline / treatment / costs are parent-verbatim",
+    "classifier acceptance requires the reservation fingerprint to resolve to intraday_triage_machine_action before generic routes; verify docs/frozen_families.jsonl carries the source identity post-close and record the check before closeout",
+    "distinct population and source are intraday_triage_machine_action plus moomoo_intraday_price with next-close settlement; prohibit exit-lifecycle severity buckets and next-open-to-five-session settlement and slot-reuse attribution and winner-collateral claims",
+    "no strategy or shared-policy or order or sizing or exit-rule change; if rejected then sync the newly declared reopen bar into scripts/build_reopen_readiness.py in this same ticket"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "observed_only_machine_default_counterfactual_attribution_only",
+  "claimed_at": "2026-07-30T16:43:23.151937+00:00",
+  "completed_at": "2026-07-30T16:50:19+00:00",
+  "created_at": "2026-07-30T16:42:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260730-003",
+  "experiment_uid": "expuid-9f72de11f2404740",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260730-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-30T16:42:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v2"
+  },
+  "hypothesis": "Observed-only deterministic policy counterfactual: under the frozen next-eligible-five-minute execution, economic-cohort deduplication, and completed-15:55-ET next-close settlement contract, active machine-default REDUCE_RISK rows add cost-adjusted value versus leaving the same held-position exposure unchanged; semantic overrides are excluded, and no price-independent information claim is made. The corrected exp-20260714-010/exp-20260725-001/002/003 reopen bars are met outcome-blind: 142 strict effective next-close settlements, 24 active machine-default reductions, 9 and 15 per chronological half.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v2"
+  ],
+  "mechanism_family": "intraday_machine_default_continuation_avoidance",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "ohlcv_momentum",
+      "field_tags": [
+        "active",
+        "add",
+        "adjusted",
+        "adjustment",
+        "are",
+        "attribution",
+        "avoidance",
+        "bars",
+        "blind",
+        "chronological",
+        "claim",
+        "close",
+        "cohort",
+        "completed",
+        "continuation",
+        "contract",
+        "corrected",
+        "cost",
+        "counterfactual",
+        "deduplication",
+        "deterministic",
+        "economic",
+        "effective",
+        "eligible",
+        "et",
+        "excluded",
+        "execution",
+        "exp",
+        "exposure",
+        "five",
+        "forward",
+        "frozen",
+        "half",
+        "held",
+        "independent",
+        "information",
+        "intraday",
+        "is",
+        "leaving",
+        "machine",
+        "made",
+        "met",
+        "minute",
+        "no",
+        "observed",
+        "only",
+        "outcome",
+        "overrides",
+        "per",
+        "policy",
+        "position",
+        "price",
+        "reduce",
+        "reductions",
+        "reopen",
+        "risk",
+        "rows",
+        "same",
+        "semantic",
+        "settlement",
+        "settlements",
+        "strict",
+        "unchanged",
+        "under",
+        "value",
+        "versus"
+      ],
+      "gate_shape": "forward_attribution"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "post_earnings_continuation_risk_support",
+        "reopen_condition": null,
+        "score": 0.4613,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "post_earnings_reset_continuation",
+        "reopen_condition": "['Add explicit PIT-safe fields for pre_earnings_risk, post_earnings_continuation, days_since_earnings, and next_future_earnings_dte.', 'Resolve same-day before-open versus after-close earnings timing before any production promotion.', 'Promote only through shared run/backtester policy and parity tests; do not use a broad DTE rollback.']",
+        "score": 0.461,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "sector_relative_risk_adjusted_momentum",
+        "reopen_condition": "Forward replacement-value rows or an orthogonal free-data quality field; do not simply retune sector residual/volatility thresholds.",
+        "score": 0.461,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "core_alpha_score_monotonicity_audit",
+        "reopen_condition": "Use component-level or vector-level attribution to find a more durable leadership/expectation/theme interaction; do not promote raw alpha_score without new forward rows or stronger monotonic evidence.",
+        "score": 0.4608,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "ohlcv_momentum",
+        "family_key": "cross_sectional_ranking_attribution",
+        "reopen_condition": "Cross-sectional ranking via alpha_score is closed for new alpha on robust broad-universe evidence: the edge shrinks when the universe broadens (the opposite of a generalizable alpha) and the only tilt is single-regime (late_strong). Do not propose alpha_score reweighting as a live ranking/sizing change. Reviving a ranking surface needs genuinely populated non-momentum components on the broad unive",
+        "score": 0.4607,
+        "status": "frozen",
+        "trials": 4
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "ohlcv_momentum",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "forward_attribution",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "ohlcv_momentum",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "claude-scheduled-alpha",
+  "prediction": {
+    "confidence_reason": "The corrected 100/20/5/5 power bars are met outcome-blind (142 strict cohorts, 24 active reductions, halves 9/15, max action-count share 25%), but the frozen bars demand positive mean and median, both-half positivity, leave-one-ticker-out sign stability, and a double-cost stress on only 24 active rows; reduce-risk counterfactuals skew negative when breaches mean-revert.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "active_mean_or_median_nonpositive",
+      "chronological_half_instability",
+      "leave_one_ticker_out_sign_failure",
+      "positive_value_concentration",
+      "transaction_cost_stress_failure"
+    ],
+    "recorded_at": "2026-07-30T16:41:51+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 0,
+  "research_refs": [
+    "res-20260721-model-monitoring-needs-power-and-tail-geometry"
+  ],
+  "reservation_intent": {
+    "key": "dcec9d2377a76d75b8bb804f607d016be4cb6653c72f4f3f01599204e090a38a",
+    "payload_hash": "dcec9d2377a76d75b8bb804f607d016be4cb6653c72f4f3f01599204e090a38a",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "research_refs": [
+      "res-20260721-model-monitoring-needs-power-and-tail-geometry"
+    ],
+    "admission_class": "settled_forward_attribution",
+    "selected_evidence_grade": "observed_only",
+    "result_ceiling": "observed_only",
+    "paper_live_eligible": false,
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.25,
+      "brier_score": 0.0625,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "active_mean_or_median_nonpositive",
+        "chronological_half_instability",
+        "leave_one_ticker_out_sign_failure",
+        "positive_value_concentration",
+        "transaction_cost_stress_failure"
+      ],
+      "realized_failure_mode": "chronological_half_instability",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Aggregate direction was positive and robust to leave-one-ticker-out and double costs (+2101 USD total, mean +87.6, median +44.7), better than the 0.25 prior; the rejection came from exactly two predeclared bars: first-half mean -2.17 USD and MUU holding 49.2% of positive value."
+    },
+    "post_run_reflection": {
+      "why_result_happened": "The machine-default REDUCE_RISK counterfactual is aggregate-positive (+2101 USD, mean +87.6, median +44.7, all leave-one-ticker-out totals positive, double-cost stress survives) but fails two frozen robustness bars: the first chronological half has negative mean value (-2.17 USD over 9 actions) and MUU alone holds 49.2% of positive value against the 40% cap. The apparent edge is concentrated in one recent name and one half of the sample, which is exactly what the predeclared bars were designed to catch.",
+      "realized_failure_mode": "chronological_half_instability",
+      "forbidden_near_neighbor_retry": "Do not retune the frozen bars, costs, halves, concentration caps, or treatment population; do not rerun at marginally more rows; do not switch to final_action or semantic-override framings of the same counterfactual; do not reserve readiness-only IDs on this surface.",
+      "new_evidence_required": "Reopen only at 48 settled active machine-default reductions with at least twelve per chronological half (synced into scripts/build_reopen_readiness.py in this ticket), and the max positive-value ticker share must clear 40% at that evaluation; a genuinely new gate shape (severity- or regime-conditioned reduction) with its own predeclared falsifier is the alternative axis. Separately, intraday_triage_machine_action keyword coverage must land as a batch fingerprint repair that also solves promotion-revalidation hermeticity, because live-table recomputation breaks frozen panels."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260730-003.json",
+  "single_causal_variable": "intraday_machine_default_reduce_risk_vs_no_adjustment_next_close_v2",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260730-003.json",
+  "trial_family": "intraday_machine_default_no_adjustment_forward_attribution",
+  "trial_variant_id": "exp-20260730-003",
+  "alpha_promotion_claim_receipt": {
+    "schema_version": 1,
+    "record_type": "alpha_promotion_claim_receipt",
+    "experiment_id": "exp-20260730-003",
+    "experiment_uid": "expuid-9f72de11f2404740",
+    "promotion_hash": "24e1bb7ec627ef464a04107e1ec6314fa9ce58eb6cfc248df3604e79d7f4a387",
+    "promotion_request_sha256": "3039c5e7fbb3c1ea3ac8cd0c0c97762d4de7e1b390ce2d1611d36b5cf8fb8621",
+    "claimed_validation_at": "2026-07-30T16:43:23.151937+00:00",
+    "research_artifact_snapshots": [],
+    "receipt_hash": "a0a0a9f0f2490f20d11008a4308b06d99a601094191eae04c04de3ca44adc12b"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The machine-default REDUCE_RISK counterfactual is aggregate-positive (+2101 USD, mean +87.6, median +44.7, all leave-one-ticker-out totals positive, double-cost stress survives) but fails two frozen robustness bars: the first chronological half has negative mean value (-2.17 USD over 9 actions) and MUU alone holds 49.2% of positive value against the 40% cap. The apparent edge is concentrated in one recent name and one half of the sample, which is exactly what the predeclared bars were designed to catch.",
+    "realized_failure_mode": "chronological_half_instability",
+    "forbidden_near_neighbor_retry": "Do not retune the frozen bars, costs, halves, concentration caps, or treatment population; do not rerun at marginally more rows; do not switch to final_action or semantic-override framings of the same counterfactual; do not reserve readiness-only IDs on this surface.",
+    "new_evidence_required": "Reopen only at 48 settled active machine-default reductions with at least twelve per chronological half (synced into scripts/build_reopen_readiness.py in this ticket), and the max positive-value ticker share must clear 40% at that evaluation; a genuinely new gate shape (severity- or regime-conditioned reduction) with its own predeclared falsifier is the alternative axis. Separately, intraday_triage_machine_action keyword coverage must land as a batch fingerprint repair that also solves promotion-revalidation hermeticity, because live-table recomputation breaks frozen panels."
+  }
+}

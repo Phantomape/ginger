@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-19T16:02:48Z",
+  "run_finished_at": "2026-08-19T16:11:30Z",
+  "milestone": "M0",
+  "work_unit": "m0_v1_bias_register",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "worktree": {
+    "path": "D:/Github/ginger/.codex/worktrees/edge-v2",
+    "branch": "automation/edge-v2",
+    "source_commit": "2c0980680974ed1d8e0cb01ba1e0b80de1fbaedb",
+    "source_dirty_checkout_modified": false
+  },
+  "changed_files": [
+    "data/v2/v1_bias_register.json",
+    "quant/test_v2_bias_register.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260819T1611Z_m0_v1_bias_register.json"
+  ],
+  "verification": [
+    "D:/Github/ginger/.venv/Scripts/python.exe -m pytest quant/test_v2_asset_inventory.py quant/test_v2_bias_register.py -q -> 4 passed in 0.26s",
+    "v1_asset_inventory.json, v1_bias_register.json, and all three hourly receipt JSON files parse successfully",
+    "docs/v2/decision_log.jsonl parses line-by-line: 4 records",
+    "default-off scan found no trade_enabled=true in docs/v2, data/v2, or the V2 contract tests",
+    "git diff --check passed"
+  ],
+  "startup_audit": {
+    "command": "python scripts/experiment.py audit",
+    "checked_at": "2026-08-19T16:02:48Z",
+    "command_exit_code": 0,
+    "audit_passed": false,
+    "tickets_checked": 2481,
+    "logs_checked": 2667,
+    "invalid_alpha_promotion_count": 10,
+    "research_result_ceiling_violation_count": 1,
+    "v2_active_experiment_count": 0,
+    "disposition": "Legacy V1 open tickets remain history or forward observation and do not preempt M0. V1 aggregate status remains navigation only and no V1 qualification transfers."
+  },
+  "bias_register_summary": {
+    "total_biases": 6,
+    "open_biases": 6,
+    "critical": 5,
+    "high": 1,
+    "release_conditions": 18,
+    "release_conditions_met": 0
+  },
+  "scientific_credibility_impact": "Positive: turns six known V1 biases into explicit evidence-bound blockers with quantitative release conditions, preventing legacy universes, weights, incomplete panels, mutable outcomes, wall-clock dates, or AI action authority from silently becoming V2 evidence.",
+  "parity_impact": "No runtime or policy change. The register blocks affected parity and qualification claims until their named deterministic, append-only, clock, comparator, and authority checks have verifiable evidence.",
+  "production_impact": "none",
+  "next_step": "User confirmation or rejection of T0 = 2026-08-18 is the remaining M0 dependency; after confirmation, close M0 and begin M1 initial schemas.",
+  "user_decisions_needed": [
+    "confirm or reject proposed V2 T0 = 2026-08-18",
+    "choose whether the V1 hourly alpha pipeline continues in parallel or freezes to settlement/read-only mode"
+  ]
+}

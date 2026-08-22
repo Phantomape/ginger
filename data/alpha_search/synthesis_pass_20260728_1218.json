@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-28T12:22:00Z",
+  "outcome_accessed": false,
+  "baseline_universe": [
+    "cash_feasible_core_gate1",
+    "cash",
+    "SPY",
+    "QQQ",
+    "Massive active common stocks as of each frozen decision date"
+  ],
+  "opportunity_cost_winner": "cash_no_new_entry",
+  "opportunity_cost_basis": "The current state has 17 positions, one available core slot and no fresh 2026-07-27 core, pilot or add-on signal; Massive is therefore evaluated against the same-date cash-feasible core candidate when one exists and cash otherwise, with SPY and QQQ secondary.",
+  "evidence_surfaces_used": [
+    "cash_feasible_core_gate1",
+    "massive_full_market_ohlcv",
+    "massive_reference_asof_identity",
+    "canonical price context",
+    "flow readiness",
+    "derivatives readiness",
+    "event readiness",
+    "positioning and portfolio exposure state",
+    "data/research_digest/latest_digest.md"
+  ],
+  "evidence_surfaces_missing": [
+    "immutable as-published Massive vendor vintage",
+    "canonical Massive daily/replay parity",
+    "flow/options paired settlements at the registered threshold",
+    "intraday REDUCE_RISK active-action power"
+  ],
+  "hypothesis_candidates": [
+    {
+      "candidate": "Massive date-native full-market continuation opportunity cost",
+      "queue": "exploration",
+      "baseline": "same-date cash-feasible core candidate if present, else cash",
+      "treatment": "top three as-of active common stocks under the frozen broad-market continuation rule",
+      "expected_horizon": "next_open_to_20_sessions",
+      "replacement_value_comparator": "cash-feasible core-or-cash, with SPY and QQQ secondary",
+      "falsifier": "fewer than five selected touches in any standard window, non-positive after-cost replacement value, a non-positive window, concentration breach, or double-cost failure",
+      "readiness": "eligible_for_outcome_blind_D0_D3"
+    },
+    {
+      "candidate": "flow/options disagreement downrank",
+      "queue": "adjacent",
+      "baseline": "cash-feasible core ranking",
+      "treatment": "downrank disagreement names",
+      "expected_horizon": "H20",
+      "replacement_value_comparator": "unchanged core ranking",
+      "falsifier": "paired settlements do not add replacement value",
+      "readiness": "vetoed_before_scope: 5 of 10 flow dates and paired settlement count unresolved"
+    },
+    {
+      "candidate": "deterministic intraday REDUCE_RISK",
+      "queue": "exploitation",
+      "baseline": "leave exposure unchanged",
+      "treatment": "execute frozen machine-default reduction",
+      "expected_horizon": "next_close",
+      "replacement_value_comparator": "same held-position notional",
+      "falsifier": "active actions or chronological halves fail the registered power bar",
+      "readiness": "vetoed_before_scope: 12 of 20 actions and 4 of 5 second-half actions"
+    }
+  ],
+  "selected_hypothesis": "Massive date-native full-market continuation opportunity cost",
+  "economic_mechanism": "Date-native membership can reveal liquid continuation candidates omitted by current-roster or core-only history without using present-day membership as a historical input.",
+  "falsifier": "Reject on touch density below five per window, any identity/split/PIT contract failure, aggregate or window-level after-cost replacement value not strictly positive, single-ticker positive-PnL share above 50%, top-five share above 60%, HHI above 0.35, or non-positive double-cost stress.",
+  "pit_tier": "research_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "Freeze a one-candidate D0-D3 panel, complete receipt-bound model-diverse challenge and verification, then reserve at most one private_replay_scout.",
+  "digest_disposition": {
+    "displayed_entry_count": 9,
+    "fresh_unconsumed_entry_count": 0,
+    "action": "no_append",
+    "reason": "Every displayed entry already has a terminal declined/no_expectation_proxy ledger disposition; duplicate consumption rows are forbidden."
+  },
+  "historical_neighbor_acknowledgement": {
+    "experiment_id": "exp-20260627-019",
+    "status": "stale_proposed_outside_7_day_guard",
+    "overlap": "broad-universe expansion",
+    "distinction": "The stale proposal used the existing OHLCV relation and liquidity top-N universe. This scope's legal axis is the new independent Massive dated full-market membership plus split-normalized price surface completed by exp-20260728-002 through exp-20260728-004."
+  },
+  "production_impact": {
+    "trade_enabled": false,
+    "orders_changed": false,
+    "shared_policy_changed": false,
+    "paper_enabled": false,
+    "live_ready": false
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "research_pit accidentally promotes",
+      "legacy fixtures break",
+      "source authorization becomes bypassable",
+      "future leakage is relabeled"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The tier split was straightforward, but adversarial review found raw-mapping, nested-verdict, non-boolean, and self-registration identity bypasses; all were closed with regression tests before acceptance."
+  },
+  "causal_components": [
+    "contract status",
+    "preflight grade ceiling",
+    "mechanism projection",
+    "research replay admission",
+    "registry result ceiling",
+    "paper/live fail-closed",
+    "documentation",
+    "tests"
+  ],
+  "change_summary": "Added a two-tier PIT contract: timestamped non-leaky history can enter hash-bound research replay with an observed-only ceiling, while canonical PIT remains mandatory for accepted paper/live authority.",
+  "change_type": "research_pit_governance",
+  "changed_variable": "two-tier PIT eligibility: research_pit for provisional discovery and canonical_pit for promotion",
+  "component": "AGENTS.md, README.md, docs/backtesting.md, docs/agent_experiment_protocol.md, docs/alpha_search_architecture.md, docs/alpha-optimization-playbook.md, docs/alpha_mechanism_generator.md, docs/experiment_log_format.md, docs/experiment_ticket_schema.md, docs/production_backtest_parity.md, docs/research_digest_pipeline.md, docs/research_pit_policy.md, docs/universe_promotion_protocol.md, quant/alpha_search_contract.py, quant/alpha_search_engine.py, quant/alpha_mechanism_generator.py, quant/experiments/_templates/candidate_pool_full_stack_template.py, quant/full_stack_candidate_pool.py, quant/test_alpha_search_contract.py, quant/test_alpha_search_engine.py, quant/test_alpha_mechanism_generator.py, quant/test_alpha_debate.py, quant/test_experiment_registry.py, quant/test_full_stack_candidate_pool.py, quant/test_persist_self_registered_result.py, scripts/alpha_debate.py, scripts/experiment_registry.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260727-006",
+  "hypothesis": "Alpha discovery currently treats timestamped historical data without canonical as-known vintages as non-PIT, preventing outcome-blind D0-D3 debate and exploratory replay even when future leakage is explicitly excluded. A research_pit tier should admit those sources for provisional research while preserving canonical_pit as the only gate-candidate and promotion grade.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "research_pit_governance",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "A reproducible research-replay admission failure or a new promotion-authority bypass not covered by the current tests"
+  ],
+  "notes": "Governance-only measurement repair. Strategy, orders, ranking, sizing, exits, and baseline metrics are unchanged. Focused suites passed 121 and 139 tests; strict audit passed; adversarial re-review found no remaining promotion-authority blocker.",
+  "parameters": {
+    "locked_variables": [
+      "two-tier PIT eligibility: research_pit for provisional discovery and canonical_pit for promotion"
+    ],
+    "single_causal_variable": "two-tier PIT eligibility: research_pit for provisional discovery and canonical_pit for promotion"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not weaken canonical promotion, relabel known leakage as research_pit, or add another near-identical PIT tier merely to avoid a failed source contract.",
+    "new_evidence_required": "Reopen governance only for a reproducible legitimate research-PIT admission failure or a new concrete promotion-authority bypass; data-specific alpha still requires its own debated experiment.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The tier split was straightforward, but adversarial review found raw-mapping, nested-verdict, non-boolean, and self-registration identity bypasses; all were closed with regression tests before acceptance."
+  },
+  "prediction": {
+    "confidence_reason": "The contracts already separate evidence_grade from promotion and enforce gate_candidate exactly, so the new tier can reuse that boundary.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "research_pit accidentally promotes",
+      "legacy fixtures break",
+      "source authorization becomes bypassable",
+      "future leakage is relabeled"
+    ],
+    "recorded_at": "2026-07-27T16:47:18+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-27T17:26:23+00:00",
+  "trial_family": "research_pit_governance",
+  "trial_variant_id": "exp-20260727-006"
+}

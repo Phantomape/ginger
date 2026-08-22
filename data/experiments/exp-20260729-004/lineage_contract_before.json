@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-20260729-004",
+  "artifact_type": "measurement_contract_before",
+  "recorded_at": "2026-07-29T04:18:08Z",
+  "outcome_accessed": false,
+  "strategy_or_order_behavior_changed": false,
+  "baseline": {
+    "candidate_contract_has_amendment_lineage": false,
+    "d3_can_authenticate_one_parent_specific_amendment": false,
+    "discovery_history_binds_candidate_snapshot_hash_and_parent_metadata": false,
+    "freeze_and_verify_preserve_duplicate_fingerprint_records": false,
+    "observed_failure": "A complete 1397-record history correctly exposes cand-d3d84780295914d0f19a as a near neighbor of cand-4047cfda28a51c488a77, but D3 has no fail-closed way to distinguish a genuine outcome-blind contract-completion amendment from an alpha retune. Using the older 1392-record snapshot hides the parent and is invalid."
+  },
+  "source_evidence": [
+    "data/alpha_search/massive_dividend_restart_pre_reservation_block_v2_20260729.json",
+    "data/alpha_search/massive_dividend_restart_prior_fingerprints_v2_20260729.json",
+    "data/alpha_search/massive_dividend_restart_panel_v3_20260729.json"
+  ],
+  "acceptance_contract": {
+    "positive": "A depth-one pre-reservation amendment may waive only its exact authenticated parent when every actual semantic diff is in the closed evaluation-artifact allowlist.",
+    "negative": [
+      "Missing, wrong-hash, wrong-scope, nested, cyclic, post-outcome, or previously reserved parents reject.",
+      "Mechanism, treatment policy, threshold, ranking, top-N, horizon, comparator rule, notional, or execution changes reject.",
+      "Any second exact or near historical neighbor still rejects.",
+      "Panel verification must recompute the same lineage decision from the external history snapshot."
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+ "schema_version": 1,
+ "experiment_id": "exp-20260728-005",
+ "record_type": "measurement_repair_before_after",
+ "candidate": "data/alpha_search/massive_split_drift_candidate_20260728_1626.json",
+ "stages": {
+  "before_repair_v1_discovery_false_positive": {
+   "artifact": "data/alpha_search/massive_split_drift_preflight_20260728_1626.json",
+   "decision": "reject",
+   "d3_reasons": [
+    "legacy_near_neighbor:cand-e914d55eb96b70d0ebec:score=0.7576"
+   ]
+  },
+  "mid_repair_v2_keyword_bucket_false_positives": {
+   "artifact": "data/alpha_search/massive_split_drift_preflight_v2_20260728.json",
+   "decision": "reject",
+   "d3_reasons": [
+    "legacy_near_neighbor:exp-20260604-021:score=0.6317",
+    "legacy_near_neighbor:exp-20260623-018:score=0.6263",
+    "legacy_near_neighbor:exp-20260623-028:score=0.6322",
+    "legacy_near_neighbor:exp-20260624-027:score=0.6256",
+    "legacy_near_neighbor:exp-20260716-007:score=0.6256"
+   ]
+  },
+  "mid_repair_v3_stale_ticket_false_positives": {
+   "artifact": "data/alpha_search/massive_split_drift_preflight_v3_20260728.json",
+   "decision": "reject",
+   "d3_reasons": [
+    "legacy_near_neighbor:exp-20260426-040:score=0.6227",
+    "legacy_near_neighbor:exp-20260426-056:score=0.6235",
+    "legacy_near_neighbor:exp-20260426-058:score=0.6235",
+    "legacy_near_neighbor:exp-20260426-061:score=0.6346",
+    "legacy_near_neighbor:exp-20260728-005:score=0.6171"
+   ]
+  },
+  "after_repair_v5_calibrated": {
+   "artifact": "data/alpha_search/massive_split_drift_preflight_v5_20260728.json",
+   "decision": "pass",
+   "d3_reasons": []
+  }
+ },
+ "witnesses": {
+  "cross_mechanism_discovery_pair_score": 0.7576,
+  "keyword_bucket_family_scores": [
+   0.6317,
+   0.6263,
+   0.6322,
+   0.6256,
+   0.6256
+  ],
+  "stale_ticket_scores": [
+   0.6227,
+   0.6235,
+   0.6235,
+   0.6346,
+   0.6171
+  ],
+  "inferred_projection_family_scores": [
+   0.6143,
+   0.616,
+   0.6152,
+   0.6105,
+   0.6107
+  ],
+  "structural_duplicate_threshold": 0.85,
+  "mechanism_same_jaccard": 0.2
+ },
+ "tests": [
+  "quant/test_alpha_search_history.py (22 tests)",
+  "quant/test_experiment_fingerprint.py (255+2 tests)",
+  "quant/test_alpha_search_engine.py, test_alpha_search_contract.py (no regressions)"
+ ],
+ "frozen_families_rebuild": {
+  "rebuilt": true,
+  "verification": "pead_broad_universe_* families re-routed from forward_replacement_value to revision_expectation; 31 genuine settled-forward families remain in the bucket"
+ },
+ "trade_enabled": false,
+ "production_impact": "none: discovery-guard calibration only; no entry, exit, ranking, sizing or order path changed"
+}

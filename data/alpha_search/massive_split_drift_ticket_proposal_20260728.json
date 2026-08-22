@@ -1,0 +1,34 @@
+{
+ "lane": "alpha_search",
+ "hypothesis": "Research-PIT private replay scout: buying active common stocks at the next session open after an official conventional forward stock-split execution date (frozen conventional-ratio predicate; as-of month-start identity; trailing-20 median dollar volume >= $1M; close >= $3; top-2 per execution date; fixed 10-session hold; round-trip costs on $4,000 paper notional) produces after-cost replacement value above the same-date cash-feasible core candidate when one exists and cash otherwise; result ceiling observed_only, descriptive lead only.",
+ "change_type": "private_replay_scout",
+ "single_causal_variable": "massive_forward_split_execution_drift_v2_next_open_10_session_replacement_value",
+ "causal_components": [
+  "frozen conventional-ratio predicate: split_to/split_from in {n:1 for n in 2..50; 3:2; 5:4; 4:3; 5:2; 7:2} exactly; six nonconventional rows (MDU; LEN; FTV; HON; DD; TTSH) excluded outcome-blind before any return was read",
+  "decision clock: execution-date New York close with next-session-open entry; execution-date observability is a research assumption and any clock-ambiguous row is voided; not re-classified",
+  "identity: research-PIT month-start as-of active common-stock membership with future vendor revisions quarantined; no current-reference or FIGI input",
+  "touch density frozen at 8/5/8 (21 touches); W2 sits exactly at the five-touch floor and any further semantic exclusion voids the candidate at preflight",
+  "comparator: same-date cash-feasible core candidate's identical costed next-open-to-10-session value when present; else zero-return cash; SPY and QQQ reported separately",
+  "date-cluster block bootstrap interval on aggregate replacement value reported descriptively; a positive result whose interval includes zero closes as a descriptive lead only and may not be labeled stable alpha",
+  "double-cost stress; max single-ticker positive share <= 50%; top-five share <= 60%; contribution HHI <= 0.35",
+  "no strategy; shared-policy; order; sizing; or exit-rule change; trade_enabled=false; result ceiling observed_only per docs/research_pit_policy.md"
+ ],
+ "mechanism_family": "forward_split_execution_event_drift",
+ "trial_family": "massive_forward_split_execution_drift_research_replay",
+ "changed_variable": "private_replay_scout_forward_split_drift_replacement_value_v2",
+ "prediction": {
+  "success_probability": 0.2,
+  "main_failure_modes": [
+   "thin_sample",
+   "no_after_cost_replacement_edge",
+   "core_opportunity_cost_not_beaten",
+   "chronological_window_instability",
+   "ticker_concentration",
+   "split_or_identity_contract_failure",
+   "double_cost_stress_failure"
+  ],
+  "confidence_reason": "The split-event surface is genuinely new with zero prior trials and all windows clear the outcome-blind touch floor under the purified predicate, but conventional forward splits are scarce (21 touches, W2 at the floor), the post-split drift literature is mixed and announcement-anchored, and the treatment must beat the accepted core hurdle after costs.",
+  "expected_ev_delta": null,
+  "expected_pnl_delta": null
+ }
+}

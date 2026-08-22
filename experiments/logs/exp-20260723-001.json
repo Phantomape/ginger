@@ -1,0 +1,120 @@
+{
+  "after_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 1.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "model_identity_not_attested",
+      "legacy_cross_provider_regression",
+      "native_codex_model_launch_mismatch"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The existing-channel verifier needed cursor seeding so it would read its own opener instead of the first challenger brief."
+  },
+  "causal_components": [],
+  "change_summary": "Added a receipt-bound Codex model-diverse debate mode while retaining the legacy cross-provider mode.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "model_diverse_codex_debate_identity_contract_v1",
+  "component": "scripts/agent_mailbox.py, scripts/alpha_debate.py, scripts/experiment_registry.py, quant/test_agent_mailbox.py, quant/test_alpha_debate.py, docs/agent_mailbox.md, docs/alpha_search_architecture.md, README.md, data/experiments",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "sharpe": 0.0,
+    "sharpe_daily": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260723-001",
+  "hypothesis": "Replace the mandatory Codex-Claude alpha debate dependency with an auditable model-diverse Codex mode: initiator, challenger, and verifier remain distinct receipt-bound runs, at least two requested model identities are present, challenger differs from initiator, and the existing cross-provider mode remains valid; no strategy, order, ranking, sizing, exit, or live behavior changes.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "measurement_governance_tooling",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260722-002"
+  ],
+  "new_evidence_type": "user_requested_same_provider_model_diversity",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair. Sol initiator, Terra challenger, and a fresh Sol verifier are admissible only with three distinct participants and run IDs, non-empty hash-bound requested models, and challenger-model separation. Same-model, blank-model, reused identity, transcript/attachment tamper, and stale-channel opener cases fail closed. No strategy, order, ranking, sizing, exit, live configuration, EV, or PnL changed. Focused 56 tests and 104 regression tests passed; lean-strict audit passed. Launcher receipts attest the requested model string, not cryptographic proof of served weights, so cross-provider review remains the stronger optional mode.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled",
+      "orders",
+      "entry",
+      "ranking",
+      "sizing",
+      "exit",
+      "live_config"
+    ],
+    "single_causal_variable": "model_diverse_codex_debate_identity_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not treat repeated prompts, sender labels, or multiple runs of one requested model as independent review; do not let verifier reuse the challenger model, participant, or run ID.",
+    "new_evidence_required": "A stronger same-provider identity claim requires provider-attested served-model metadata; otherwise use the preserved cross-provider mode when stronger independence justifies the transfer and authorization cost.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The existing-channel verifier needed cursor seeding so it would read its own opener instead of the first challenger brief."
+  },
+  "prediction": {
+    "confidence_reason": "The accepted exp-20260722-002 gate already binds executable hashes, participants, roles, and run IDs; this change extends the identity predicate to requested_model diversity without touching trading behavior.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "model_identity_not_attested",
+      "legacy_cross_provider_regression",
+      "native_codex_model_launch_mismatch"
+    ],
+    "recorded_at": "2026-07-23T03:34:18+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260723-001/before.json",
+    "data/experiments/exp-20260723-001/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-23T03:48:50+00:00",
+  "trial_family": "model_diverse_codex_debate_contract",
+  "trial_variant_id": "exp-20260723-001"
+}

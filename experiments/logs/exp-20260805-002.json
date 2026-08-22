@@ -1,0 +1,117 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "partial facade state",
+      "proposal round-trip mismatch",
+      "duplicate closeout",
+      "hidden safety-gate bypass"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none_in_validated_operator_path",
+    "surprise_level": "very_low",
+    "surprise_note": "Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade."
+  },
+  "causal_components": [
+    "qualify facade",
+    "start facade",
+    "finish facade",
+    "existing guards remain authoritative",
+    "no strategy or order behavior changes"
+  ],
+  "change_summary": "Added the qualify/start/finish alpha workflow facade, Investment Team lead-only handoff, one-time serialized admission, recoverable hash-bound closeout, and immutable terminal-result guard without changing strategy or orders.",
+  "change_type": "workflow_orchestration",
+  "changed_variable": "three_command_facade_only",
+  "component": "scripts/alpha_workflow.py, quant/test_alpha_workflow_cli.py, docs/alpha_workflow.md",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260805-002",
+  "hypothesis": "Alpha hypothesis: using a four-role Investment Team before machine qualification may produce better candidate ideas. The blocker tested here is operational: one operator currently has to invoke many lifecycle commands. A three-command facade can reduce manual error while delegating every existing guard unchanged.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "alpha_workflow_operator_contract",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260801-001"
+  ],
+  "new_evidence_type": "measurement_workflow_simplification",
+  "next_retry_requires": [],
+  "notes": "93 focused and dependency tests passed; CLI compile/help and lean-strict audit were also checked.",
+  "parameters": {
+    "locked_variables": [
+      "alpha_gate_thresholds",
+      "live_order_behavior",
+      "production_ranking",
+      "position_sizing",
+      "exit_rules"
+    ],
+    "single_causal_variable": "alpha_workflow_three_command_facade_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": "none_in_validated_operator_path",
+    "why_result_happened": "Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade."
+  },
+  "prediction": {
+    "confidence_reason": "The facade delegates existing guarded entry points and removes only redundant operator invocations, so the main risk is orchestration state handling rather than strategy logic.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "partial facade state",
+      "proposal round-trip mismatch",
+      "duplicate closeout",
+      "hidden safety-gate bypass"
+    ],
+    "recorded_at": "2026-08-05T02:10:17+00:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-05T03:03:31+00:00",
+  "trial_family": "operator_complexity_reduction",
+  "trial_variant_id": "exp-20260805-002"
+}

@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": ["ohlcv_warehouse"],
+      "roles": ["market_expectation", "price_revealed_context", "opportunity_cost"],
+      "artifacts": [
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json",
+        "data/warehouse/warehouse_main.sqlite"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_candidate_order",
+        "source": "ohlcv_warehouse"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Use only as the frozen cash-feasible opportunity-cost prior; OHLCV relabeling is not a new evidence source.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260712-015/frozen_behavior_inputs.json": "d8af32ec2cfd73036f81ed8f347e3c09e891e91685e6fc6ff8404ee7f14cb03e",
+        "data/warehouse/warehouse_main.sqlite": "d66b3f05983b35517ea2bef57e43092d6ddb04a0162d6d82ef2499b02960ff86"
+      }
+    },
+    {
+      "surface_id": "spac_common_quote_prior_unbound_20260727",
+      "data_source": "moomoo_openapi_quotes",
+      "component_sources": ["moomoo_openapi_quotes"],
+      "roles": ["market_expectation", "price_revealed_context"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "common_share_price_divided_by_net_redemption_claim",
+        "source": "moomoo_openapi_quotes"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Freeze a survivorship-safe SPAC universe and at least 30 issuer-deadline quote/claim decisions, including at least 20 settled redemptions.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    },
+    {
+      "surface_id": "sec_spac_redemption_terms_unbound_20260727",
+      "data_source": "sec_spac_filings",
+      "component_sources": ["sec_spac_filings"],
+      "roles": ["independent_evidence", "event", "cash_claim"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Parse filing-vintage trust value, redemption terms, deadline and completion status for at least 30 unique decisions with auditable SEC publication timestamps.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    },
+    {
+      "surface_id": "broker_spac_redemption_execution_unbound_20260727",
+      "data_source": "broker_corporate_actions",
+      "component_sources": ["moomoo_openapi", "broker_corporate_actions"],
+      "roles": ["execution_cost", "corporate_action", "liquidity"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Bind account eligibility, broker submission cutoff, fees and cash-release timing for at least 20 settled redemption instructions before any backtest claim.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    },
+    {
+      "surface_id": "adr_home_share_fx_quote_prior_unbound_20260727",
+      "data_source": "moomoo_cross_market_quotes",
+      "component_sources": ["moomoo_openapi_quotes", "external_fx_required"],
+      "roles": ["market_expectation", "price_revealed_context", "execution_cost"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "adr_minus_ratio_adjusted_home_share_after_fx",
+        "source": "moomoo_cross_market_quotes"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Collect at least 30 synchronized executable ADR/home-share/FX decisions across at least 10 fungible pairs and settle at least 20 after all costs.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    },
+    {
+      "surface_id": "adr_conversion_terms_unbound_20260727",
+      "data_source": "issuer_depositary_terms",
+      "component_sources": ["issuer_depositary_terms", "sec_filings"],
+      "roles": ["independent_evidence", "conversion_terms"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Bind PIT ratio, fungibility, issuance/cancellation fee, settlement lag and temporary conversion restrictions for every candidate pair.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    },
+    {
+      "surface_id": "put_call_stock_quote_prior_unbound_20260727",
+      "data_source": "moomoo_option_stock_quotes",
+      "component_sources": ["moomoo_options", "moomoo_openapi_quotes"],
+      "roles": ["market_expectation", "price_revealed_context", "execution_cost"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "executable_put_call_parity_residual",
+        "source": "moomoo_option_stock_quotes"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Freeze at least 100 simultaneous stock/call/put executable quote sets and at least 30 independently settled parity decisions after legging costs.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    },
+    {
+      "surface_id": "option_assignment_dividend_borrow_terms_unbound_20260727",
+      "data_source": "occ_and_carry_terms",
+      "component_sources": ["occ_contracts", "issuer_dividends", "borrow", "risk_free_curve"],
+      "roles": ["independent_evidence", "execution_cost", "assignment_risk"],
+      "artifacts": ["data/alpha_search/convergence_source_contract_preflight_20260727_0846.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 0,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Bind PIT dividends, rates, borrow availability/cost and early-assignment outcomes to at least 30 settled parity decisions.",
+      "source_contract_status": "partial",
+      "as_of": "2026-07-27T15:46:05Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/convergence_source_contract_preflight_20260727_0846.json": "b592475ee326c60206541c2d08ca1ae14e148e8bfaf477da90f8e3d5cb1f7dda"
+      }
+    }
+  ]
+}

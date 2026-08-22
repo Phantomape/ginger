@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1553`
-- Raw records loaded by history report: `5329`
-- History fingerprint: `6d11603a5be06370`
+- Strategy records counted: `1555`
+- Raw records loaded by history report: `5353`
+- History fingerprint: `2c40ff2083be8315`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -46,10 +46,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260716-008` `rejected`: EV `-0.5644`, PnL `$-7,804.17`, family `execution_cash_opportunity_cost_persistence`, trial `cash_conflict_persistent_order_queue`.
-  Lesson: The queue produced only twelve delayed fills. Old-thin improved, but late-strong and mid-weak both lost EV and PnL; aggregate EV fell 0.5644 and aggregate PnL fell 7804.17. All FIFO, thesis, cash-conservation, and con...
-- `exp-20260716-010` `rejected`: EV `+0.0000`, PnL `$0.00`, family `capital_allocation_ablation_batch`, trial `capital_allocation_ablation_batch`.
-  Lesson: Under the enforced cash ledger the boost families still add EV (risk-on leader -6.86% when removed, rs top-ups -6.61%, mid-sector dispersion -5.18%, financials -2.61%, 200MA extension -2.02%, add-on stack -1.49% EV /...
 - `exp-20260717-004` `rejected_fed_h8_weekly_bank_size_relative_value`: EV `-0.1411`, PnL `$-2,089.05`, family `official_bank_balance_sheet_transmission_relative_value`, trial `fed_h8_weekly_release_bank_size_pair`.
   Lesson: The bank-size signal had essentially no gross directional edge: 39 of 78 weeks were gross winners but aggregate gross PnL was only +$94.96. Fixed $28 pair costs consumed $2,184, leaving only 8 net-positive weeks, thre...
 - `exp-20260717-005` `rejected_tsa_historical_source_contract`: EV `+0.0000`, PnL `$0.00`, family `production_visible_tsa_checkpoint_travel_demand_candidate_pool`, trial `tsa_weekly_checkpoint_throughput_travel_demand_basket`.
@@ -70,6 +66,10 @@ facts before changing strategy behavior.
   Lesson: The USDA end-to-end probe also drew a 0.625 novelty near-neighbor WARN, meaning the old gate would have required an override anyway for THIS specific reskin - but the six replayed burned tickets all sailed through the...
 - `exp-20260805-002` `accepted`: EV `+0.0000`, PnL `$0.00`, family `alpha_workflow_operator_contract`, trial `operator_complexity_reduction`.
   Lesson: Concurrency review exposed legacy terminal-overwrite and accepted-override gaps, so the final repair includes narrow registry guards in addition to the three-command facade. TODO TODO
+- `exp-20260814-001` `rejected`: EV `+0.0000`, PnL `$0.00`, family `persistent_reported_dollar_per_transaction_state`, trial `massive_multi_session_adts_state_research_replay`.
+  Lesson: The v2 surfaces registry bound the raw 2.2GB research warehouse sqlite directly, so claim-receipt construction deterministically exceeded the 64MB per-file snapshot cap; the reservation could never be claimed, no repl...
+- `exp-20260814-003` `rejected`: EV `-15620.7100`, PnL `$0.00`, family `persistent_reported_dollar_per_transaction_state`, trial `massive_multi_session_adts_state_research_replay`.
+  Lesson: A robust multi-session elevated average-dollar-per-transaction state with sustained participation and nonnegative tape does not mark incomplete upward price discovery; on this universe it marks short-horizon exhaustio...
 
 ## Mechanism Lesson Cards
 
@@ -81,10 +81,10 @@ facts before changing strategy behavior.
 - [`external_event_satellite_overlay_allocation`](lessons/external-event-satellite-overlay-allocation.md)
 - [`sec_earnings_semantic_field`](lessons/sec-earnings-semantic-field.md)
 - [`state_surface_concentration`](lessons/state-surface-concentration.md)
+- [`persistent_reported_dollar_per_transaction_state`](lessons/persistent-reported-dollar-per-transaction-state.md)
 - [`alpha_workflow_operator_contract`](lessons/alpha-workflow-operator-contract.md)
 - [`measurement_governance_tooling`](lessons/measurement-governance-tooling.md)
 - [`production_visible_finra_venue_short_interest_quiet_absorption_candidate_pool`](lessons/production-visible-finra-venue-short-interest-quiet-absorption-candidate-pool.md)
-- [`production_visible_clinicaltrials_phase3_primary_endpoint_semantic_entry_admission`](lessons/production-visible-clinicaltrials-phase3-primary-endpoint-semantic-entry-admission.md)
 
 ## Line Budget
 

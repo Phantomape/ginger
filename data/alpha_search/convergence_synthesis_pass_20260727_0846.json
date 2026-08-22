@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "search_run": "alpha-search-20260727-convergence-0846",
+  "created_at": "2026-07-27T16:16:50Z",
+  "outcome_blind": true,
+  "experiment_id_reserved": false,
+  "trade_enabled": false,
+  "baseline_universe": [
+    "cash",
+    "current cash-feasible core candidate universe",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash_no_executable_new_entry",
+  "evidence_surfaces_used": [
+    "cash_feasible_core_price_prior_20260715",
+    "spac_common_quote_prior_unbound_20260727",
+    "sec_spac_redemption_terms_unbound_20260727",
+    "broker_spac_redemption_execution_unbound_20260727",
+    "adr_home_share_fx_quote_prior_unbound_20260727",
+    "adr_conversion_terms_unbound_20260727",
+    "put_call_stock_quote_prior_unbound_20260727",
+    "option_assignment_dividend_borrow_terms_unbound_20260727"
+  ],
+  "evidence_surfaces_missing": [
+    "survivorship-safe filing-vintage SPAC claim/deadline/outcome ledger",
+    "primary broker SPAC redemption eligibility/cutoff/acceptance/fee/cash-release contract",
+    "authorized executable SPAC ask/size snapshots",
+    "primary ADR depositary ratio/fungibility/fee/restriction contracts",
+    "synchronized authorized ADR/home-share/FX executable quotes and borrow",
+    "simultaneous executable stock/call/put quotes",
+    "PIT rates, dividends, borrow, assignment outcomes and multi-leg execution evidence"
+  ],
+  "research_digest_consumption": {
+    "digest_path": "data/research_digest/latest_digest.md",
+    "fresh_entries": 0,
+    "ledger_append_required": false,
+    "reason": "Every eligible digest entry already had a terminal disposition."
+  },
+  "hypothesis_candidates": [
+    {
+      "candidate_id": "cand-29f4d34104ee183463fc",
+      "title": "Pre-redemption SPAC trust-claim discount convergence",
+      "economic_mechanism": "contractual cash-claim discount converges through valid redemption and trust cash release",
+      "baseline": "cash or the displaced cash-feasible core candidate",
+      "treatment": "admit only a PIT issuer whose executable ask is below the filing-vintage net claim by an all-in safety margin and whose broker deadline is verified",
+      "expected_horizon": "5 to 120 calendar days",
+      "replacement_value_comparator": "cash, SPY, QQQ and exact displaced core candidate",
+      "falsifier": "fewer than 20 eligible settlements, unreliable broker submission, or non-positive replacement value after all costs/carry/tails",
+      "evidence_grade": "lead",
+      "current_selection": "reject_now",
+      "relative_rank": 1
+    },
+    {
+      "candidate_id": "cand-2fc982273a1db86d8902",
+      "title": "Fungible ADR versus home-share parity convergence",
+      "economic_mechanism": "same legal claim converges across venues outside a fully measured FX/conversion/cost band",
+      "baseline": "cash",
+      "treatment": "paired cheap-claim entry and rich-claim hedge only on synchronized executable quotes and bound conversion terms",
+      "expected_horizon": "intraday to five sessions",
+      "replacement_value_comparator": "cash, unhedged cheap leg and exact displaced core candidate",
+      "falsifier": "fewer than 20 after-cost settlements or inability to execute both legs and FX/borrow hedge",
+      "evidence_grade": "lead",
+      "current_selection": "reject_now",
+      "relative_rank": 2
+    },
+    {
+      "candidate_id": "cand-5abebd9e97d4e183792d",
+      "title": "Assignment-aware executable put-call parity residual",
+      "economic_mechanism": "replication residual converges or settles after all American-option and execution frictions",
+      "baseline": "cash on equal capital and margin",
+      "treatment": "conversion or reversal only on simultaneous executable quotes with bound carry, dividend, borrow and assignment reserves",
+      "expected_horizon": "intraday through expiry",
+      "replacement_value_comparator": "cash on equal margin plus exact displaced core candidate",
+      "falsifier": "fewer than 30 independently executable settlements or non-positive assignment-aware PnL after margin and tail reserves",
+      "evidence_grade": "lead",
+      "current_selection": "reject_now",
+      "relative_rank": 3
+    }
+  ],
+  "selected_hypothesis": null,
+  "research_priority_lead": "cand-29f4d34104ee183463fc",
+  "economic_mechanism": null,
+  "falsifier": null,
+  "evidence_grade": "lead",
+  "panel_result": {
+    "panel_hash": "9b714f4e7b9a2596389de49b9629195259e5dadc16ced500a823e24a50e81fba",
+    "candidate_count": 3,
+    "selected_count": 0,
+    "preflight_decision_counts": {"reject": 3},
+    "failure_reason_counts": {
+      "duplicate_or_frozen": 3,
+      "no_candidate_overlap": 3,
+      "pit_or_source_failure": 3
+    },
+    "interpretation": "The direct zero-row/source/mapping blockers are load-bearing. Component-source mismatches and several machine D3 neighbors are non-load-bearing assembly or classification defects."
+  },
+  "debate_result": {
+    "status": "verified_reject",
+    "challenger_model": "gpt-5.6-terra",
+    "verifier_model": "gpt-5.6-sol",
+    "transcript_sha256": "25c6e1ac1f1931fd30cfea782d45e4cb02cb77de77c35ff3cdd72b9921d304c3",
+    "durable_audit": "data/alpha_search/convergence_debate_rejection_20260727_0846.json"
+  },
+  "next_machine_action": "Do not reserve an experiment. Reopen SPAC only after primary broker/account redemption evidence is versioned; then build a survivorship-safe SEC-plus-executable-quote observer targeting at least 30 issuer-deadline decisions and 20 independent settlements. ADR and put-call parity remain behind larger source and execution contracts.",
+  "production_impact": {
+    "strategy_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "orders_changed": false,
+    "trade_enabled": false
+  }
+}

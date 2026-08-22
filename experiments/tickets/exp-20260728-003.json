@@ -1,0 +1,344 @@
+{
+  "acceptance_rule": "The completed 520-date Massive research warehouse plus official split endpoint stores schema-valid split events with exact raw-byte hashes, all-page checkpoints, idempotent resume, and bounded pagination; event-local historical price factors use only split_from/split_to for price_date < execution_date <= explicit as_of and never use the provider cumulative factor; malformed/conflicting events roll back; current-only identity metadata reliably keeps identity_asof_ready and replay_ready false; focused tests and lean audit pass; Gate-1 hash remains unchanged; no return, production, live, or strategy behavior is touched.",
+  "allowed_write_scope": [
+    "quant/massive_ohlcv_backfill.py",
+    "quant/test_massive_ohlcv_backfill.py",
+    "data/alpha_search/massive_normalization_readiness_20260728.json",
+    "data/warehouse/massive_history.sqlite",
+    "data/warehouse/massive_history.sqlite-wal",
+    "data/warehouse/massive_history.sqlite-shm",
+    "data/warehouse/massive_history.sqlite-journal"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260728-003.md",
+  "causal_components": [
+    "split_event_ingestion",
+    "hash_bound_pagination",
+    "event_local_asof_factor",
+    "current_reference_identity_fail_closed"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "Massive research-PIT split event and identity readiness contract",
+  "claimed_at": "2026-07-28T08:33:43+00:00",
+  "completed_at": "2026-07-28T08:54:23+00:00",
+  "created_at": "2026-07-28T08:32:29+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    },
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "experiment_id": "exp-20260728-003",
+  "experiment_uid": "expuid-a1327e3bbe454ecf",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260728-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-07-28T08:32:29+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "massive_split_identity_readiness_v2"
+  },
+  "hypothesis": "Alpha-enabling massive_full_market_ohlcv measurement repair: after the grouped-daily warehouse reaches 520 complete checkpoints, add the previously absent Massive API split-event surface and a fail-closed research-PIT normalization audit. Persist exact split_from, split_to, and execution_date rows with hash-bound pagination; compute factors only from events known by the explicit as-of cutoff; reject current reference identity as replay-ready when effective-dated lifecycle coverage is missing; do not inspect returns or change production.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "trade_enabled_false",
+    "no_live_or_core_change",
+    "no_return_inspection",
+    "unadjusted_bars",
+    "research_pit_ceiling_observed_only",
+    "production_warehouse_untouched",
+    "current_reference_not_asof"
+  ],
+  "mechanism_family": "massive_full_market_ohlcv",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/backtester.py",
+    "quant/run.py",
+    "quant/signal_engine.py",
+    "quant/risk_engine.py",
+    "operator_inputs/open_positions.json",
+    "data/daily/orders/"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260728-002",
+    "exp-20260727-006",
+    "exp-20260627-019"
+  ],
+  "new_evidence_type": "unprecedented_split_event_fields_on_unsaturated_source",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "massive_full_market_ohlcv",
+      "field_tags": [
+        "a",
+        "absent",
+        "add",
+        "after",
+        "alpha",
+        "api",
+        "as",
+        "audit",
+        "bound",
+        "by",
+        "change",
+        "checkpoints",
+        "closed",
+        "complete",
+        "compute",
+        "contract",
+        "coverage",
+        "current",
+        "cutoff",
+        "daily",
+        "date",
+        "dated",
+        "do",
+        "effective",
+        "enabling",
+        "event",
+        "events",
+        "exact",
+        "execution",
+        "explicit",
+        "factors",
+        "fail",
+        "from",
+        "full",
+        "grouped",
+        "hash",
+        "identity",
+        "inspect",
+        "is",
+        "known",
+        "lifecycle",
+        "market",
+        "massive",
+        "measurement",
+        "missing",
+        "normalization",
+        "not",
+        "of",
+        "only",
+        "or",
+        "pagination",
+        "persist",
+        "pit",
+        "previously",
+        "reaches",
+        "readiness",
+        "ready",
+        "reference",
+        "reject",
+        "repair",
+        "research",
+        "returns",
+        "rows",
+        "split",
+        "surface",
+        "to",
+        "warehouse",
+        "when"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "massive_full_market_ohlcv",
+        "family_key": "massive_full_market_source_ingestion",
+        "reopen_condition": "Reach 520 complete grouped_daily checkpoints spanning 2024-07-29 through 2026-07-24, then freeze an outcome-blind D0-D3 candidate panel and pass effective-dated identity/split checks before reserving the separate no-core replay alpha hypothesis.",
+        "score": 0.4932,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "factor_etf_reference_warehouse_repair",
+        "reopen_condition": "Next valid alpha_search: rerun the fixed factor-residual idiosyncratic leadership bundle with this repaired warehouse surface; do not change thresholds, hold days, notional, or ETF list.",
+        "score": 0.0278,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.5,
+        "data_source": "other",
+        "family_key": "sec_6k_foreign_issuer_event_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.0274,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_event_pit_sic_asof_filing_repair",
+        "reopen_condition": "Materially new evidence is accession-level PIT SIC coverage, fresh closed forward rows from shared daily helper, or a new relation/economic source such as deal consideration, supply-chain exposure, borrow economics, or verified issuer-to-listed-peer linkage.",
+        "score": 0.0274,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "core_entry_admission",
+        "family_key": "observer_no_entry_status_semantics",
+        "reopen_condition": "Wait for materially more closed observer outcome rows after the warehouse advances beyond the 2026-07-03/2026-07-04 event dates, then run RV attribution against cash/SPY/QQQ using the repaired status split.",
+        "score": 0.0273,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "Unprecedented field on an unsaturated source with one prior trial: Massive /stocks/v1/splits event-local split_from, split_to, adjustment_type, and execution_date rows were not ingested before and were explicitly named as a prerequisite to the exp-20260728-002 no-core replay.",
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "massive_full_market_ohlcv",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "Unprecedented field on an unsaturated source with one prior trial: Massive /stocks/v1/splits event-local split_from, split_to, adjustment_type, and execution_date rows were not ingested before and were explicitly named as a prerequisite to the exp-20260728-002 no-core replay.",
+      "categories": [],
+      "invalid_same_source_field_only": true,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "massive_full_market_ohlcv",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-alpha-automation",
+  "prediction": {
+    "confidence_reason": "The 520-date predecessor and real endpoint schema preflight passed before any return inspection; the work reuses tested transport, hash, transaction, and resume primitives, while the identity verdict is deliberately fail-closed.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "split_endpoint_plan_or_schema_mismatch",
+      "pagination_hash_gap",
+      "provider_event_conflict",
+      "future_split_leakage",
+      "cumulative_factor_misuse",
+      "current_reference_identity_false_positive",
+      "credential_leak",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T08:31:46+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 1,
+  "reservation_intent": {
+    "key": "daed1d76dd0748ac4b652db972fe4532cdf60cf9699a5e20e4116547415949e0",
+    "payload_hash": "daed1d76dd0748ac4b652db972fe4532cdf60cf9699a5e20e4116547415949e0",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [
+      "The completed warehouse has 520/520 grouped checkpoints and the split snapshot has 3,049 validated rows with an exact all-page hash and network-free idempotent resume.",
+      "Event-local factors use only split_from/split_to inside the explicit price_date < execution_date <= as_of boundary; the provider cumulative factor is neither normalized nor consumed.",
+      "The metadata-only audit correctly keeps identity_asof_ready and replay_ready false, while Gate-1 and all must-not-touch production hashes remain unchanged."
+    ],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/alpha_search/massive_normalization_readiness_20260728.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.82,
+      "brier_score": 0.0324,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "split_endpoint_plan_or_schema_mismatch",
+        "pagination_hash_gap",
+        "provider_event_conflict",
+        "future_split_leakage",
+        "cumulative_factor_misuse",
+        "current_reference_identity_false_positive",
+        "credential_leak",
+        "dirty_worktree_overlap"
+      ],
+      "realized_failure_mode": "provider_event_conflict",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Real payloads contained seven valid same-ticker same-date same-type stock-dividend groups with distinct provider IDs and ratios; the first attempt safely rolled back, and the final effect key binds the full ratio tuple while provider-ID reuse still fails closed."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260728-003.json",
+  "single_causal_variable": "massive_research_pit_split_and_identity_readiness_contract_v2",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260728-003.json",
+  "trial_family": "massive_split_normalization",
+  "trial_variant_id": "official_split_events_fail_closed_identity_audit_v1"
+}

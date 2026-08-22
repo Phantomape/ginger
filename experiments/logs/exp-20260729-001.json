@@ -1,0 +1,127 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.2057,
+    "max_drawdown_pct": 0.0889,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.36,
+    "total_return_pct": null,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "provider-wide outage mistaken for per-ticker failure",
+      "ORTEX pagination credit accounting undercounts requests",
+      "stale threshold misclassifies weekends",
+      "observer status change leaks into trading behavior",
+      "pre-existing dirty worktree overlaps scoped files"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [
+    "iBorrowDesk retry rotation and bounded host-down abort",
+    "ORTEX complete pagination",
+    "provider-date freshness fail-closed",
+    "observer-only health reporting"
+  ],
+  "change_summary": "Batch forward-health repair: rotate iBorrowDesk failed shards fairly, make ORTEX pagination complete-or-fail with per-page accounting, and fail closed on stale provider content; no strategy behavior change.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "observer_forward_health_fail_closed_v1",
+  "component": "quant/iborrowdesk_data_source.py, quant/ortex_data_sidecar.py, quant/ortex_borrow_observer.py, quant/run.py, quant/test_iborrowdesk_data_source.py, quant/test_ortex_data_sidecar.py, quant/test_ortex_borrow_observer.py, quant/test_run_daily_wiring.py, data/experiments/exp-20260729-001/, experiments/cards/exp-20260729-001.md, experiments/manifests/exp-20260729-001.json, experiments/tickets/exp-20260729-001.json, experiments/logs/exp-20260729-001.json, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260729-001",
+  "hypothesis": "Batch observer-health fault recovery: the iBorrowDesk scheduler must make fair progress past repeatedly failing head-of-line tickers, and the ORTEX daily observer must consume all provider pages and fail closed when its newest content is stale, so rolling forward vintages cannot silently starve while status remains healthy; no signal, ranking, sizing, exit, or order behavior changes.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "production_forward_observer_health",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "genuine_forward_producer_fault_recovery",
+  "next_retry_requires": [
+    "An independently observed source-format change, pagination or credit semantic incompatibility, or another content-identity failure that persists after this repaired contract."
+  ],
+  "notes": "Accepted measurement repair only. Targeted 25/25 and related integration 104/104 tests passed; py_compile and diff checks passed. Active cash-feasible Gate-1 remains EV 6.2057, PnL 130992.36, 49 trades, minimum survival 81.16%, worst drawdown 8.89%. Current ORTEX 20/20 coverage is correctly reclassified stale_content/ready=false; next scheduled producer run must advance content or remain explicitly stale/failed. No network, paper/live, ranking, sizing, exit, or order change.",
+  "parameters": {
+    "locked_variables": [
+      "all strategy rules; candidate ranking; sizing; exits; orders; Gate-1 metrics; existing immutable observer rows; ORTEX credit floor and four-name daily cap; iBorrowDesk rolling-history append-only semantics"
+    ],
+    "single_causal_variable": "forward_observer_fair_progress_pagination_and_content_freshness_contract"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve separate IDs to retune retry order, page size, stale thresholds, or manually refresh either observer; routine production verification and daily materialization consume no experiment ID.",
+    "new_evidence_required": "Reopen only for an independently observed source-format change, pagination or credit semantic incompatibility, or another content-identity failure that persists after this repaired contract.",
+    "realized_failure_mode": null,
+    "why_result_happened": "Both failures were deterministic control-plane defects: success-age priority ignored recent failed attempts, while first-page-only retrieval and coverage-only readiness confused process completion with fresh provider content."
+  },
+  "prediction": {
+    "confidence_reason": "Both faults are reproduced from immutable local state and arise from bounded deterministic control-flow defects; the existing modules already expose retry state, pagination, provider dates, and observer-only contracts needed for a narrow repair.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "provider-wide outage mistaken for per-ticker failure",
+      "ORTEX pagination credit accounting undercounts requests",
+      "stale threshold misclassifies weekends",
+      "observer status change leaks into trading behavior",
+      "pre-existing dirty worktree overlaps scoped files"
+    ],
+    "recorded_at": "2026-07-29T00:19:04+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260729-001/before_measurement.json",
+    "data/experiments/exp-20260729-001/after_measurement.json",
+    "data/experiments/exp-20260729-001/exp_20260729_001_observer_forward_health.json",
+    "quant/iborrowdesk_data_source.py",
+    "quant/ortex_data_sidecar.py",
+    "quant/ortex_borrow_observer.py",
+    "quant/test_iborrowdesk_data_source.py",
+    "quant/test_ortex_data_sidecar.py",
+    "quant/test_ortex_borrow_observer.py"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-29T00:41:35+00:00",
+  "trial_family": "batch_forward_observer_starvation_fault_recovery",
+  "trial_variant_id": "iborrowdesk_ortex_v1"
+}

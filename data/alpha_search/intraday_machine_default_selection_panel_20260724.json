@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "record_type": "panel_selection",
+  "selection_scope_id": "scope-807e75e01eab3251c791f0cf",
+  "created_at": "2026-07-25T01:45:00Z",
+  "data_cutoff": "2026-07-25T01:16:01Z",
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "intraday_machine_action_forward_20260724",
+      "intraday_price_revealed_forward_20260724"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generator_version": "intraday-machine-default-predeclared-reopen-v1",
+      "queue_budgets": {
+        "adjacent": 1,
+        "exploitation": 0,
+        "exploration": 0
+      },
+      "required_evidence_roles": [
+        "market_expectation",
+        "price_revealed_context",
+        "independent_evidence",
+        "portfolio_exposure"
+      ],
+      "required_precommitments": [
+        "baseline",
+        "treatment",
+        "expected_horizon",
+        "replacement_value_comparator",
+        "falsifier",
+        "execution_envelope",
+        "active_action_power",
+        "chronological_half_stability",
+        "ticker_concentration",
+        "leave_one_ticker_out"
+      ],
+      "required_queues": [
+        "adjacent"
+      ],
+      "schema_version": 1,
+      "selection_anchor": "The sole candidate and formula were predeclared by exp-20260714-010 before the 100-effective-cohort reopen threshold was reached; current selection uses readiness counts only.",
+      "selection_limit": 1,
+      "selection_policy": "Select the one predeclared machine-default versus no-adjustment observed-only attribution only if outcome-blind D0-D3 and model-diverse verification pass.",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-07-25T01:16:01Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-07-25T01:45:00Z",
+    "generator_version": "intraday-machine-default-predeclared-reopen-v1",
+    "manifest_hash": "807e75e01eab3251c791f0cfc90a4c463124d7ccb44c993dbbdfc4fe052cffed",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-07-25T01:16:00Z",
+    "prior_fingerprint_count": 1364,
+    "prior_fingerprint_snapshot_hash": "563aec6de828704d7478655b561e8d932f4fbf22bb8089f51d3ee630ea8f577c",
+    "queue_budgets": {
+      "adjacent": 1,
+      "exploitation": 0,
+      "exploration": 0
+    },
+    "schema_version": 1,
+    "scope_name": "intraday-machine-default-observed-only-20260724",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "9b617c5b1cd9b7eb3098879312669df605588481cfd2979ba3f854b7c18df115",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "807e75e01eab3251c791f0cfc90a4c463124d7ccb44c993dbbdfc4fe052cffed",
+  "surface_registry_hash": "9b617c5b1cd9b7eb3098879312669df605588481cfd2979ba3f854b7c18df115",
+  "prior_fingerprint_snapshot_hash": "563aec6de828704d7478655b561e8d932f4fbf22bb8089f51d3ee630ea8f577c",
+  "prior_fingerprint_count": 1364,
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "queue_budgets": {
+    "adjacent": 1,
+    "exploitation": 0,
+    "exploration": 0
+  },
+  "queue_actual_counts": {
+    "adjacent": 1,
+    "exploitation": 0,
+    "exploration": 0
+  },
+  "expected_candidate_count": 1,
+  "candidate_pool_complete": true,
+  "selection_pool_complete": true,
+  "candidate_ids": [
+    "cand-e3b751228762a361b8c2"
+  ],
+  "candidate_snapshots": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-e3b751228762a361b8c2",
+      "search_queue": "adjacent",
+      "hypothesis": "Under the frozen next-eligible-5-minute execution, economic-cohort deduplication, and next-close settlement contract, the deterministic machine-default REDUCE_RISK action avoids enough post-breach continuation loss to add cost-adjusted value versus leaving the held position unchanged; semantic overrides are excluded.",
+      "fingerprint": {
+        "data_source": "intraday_triage_machine_action",
+        "component_sources": [
+          "intraday_triage_machine_action",
+          "moomoo_intraday_price"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "exit_breach_continuation_avoidance",
+        "decision_surface": "risk_allocation",
+        "payoff_shape": "cost_adjusted_avoided_loss",
+        "horizon": "next_close",
+        "execution_dependency": "next_eligible_5m_open_after_decision_with_fixed_one_way_cost",
+        "portfolio_role": "intraday_drawdown_control"
+      },
+      "surface_ids": [
+        "intraday_machine_action_forward_20260724",
+        "intraday_price_revealed_forward_20260724"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "moomoo_intraday_price",
+          "known_at": "2026-07-24T20:05:41Z",
+          "provenance": {
+            "baseline_policy": "maintain the full held-position exposure through the next regular close",
+            "price_clock": "decision-time context followed by the next eligible five-minute open"
+          }
+        },
+        "independent_evidence": [
+          {
+            "active_action": "REDUCE_RISK",
+            "field": "machine_default_action",
+            "known_at": "2026-07-24T20:05:41Z",
+            "policy_version": "discretionary_intraday_guardrails_v1",
+            "source": "intraday_triage_machine_action"
+          }
+        ],
+        "gap_definition": "The unchanged-exposure prior treats the held position as worth carrying through the next close, while the independently frozen exit-breach state calls for an immediate deterministic exposure reduction.",
+        "transmission": {
+          "affected_tickers": [
+            "APP",
+            "CRDO",
+            "DDOG",
+            "DINO",
+            "GEV",
+            "HOOD",
+            "MCD",
+            "META",
+            "MRVL",
+            "MU",
+            "MUU",
+            "NFLX",
+            "NVDA",
+            "RKLB",
+            "SNXX",
+            "SPY",
+            "TQQQ",
+            "UNH",
+            "WDC"
+          ],
+          "catalyst": "A pre-existing deterministic exit-rule breach known before the next eligible five-minute execution bar.",
+          "expected_direction": "An active REDUCE_RISK decision should add cost-adjusted value when the breached position continues adversely into the next regular close.",
+          "half_life": "From the next eligible five-minute open through the next regular-session close."
+        }
+      },
+      "why_not_arbitraged": "The rule applies only to already-held positions after an internal exit breach, pays the spread and fixed one-way cost, and can be swamped by reversals; any edge is therefore conditional on continuation after the breach rather than a free-standing public entry signal.",
+      "falsifier": "Reject unless there are at least 20 active machine-default actions and at least five in each chronological half; the costed active-action mean and median are positive; each half has positive mean value; the largest ticker is at most 35% of active-action count and at most 40% of positive value; every leave-one-ticker-out total remains positive; and doubling the recorded one-way cost leaves total value positive.",
+      "baseline": {
+        "policy": "Do not alter the held-position exposure after the intraday decision; carry the existing position unchanged through the next regular close.",
+        "universe": "Effective settled primary intraday ticker-day economic cohorts under aggregation rule v1."
+      },
+      "treatment": {
+        "policy": "Apply exactly the recorded machine_default_action from discretionary_intraday_guardrails_v1 at the next eligible five-minute open; only REDUCE_RISK changes exposure, and all semantic action labels are ignored for this attribution."
+      },
+      "replacement_value_comparator": "The exact held-position notional left unchanged through the same next-close horizon, with identical timestamps, price bars, and fixed transaction-cost assumptions.",
+      "expected_horizon": "next_close",
+      "execution_envelope": {
+        "borrow_dependency": "None; treatment only reduces an existing long position and cannot create a short.",
+        "capacity_constraint": "Treatment is capped by the recorded existing-position reduction fraction and cannot exceed current shares.",
+        "costs_and_carry": "Recorded five-basis-point one-way reduction cost plus a predeclared double-cost stress; no carry assumption is added.",
+        "intended_instrument": "A reduction of the exact already-held cash equity or ETF; no new instrument or leverage mapping is created.",
+        "liquidity_dependency": "The next eligible regular-session five-minute open must exist for the held instrument, with the recorded fixed cost applied.",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "Machine state and position notional must be frozen before the next eligible five-minute execution bar; settlement is the next regular close.",
+        "trade_enabled": false
+      },
+      "evidence_grade": "observed_only",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "intraday_machine_action_forward_20260724",
+          "snapshot_hash": "3e1fe7ce511040a4fd0c3cf64325f90abc5d642cf55c68dedc5613caf44a76af"
+        },
+        {
+          "surface_id": "intraday_price_revealed_forward_20260724",
+          "snapshot_hash": "673cc5d200e371f9561704f422d48912ff8189aee5bcc833fa18acbc76ba4a8f"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Machine-default intraday risk reduction versus no adjustment",
+      "created_at": "2026-07-25T01:18:00Z",
+      "created_by": "codex-alpha-automation-20260724",
+      "prediction": {
+        "success_probability": 0.12,
+        "main_failure_modes": [
+          "active_action_power_insufficient",
+          "chronological_half_instability",
+          "leave_one_ticker_out_sign_failure",
+          "positive_value_concentration",
+          "transaction_cost_stress_failure"
+        ],
+        "confidence_reason": "The explicit 100-effective-cohort reopen count is met under a fixed forward contract, but only 12 immutable decisions actively reduce exposure, so the predeclared power and concentration bars are likely to reject."
+      },
+      "reopen_condition": "After this frozen attribution, require at least 20 active machine-default reductions, at least five in each chronological half, and no more than 40% of positive value from one ticker before another promotion review.",
+      "next_machine_action": "If outcome-blind D0-D3 and model-diverse verification pass, reserve one observed-only attribution ID, evaluate only the frozen robustness bars, and leave all production behavior unchanged.",
+      "research_refs": [
+        "res-20260721-model-monitoring-needs-power-and-tail-geometry"
+      ]
+    }
+  ],
+  "candidate_snapshot_hashes": {
+    "cand-e3b751228762a361b8c2": "367a8552099a0169300c8b4f87c1ea1318ec6970396376a713072bdd5003ee7e"
+  },
+  "preflight_decisions": {
+    "cand-e3b751228762a361b8c2": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-e3b751228762a361b8c2",
+      "selection_scope_id": "scope-807e75e01eab3251c791f0cf",
+      "evaluated_at": "2026-07-25T01:45:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-07-25T01:16:01Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "intraday_machine_action_forward_20260724": "3e1fe7ce511040a4fd0c3cf64325f90abc5d642cf55c68dedc5613caf44a76af",
+        "intraday_price_revealed_forward_20260724": "673cc5d200e371f9561704f422d48912ff8189aee5bcc833fa18acbc76ba4a8f"
+      },
+      "declared_evidence_grade": "observed_only",
+      "maximum_supported_evidence_grade": "observed_only",
+      "fingerprint_hash": "e8444bc28735b26fe0582644d426af19d42865fea848844427adb5064280a092",
+      "gates": {
+        "D0": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D3": {
+          "status": "pass",
+          "reasons": []
+        }
+      },
+      "decision": "pass",
+      "failure_reasons": [],
+      "reopen_condition": "After this frozen attribution, require at least 20 active machine-default reductions, at least five in each chronological half, and no more than 40% of positive value from one ticker before another promotion review.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "5cc49963234b3cf9c353b8a933292218d42435188f9b4407639a61d2ea1fd137"
+    }
+  },
+  "preflight_decision_hashes": {
+    "cand-e3b751228762a361b8c2": "5cc49963234b3cf9c353b8a933292218d42435188f9b4407639a61d2ea1fd137"
+  },
+  "scores": {
+    "cand-e3b751228762a361b8c2": {
+      "components": {
+        "evidence_maturity": 0.666667,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 0.7,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.0
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": 0.851333,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "rejection_reasons": {},
+  "selection_limit": 1,
+  "batch_policy_bundle_id": null,
+  "selected_candidate_ids": [
+    "cand-e3b751228762a361b8c2"
+  ],
+  "selected_candidate_id": "cand-e3b751228762a361b8c2",
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "panel_hash": "0663501b4745cb3f5dca8123e3697c72d9a894c6c363ae0c4c267deeafd0313a"
+}

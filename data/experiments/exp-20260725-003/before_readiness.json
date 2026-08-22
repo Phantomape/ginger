@@ -1,0 +1,54 @@
+{
+  "schema": "intraday_reduce_risk_power_readiness_before_v1",
+  "experiment_id": "exp-20260725-003",
+  "captured_at": "2026-07-25T11:12:30Z",
+  "accepted_alpha": false,
+  "strategy_behavior_changed": false,
+  "trade_enabled": false,
+  "active_gate1_reference": {
+    "path": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731",
+    "aggregate_expected_value_score": 6.2057,
+    "aggregate_total_pnl_usd": 130992.36,
+    "trade_count": 49,
+    "minimum_survival_rate": 0.8116,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "source_identity": {
+    "builder_path": "scripts/build_reopen_readiness.py",
+    "builder_sha256": "0520c784b20277ca5351da470d5bbdbfa2d416031670c03fd8b67272f1111248",
+    "readiness_path": "data/reopen_readiness.json",
+    "readiness_sha256": "53fd9fdb6400071f194083c879853e816c435fedce9b818a966fdd6969340b07",
+    "outcome_ledger_path": "data/daily/intraday/backtests/outcome_ledgers/intraday_triage_outcomes_20260724.jsonl",
+    "outcome_ledger_sha256": "cff5e825c533d63e98e3cc558a67a689b3e864060db229e78cc695acbe48b78b",
+    "scorecard_path": "data/daily/intraday/backtests/latest_scorecard.json",
+    "scorecard_sha256": "fc9536c57c3d33813c37626184ebba0369f23e0c53430c471b44b8ebb31b03df"
+  },
+  "intraday_lane": {
+    "counters": {
+      "raw_primary_next_close_rows": 137,
+      "effective_next_close_rows": 118,
+      "raw_closed_next_close_rows": 113,
+      "effective_closed_next_close_rows": 94,
+      "raw_strict_completed_next_close_settlements": 113,
+      "strict_effective_next_close_settlements": 94,
+      "duplicate_economic_rows_excluded": 19,
+      "incomplete_closed_effective_rows_excluded": 0
+    },
+    "thresholds": {
+      "strict_effective_next_close_settlements": 100
+    },
+    "status": "not_ready",
+    "missing_power_contract": {
+      "strict_effective_next_close_reduce_risk_settlements": 20,
+      "first_half_strict_effective_next_close_reduce_risk_settlements": 5,
+      "second_half_strict_effective_next_close_reduce_risk_settlements": 5,
+      "source": "exp-20260725-002 alpha_synthesis and post_run_reflection"
+    }
+  },
+  "defect": {
+    "false_ready_possible": true,
+    "description": "The before builder returned ready whenever strict_effective_next_close_settlements reached 100, even if the selected REDUCE_RISK treatment still had fewer than 20 settled actions or fewer than five actions in either chronological half.",
+    "outcome_direction_read": false
+  }
+}

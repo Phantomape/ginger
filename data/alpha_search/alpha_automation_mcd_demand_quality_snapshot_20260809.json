@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_automation_synthesis",
+  "created_at": "2026-08-09T19:36:19Z",
+  "data_cutoff": "2026-08-09T19:36:19Z",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "latest_completed_market_session": "2026-08-07",
+  "baseline_universe": [
+    "43 core tickers",
+    "13 governance-tradeable or pilot tickers",
+    "42 observation-only tickers",
+    "1227-ticker broad-market research universe",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "opportunity_cost_winner": "cash_no_new_entry",
+  "opportunity_cost_basis": "The latest completed session has zero production signals and zero pilot signals, and position control blocks additions; no candidate-specific forward return or sleeve outcome was used.",
+  "evidence_surfaces_used": [
+    "SEC public filing text for MCD Q2 2026 earnings and 10-Q",
+    "official BLS and Census restaurant demand releases",
+    "official issuer peer releases for restaurant traffic and margin context",
+    "current price-universe, reopen-readiness and portfolio-control inventories for opportunity cost only"
+  ],
+  "evidence_surfaces_missing": [
+    "observable pre-event market expectation or consensus surprise proxy",
+    "canonical as-known historical MCD traffic/check/franchised-margin cohort",
+    "at least five treatment touches in every standard window",
+    "settled replacement value",
+    "candidate-overlapping derivatives, flow and positioning evidence"
+  ],
+  "research_digest": {
+    "artifact": "data/research_digest/latest_digest.md",
+    "fresh_entry_count": 0,
+    "decision": "No new digest entry exists beyond the nine already declined for no_expectation_proxy, so no ledger append is required this run."
+  },
+  "hypothesis_candidates": [
+    {
+      "candidate": "MCD price-mix-led comparable-sales fragility",
+      "queue": "exploration",
+      "decision": "selected_for_lead_qualification",
+      "baseline": "MCD earnings events with positive U.S. comparable sales and positive comparable guest counts",
+      "treatment": "positive U.S. comparable sales driven by check or product mix while comparable guest counts are negative and sales-driven franchised margin dollars still grow",
+      "expected_horizon": "next_open_h10_h20",
+      "replacement_value_comparator": "cash, SPY, QQQ and the unconditioned MCD earnings-event row",
+      "falsifier": "Reject if an as-known historical cohort shows no weaker H10/H20 continuation than positive-traffic events, if any standard window has fewer than five touches, or if expectation, PIT, novelty or transmission checks fail."
+    },
+    {
+      "candidate": "SCCO supplier-financing relief combined with CFTC copper positioning-price disagreement",
+      "queue": "exploration",
+      "decision": "parked_before_qualification",
+      "reason": "No independent copper-futures expectation proxy, CFTC vintage contract, historical touches or settled rows; possible collision with the parked official-release fixed-response lane."
+    },
+    {
+      "candidate": "SEC Item 1.01 contract economics for current BKNG APP COHR rows",
+      "queue": "adjacent",
+      "decision": "declined_before_qualification",
+      "reason": "The relation surface has only one amount and zero duration observations, while issuer-self, peer and economic-terms near-neighbors already require richer counterparty, value, duration or revenue-exposure evidence."
+    }
+  ],
+  "selected_hypothesis": "For MCD earnings events, positive U.S. comparable sales driven by check or product mix while comparable guest counts are negative and franchised margin dollars rise may have weaker H10/H20 continuation than positive-traffic events because nominal sales and high-margin rent or royalty economics can temporarily mask demand fragility.",
+  "economic_mechanism": "A predominantly franchised model monetizes nominal franchisee sales through rent and royalty economics. Price and mix can preserve nominal comparable sales and franchised margin dollars while transactions fall, leaving weaker demand breadth and repeat-purchase support than a traffic-led event.",
+  "falsifier": "A strictly as-known, definition-stable historical MCD cohort must show treatment H10/H20 replacement value is not weaker than positive-traffic events across the standard windows, or any PIT, touch-density, market-prior, novelty, concentration or transmission contract fails.",
+  "pit_tier": "research_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "Run exactly one alpha_workflow qualify call; do not start or reserve an experiment unless D0-D3 promotes the frozen candidate.",
+  "selection_basis": "Mechanism-first scan of current official-source facts, not historical winner ranking. MCD was selected because its filing contains a directly testable divergence between positive comparable sales, negative guest counts and higher franchised margin dollars. No post-event price outcome was accessed.",
+  "selected_event": {
+    "ticker": "MCD",
+    "earnings_accession": "0000063908-26-000067",
+    "earnings_accepted_at": "2026-08-04T11:01:40Z",
+    "earnings_usable_trade_date": "2026-08-05",
+    "ten_q_accession": "0000063908-26-000073",
+    "ten_q_accepted_at": "2026-08-07T12:52:32Z",
+    "ten_q_usable_trade_date": "2026-08-10",
+    "source": "https://www.sec.gov/Archives/edgar/data/63908/000006390826000067/exhibit991-6302026.htm",
+    "facts": [
+      "Q2 global comparable sales increased 1.3% and U.S. comparable sales increased 0.8%.",
+      "U.S. comparable sales were driven by positive check growth including favorable product mix, partly offset by negative comparable guest counts.",
+      "Quarter results excluding specified items were primarily driven by higher sales-driven franchised margins and higher other operating income.",
+      "The 10-Q is a replayable SEC public-PIT proxy but the local archive was fetched after the fact, so it does not prove production-time observation."
+    ]
+  },
+  "independent_context": [
+    {
+      "source": "https://www.bls.gov/news.release/cpi.toc.htm",
+      "known_at": "2026-07-14T12:30:00Z",
+      "fact": "June 2026 limited-service meal prices rose 3.1% year over year, so positive nominal comparable sales need not imply positive traffic."
+    },
+    {
+      "source": "https://www.census.gov/retail/marts/www/marts_current.pdf",
+      "known_at": "2026-07-16T12:30:00Z",
+      "fact": "June 2026 food-services and drinking-places nominal sales rose 3.8% year over year, only modestly above food-away-from-home inflation."
+    },
+    {
+      "source": "https://www.prnewswire.com/news-releases/chipotle-raises-full-year-comparable-sales-guidance-on-strong-q2-momentum-302838152.html",
+      "known_at": "2026-07-29T20:10:00Z",
+      "fact": "Chipotle reported positive transactions and comparable sales alongside lower restaurant-level margin, showing traffic, sales and margin do not mechanically move together."
+    }
+  ],
+  "outcome_accessed": false,
+  "experiment_id_reserved": false
+}

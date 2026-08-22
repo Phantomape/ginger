@@ -1,0 +1,149 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0324,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "historical_date_plan_or_schema_mismatch",
+      "pagination_date_drift",
+      "duplicate_asof_ticker_identity",
+      "response_revision_on_resume",
+      "current_reference_leakage",
+      "rate_limit",
+      "dirty_worktree_overlap"
+    ],
+    "predicted_success_probability": 0.82,
+    "realized_failure_mode": "duplicate_asof_ticker_identity",
+    "surprise_level": "very_low",
+    "surprise_note": "The dated endpoint returned post-decision descriptive revisions; future rows were quarantined before identity comparison and excluded from candidate decisions."
+  },
+  "causal_components": [
+    "official_date_parameter",
+    "active_common_stock_asof_snapshots",
+    "hash_bound_pagination",
+    "unique_ticker_identity",
+    "idempotent_resume",
+    "fail_closed_coverage_audit"
+  ],
+  "change_summary": "Freeze 19 date-bound Massive active common-stock identity snapshots with exact raw provenance, decision-time revision isolation, and network-free resume; no strategy or production change.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "massive_full_market_ohlcv research-PIT effective-dated identity",
+  "component": "quant/massive_ohlcv_backfill.py, quant/test_massive_ohlcv_backfill.py, data/alpha_search/synthesis_pass_20260728_0212.json, data/alpha_search/massive_asof_identity_readiness_20260728.json, data/warehouse/massive_history.sqlite, data/warehouse/massive_history.sqlite-wal, data/warehouse/massive_history.sqlite-shm, data/warehouse/massive_history.sqlite-journal",
+  "date_range": {
+    "end": "2026-04-21",
+    "start": "2025-10-23"
+  },
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260728-004",
+  "hypothesis": "Alpha-enabling massive_full_market_ohlcv identity measurement repair: use the official date query on /v3/reference/tickers to freeze hash-bound active common-stock as-of snapshots for all 19 standard-window month-start decision dates; each (as_of,ticker) maps to exactly one provider identity, current reference rows never enter replay, resume is idempotent, and no return or production behavior is read or changed.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "massive_full_market_ohlcv",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260728-002",
+    "exp-20260728-003",
+    "exp-20260727-005"
+  ],
+  "new_evidence_type": "unprecedented_asof_date_field_on_unsaturated_source",
+  "next_retry_requires": [
+    "The outcome-blind D0-D3 consumer must enforce a machine-tested safe projection limited to as_of, ticker, type, and active; descriptive fields and FIGI/CIK joins remain forbidden.",
+    "Complete the fixed D0-D3 panel and model-diverse debate before reserving at most one research_pit private_replay_scout with result_ceiling=observed_only."
+  ],
+  "notes": "Accepted measurement repair only: 188531 raw versions to 188528 unique identities across 19 dates, minimum 9834 per date, three eligible vendor-revision collapses, zero future-only or undated duplicate groups, exact raw/page/checkpoint hashes valid, and invalid-key idempotent rerun succeeded. Evidence remains lead/research_pit with observed_only replay ceiling; paper/live/trading disabled; no price or return outcomes read. Candidate membership fields are as_of/ticker/type/active only; FIGIs are measurement-only and cross-page duplicates remain fail-closed.",
+  "parameters": {
+    "locked_variables": [
+      "trade_enabled_false",
+      "no_live_or_core_change",
+      "no_return_inspection",
+      "unadjusted_bars",
+      "research_pit_ceiling_observed_only",
+      "production_warehouse_untouched",
+      "active_common_stock_only",
+      "fixed_19_month_start_dates",
+      "current_reference_excluded"
+    ],
+    "single_causal_variable": "Massive effective-dated research-PIT as-of identity surface"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reserve another Massive identity/materialization experiment merely to add more month-start dates, consume descriptive fields, change the row threshold, or retune vendor-revision collapse; this fixed 19-date surface is complete and same-source expansion is not a new evidence axis.",
+    "new_evidence_required": "The next alpha experiment requires an outcome-blind fixed D0-D3 Massive no-core candidate panel, model-diverse debate, and a separate private_replay_scout promotion request. Reopening identity itself requires an independently verified as-published vintage or a genuine cross-page/source-format integrity fault.",
+    "realized_failure_mode": "duplicate_asof_ticker_identity",
+    "why_result_happened": "The official dated endpoint supplied complete active-common-stock membership for all 19 decision dates, but three pages contained duplicate descriptive vendor revisions. The implementation retained post-decision descriptive fields only for provenance, excluded them from candidate decisions, applied the 16:00 America/New_York cutoff to duplicate-revision identity checks, and produced 188,528 unique ticker-date membership rows."
+  },
+  "prediction": {
+    "confidence_reason": "The official Massive documentation and a live outcome-blind 2024-10-02 probe confirm that date returns point-in-time active common-stock rows; 520 grouped days and split events are already frozen. Remaining risk is bounded pagination, identity uniqueness, rate limits, and safe integration in the dirty shared worktree.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "historical_date_plan_or_schema_mismatch",
+      "pagination_date_drift",
+      "duplicate_asof_ticker_identity",
+      "response_revision_on_resume",
+      "current_reference_leakage",
+      "rate_limit",
+      "dirty_worktree_overlap"
+    ],
+    "recorded_at": "2026-07-28T09:18:05+00:00",
+    "success_probability": 0.82
+  },
+  "prior_trial_count": 2,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/alpha_search/massive_asof_identity_readiness_20260728.json",
+    "data/alpha_search/synthesis_pass_20260728_0212.json",
+    "quant/massive_ohlcv_backfill.py",
+    "quant/test_massive_ohlcv_backfill.py"
+  ],
+  "reproduction_command": ".\\.venv\\Scripts\\python.exe -B quant\\massive_ohlcv_backfill.py audit-reference-asof --min-rows-per-date 1000; .\\.venv\\Scripts\\python.exe -m pytest quant\\test_massive_ohlcv_backfill.py -q; .\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict",
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2025-04-22",
+      "start": "2024-10-02"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-07-28T11:03:15+00:00",
+  "trial_family": "massive_asof_identity_surface",
+  "trial_variant_id": "official_month_start_active_cs_snapshots_v1"
+}

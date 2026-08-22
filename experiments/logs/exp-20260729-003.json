@@ -1,0 +1,108 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "legacy_ticket_audit_breakage",
+      "research_pit_ceiling_regression",
+      "stale_cli_reference"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The promotion request itself carries the deterministic safeguards, so the safe simplification was removing debate from schema v2 rather than deleting promotion admission."
+  },
+  "causal_components": [
+    "remove debate gate",
+    "make promotion requests debate-free",
+    "preserve private-replay result ceiling",
+    "update docs and focused tests"
+  ],
+  "change_summary": "Make alpha promotion debate-free by default while retaining deterministic D0-D3, PIT, revocation, proposal, artifact-hash, claim, close, and audit enforcement.",
+  "change_type": "experiment_process_simplification",
+  "changed_variable": "alpha admission no longer requires debate locks or model-review receipts",
+  "component": "AGENTS.md, docs/agent_experiment_protocol.md, docs/alpha-optimization-playbook.md, docs/alpha_search_architecture.md, docs/alpha_mechanism_generator.md, docs/agent_mailbox.md, docs/experiment_ticket_schema.md, docs/experiment_log_format.md, docs/research_digest_pipeline.md, docs/research_pit_policy.md, README.md, scripts/alpha_search.py, scripts/alpha_debate.py, scripts/create_experiment_ticket.py, scripts/experiment_registry.py, quant/test_alpha_debate.py, quant/test_alpha_promotion_v2.py, quant/test_experiment_registry.py, quant/test_persist_self_registered_result.py, data/experiments/exp-20260729-003/exp_20260729_003_remove_alpha_debate_gate.json, experiments/artifacts/exp-20260729-003_remove_alpha_debate_gate.md, experiments/logs/exp-20260729-003.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260729-003",
+  "hypothesis": "Removing mandatory multi-model debate from alpha admission while retaining outcome-blind D0-D3, PIT ceilings, novelty, readiness, claim locks, and audit will eliminate authorization stalls without weakening deterministic experiment safeguards.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_process_simplification",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Schema-v2 promotions omit debate locks and model receipts. Legacy schema-v1 remains readable only for historical compatibility. No strategy, signal, ranking, sizing, exit, order, live, or Gate-1 behavior changed. Verification: 108 focused tests and lean-strict audit passed. docs/alpha_search_architecture.md remained untouched because concurrent claimed exp-20260729-004 owns it; canonical AGENTS/protocol and executable CLI are updated.",
+  "parameters": {
+    "locked_variables": [
+      "alpha admission no longer requires debate locks or model-review receipts"
+    ],
+    "single_causal_variable": "alpha admission no longer requires debate locks or model-review receipts"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not reintroduce mandatory model/provider topology or delete the deterministic promotion request in the name of simplification; schema-v2 regression tests now own this boundary.",
+    "new_evidence_required": "Revisit only if a concrete leakage, tamper, revocation, or PIT-authority failure escapes the deterministic promotion checks, or a new promotion schema needs additional hash-bound evidence.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The promotion request itself carries the deterministic safeguards, so the safe simplification was removing debate from schema v2 rather than deleting promotion admission."
+  },
+  "prediction": {
+    "confidence_reason": "The debate stack is isolated to admission plumbing; deterministic D0-D3, novelty, readiness, PIT and Gate contracts are already separate.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "legacy_ticket_audit_breakage",
+      "research_pit_ceiling_regression",
+      "stale_cli_reference"
+    ],
+    "recorded_at": "2026-07-29T04:15:15+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-07-29T04:32:00+00:00",
+  "trial_family": "experiment_process_simplification",
+  "trial_variant_id": "exp-20260729-003"
+}

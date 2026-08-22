@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-28T12:25:00Z",
+  "outcome_blind": true,
+  "price_or_return_outcomes_read": false,
+  "source_database": "data/warehouse/massive_history.sqlite",
+  "membership_contract": "reference-asof:<date>:active=true:type=CS; decisions use only as_of,ticker,type,active",
+  "price_clock": "Only bars with trade_date <= decision_date were loaded. OHLC values before a split were multiplied by the event-local product(split_from/split_to) for price_date < execution_date <= decision_date.",
+  "policy": {
+    "rule_version": "broad_market_price_floor_rank_low_extension_high_volatility_trend_persistence_v1",
+    "ret20_excess_spy_min": 0.035,
+    "ret60_min": 0.08,
+    "near_high_60_min": 0.93,
+    "volume_ratio_20_min": 1.0,
+    "decision_close_price_min": 40.0,
+    "daily_entry_slots": 3,
+    "hold_days": 20,
+    "current_or_legacy_core_membership_used": false
+  },
+  "required_selected_touches_per_window": 5,
+  "windows": {
+    "old_thin": {
+      "start": "2024-10-02",
+      "end": "2025-04-22",
+      "generated_touches": 632,
+      "selected_touches": 18,
+      "clears": true
+    },
+    "mid_weak": {
+      "start": "2025-04-23",
+      "end": "2025-10-22",
+      "generated_touches": 696,
+      "selected_touches": 18,
+      "clears": true
+    },
+    "late_strong": {
+      "start": "2025-10-23",
+      "end": "2026-04-21",
+      "generated_touches": 763,
+      "selected_touches": 18,
+      "clears": true
+    }
+  },
+  "selected_by_decision_date": {
+    "2024-10-02": [],
+    "2024-11-01": ["TECX", "TARS", "MDGL"],
+    "2024-12-02": ["ATLC", "USLM", "GHM"],
+    "2025-01-02": ["DXPE", "BROS", "TARS"],
+    "2025-02-03": ["MNPR", "OKLO", "EAT"],
+    "2025-03-03": ["ITCI", "ESLT", "CHEF"],
+    "2025-04-01": ["MPTI", "NUTX", "WNS"],
+    "2025-05-01": ["RGC", "ODD", "FCAP"],
+    "2025-06-02": ["SVT", "ELF", "WLDN"],
+    "2025-07-01": ["HOOD", "TTMI", "KEQU"],
+    "2025-08-01": ["CECO", "W", "APPF"],
+    "2025-09-02": ["SATS", "XMTR", "INSM"],
+    "2025-10-01": ["SUPX", "SNDK", "BE"],
+    "2025-11-03": ["SNDK", "BE", "RHLD"],
+    "2025-12-01": ["CDTX", "EXAS", "ARWR"],
+    "2026-01-02": ["SNDK", "VICR", "RKLB"],
+    "2026-02-02": ["SNDK", "RAPT", "MU"],
+    "2026-03-02": ["AXTI", "AAOI", "HYMC"],
+    "2026-04-01": ["APLS", "DOCN", "CAR"]
+  },
+  "total_generated_touches": 2091,
+  "total_selected_touches": 54,
+  "all_windows_clear": true,
+  "caveat": "2024-10-02 has zero generated candidates because Massive history begins too near that date for the frozen 60-session feature lookback; the old_thin window still has 18 selected touches across the remaining dates."
+}
