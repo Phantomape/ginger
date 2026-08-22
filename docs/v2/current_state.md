@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-21T23:48Z（M2 explicit segmented-hot runtime wiring）
+> 最后更新：2026-08-22T00:18Z（M2 repository-external append-anchor decision contract）
 
 ## 里程碑
 
@@ -13,7 +13,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 |---|---|
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
-| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback 及 cold-lineage 结构回归完成；市场级扩展与外部 append anchor 待完成 |
+| M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
 | Research scout lane | 已开放：首个 SEC contract-relation preflight 在 reserve 前拒绝；等待满足新证据轴与受理条件的输入 |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
@@ -214,6 +214,24 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   写入、断电级目录持久性或本地有效旧 `HEAD` 回滚；动态 PIT 市场 universe、market decision clock 与适用的
   production/backtest parity 仍是后续 blocker。
 
+### Repository-external append anchor 决策合同（待用户选择）
+
+- `data/v2/repository_external_append_anchor_decision_packet.json` 冻结 target-independent 合同与自哈希：一个获批
+  anchor-genesis cutover 后，append/零事件 manifest/rotation 的每次 `HEAD.json` 迁移都必须在下一迁移或任何
+  canonical 消费前外部追加并独立读回；仅 sequence 连续不够，append/rotation 必须证明从前一 external anchor 合法延伸。
+- decision packet 本身不可原地回填；用户授权后要在 sequence-1 前新建 content-addressed selected-contract artifact 引用本
+  packet。实际 cutover/anchor-gate 时钟不能回填进这份 pre-cutover contract，而要在 sequence-1 外部 commit 与独立 read-back
+  后另写不可变 activation receipt；该 receipt 必须绑定获批且与 writer 分离的 read principal、target/locator、raw read evidence
+  与 exact anchor-object hash，不能只记自报时间。`canonical_forward_eligibility_started_at` 继续为 null，等待另一次 canonical review。
+- target 必须位于独立管理边界，提供 immutable retention、ordered append 或 predecessor CAS、strong latest/read-after-write、
+  idempotent create 与 provider receipt。append/read/retention-admin principal ID 与 owner 分离；tracked contract 只保存 non-secret
+  IAM/secret-store reference。
+- A1-A14 冻结旧 HEAD、rollback-then-append、rotation、lost ack、gap/fork、cross-stream replay、remote ahead/behind、错误 target/
+  retention receipt 与 outage fail-closed。anchor 只满足一个独立 promotion gate，不授予 source PIT、coverage、Engine-0、paper/live
+  或交易资格，也不是 bounded scout 前置；cutover 只 prospective 生效，禁止追溯升级。
+- 当前没有 provider/account/namespace、locked retention、principal ID/owner、secret reference、deployment owner 或显式实现授权，
+  所以 `external_append_anchor_status=absent`、`canonical_reads_allowed=false`、`trade_enabled=false`；没有 connector、账号或凭据变更。
+
 ## M1 已完成单元
 
 ### 证据绑定交易日时钟合同
@@ -329,8 +347,10 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-显式 segmented-hot runtime 接线已完成，rotation 继续 unscheduled 且 source ceiling 仍为 research-only。下一干净 M2 单元应先形成
-仓库外 append anchor 的可验证 contract/部署选择；若没有明确的外部不可变目标和权限，只做 decision packet/no-op，不用本地自哈希冒充。
+仓库外 append anchor 的 target-independent contract 已冻结，但实际 target 仍未选择，状态继续为 absent。下一步需要用户明确
+provider/product、account/namespace、writer topology、locked retention、ordered/latest/receipt 能力、三类 principal ID/owner、
+non-secret secret-store reference、deployment owner、threat model、网络/成本许可和 implementation authorization；之后才能实现
+connector、跑 A1-A14、shadow 演练 outage/rollback，并另做 canonical review。未获授权时不要重复实现或用本地 self-hash 冒充。
 真实 population/churn/retention/SLO 仍是任何自动 cadence 或绝对 scale limit 的前提；真正的 M3 Engine-0 还需动态 PIT 市场 universe、
 市场决策时钟和共享 feature/policy/decision chain。若期间出现满足
 novelty/reopen、PIT、mapping 和非零触达条件的新 source axis，立即回到 bounded scout lane 做 experiment-local

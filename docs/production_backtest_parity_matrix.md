@@ -14,12 +14,16 @@ clock, orders, or paper/live policy. The immutable source manifest keeps
 `parity_status=contract_only_unwired`; adapter and observation alias parity are
 recorded separately and cannot upgrade PIT or authority.
 
-The opt-in segmented sidecar is still not a runtime backend. Full-checkpoint
-HEADs retain the legacy storage marker, while compact HEADs carry a distinct
-self-hash-bound capability marker that an older reader rejects before checkpoint
-access. Deployment is reader-first and one-way within a root; rotation remains
-explicit and unscheduled. This capability contract changes no adapter identity,
-membership, daily/replay result, PIT tier, authority, or default-off boundary.
+The opt-in segmented sidecar is now available only as the explicit
+`segmented_hot_v1` research runtime backend; `legacy_jsonl_v1` remains a separate
+explicit compatibility route. There is no auto-detection, cold-lineage traversal,
+or silent fallback. Full-checkpoint HEADs retain the legacy storage marker, while
+compact HEADs carry a distinct self-hash-bound capability marker that an older
+reader rejects before checkpoint access. Backend and hot-tip identities are bound
+into adapter/observation identity while the membership semantic snapshot remains
+equal across explicit backends. Deployment is reader-first and one-way within a
+root; rotation remains explicit and unscheduled. No Engine-0, scheduler,
+production/backtest, canonical, paper/live, execution, or trading parity is claimed.
 
 | Decision point | Shared source | Replay use | Daily use | Allowed difference |
 | --- | --- | --- | --- | --- |

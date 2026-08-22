@@ -39,6 +39,7 @@
 - [x] 建立 aggregate storage capability/rollback 合同：full/compact `HEAD.storage_contract` 明确分流，marker 与 checkpoint 类型 fail-closed 绑定；部署固定 reader-first，compact 切换后禁止同 root 原地 HEAD rewind 或回滚到不支持 compact lineage 的 binary，rotation 继续显式且 unscheduled（2026-08-21）
 - [x] 给 cold rotation/deep lineage 建立参数化结构回归：同一逻辑 tip 的 1/2/4 generation fixture 冻结 hot load 零 archive traversal、standalone exact pass 每个可达 record 单读、byte conservation 与保守 affine peak-memory guard；小型 fixture 不冒充真实 market-scale/SLO，elapsed 只记诊断，绝对 cadence 继续等待真实 population/churn/retention/SLO（2026-08-21）
 - [x] 将 segmented hot-state reader 以显式 backend 接入 source-bounded runtime，并证明显式 hot-tip manifest/as-of 的 daily/replay 等价；单次加载同一 state，禁止 backend 自动探测、cold traversal 或 silent legacy fallback，rotation 保持显式且 unscheduled（2026-08-21）
+- [x] 冻结仓库外 append anchor 的 target-independent decision/deployment contract：每次 HEAD transition、cutover/successor/receipt/retention/IAM/fail-closed 语义与 A1-A14 验收已机器绑定；target、owner、凭据边界和授权仍待用户选择（2026-08-21）
 - [ ] 任何 canonical 候选前建立仓库外 append anchor；本地有效旧 `HEAD` 回滚仍无法由仓库内 sidecar 检出
 
 ## 注意事项
