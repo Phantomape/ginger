@@ -39,7 +39,10 @@ ARCHIVE_DIR = REPO_ROOT / "data" / "non_ohlcv" / "iborrowdesk"
 HISTORY_DIR = ARCHIVE_DIR / "history"
 FETCH_STATE_PATH = ARCHIVE_DIR / "fetch_state.json"
 
-API_URL = "https://iborrowdesk.com/api/ticker/{symbol}"
+# exp-20260825-001: the site moved to the www host; the apex host now drops
+# /api requests with empty replies (RemoteDisconnected), which froze the
+# archive from ~2026-07-21 until this repair.
+API_URL = "https://www.iborrowdesk.com/api/ticker/{symbol}"
 USER_AGENT = "ginger-research/1.0 (borrow-economics archive; contact: repo-local)"
 SOURCE_LABEL = "iborrowdesk.com mirror of IBKR shortable-stock indicative feed"
 
