@@ -438592,8 +438592,19 @@
       "card_file": "experiments/cards/exp-20260825-001.md",
       "revision_manifest_file": "experiments/manifests/exp-20260825-001.json",
       "updated_at": "2026-08-25T16:22:23+00:00"
+    },
+    {
+      "experiment_id": "exp-20260826-001",
+      "status": "accepted",
+      "lane": "measurement_repair",
+      "owner": "claude-scheduled-alpha",
+      "hypothesis": "Wire the missing borrow-coverage step into the daily pipeline: the pair forward-readiness borrow gate needs iBorrowDesk evidence archived at or before each batch first_seen_at and at most 3 calendar days old, but nothing in run.py fetches the day's short-side exposure tickers before the exposure observer freezes first_seen_at, and the Step 1.65 shard rotation skips microcaps outside build_default_refresh_universe, so batches structurally fail-close on missing/stale_pit_borrow (blocked_downstream_check: news_propagation_pair_forward_readiness measurement_ready_batches, pre-repair gate value 0; latest batch pair-ready-81e8043a1b900c1f45c1114c is blocked solely by 3 missing plus 21 stale borrow tickers with cross-side overlap already clear). This repair wires a targeted prefetch of the run's new positive-polarity exposure tickers into news_event_exposure_observer.run before the first_seen_at stamp, and splits the run.py Step 1.65 request budget under the ~90-request www throttle, after which per-batch borrow coverage lands automatically in every daily run with no further IDs and no readiness-contract change.",
+      "ticket_file": "experiments/tickets/exp-20260826-001.json",
+      "card_file": "experiments/cards/exp-20260826-001.md",
+      "revision_manifest_file": "experiments/manifests/exp-20260826-001.json",
+      "updated_at": "2026-08-26T16:21:47+00:00"
     }
   ],
   "schema_version": 1,
-  "updated_at": "2026-08-25T16:22:23+00:00"
+  "updated_at": "2026-08-26T16:21:47+00:00"
 }

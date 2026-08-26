@@ -540,11 +540,15 @@ def _persist_news_event_exposure_observer():
 
         manifest = run_exposure_observer()
         log.info(
-            "Structured-news second-order exposures: rows=%s closed=%s appended=%s pending=%s",
+            "Structured-news second-order exposures: rows=%s closed=%s appended=%s pending=%s pair_ready=%s pair_blocked=%s",
             manifest.get("rows"),
             manifest.get("closed_rows"),
             manifest.get("appended_this_run"),
             manifest.get("pending_rows"),
+            (manifest.get("pair_forward_readiness") or {}).get(
+                "measurement_ready_batches"
+            ),
+            (manifest.get("pair_forward_readiness") or {}).get("blocked_batches"),
         )
         return manifest
     except Exception as e:
@@ -3875,12 +3879,16 @@ def main():
     # loss-free with a bounded per-run request budget. Data collection only;
     # total failure changes nothing downstream. Env opt-out:
     # IBORROWDESK_REFRESH_DISABLED=1.
+    # exp-20260826-001: budget split under the www host's ~90-request throttle
+    # (http_444 at ~90 req @1 req/s): the shard keeps 60 so the exposure
+    # observer's targeted short-side prefetch minutes later (which pair
+    # forward readiness actually consumes) retains headroom.
     if os.environ.get("IBORROWDESK_REFRESH_DISABLED", "").strip() not in ("1", "true"):
         try:
             from iborrowdesk_data_source import refresh_archive as _ibd_refresh
             from ohlcv_warehouse_refresh import build_default_refresh_universe as _ibd_universe
             _ibd_summary = _ibd_refresh(
-                _ibd_universe(), max_fetches=150, min_age_days=5.0, sleep_s=1.0,
+                _ibd_universe(), max_fetches=60, min_age_days=5.0, sleep_s=1.0,
             )
             log.info(
                 "iBorrowDesk archive refresh: %s/%s fetched, %s rows added, "

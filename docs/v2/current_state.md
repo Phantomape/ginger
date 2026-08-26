@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-25T16:25Z（exp-20260825-001 iBorrowDesk www 主机故障修复）
+> 最后更新：2026-08-26T16:30Z（exp-20260826-001 first-seen 前定向借券预抓取接线）
 
 ## 里程碑
 
@@ -41,6 +41,11 @@
 - exp-20260825-001（measurement_repair, accepted）：iBorrowDesk 抓取管道自 ~07-21 起全死——上游迁移到 www.iborrowdesk.com,裸域 /api 直接断连（RemoteDisconnected）,每日刷新连挂 5 次即中止,PIT 借券归档冻结,pair forward readiness 每个 batch 都被 stale_pit_borrow 永久 fail-close。单行 API_URL 修复;10/10 被阻塞 short 侧 ticker 归档已到 2026-08-24(满足 3 日历日新鲜度),补齐 shard +2580 行(www 限流 http_444 于 ~90 请求/1 req/s 后触发,abort-early 可续传)。
 - readiness 剩余阻塞（未动,归 readiness lane 所有者决策）：(1) batch microcap ticker 不在 build_default_refresh_universe,missing_pit_borrow 持续;(2) 轮转节奏无法保证任意 batch ticker 的 3 日新鲜度,需要对活跃 batch short 侧 ticker 定向抓取或改合同;(3) cross_side_ticker_overlap 由数据决定。
 - d-0003 gate 不变：≥1 个真实 measurement_ready batch 之前不开 shared paper-policy pair alpha 实验;exp-20260824-001 的单次 pair-build 资格未消耗。
+
+## 最新可执行证据状态（2026-08-26）
+
+- exp-20260826-001（measurement_repair, accepted）：readiness 借券 PIT 规则（archived_at ≤ first_seen_at 且 ≤3 日历日）只有在抓取先于 first_seen 冻结时才可能满足——盲目 stalest-first 轮转结构性做不到且跳过 universe 外 microcap,导致每个 batch 永久 fail-close。修复：`news_event_exposure_observer.run` 在 stamp first_seen 之前对本轮**新增**正极性（short 侧）exposure ticker 定向 refresh_archive（仅生产路径、fail-open、共用 IBORROWDESK_REFRESH_DISABLED 开关）;run.py Step 1.65 shard 预算 150→60,在 ~90 请求 www 限流下给预抓取留余量。闭环验证：27 测试通过;当前受阻 batch 的 23/23 stale/missing short 侧 ticker 实抓成功（+1328 行,含 microcap ALMU/AMBQ/ASTI,未触限流）;生产 rollout smoke 干净。已冻结 batch 不倒填,今日 measurement_ready 仍为 0（by design）;economic_progress=false。
+- **转化检查（下一轮第一件事）**：下一个每日 run 产出新 first-seen batch 后看 `data/non_ohlcv/news_propagation_pair_forward_readiness/latest_snapshot.json`——若 measurement_ready_batches ≥ 1,d-0003 gate 打开,立即 reserve 单次 shared-paper-first dollar-neutral pair-build 实验（exp-20260824-001 资格）;若新 batch 仍有 stale/missing_pit_borrow,说明 prefetch 失败,查 exposure manifest 的 short_side_borrow_prefetch 摘要,不得 park。合法残余 blocker 只有 cross_side_ticker_overlap（数据决定）和个别 microcap 经验性无覆盖。
 
 ## 现场事实（2026-08-18）
 

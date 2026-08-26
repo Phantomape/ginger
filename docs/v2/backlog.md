@@ -21,7 +21,8 @@
 ### 直接阻断 forward 的插队修复
 
 - [x] iBorrowDesk 抓取管道 www 主机故障修复（exp-20260825-001, accepted）:裸域 /api 断连自 ~07-21 冻结 PIT 借券归档;已修复并验证 10/10 定向 + 89/150 shard;每日 run.py Step 1.65 自动续传补齐
-- [ ] readiness borrow 覆盖缺口（lane 所有者决策）：活跃 batch short 侧 ticker（含 microcap,iBorrowDesk 实际覆盖）需定向每日抓取才能满足 3 日历日新鲜度;轮转节奏（~90-150/日 over 1365 tickers, min_age 5d）结构性不够;或明确放宽合同
+- [x] readiness borrow 覆盖缺口修复（exp-20260826-001, accepted）：exposure observer 在 first_seen 冻结前对本轮新增 short 侧 ticker 定向预抓取（fail-open）;Step 1.65 预算 150→60 留限流余量;转化检查=下一个每日 batch 的 borrow_coverage
+- [ ] 转化确认后消耗 pair-build 资格：measurement_ready_batches ≥ 1 时 reserve 单次 shared-paper-first pair-build 实验（见 current_state 2026-08-26 节与 receipt next_alpha_action）
 
 - [x] structured-news exposure 新行冻结本地 `first_seen_at`，旧行不倒填；同批两侧密度/集中度/重叠与 PIT indicative borrow readiness 每日幂等落盘（exp-20260824-002）
 - [x] 零 ID、outcome-blind 重建每日快照的保守历史 `known_at`：精确 Git 路径只有 5 个独立 entry-ready 时点 / 3 个 borrow-filtered；research-PIT EOD 路径有 20 个 entry-ready、16 个 H10、2 个 borrow-filtered，均未过预声明门槛（`data/alpha_search/news_pair_historical_reconstructability_20260824.json`）

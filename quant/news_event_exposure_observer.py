@@ -11,11 +11,13 @@ observation rows for that ticker's SECOND-ORDER exposure set:
 - theme_peer: listed peers of every theme whose curated basket contains the
   first-order ticker (entity_exposure_map theme overlay).
 
-Rows use the same forward semantics as the first-order news observation
-contract: entry at the next warehouse session OPEN strictly after event_date,
-5d/10d close SPY-excess settlement. Direction is recorded (event polarity),
-never predeclared: whether second-order names inherit, invert, or ignore the
-first-order impact is the question for a later, separately gated read.
+New v2 rows freeze local ``first_seen_at`` when first appended and enter at the
+first regular-session open strictly after that timestamp. Historical v1 rows
+remain unbackfilled and keep their event-date settlement only as legacy
+observations. Both versions retain 5d/10d close SPY-excess settlement.
+Direction is recorded (event polarity), never predeclared: whether second-order
+names inherit, invert, or ignore the first-order impact is the question for a
+later, separately gated read.
 
 Ledger (append-only, dedup by (event_id, exposure_ticker)):
   data/non_ohlcv/news_event_exposure_observations/rows.jsonl
@@ -27,10 +29,13 @@ No trading behavior change.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
-from datetime import datetime, timezone
+import os
+from datetime import datetime, time, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -45,13 +50,27 @@ COLD_DB = DATA_DIR / "warehouse" / "warehouse_main.sqlite"
 HOT_DB = DATA_DIR / "warehouse" / "warehouse_main_hot.sqlite"
 STRUCTURED_DAILY_DIR = DATA_DIR / "daily" / "news" / "structured"
 
-SCHEMA_VERSION = "news_event_exposure_observation_v1"
+LEGACY_SCHEMA_VERSION = "news_event_exposure_observation_v1"
+SCHEMA_VERSION = "news_event_exposure_observation_v2"
 MAX_SIC_PEERS = 15
 HORIZONS = (5, 10)
+NEW_YORK = ZoneInfo("America/New_York")
 
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _aware_datetime(value: str, *, field: str) -> datetime:
+    parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError(f"{field} must be timezone-aware")
+    return parsed
+
+
+def _first_seen_batch_id(first_seen_at: str) -> str:
+    digest = hashlib.sha256(first_seen_at.encode("utf-8")).hexdigest()[:20]
+    return f"news-first-seen-{digest}"
 
 
 def load_exposure_map(
@@ -125,7 +144,12 @@ def build_exposure_rows(
     exposure_map: Mapping[str, Any],
     *,
     max_sic_peers: int = MAX_SIC_PEERS,
+    first_seen_at: str | None = None,
 ) -> list[dict[str, Any]]:
+    batch_id = None
+    if first_seen_at is not None:
+        _aware_datetime(first_seen_at, field="first_seen_at")
+        batch_id = _first_seen_batch_id(first_seen_at)
     rows = []
     for event in event_rows:
         ticker = str(event.get("ticker") or "").upper()
@@ -136,28 +160,36 @@ def build_exposure_rows(
         for edge in exposure_set_for_ticker(
             ticker, exposure_map, max_sic_peers=max_sic_peers
         ):
-            rows.append(
-                {
-                    "schema_version": SCHEMA_VERSION,
-                    "event_id": event_id,
-                    "event_date": event_date,
-                    "published_at": event.get("published_at"),
-                    "first_order_ticker": ticker,
-                    "exposure_ticker": edge["exposure_ticker"],
-                    "relation_type": edge["relation_type"],
-                    "match_basis": edge["match_basis"],
-                    "theme": edge["theme"],
-                    "event_relation_type": event.get("relation_type"),
-                    "event_polarity": event.get("relation_polarity"),
-                    "event_rule_version": event.get("rule_version"),
-                    "entry_semantics": "next_session_open_after_event_date",
-                    "exit_semantics": "5d_and_10d_close_spy_excess",
-                    "entry_date": None,
-                    "excess_5d": None,
-                    "excess_10d": None,
-                    "outcome_status": "pending_forward_close",
-                }
-            )
+            row = {
+                "schema_version": (
+                    SCHEMA_VERSION if first_seen_at else LEGACY_SCHEMA_VERSION
+                ),
+                "event_id": event_id,
+                "event_date": event_date,
+                "published_at": event.get("published_at"),
+                "first_order_ticker": ticker,
+                "exposure_ticker": edge["exposure_ticker"],
+                "relation_type": edge["relation_type"],
+                "match_basis": edge["match_basis"],
+                "theme": edge["theme"],
+                "event_relation_type": event.get("relation_type"),
+                "event_polarity": event.get("relation_polarity"),
+                "event_rule_version": event.get("rule_version"),
+                "entry_semantics": (
+                    "first_regular_session_open_after_first_seen_at"
+                    if first_seen_at
+                    else "next_session_open_after_event_date"
+                ),
+                "exit_semantics": "5d_and_10d_close_spy_excess",
+                "entry_date": None,
+                "excess_5d": None,
+                "excess_10d": None,
+                "outcome_status": "pending_forward_close",
+            }
+            if first_seen_at:
+                row["first_seen_at"] = first_seen_at
+                row["first_seen_batch_id"] = batch_id
+            rows.append(row)
     return rows
 
 
@@ -230,6 +262,23 @@ def _excess(
     )
 
 
+def _entry_index(row: Mapping[str, Any], frame: pd.DataFrame) -> pd.Timestamp | None:
+    first_seen_at = row.get("first_seen_at")
+    if not first_seen_at:
+        after = frame.index[frame.index > pd.Timestamp(row["event_date"])]
+        return after[0] if len(after) else None
+
+    observed = _aware_datetime(str(first_seen_at), field="first_seen_at").astimezone(
+        NEW_YORK
+    )
+    for candidate in frame.index:
+        session_date = pd.Timestamp(candidate).date()
+        session_open = datetime.combine(session_date, time(9, 30), tzinfo=NEW_YORK)
+        if session_open > observed:
+            return candidate
+    return None
+
+
 def settle_rows(
     rows: list[dict[str, Any]],
     frames: Mapping[str, pd.DataFrame] | None = None,
@@ -241,6 +290,15 @@ def settle_rows(
     spy = frames.get("SPY")
     counts = {"settled": 0, "still_pending": 0, "no_frame": 0}
     if spy is None:
+        for row in pending:
+            if not row.get("first_seen_at"):
+                continue
+            frame = frames.get(row["exposure_ticker"])
+            if frame is None:
+                continue
+            entry = _entry_index(row, frame)
+            if entry is not None:
+                row["entry_date"] = str(pd.Timestamp(entry).date())
         counts["still_pending"] = len(pending)
         return counts
     for row in pending:
@@ -248,17 +306,18 @@ def settle_rows(
         if frame is None:
             counts["no_frame"] += 1
             continue
-        after = frame.index[frame.index > pd.Timestamp(row["event_date"])]
-        if not len(after):
+        entry = _entry_index(row, frame)
+        if entry is None:
             counts["still_pending"] += 1
             continue
-        entry = after[0]
+        if row.get("first_seen_at"):
+            row["entry_date"] = str(pd.Timestamp(entry).date())
         ex10 = _excess(frame, spy, entry, 10)
         if ex10 is None:
             counts["still_pending"] += 1
             continue
         ex5 = _excess(frame, spy, entry, 5)
-        row["entry_date"] = str(entry.date())
+        row["entry_date"] = str(pd.Timestamp(entry).date())
         row["excess_5d"] = round(ex5, 6) if ex5 is not None else None
         row["excess_10d"] = round(ex10, 6)
         row["outcome_status"] = "closed"
@@ -293,6 +352,20 @@ def write_ledger(
         "event_ids": len({r["event_id"] for r in ordered}),
         "first_order_tickers": len({r["first_order_ticker"] for r in ordered}),
         "exposure_tickers": len({r["exposure_ticker"] for r in ordered}),
+        "first_seen_eligible_rows": sum(
+            1
+            for row in ordered
+            if row.get("schema_version") == SCHEMA_VERSION
+            and row.get("first_seen_at")
+            and row.get("first_seen_batch_id")
+        ),
+        "legacy_ineligible_rows": sum(
+            1
+            for row in ordered
+            if row.get("schema_version") != SCHEMA_VERSION
+            or not row.get("first_seen_at")
+            or not row.get("first_seen_batch_id")
+        ),
         "max_sic_peers": MAX_SIC_PEERS,
         "last_run_utc": utc_now(),
     }
@@ -332,6 +405,46 @@ def collect_structured_event_rows(
     return unique
 
 
+def prefetch_short_side_borrow(
+    events: Iterable[Mapping[str, Any]],
+    exposure_map: Mapping[str, Any],
+    existing: Iterable[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Refresh the PIT borrow archive for this run's new short-side tickers.
+
+    Pair forward readiness (news_propagation_pair_forward_observer) only counts
+    borrow evidence archived at or before the batch ``first_seen_at`` and at
+    most 3 calendar days old, so the fetch must land BEFORE the first_seen
+    stamp; nothing can be repaired after the batch freezes. Fail-open: a dead
+    or throttled host must never block the exposure ledger itself.
+    """
+    if os.environ.get("IBORROWDESK_REFRESH_DISABLED", "").strip() in ("1", "true"):
+        return {"status": "disabled"}
+    try:
+        from news_propagation_pair_forward_observer import SHORT_POLARITY
+
+        existing_keys = {_row_key(row) for row in existing}
+        tickers = sorted(
+            {
+                str(row.get("exposure_ticker") or "").upper()
+                for row in build_exposure_rows(events, exposure_map)
+                if _row_key(row) not in existing_keys
+                and row.get("event_polarity") == SHORT_POLARITY
+            }
+            - {""}
+        )
+        if not tickers:
+            return {"status": "no_new_short_side_rows", "tickers": []}
+        from iborrowdesk_data_source import refresh_archive
+
+        summary = refresh_archive(
+            tickers, max_fetches=len(tickers), min_age_days=1.0, sleep_s=1.0
+        )
+        return {"status": "ok", "tickers": tickers, "refresh": summary}
+    except Exception as error:  # noqa: BLE001 - observation must stay fail-open
+        return {"status": "failed", "error": str(error)}
+
+
 def run(
     *,
     replay_files: Iterable[Path | str] = (),
@@ -344,9 +457,14 @@ def run(
     events = collect_structured_event_rows(
         replay_files=replay_files, daily_dir=daily_dir
     )
-    fresh = build_exposure_rows(events, exposure_map)
     base = Path(out_dir) if out_dir else DEFAULT_OUT_DIR
     existing = load_ledger(base / "rows.jsonl")
+    if out_dir is None and not replay_files:
+        borrow_prefetch = prefetch_short_side_borrow(events, exposure_map, existing)
+    else:
+        borrow_prefetch = {"status": "skipped_non_production"}
+    observed_at = utc_now()
+    fresh = build_exposure_rows(events, exposure_map, first_seen_at=observed_at)
     merged, appended = merge_rows(existing, fresh)
     settle_counts = settle_rows(merged, frames)
     manifest = write_ledger(
@@ -356,8 +474,19 @@ def run(
             "source_events": len(events),
             "appended_this_run": appended,
             "settle_counts": settle_counts,
+            "short_side_borrow_prefetch": borrow_prefetch,
         },
     )
+    from news_propagation_pair_forward_observer import run as run_pair_observer
+
+    readiness_out_dir = (
+        base / "pair_forward_readiness" if out_dir else None
+    )
+    manifest["pair_forward_readiness"] = run_pair_observer(
+        exposure_rows=merged,
+        out_dir=readiness_out_dir,
+    )
+    atomic_write_json(manifest, base / "manifest.json")
     return manifest
 
 

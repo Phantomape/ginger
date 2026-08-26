@@ -1,0 +1,37 @@
+{
+  "captured_at_utc": "2026-08-26T16:22Z",
+  "repair": {
+    "exposure_observer": "prefetch_short_side_borrow wired into news_event_exposure_observer.run before the first_seen_at stamp (production path only: out_dir None and no replay_files; env opt-out IBORROWDESK_REFRESH_DISABLED; fail-open)",
+    "run_py_step_1_65": "shard max_fetches 150 -> 60 (budget split under ~90-request www throttle so the targeted prefetch minutes later keeps headroom)"
+  },
+  "verification": {
+    "focused_tests": "27 passed (test_news_event_exposure_observer.py incl. 4 new prefetch tests, test_news_propagation_pair_forward_observer.py, test_iborrowdesk_data_source.py)",
+    "live_targeted_fetch": {
+      "tickers": 23,
+      "succeeded": 23,
+      "rows_added": 1328,
+      "not_found": [],
+      "aborted_early": false,
+      "note": "all 23 stale/missing short-side tickers of batch news-first-seen-14076b0df763cbc04764 incl. microcaps ALMU/AMBQ/ASTI fetched via the same refresh_archive path; no throttle hit"
+    },
+    "production_rollout_smoke": {
+      "appended_this_run": 0,
+      "prefetch_status": "no_new_short_side_rows",
+      "readiness": {
+        "batches": 2,
+        "measurement_ready_batches": 0,
+        "blocked_batches": 2
+      },
+      "note": "today's frozen batches correctly REMAIN blocked: evidence archived after first_seen must not count (no retroactive repair); conversion is expected on the next daily batch whose short-side tickers get prefetched before the first_seen stamp"
+    }
+  },
+  "post_repair_gate_value": {
+    "measurement_ready_batches": 0,
+    "economic_progress": false,
+    "conversion_check": "next daily run: new batch short_side borrow_coverage covered==required and no stale/missing_pit_borrow blockers"
+  },
+  "residual_blockers": [
+    "cross_side_ticker_overlap is data-driven",
+    "iBorrowDesk coverage of any given microcap remains empirical (today 3/3 covered)"
+  ]
+}
