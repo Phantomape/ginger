@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-26T04:01:16Z",
+  "run_finished_at": "2026-08-26T04:30:07Z",
+  "milestone": "research_scout_lane",
+  "work_unit": "private_replay_scout_frozen_family_projection_repair",
+  "outcome": "completed_accepted_measurement_repair",
+  "experiment_id": "exp-20260826-001",
+  "trade_enabled": false,
+  "source_commit": "6f600cdbd822411a85c8f531d375a112e44d39a2",
+  "selection_rationale": {
+    "priority": "P1 measurement-integrity containment",
+    "finding": "The terminal rejected exp-20260822-001 private replay scout was absent from docs/frozen_families.jsonl because its log shard omitted family metadata even though its same-ID reservation ticket froze that identity before outcome access.",
+    "chosen_repair": "At frozen-family read time, fill only missing family identity fields for same-ID terminal V2 private replay scouts whose ticket status, decision, and artifact binding match the log; reject missing, malformed, wrong-type, or conflicting tickets.",
+    "outcome_access_boundary": "Required startup navigation had already exposed historical outcomes, so this run made no scientific candidate selection and performed measurement repair only."
+  },
+  "experiment_result": {
+    "decision": "accepted",
+    "source_scout_experiment_id": "exp-20260822-001",
+    "projected_family": "v2_sec_8k_complete_frame_h1_scout",
+    "projected_family_status": "single_attempt",
+    "projected_family_trials": 1,
+    "projected_family_accept_rate": 0.0,
+    "projected_row_sha256": "958779f993770fee0104249908c30106a1f4540ac6d48fcd07139f7af31ce684",
+    "reopen_condition": "A retry requires a separately frozen later complete SEC frame or an independent pre-outcome event-sign source, not threshold tuning.",
+    "historical_evidence_mutated": false
+  },
+  "historical_evidence_identities": {
+    "log_sha256": "7e9fef38e780cd5c0dbd2836df44ffa0a5e404534e089a2b3677691c2e6ee9e9",
+    "ticket_sha256": "b9c79e1cf00e90c63c24b2c64b18a534f6ff6cf3888879c0d4a188f6c4b13085",
+    "result_artifact_sha256": "ec828033d5319edeafd818a4981957008455270b7ab45c4f4098802d3eb33c0c"
+  },
+  "verification": [
+    ".venv\\Scripts\\python.exe -B -m pytest quant/test_build_frozen_families.py quant/test_experiment_history.py quant/test_alpha_playbook_contract.py -q: 27 passed.",
+    "Exact novelty query now warns on v2_sec_8k_complete_frame_h1_scout with one blocking single-attempt match, score 0.85, and accept_rate 0.0.",
+    "Full frozen-family regeneration is deterministic from current truth sources; it also refreshed the existing news-event reopen condition from TODO to its already-recorded quantitative 983-row contract.",
+    "scripts/experiment.py audit --lean-strict: lean_strict_passed=true and no failure domains.",
+    "git diff --check passed.",
+    "Protected exp-20260822-001 log, ticket, and result artifact remain byte-identical to HEAD.",
+    "No trade_enabled=true value appears in the new experiment files."
+  ],
+  "changed_files": [
+    "scripts/build_frozen_families.py",
+    "quant/test_build_frozen_families.py",
+    "docs/frozen_families.jsonl",
+    "docs/experiment_registry.json",
+    "data/experiments/exp-20260826-001/before_guard_readiness.json",
+    "data/experiments/exp-20260826-001/after_guard_readiness.json",
+    "experiments/tickets/exp-20260826-001.json",
+    "experiments/cards/exp-20260826-001.md",
+    "experiments/manifests/exp-20260826-001.json",
+    "experiments/logs/exp-20260826-001.json",
+    "data/v2/hourly_runs/20260826T0401Z_measurement_repair_private_replay_scout_frozen_family_projection.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json",
+    "data/v2/hourly_runs/20260822T0203Z_noop_concurrent_v2_scout_containment_audit.json",
+    "data/v2/hourly_runs/20260823T1610Z_noop_concurrent_alpha_containment_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive measurement integrity: the prior rejected V2 scout is now machine-visible as an anti-repeat prior with its pre-outcome reopen condition. No new alpha claim, outcome-driven selection, PIT claim, or promotion was made.",
+  "parity_impact": "none; no strategy, replay, daily, scheduler, production, paper, live, execution, or canonical behavior changed.",
+  "production_impact": "none; trade_enabled remained false and no order or permission path was touched.",
+  "remaining_blockers": [
+    "The shared private-replay closeout path does not yet enforce an explicit top-level artifact disposition; the historical artifact has equivalent rejected/default-off fields and was intentionally not rewritten.",
+    "No eligible outcome-blind scout input, selected and authorized append anchor, active V2 experiment, or queued selected frozen M3 unit exists.",
+    "Eight pre-existing shared/V1 test failures still block a full-repository green result; their relevant identities are unchanged from the prior audit."
+  ],
+  "next_step": "Use a separately scoped unit to enforce explicit disposition in future shared private-replay closeouts, or wait for a genuinely eligible outcome-blind scout input or authorized milestone unit.",
+  "user_decisions_needed": [
+    "Decide whether the Edge V2 automation should own the eight pre-existing shared/V1 test failures.",
+    "Provide or authorize the external append anchor, or freeze and select an M3 work unit, if promotion work should resume."
+  ],
+  "made_by": "codex-edge-v2-automation"
+}

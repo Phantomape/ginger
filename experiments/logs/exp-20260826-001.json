@@ -1,0 +1,106 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "ticket/log identity mismatch",
+      "unintended legacy-family drift",
+      "derived guard still omits scout"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": "private_replay_scout_family_metadata_projection_gap",
+    "surprise_level": "very_low",
+    "surprise_note": "The terminal scout was visible in state and receipts but absent from the generated anti-repeat view because its one-off closeout log omitted family keys."
+  },
+  "causal_components": [],
+  "change_summary": "Project missing private-replay scout family metadata from the same-ID terminal reservation ticket into the derived frozen-family guard; historical evidence bytes remain unchanged.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "missing_scout_family_metadata_projection",
+  "component": "scripts/build_frozen_families.py, quant/test_build_frozen_families.py, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260826-001",
+  "hypothesis": "The frozen-family generator drops a completed private replay scout when its log shard omits family metadata even though the same-ID reservation ticket froze it before outcomes; projecting only missing scout family fields from that ticket will restore machine anti-repeat and reopen enforcement without changing historical evidence.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_history_guard_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_contract_gap",
+  "next_retry_requires": [
+    "A new terminal V2 private replay scout whose log omits or conflicts with the same-ID ticket's pre-outcome trial metadata.",
+    "A separately scoped shared-closeout enforcement defect, such as a missing or inconsistent artifact disposition."
+  ],
+  "notes": "Guard verification: exact-family novelty check now warns with one 0%-accept single-attempt blocker and carries the pre-recorded later-frame-or-independent-event-sign reopen condition. Scope is measurement metadata only; no strategy, parity, production, permission, or trade state changed. The historical result artifact still lacks an explicit top-level disposition field; equivalent rejected/default-off fields remain intact and future shared closeout enforcement is a separate follow-up.",
+  "parameters": {
+    "locked_variables": [
+      "only private_replay_scout tickets; fill only missing family metadata; never override log values; same experiment_id required; historical result bytes unchanged; trade_enabled=false"
+    ],
+    "single_causal_variable": "private_replay_scout_frozen_family_projection"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not edit historical scout evidence or add another overlay schema; only same-ID, terminal, result-bound ticket metadata may fill missing derived trial-family keys.",
+    "new_evidence_required": "A new terminal V2 private replay scout with missing or conflicting pre-outcome family metadata, or a separately demonstrated shared-closeout disposition enforcement defect.",
+    "realized_failure_mode": "private_replay_scout_family_metadata_projection_gap",
+    "why_result_happened": "The terminal scout was visible in state and receipts but absent from the generated anti-repeat view because its one-off closeout log omitted family keys."
+  },
+  "prediction": {
+    "confidence_reason": "The omission is deterministic: the log has no family keys, the same-ID ticket already contains frozen family keys, and the generator currently skips familyless records. A missing-only same-ID overlay is narrow and testable.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "ticket/log identity mismatch",
+      "unintended legacy-family drift",
+      "derived guard still omits scout"
+    ],
+    "recorded_at": "2026-08-26T04:17:13+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260826-001/before_guard_readiness.json",
+    "data/experiments/exp-20260826-001/after_guard_readiness.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-26T04:23:08+00:00",
+  "trial_family": "private_replay_scout_frozen_family_projection",
+  "trial_variant_id": "exp-20260826-001"
+}

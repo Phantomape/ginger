@@ -34,6 +34,13 @@ from quant.experiment_history import (
 )
 
 OUT_PATH = REPO_ROOT / "docs" / "frozen_families.jsonl"
+PRIVATE_REPLAY_SCOUT_CHANGE_TYPE = "private_replay_scout"
+PRIVATE_REPLAY_SCOUT_RECORD_TYPE = "v2_private_replay_scout_result"
+PRIVATE_REPLAY_SCOUT_TERMINAL_STATUSES = {"observed_only", "rejected"}
+_SCOUT_FAMILY_METADATA_FIELDS = (
+    "trial_family",
+    "mechanism_family",
+)
 
 
 def _load_json(path: Path) -> Any:
@@ -41,6 +48,123 @@ def _load_json(path: Path) -> Any:
         return json.load(io.open(path, encoding="utf-8"))
     except Exception:
         return None
+
+
+def _private_replay_scout_tickets(
+    root: Path,
+    records: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    tickets: list[dict[str, Any]] = []
+    for record in records:
+        if record.get("record_type") != PRIVATE_REPLAY_SCOUT_RECORD_TYPE:
+            continue
+        experiment_id = str(record.get("experiment_id") or "").strip()
+        if not experiment_id:
+            raise ValueError("private replay scout log is missing experiment_id")
+        path = root / "experiments" / "tickets" / f"{experiment_id}.json"
+        ticket = _load_json(path)
+        if not isinstance(ticket, dict):
+            raise ValueError(
+                f"private replay scout ticket is missing or malformed: {path}"
+            )
+        if ticket.get("change_type") != PRIVATE_REPLAY_SCOUT_CHANGE_TYPE:
+            raise ValueError(
+                f"private replay scout ticket change_type mismatch: {path}"
+            )
+        ticket_experiment_id = str(ticket.get("experiment_id") or "").strip()
+        if ticket_experiment_id != experiment_id:
+            raise ValueError(f"private replay scout ticket identity mismatch: {path}")
+        tickets.append(ticket)
+    return tickets
+
+
+def overlay_private_replay_scout_trial_metadata(
+    records: list[dict[str, Any]],
+    tickets: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Fill missing derived-history keys from the matching reservation ticket.
+
+    Experiment log shards remain the outcome source of truth.  A private replay
+    scout ticket freezes its family identity before outcomes, so these two
+    accounting fields may safely fill an omission in the same-ID log.
+    Existing log values are never replaced; disagreement fails closed.
+    """
+
+    scout_tickets: dict[str, dict[str, Any]] = {}
+    for ticket in tickets:
+        if not isinstance(ticket, dict):
+            raise ValueError("private replay scout ticket input is malformed")
+        experiment_id = str(ticket.get("experiment_id") or "").strip()
+        if not experiment_id:
+            raise ValueError("private replay scout ticket is missing experiment_id")
+        if experiment_id in scout_tickets:
+            raise ValueError(f"duplicate private replay scout ticket: {experiment_id}")
+        scout_tickets[experiment_id] = ticket
+
+    overlaid: list[dict[str, Any]] = []
+    for record in records:
+        if not isinstance(record, dict):
+            overlaid.append(record)
+            continue
+        if record.get("record_type") != PRIVATE_REPLAY_SCOUT_RECORD_TYPE:
+            overlaid.append(record)
+            continue
+        experiment_id = str(record.get("experiment_id") or "").strip()
+        if not experiment_id:
+            raise ValueError("private replay scout log is missing experiment_id")
+        ticket = scout_tickets.get(experiment_id)
+        if ticket is None:
+            raise ValueError(
+                f"private replay scout ticket is missing for {experiment_id}"
+            )
+        if ticket.get("change_type") != PRIVATE_REPLAY_SCOUT_CHANGE_TYPE:
+            raise ValueError(
+                f"private replay scout ticket change_type mismatch for {experiment_id}"
+            )
+        for field in _SCOUT_FAMILY_METADATA_FIELDS:
+            if not str(ticket.get(field) or "").strip():
+                raise ValueError(
+                    f"private replay scout ticket is missing {field} for {experiment_id}"
+                )
+        log_status = str(record.get("status") or "").strip()
+        ticket_status = str(ticket.get("status") or "").strip()
+        if (
+            log_status not in PRIVATE_REPLAY_SCOUT_TERMINAL_STATUSES
+            or ticket_status != log_status
+        ):
+            raise ValueError(
+                f"private replay scout terminal status mismatch for {experiment_id}"
+            )
+        result = ticket.get("result")
+        if not isinstance(result, dict) or result.get("decision") != log_status:
+            raise ValueError(
+                f"private replay scout result decision mismatch for {experiment_id}"
+            )
+        if record.get("decision") != result.get("decision"):
+            raise ValueError(
+                f"private replay scout log decision mismatch for {experiment_id}"
+            )
+        if (
+            not record.get("artifact")
+            or record.get("artifact") != result.get("artifact")
+            or not record.get("artifact_sha256")
+            or record.get("artifact_sha256") != result.get("artifact_sha256")
+        ):
+            raise ValueError(
+                f"private replay scout artifact binding mismatch for {experiment_id}"
+            )
+        merged = dict(record)
+        for field in _SCOUT_FAMILY_METADATA_FIELDS:
+            log_value = str(record.get(field) or "").strip()
+            ticket_value = str(ticket.get(field) or "").strip()
+            if log_value and ticket_value and log_value != ticket_value:
+                raise ValueError(
+                    f"private replay scout {field} mismatch for {experiment_id}"
+                )
+            if not log_value and ticket_value:
+                merged[field] = ticket_value
+        overlaid.append(merged)
+    return overlaid
 
 
 def _reopen_condition(rec: dict[str, Any]) -> str | None:
@@ -164,6 +288,10 @@ def build_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def main() -> int:
     records = _dedupe_records_by_experiment_id(load_experiment_logs(REPO_ROOT))
+    records = overlay_private_replay_scout_trial_metadata(
+        records,
+        _private_replay_scout_tickets(REPO_ROOT, records),
+    )
     rows = build_rows(records)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)

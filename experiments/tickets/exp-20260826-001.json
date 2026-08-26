@@ -1,0 +1,272 @@
+{
+  "acceptance_rule": "Focused tests pass; regeneration adds the exact exp-20260822-001 family with its pre-recorded reopen condition; no historical evidence file changes; lean-strict audit passes.",
+  "allowed_write_scope": [
+    "scripts/build_frozen_families.py",
+    "quant/test_build_frozen_families.py",
+    "docs/frozen_families.jsonl"
+  ],
+  "baseline_result_file": "experiments/logs/exp-20260822-001.json",
+  "card_file": "experiments/cards/exp-20260826-001.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "missing_scout_family_metadata_projection",
+  "claimed_at": "2026-08-26T04:17:44+00:00",
+  "completed_at": "2026-08-26T04:23:07+00:00",
+  "created_at": "2026-08-26T04:17:34+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260826-001",
+  "experiment_uid": "expuid-83c12a36877a414e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260826-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-26T04:17:34+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "private_replay_scout_frozen_family_projection"
+  },
+  "hypothesis": "The frozen-family generator drops a completed private replay scout when its log shard omits family metadata even though the same-ID reservation ticket froze it before outcomes; projecting only missing scout family fields from that ticket will restore machine anti-repeat and reopen enforcement without changing historical evidence.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "only private_replay_scout tickets; fill only missing family metadata; never override log values; same experiment_id required; historical result bytes unchanged; trade_enabled=false"
+  ],
+  "mechanism_family": "experiment_history_guard_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "experiments/logs/exp-20260822-001.json",
+    "data/experiments/exp-20260822-001",
+    "experiments/tickets/exp-20260822-001.json"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "measurement_contract_gap",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "anti",
+        "before",
+        "changing",
+        "completed",
+        "drops",
+        "enforcement",
+        "even",
+        "evidence",
+        "experiment",
+        "family",
+        "fields",
+        "from",
+        "froze",
+        "frozen",
+        "generator",
+        "guard",
+        "historical",
+        "history",
+        "id",
+        "integrity",
+        "it",
+        "its",
+        "log",
+        "machine",
+        "metadata",
+        "missing",
+        "omits",
+        "only",
+        "outcomes",
+        "private",
+        "projecting",
+        "projection",
+        "reopen",
+        "repeat",
+        "reservation",
+        "restore",
+        "same",
+        "shard",
+        "that",
+        "though",
+        "ticket",
+        "when",
+        "will",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "parked_surface_reopen_condition_progress_guard",
+        "reopen_condition": "A valid retry needs the logged reopen counts to satisfy their numeric checks, or a genuinely new data source or new gate shape declared in --new-evidence-axis.",
+        "score": 0.024,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_log_json_parse_repair",
+        "reopen_condition": "A retry requires a newly detected malformed log shard, a parser/audit failure attributable to exp-20260628-020, or a repository-wide encoding contract change.",
+        "score": 0.0231,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "recipe_lane_guard",
+        "reopen_condition": "Watch the next 2 weeks of alpha reservations: if a reskin of a curated lane still lands (guard miss), extend that lane phrase clusters in a follow-up; if an agent needs --recipe-lane-override for a genuinely new mechanism more than rarely, the clusters are too broad. Fingerprint-level (structured recipe identity per docs/alpha_search_architecture.md 4.1) should eventually replace phrase curation w",
+        "score": 0.0231,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_log_wrapper_identity_repair",
+        "reopen_condition": "No retry is needed unless another manifest hash mismatch or cross-ID wrapper write is detected.",
+        "score": 0.0222,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_completed_close_settlement_integrity",
+        "reopen_condition": "Let the v2 routine pipeline accumulate at least 100 strict effective next-close cohorts, then generate a fresh outcome-blind D0-D3 scope before any separately reserved alpha hypothesis.",
+        "score": 0.0222,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-edge-v2-automation",
+  "prediction": {
+    "confidence_reason": "The omission is deterministic: the log has no family keys, the same-ID ticket already contains frozen family keys, and the generator currently skips familyless records. A missing-only same-ID overlay is narrow and testable.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "ticket/log identity mismatch",
+      "unintended legacy-family drift",
+      "derived guard still omits scout"
+    ],
+    "recorded_at": "2026-08-26T04:17:13+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "851984cf7a4b592e0c61bb0626b3ec6934cccde5a605b06581214075c9e54a6a",
+    "payload_hash": "851984cf7a4b592e0c61bb0626b3ec6934cccde5a605b06581214075c9e54a6a",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260826-001/before_guard_readiness.json",
+    "after_result_file": "data/experiments/exp-20260826-001/after_guard_readiness.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.95,
+      "brier_score": 0.0025,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "ticket/log identity mismatch",
+        "unintended legacy-family drift",
+        "derived guard still omits scout"
+      ],
+      "realized_failure_mode": "private_replay_scout_family_metadata_projection_gap",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The terminal scout was visible in state and receipts but absent from the generated anti-repeat view because its one-off closeout log omitted family keys."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260826-001.json",
+  "single_causal_variable": "private_replay_scout_frozen_family_projection",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260826-001.json",
+  "trial_family": "private_replay_scout_frozen_family_projection",
+  "trial_variant_id": "exp-20260826-001"
+}
