@@ -1,0 +1,79 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 1.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 0.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [
+    "registry identity snapshot",
+    "canonical ticket path",
+    "per-ticket terminal CAS",
+    "full log payload hash",
+    "reservation identity binding"
+  ],
+  "change_summary": "Bound future reservation, claim, terminal writer, exact log intent, and strict cache provenance into one fail-closed closeout contract.",
+  "change_type": "measurement_repair",
+  "changed_variable": "closeout_integrity_contract",
+  "component": "scripts/experiment_registry.py, scripts/judge_experiment.py, quant/test_private_replay_closeout_contract.py, quant/test_persist_self_registered_result.py, docs/agent_experiment_protocol.md, docs/quant_agent_protocol_v2.md, docs/experiment_ticket_schema.md, docs/experiment_registry.json, docs/frozen_families.jsonl, data/experiments/exp-20260826-005/, experiments/tickets/exp-20260826-005.json, experiments/cards/exp-20260826-005.md, experiments/manifests/exp-20260826-005.json, experiments/logs/exp-20260826-005.json, data/v2/hourly_runs/20260826T0509Z_measurement_repair_private_replay_artifact_disposition.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "sharpe": 1.0
+  },
+  "experiment_id": "exp-20260826-005",
+  "hypothesis": "Future private-replay closeout must preserve canonical registry provenance, serialize every terminal writer on one ticket lock, and commit the full immutable log payload before ticket mutation so races and identity drift fail closed without granting research authority.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "private_replay_closeout_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "concurrency_counterexample",
+  "next_retry_requires": [
+    "One reproducible pre-generic terminal-without-shard failure, one generic exact-intent same-ID recovery failure, one real alternate-workspace alpha_workflow finish root drift, or one scope, identity, state-machine, CAS, commitment, or strict-anchor bypass."
+  ],
+  "notes": "sharpe improved 1.0000",
+  "parameters": {
+    "locked_variables": [
+      "private replay closeout contract"
+    ],
+    "single_causal_variable": "private replay closeout provenance and terminal write commitment"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retry with a hash-only log promise, a terminal writer outside the shared ticket lock, or a strict-cache path that recreates a missing reservation anchor.",
+    "new_evidence_required": "Reopen only for one reproducible pre-generic terminal-without-shard failure, one generic exact-intent same-ID recovery failure, one real alternate-workspace alpha_workflow finish root drift, or one scope, identity, state-machine, CAS, commitment, or strict-anchor bypass.",
+    "realized_failure_mode": "hash_only_log_recovery_gap",
+    "why_result_happened": "Strict cache completion exposed that a hash without the exact volatile log row was insufficient for a fresh-process repair."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260826-005/before_closeout_integrity_contract.json",
+    "data/experiments/exp-20260826-005/after_closeout_integrity_contract.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-26T09:33:46+00:00",
+  "trial_family": "v2_private_replay_closeout_integrity",
+  "trial_variant_id": "exp-20260826-005"
+}

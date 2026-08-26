@@ -60,6 +60,72 @@ audit. A research replay cannot persist `accepted` or any `accepted_*` status.
 The source definition and upgrade rules are in
 [`research_pit_policy.md`](research_pit_policy.md).
 
+New `private_replay_scout` tickets also freeze
+`private_replay_scout_artifact_disposition_contract_version=1`. This is a
+post-outcome closeout contract, not a promotion or claim input. Closeout must
+bind a repository-local `v2_private_replay_scout_result` JSON artifact by actual
+SHA-256 and keep its top-level `status` and `decision` equal to the registry
+terminal status. Its separate `disposition` is restricted to the mapping in
+`docs/quant_agent_protocol_v2.md` §5; `invalid_contaminated` additionally
+requires `evidence_invalid=true`. Marker-less historical tickets retain their
+original identities and are not rewritten.
+At successful claim, the registry writes
+`private_replay_scout_closeout_claim_binding`: a hash-bound snapshot of the
+experiment ID/UID, exact `change_type`, contract version, `allowed_write_scope`,
+and `must_not_touch`. Claim retry, close, self-registration, log persistence,
+and audit reject any later drift. A contract marker or claim binding also fixes
+the admission identity to `change_type=private_replay_scout` plus
+`alpha_promotion.admission_class=research_replay`; changing either field cannot
+demote the ticket out of the contract. Scope entries are strict `list[str]`
+values: a trailing `/` denotes a directory, while an exact file entry does not
+authorize descendants.
+
+This enforcement applies to tickets at or after
+`2026-08-26T05:10:00+00:00` and to any ticket carrying the marker or binding.
+The marker-less `exp-20260822-001` historical replay remains exempt and is not
+backfilled.
+For contract-v1 tickets, the close CLI requires `--append-log` whenever
+`--write-registry` is used and validates the draft before mutating the ticket.
+It also rejects a known conflicting shard before mutating the ticket. For a
+pre-generic contract-v1 ticket, new post-ticket shard I/O/race failure can still
+leave a terminal ticket without a shard; audit/lean-strict blocks, and a
+reproducible instance is a quantitative closeout-integrity reopen condition.
+The canonical shard is immutable after creation: contract-v1 rejects
+`--allow-duplicate-log-id`, and the shared writer permits only an exact
+idempotent no-op against an existing contract shard. A conflicting rewrite is
+rejected under the shard lock.
+
+Generic reservation identity applies from `exp-20260826-006` or
+`2026-08-26T08:20:00+00:00`, whichever identifies the ticket as future. The
+reservation writes the same immutable `experiment_reservation_identity` into
+ticket, registry row, and revision manifest. All three also carry an exact
+boolean `experiment_ever_claimed`; claim advances only through
+ticket/manifest/registry states `000 -> 100 -> 110 -> 111`. Only same-owner
+claim retry may repair `100` or `110`, and only when the manifest already holds
+the valid hash-bound `experiment_claim_transition`. Close, log, self-register,
+and audit require `111`. Strict post-reservation writes reject a missing or
+changed registry row/manifest and cannot reconstruct either anchor from the
+mutated ticket.
+
+Every generic future terminal ticket also requires:
+
+- `experiment_closeout_log_intent`: the exact compact JSON object the canonical
+  shard writer must persist;
+- `experiment_closeout_log_intent_sha256`: SHA-256 of that object under the
+  canonical JSON hash used by the registry.
+
+The terminal ticket binds both fields in its first terminal write. The close
+path then writes/verifies that exact shard and commits the strict registry cache
+last. A same-ID standard-close or self-registration retry can therefore recover
+an interrupted shard/cache write without regenerating volatile fields such as
+`timestamp`; the audit and writer reject a missing, altered, wrong-ID, or
+conflicting intent/shard. This is recoverable ordering across three independent
+files, not cross-file atomicity. A process may expose an intermediate terminal
+ticket before its shard/cache, and mutation or deletion of reservation anchors
+fails closed. `--write-registry` requires `--append-log` for every generic
+future ticket, not only private replay. Presence of either closeout-intent field
+is itself a generic rollout marker, so backdating cannot disable the contract.
+
 ## Required Ticket Fields
 
 ```json
@@ -295,7 +361,9 @@ python scripts\judge_experiment.py `
 
 `--append-log` writes the generated row to
 `experiments/logs/<experiment_id>.json`. Duplicate experiment IDs are
-rejected unless `--allow-duplicate-log-id` is set.
+rejected unless the legacy-only `--allow-duplicate-log-id` escape is set.
+Contract-v1 and generic future tickets forbid that escape and accept only an
+exact idempotent repeat.
 
 ## Conflict Rules
 

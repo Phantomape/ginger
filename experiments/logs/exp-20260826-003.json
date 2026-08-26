@@ -1,0 +1,113 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 1.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 0.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "custom_logs_dir_not_propagated",
+      "preflight_and_update_semantics_diverge",
+      "default_registry_regression"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The artifact validator itself was correct once given the workspace root; the failure was deterministic CLI ordering and an omitted custom logs_dir."
+  },
+  "causal_components": [
+    "custom workspace root",
+    "pre-mutation draft validation",
+    "canonical custom log path"
+  ],
+  "change_summary": "Propagate the selected registry workspace through closeout draft validation and canonical log persistence, and validate the draft before terminal ticket mutation.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "custom_registry_closeout_root_and_ordering",
+  "component": "scripts/judge_experiment.py, quant/test_experiment_registry.py, data/experiments/exp-20260826-003/before_custom_registry_close.json, data/experiments/exp-20260826-003/after_custom_registry_close.json, experiments/cards/exp-20260826-003.md, experiments/manifests/exp-20260826-003.json, experiments/tickets/exp-20260826-003.json, experiments/logs/exp-20260826-003.json, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "sharpe": 1.0
+  },
+  "experiment_id": "exp-20260826-003",
+  "hypothesis": "Custom-registry closeout must derive one workspace root, require canonical log append with terminal mutation, and validate the draft before mutation so invalid artifact or root mismatch cannot strand the ticket before log I/O begins.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260826-002"
+  ],
+  "new_evidence_type": "adversarial_review_reproduction",
+  "next_retry_requires": [
+    "A reproducible post-ticket log I/O or race failure, alternate-workspace root mismatch, or mutation-order regression not covered by the custom-registry end-to-end test."
+  ],
+  "notes": "Adversarial-review parity repair only; no scientific candidate was selected. A real custom-registry CLI close and invalid-preflight case passed; trade_enabled remains false.",
+  "parameters": {
+    "locked_variables": [
+      "custom registry private replay closeout root and mutation ordering"
+    ],
+    "single_causal_variable": "custom registry private replay closeout root and mutation ordering"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not infer closeout authority from the process working directory or mutate a ticket before its artifact-bound log draft validates; the selected registry owns both root and log path.",
+    "new_evidence_required": "Reopen only for a reproducible post-ticket log I/O or race failure that leaves a missing canonical shard, a new alternate workspace layout, or a root propagation regression outside the fixture.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The artifact validator itself was correct once given the workspace root; the failure was deterministic CLI ordering and an omitted custom logs_dir."
+  },
+  "prediction": {
+    "confidence_reason": "The adversarial review reproduced a deterministic root mismatch in one CLI module; passing the already-derived workspace root through existing helpers should repair it without changing scientific policy.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "custom_logs_dir_not_propagated",
+      "preflight_and_update_semantics_diverge",
+      "default_registry_regression"
+    ],
+    "recorded_at": "2026-08-26T05:50:09+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 2,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260826-003/before_custom_registry_close.json",
+    "data/experiments/exp-20260826-003/after_custom_registry_close.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-26T06:00:38+00:00",
+  "trial_family": "v2_private_replay_scout_closeout_integrity",
+  "trial_variant_id": "v2_private_replay_scout_custom_registry_close_v1"
+}

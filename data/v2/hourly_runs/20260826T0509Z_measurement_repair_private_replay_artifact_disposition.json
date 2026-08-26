@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-26T05:09:00Z",
+  "run_finished_at": "2026-08-26T09:40:00Z",
+  "milestone": "research_scout_lane",
+  "work_unit": "private_replay_and_generic_experiment_closeout_integrity",
+  "outcome": "completed_four_accepted_measurement_repairs",
+  "experiment_ids": [
+    "exp-20260826-002",
+    "exp-20260826-003",
+    "exp-20260826-004",
+    "exp-20260826-005"
+  ],
+  "trade_enabled": false,
+  "source_commit": "86c489200618c93fc1e3f485bc0e3a01f1167c2b",
+  "selection_rationale": {
+    "priority": "P1 experiment measurement and closeout integrity",
+    "finding": "Future private replay artifacts lacked a shared disposition contract; custom registries could validate and write against the wrong workspace; lean-strict did not block post-enforcement hard-integrity failures; and generic reservation, claim, terminal writer, exact log, and registry-cache provenance were not one monotonic fail-closed contract.",
+    "chosen_repair": "Add artifact identity/disposition validation, custom-root draft preflight, hard-integrity exit gating, independent reservation identities, an exact claim prefix state machine, one per-ticket terminal CAS, recoverable hash-bound log intent, immutable shard persistence, and strict cache completion that cannot recreate missing reservation anchors.",
+    "outcome_access_boundary": "Required startup navigation had already exposed settled outcomes. No scientific candidate was selected; all four IDs are measurement or identity repairs."
+  },
+  "experiment_results": [
+    {
+      "experiment_id": "exp-20260826-002",
+      "decision": "accepted",
+      "result": "Future private_replay_scout closeout now binds a repository-local artifact identity, digest, terminal status/disposition mapping, contamination flag, scope, claim identity, and immutable canonical shard."
+    },
+    {
+      "experiment_id": "exp-20260826-003",
+      "decision": "accepted",
+      "result": "Standard close derives artifact and log paths from the selected registry workspace, requires canonical append with future write-registry, and rejects invalid drafts, roots, and known conflicting shards before terminal mutation."
+    },
+    {
+      "experiment_id": "exp-20260826-004",
+      "decision": "accepted",
+      "result": "Lean-strict now exposes and blocks post-enforcement research-closeout and canonical-record failures while keeping legacy orphan and pre-enforcement debt report-only."
+    },
+    {
+      "experiment_id": "exp-20260826-005",
+      "decision": "accepted",
+      "result": "Future generic reservations bind ticket/registry/manifest identity, permit only 000-to-111 claim-prefix repair, serialize terminal writers, persist an exact recoverable log intent and shard before strict cache, and reject missing or changed independent anchors."
+    }
+  ],
+  "verification": [
+    "Focused closeout and frozen-family suite: 301 passed (289 closeout/registry tests plus 12 frozen-family tests).",
+    "Shared experiment registry and lifecycle suite: 623 passed.",
+    "Complete quant/test_v2*.py suite: 349 passed.",
+    "scripts/experiment.py audit --lean-strict: lean_strict_passed=true, hard_integrity_passed=true, no failure domains.",
+    "Target py_compile, git diff --check, and git diff --cached --check passed; only expected LF-to-CRLF checkout warnings were emitted.",
+    "All exp-20260826-002 through exp-20260826-005 tickets and registry rows are terminal accepted with canonical log shards.",
+    "Independent adversarial review found no P0/P1 after registry-row deletion, manifest deletion, conflicting commitment, wrong-ID log, first-writer race, shard failure, cache failure, and fresh CLI retry tests.",
+    "Protected exp-20260822-001 runner/result/ticket/log SHA-256 values remain 6393616c..., ec828033..., b9c79e1c..., and 7e9fef38... respectively.",
+    "No strategy, production, order, permission, or active trade_enabled=true path was introduced."
+  ],
+  "changed_files": [
+    "scripts/experiment.py",
+    "scripts/experiment_registry.py",
+    "scripts/judge_experiment.py",
+    "quant/test_experiment_registry.py",
+    "quant/test_persist_self_registered_result.py",
+    "quant/test_private_replay_closeout_contract.py",
+    "docs/agent_experiment_protocol.md",
+    "docs/experiment_ticket_schema.md",
+    "docs/quant_agent_protocol_v2.md",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "data/experiments/exp-20260826-002/before_guard_readiness.json",
+    "data/experiments/exp-20260826-002/after_guard_readiness.json",
+    "data/experiments/exp-20260826-003/before_custom_registry_close.json",
+    "data/experiments/exp-20260826-003/after_custom_registry_close.json",
+    "data/experiments/exp-20260826-004/before_lean_strict_hard_integrity.json",
+    "data/experiments/exp-20260826-004/after_lean_strict_hard_integrity.json",
+    "data/experiments/exp-20260826-005/before_closeout_integrity_contract.json",
+    "data/experiments/exp-20260826-005/after_closeout_integrity_contract.json",
+    "experiments/cards/exp-20260826-002.md",
+    "experiments/cards/exp-20260826-003.md",
+    "experiments/cards/exp-20260826-004.md",
+    "experiments/cards/exp-20260826-005.md",
+    "experiments/manifests/exp-20260826-002.json",
+    "experiments/manifests/exp-20260826-003.json",
+    "experiments/manifests/exp-20260826-004.json",
+    "experiments/manifests/exp-20260826-005.json",
+    "experiments/tickets/exp-20260826-002.json",
+    "experiments/tickets/exp-20260826-003.json",
+    "experiments/tickets/exp-20260826-004.json",
+    "experiments/tickets/exp-20260826-005.json",
+    "experiments/logs/exp-20260826-002.json",
+    "experiments/logs/exp-20260826-003.json",
+    "experiments/logs/exp-20260826-004.json",
+    "experiments/logs/exp-20260826-005.json",
+    "data/v2/hourly_runs/20260826T0509Z_measurement_repair_private_replay_artifact_disposition.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json",
+    "data/v2/hourly_runs/20260822T0203Z_noop_concurrent_v2_scout_containment_audit.json",
+    "data/v2/hourly_runs/20260823T1610Z_noop_concurrent_alpha_containment_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive measurement integrity: future private and generic experiment identities, closeout artifacts, exact canonical logs, and blocking audit verdicts are now independently bound and recoverable without granting scientific authority from a stale cache. No new alpha thesis, outcome-driven selection, PIT claim, or promotion was made.",
+  "parity_impact": "No strategy, replay, daily, scheduler, execution, allocation, paper, live, or broker behavior changed. This repair makes experiment-record parity stricter and keeps trade_enabled=false.",
+  "non_atomic_boundary": "Ticket, shard, and registry cache remain separate files. Future generic tickets carry an exact intent that supports same-ID shard/cache retry; pre-generic contract-v1 tickets only guarantee invalid draft/root/known-conflict failure before terminal mutation, so a new post-ticket I/O/race can still strand a missing shard and hard-fail audit.",
+  "quantitative_reopen_conditions": [
+    "one reproducible pre-generic post-ticket shard failure leaving a terminal ticket without its canonical shard",
+    "one reproducible generic terminal intent that cannot recover the exact shard and strict cache under the same experiment ID",
+    "one real alternate-workspace alpha_workflow finish that resolves artifact or log paths outside the selected registry workspace",
+    "one reproducible scope, identity, claim-prefix, terminal CAS, shard commitment, or strict-anchor backfill bypass"
+  ],
+  "remaining_nonblocking_p2": [
+    "Standard terminal repair treats the committed ticket intent as authoritative even if a retry supplies a different presentation-only log_draft.",
+    "Self-registration terminal repair accepts a caller result that is a matching key subset of the canonical result.",
+    "The alpha_workflow finish intent builder has not yet been proven against a real alternate custom-registry workspace root."
+  ],
+  "next_step": "Do not reopen this family without a listed quantitative trigger. On the next clean wake, select the earliest safe V2 promotion-backlog or genuinely outcome-blind scout unit; external append-anchor construction remains gated on provider/IAM/retention authorization.",
+  "user_decisions_needed": [
+    "Authorize an external append-anchor provider, IAM scope, and retention policy if M2 append-anchor construction should proceed.",
+    "Otherwise freeze and select the next M3 work unit; no decision is needed for this completed closeout repair."
+  ],
+  "made_by": "codex-edge-v2-automation"
+}

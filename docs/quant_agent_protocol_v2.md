@@ -197,6 +197,25 @@ stage-required V2 records、source disposition 和 evaluation-input manifest 必
 预冻结值并记录 code/result identity；缺失、漂移或事后替换一律 `invalid_contaminated` + registry `rejected`。通用 registry
 cross-hook 是 scout P2；同类人工 binding 连续出现两次再提升为共享 guard，不能因此重新前置 M2-M5。
 
+未来 contract-v1 `private_replay_scout` 在 reserve/claim 时还要冻结 ticket UID、准入身份、scope 与禁止触碰面的
+哈希绑定，并把独立 identity snapshot 写入 registry index 和 revision manifest。terminal close 的标准路径与
+self-registration 共用同一个 per-ticket lock；ticket result 在写入前承诺完整 canonical log payload 的 SHA-256，log shard
+只允许完全相同的幂等首写。`--write-registry` 必须同时带 `--append-log`，artifact、workspace root、log draft 和已存在 shard
+必须先通过校验。对尚未进入通用 reservation-identity rollout 的 contract-v1 ticket，这只保证已知无效输入在 ticket
+terminalize 之前失败；新的 post-ticket shard I/O/race 仍可能留下 terminal ticket without log，audit/lean-strict 必须硬失败。
+
+从 `exp-20260826-006` 或 `2026-08-26T08:20:00+00:00` 起，所有 lane 共用通用 reservation/closeout 合同：reserve 在
+ticket、registry、manifest 写同一个 `experiment_reservation_identity` 与 exact boolean `experiment_ever_claimed=false`；claim
+只允许 `000 -> 100 -> 110 -> 111`，且仅同 owner、manifest 已有有效 hash-bound `experiment_claim_transition` 的 `100/110`
+可向前修复。close/log/audit 必须看到 `111`；strict cache 不得从已变更 ticket 回填丢失的 registry row 或 manifest。
+terminal ticket 同一次写入还保存 compact exact `experiment_closeout_log_intent` 及其 SHA-256；随后写/核对 exact shard，最后
+严格提交 registry cache。标准 close 和 self-registration 因而能在 fresh retry 中按原 ID 恢复 shard/cache I/O 中断，且 generic
+log 也绑定 exact experiment ID 与完整 payload。三文件仍非原子事务：中断可短暂暴露 terminal ticket、缺 shard 或 stale cache；
+审计会阻断，anchor 删除/篡改则 fail closed 而不自动重建。任一 intent marker 都强制进入通用合同，不能靠 backdate/旧 ID 绕过。
+
+只有复现 pre-generic post-ticket 缺 shard、通用 intent 无法 same-ID 恢复、alternate-workspace `alpha_workflow finish` root 漂移，
+或出现 scope/identity/state-machine/CAS/commitment 绕过时，才重开该 closeout-integrity 家族；普通措辞或字段重排不构成新证据。
+
 ### 工作优先级和防饥饿
 
 默认排序是：P0/P1 containment -> 不受该问题影响的正在运行/未收尾 V2 experiment -> 已通过免费 preflight 的 scout

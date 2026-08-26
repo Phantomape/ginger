@@ -1,0 +1,114 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 1.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 0.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "legacy_audit_breakage",
+      "artifact_path_resolution_drift",
+      "standard_and_self_registered_closeout_divergence"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The shared ceiling guard was the expected chokepoint; the only implementation adjustment was accepting pathlib paths in standard closeout while retaining string-plus-digest bindings for persisted results."
+  },
+  "causal_components": [
+    "artifact disposition mapping",
+    "artifact identity validation",
+    "legacy compatibility boundary",
+    "focused closeout audit tests"
+  ],
+  "change_summary": "Enforce hash-bound top-level disposition mapping for future V2 private replay scout closeout across standard, self-registered, log-append, and audit paths while preserving historical artifacts.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "future_private_replay_scout_artifact_disposition_contract",
+  "component": "scripts/experiment_registry.py, quant/test_experiment_registry.py, quant/test_persist_self_registered_result.py, docs/agent_experiment_protocol.md, docs/experiment_ticket_schema.md, data/experiments/exp-20260826-002/before_guard_readiness.json, data/experiments/exp-20260826-002/after_guard_readiness.json, experiments/cards/exp-20260826-002.md, experiments/manifests/exp-20260826-002.json, experiments/tickets/exp-20260826-002.json, experiments/logs/exp-20260826-002.json, docs/experiment_registry.json, docs/frozen_families.jsonl, data/v2/hourly_runs/20260826T0509Z_measurement_repair_private_replay_artifact_disposition.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "sharpe": 1.0
+  },
+  "experiment_id": "exp-20260826-002",
+  "hypothesis": "Future research-replay closeouts must bind a hash-verified result artifact whose top-level disposition matches the registry terminal status, so ambiguous and contaminated scouts fail closed without rewriting historical evidence.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260826-001"
+  ],
+  "new_evidence_type": "new_measurement_guard",
+  "next_retry_requires": [
+    "A reproducible closeout bypass or a protocol-level disposition change that requires a versioned contract update."
+  ],
+  "notes": "Measurement repair only: startup had already exposed prior outcome values, so no alpha candidate was selected. All four legal mappings pass; identity, digest, mapping, and evidence_invalid drift fail closed. trade_enabled remains false.",
+  "parameters": {
+    "locked_variables": [
+      "future private replay scout artifact disposition closeout contract"
+    ],
+    "single_causal_variable": "future private replay scout artifact disposition closeout contract"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not add runner-local disposition checks, make artifact identity optional, or retrofit exp-20260822-001; the shared future-only v1 closeout boundary is the accepted contract.",
+    "new_evidence_required": "Reopen only for a reproducible path, digest, identity, status-disposition, or evidence-invalid bypass, or for a protocol disposition change that requires contract version 2.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The shared ceiling guard was the expected chokepoint; the only implementation adjustment was accepting pathlib paths in standard closeout while retaining string-plus-digest bindings for persisted results."
+  },
+  "prediction": {
+    "confidence_reason": "The shared ceiling guard is already the single chokepoint and the protocol enumerates a finite mapping; the main risk is applying the new requirement retroactively or resolving artifact identity differently across closeout APIs.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "legacy_audit_breakage",
+      "artifact_path_resolution_drift",
+      "standard_and_self_registered_closeout_divergence"
+    ],
+    "recorded_at": "2026-08-26T05:10:17+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 1,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260826-002/before_guard_readiness.json",
+    "data/experiments/exp-20260826-002/after_guard_readiness.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-26T05:24:56+00:00",
+  "trial_family": "v2_private_replay_scout_closeout_integrity",
+  "trial_variant_id": "v2_private_replay_scout_artifact_disposition_v1"
+}

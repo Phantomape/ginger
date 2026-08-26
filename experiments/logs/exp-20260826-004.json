@@ -1,0 +1,114 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 1.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": 0.0,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "legacy_debt_overblocked",
+      "hard_integrity_not_visible",
+      "default_audit_regression"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": "hard_integrity_not_visible",
+    "surprise_level": "very_low",
+    "surprise_note": "The underlying audit already classified the failures; the wrapper omitted them from its blocking verdict."
+  },
+  "causal_components": [
+    "hard-integrity summary",
+    "post-enforcement blocking",
+    "legacy orphan compatibility"
+  ],
+  "change_summary": "Made post-enforcement closeout integrity part of the lean-strict exit gate while preserving report-only legacy debt.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "lean_strict_hard_integrity_gate",
+  "component": "scripts/experiment.py, quant/test_experiment_registry.py, data/experiments/exp-20260826-004/before_lean_strict_hard_integrity.json, data/experiments/exp-20260826-004/after_lean_strict_hard_integrity.json, experiments/cards/exp-20260826-004.md, experiments/manifests/exp-20260826-004.json, experiments/tickets/exp-20260826-004.json, experiments/logs/exp-20260826-004.json, docs/experiment_registry.json, docs/frozen_families.jsonl",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "sharpe": 1.0
+  },
+  "experiment_id": "exp-20260826-004",
+  "hypothesis": "lean-strict must surface and block post-enforcement closeout integrity failures while leaving legacy orphan logs report-only.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_measurement_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260826-002",
+    "exp-20260826-003"
+  ],
+  "new_evidence_type": "adversarial_review_reproduction",
+  "next_retry_requires": [
+    "One reproducible artifact path, digest, identity, disposition, or evidence-invalid bypass or contract-v2 disposition change; one post-ticket missing-shard, alternate-root, or mutation-order regression; or one post-enforcement hard-integrity miss or pre-enforcement legacy-orphan false block."
+  ],
+  "notes": "sharpe improved 1.0000",
+  "parameters": {
+    "locked_variables": [
+      "lean-strict hard-integrity exit gate"
+    ],
+    "single_causal_variable": "lean-strict hard-integrity exit gate"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not add another presentation-only audit summary that omits hard-integrity domains from the lean-strict exit code.",
+    "new_evidence_required": "Reopen only for one reproducible artifact path, digest, identity, disposition, or evidence-invalid bypass or contract-v2 disposition change; one post-ticket missing-shard, alternate-root, or mutation-order regression; or one post-enforcement hard-integrity miss or pre-enforcement legacy-orphan false block.",
+    "realized_failure_mode": "hard_integrity_not_visible",
+    "why_result_happened": "The underlying audit already classified the failures; the wrapper omitted them from its blocking verdict."
+  },
+  "prediction": {
+    "confidence_reason": "The adversarial review reproduced a deterministic wrapper-level omission; adding explicit hard-integrity domains to the existing lean gate is local and testable.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "legacy_debt_overblocked",
+      "hard_integrity_not_visible",
+      "default_audit_regression"
+    ],
+    "recorded_at": "2026-08-26T06:51:19+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 3,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260826-004/before_lean_strict_hard_integrity.json",
+    "data/experiments/exp-20260826-004/after_lean_strict_hard_integrity.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-26T09:33:26+00:00",
+  "trial_family": "v2_private_replay_scout_closeout_integrity",
+  "trial_variant_id": "v2_private_replay_scout_lean_strict_hard_gate_v1"
+}

@@ -423,6 +423,62 @@ Final records must include:
 - post-run reflection and next evidence;
 - related files and reproduction command.
 
+For V2 `private_replay_scout` tickets reserved under artifact-disposition
+contract v1, both closeout APIs reopen the repository-local result artifact and
+verify its SHA-256. The artifact must keep registry `status` and `decision` at
+the terminal ceiling (`observed_only` or `rejected`) and put the scientific
+classification in top-level `disposition`: `observed_only` maps only to
+`positive_replay_lead_not_promoted`; `rejected` maps to `rejected`,
+`inconclusive_insufficient_sample`, or `invalid_contaminated`. The contaminated
+case requires `evidence_invalid=true`; all other dispositions require false.
+Artifact identity, digest, mapping, or flag drift fails close and audit. Older
+artifacts remain immutable and are not retroactively upgraded.
+Successful claim also freezes a hash-bound
+`private_replay_scout_closeout_claim_binding` over the ticket ID/UID, exact
+change type, contract version, `allowed_write_scope`, and `must_not_touch`.
+Claim retry, close, self-registration, log persistence, and audit revalidate
+that snapshot. The marker/binding additionally requires the exact
+`private_replay_scout + research_replay` identity, so lane or admission-class
+swaps cannot escape closeout enforcement. This is a future-only contract from
+`2026-08-26T05:10:00+00:00`; marker-less historical `exp-20260822-001` is not
+rewritten.
+The close CLI rejects `--write-registry` for these tickets unless
+`--append-log` is also present, and validates the log draft before terminal
+ticket mutation. It also rejects a known conflicting canonical shard before
+the terminal write. For pre-generic contract-v1 tickets, a new shard I/O/race
+failure after that write can still leave a terminal ticket without its shard;
+audit/lean-strict blocks and that reproducible state is a closeout-integrity
+reopen trigger. This is deliberately not described as a transaction.
+Contract-v1 canonical shards are immutable. The close CLI rejects
+`--allow-duplicate-log-id`; direct/shared persistence accepts only an exact
+idempotent repeat and rejects a conflicting overwrite under the shard lock.
+
+All experiment reservations from `exp-20260826-006` or
+`2026-08-26T08:20:00+00:00` onward use the generic reservation/closeout
+contract. Reserve writes one immutable `experiment_reservation_identity` to
+the canonical ticket, registry row, and revision manifest, plus exact boolean
+`experiment_ever_claimed=false` snapshots. Claim is the only forward repair
+state machine: ticket/manifest/registry markers advance `000 -> 100 -> 110 ->
+111`; only `100` and `110`, with the same owner and a valid hash-bound
+`experiment_claim_transition` already in the manifest, may be repaired. Close,
+log persistence, and audit require the completed `111` state. Strict claim and
+terminal cache writes require the original same-ID registry row and manifest;
+they never recreate missing reservation anchors.
+
+A future terminal ticket carries the compact exact canonical row in
+`experiment_closeout_log_intent` and its SHA-256 in
+`experiment_closeout_log_intent_sha256`. The same terminal-ticket write binds
+that intent; close then persists the exact shard and only afterward commits the
+strict registry cache. Standard close and self-registration can recover a
+shard or cache failure under the same ID from this intent, including a fresh
+CLI invocation, while a conflicting first writer remains immutable. These are
+three separately persisted files, not an atomic transaction: an interrupted
+call may expose an auditable intermediate state, and deletion or mutation of
+an independent reservation anchor fails closed instead of being backfilled.
+For these future tickets, `--write-registry` also requires `--append-log`, even
+outside the private-replay lane, and any closeout-intent marker opts the ticket
+into the full generic contract rather than allowing a backdated escape.
+
 Rejected experiments still need a complete record.
 
 ## Artifacts
@@ -458,8 +514,11 @@ Active alpha automation should run:
 
 `lean_quality_passed` remains the prediction/reflection quality sub-verdict.
 `lean_strict_passed` is the actionable end-of-turn verdict: it also requires
-the machine-enforced alpha playbook contract. Historical debt is visibility
-only unless the audit says it blocks current post-enforcement work.
+post-enforcement research-closeout and canonical-record integrity plus the
+machine-enforced alpha playbook contract. Pre-rollout research violations,
+filename mismatches, and orphan log shards remain visible in explicit legacy
+counts but do not block; explicit contract markers/bindings and records at or
+after the enforcement cutoff always fail closed.
 
 Self-registration guard:
 

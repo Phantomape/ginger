@@ -70,9 +70,47 @@ PREDICTION_REQUIRED_LANES = {
 PREDICTION_ENFORCEMENT_STARTED_AT = "2026-05-29T21:33:00+00:00"
 LEAN_QUALITY_ENFORCEMENT_STARTED_AT = "2026-06-07T01:44:00+00:00"
 ALPHA_PROMOTION_ENFORCEMENT_STARTED_AT = "2026-07-22T06:34:58+00:00"
+LEAN_HARD_INTEGRITY_ENFORCEMENT_STARTED_AT = "2026-08-26T06:51:49+00:00"
+EXPERIMENT_RESERVATION_IDENTITY_ENFORCEMENT_STARTED_AT = (
+    "2026-08-26T08:20:00+00:00"
+)
+EXPERIMENT_RESERVATION_IDENTITY_MIN_ID = "exp-20260826-006"
 RESEARCH_REPLAY_ADMISSION_CLASS = "research_replay"
 RESEARCH_REPLAY_RESULT_CEILING = "observed_only"
 RESEARCH_REPLAY_FINAL_STATUSES = {"observed_only", "rejected"}
+PRIVATE_REPLAY_SCOUT_CHANGE_TYPE = "private_replay_scout"
+PRIVATE_REPLAY_SCOUT_ARTIFACT_RECORD_TYPE = "v2_private_replay_scout_result"
+PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_CONTRACT_VERSION = 1
+PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_ENFORCEMENT_STARTED_AT = (
+    "2026-08-26T05:10:00+00:00"
+)
+PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITIONS = {
+    "observed_only": {"positive_replay_lead_not_promoted"},
+    "rejected": {
+        "rejected",
+        "inconclusive_insufficient_sample",
+        "invalid_contaminated",
+    },
+}
+PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD = (
+    "private_replay_scout_closeout_claim_binding"
+)
+PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD = (
+    "private_replay_scout_registry_identity"
+)
+PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD = (
+    "private_replay_scout_canonical_log_sha256"
+)
+PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD = (
+    "private_replay_scout_registry_canonical_log_sha256"
+)
+EXPERIMENT_RESERVATION_IDENTITY_FIELD = "experiment_reservation_identity"
+EXPERIMENT_EVER_CLAIMED_FIELD = "experiment_ever_claimed"
+EXPERIMENT_CLAIM_TRANSITION_FIELD = "experiment_claim_transition"
+EXPERIMENT_CLOSEOUT_LOG_INTENT_FIELD = "experiment_closeout_log_intent"
+EXPERIMENT_CLOSEOUT_LOG_INTENT_SHA256_FIELD = (
+    "experiment_closeout_log_intent_sha256"
+)
 SETTLED_FORWARD_ADMISSION_CLASS = "settled_forward_attribution"
 # Both research-boundary admission classes share the observed_only ceiling;
 # they differ only in the evidence grade frozen at promotion time.
@@ -88,10 +126,33 @@ _SELF_REGISTER_IMMUTABLE_EXISTING_FIELDS = frozenset(
         "claimed_at",
         "owner",
         "lane",
+        "change_type",
         "alpha_promotion",
         "alpha_promotion_claim_receipt",
+        "private_replay_scout_artifact_disposition_contract_version",
+        PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD,
+        PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD,
+        EXPERIMENT_EVER_CLAIMED_FIELD,
+        "allowed_write_scope",
+        "must_not_touch",
         "hub_identity",
         "ticket_file",
+    }
+)
+_SELF_REGISTER_FORBIDDEN_INPUT_FIELDS = frozenset(
+    {
+        "experiment_id",
+        "experiment_uid",
+        "ticket_file",
+        "status",
+        "result",
+        "claimed_at",
+        "completed_at",
+        EXPERIMENT_RESERVATION_IDENTITY_FIELD,
+        PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD,
+        PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD,
+        EXPERIMENT_CLOSEOUT_LOG_INTENT_FIELD,
+        EXPERIMENT_CLOSEOUT_LOG_INTENT_SHA256_FIELD,
     }
 )
 
@@ -212,9 +273,21 @@ def _ticket_is_post_alpha_promotion_enforcement(ticket):
 
 
 def _revalidate_alpha_promotion_for_claim(registry, ticket):
+    anchor = ticket.get("alpha_promotion")
+    private_contract_indicator = _private_replay_scout_contract_indicator(ticket)
+    research_bound = (
+        isinstance(anchor, dict)
+        and anchor.get("admission_class") in _RESEARCH_ADMISSION_EXPECTED_GRADES
+    ) or private_contract_indicator
+    if research_bound and not _alpha_promotion_required_for_lane(ticket.get("lane")):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} research/private replay cannot demote "
+            f"lane to {ticket.get('lane')!r} before claim"
+        )
     if not _alpha_promotion_required_for_lane(ticket.get("lane")):
         return None
-    anchor = ticket.get("alpha_promotion")
+    if private_contract_indicator:
+        _validate_private_replay_scout_identity(ticket)
     enforced = _alpha_promotion_gate_enabled(registry)
     if not anchor:
         if enforced and _ticket_is_post_alpha_promotion_enforcement(ticket):
@@ -224,6 +297,14 @@ def _revalidate_alpha_promotion_for_claim(registry, ticket):
             )
         return None
     repo_root = _registry_repo_root(registry) or REPO_ROOT
+    if _private_replay_scout_artifact_contract_required(ticket, anchor):
+        _private_replay_scout_scope_entries(
+            ticket, "allowed_write_scope", Path(repo_root).resolve()
+        )
+        _private_replay_scout_scope_entries(
+            ticket, "must_not_touch", Path(repo_root).resolve()
+        )
+        _validate_private_replay_scout_claim_binding(ticket)
     return _alpha_promotion_api().revalidate_ticket_promotion(
         ticket,
         repo_root=repo_root,
@@ -276,6 +357,11 @@ def _is_never_claimed_duplicate_accounting_close(ticket, decision, realized_fail
     if ticket.get("claimed_at"):
         return False
     if ticket.get("alpha_promotion_claim_receipt"):
+        return False
+    if (
+        EXPERIMENT_EVER_CLAIMED_FIELD in ticket
+        and ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD) is not False
+    ):
         return False
     if str(realized_failure_mode or "") != "duplicate_reservation_accounting":
         return False
@@ -340,7 +426,586 @@ def _research_replay_metadata(experiment):
     return expected
 
 
-def _enforce_research_replay_result_ceiling(experiment, decision, result=None):
+def _private_replay_scout_artifact_contract_required(experiment, metadata):
+    if _private_replay_scout_contract_indicator(experiment):
+        _validate_private_replay_scout_identity(experiment, metadata=metadata)
+    if metadata.get("admission_class") != RESEARCH_REPLAY_ADMISSION_CLASS:
+        return False
+    if experiment.get("change_type") != PRIVATE_REPLAY_SCOUT_CHANGE_TYPE:
+        return False
+
+    version = experiment.get(
+        "private_replay_scout_artifact_disposition_contract_version"
+    )
+    if version is not None:
+        if type(version) is not int or (
+            version != PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_CONTRACT_VERSION
+        ):
+            raise ValueError(
+                f"{experiment.get('experiment_id')} has invalid private replay "
+                f"artifact disposition contract version {version!r}"
+            )
+        _private_replay_scout_scope_entries(experiment, "allowed_write_scope")
+        _private_replay_scout_scope_entries(experiment, "must_not_touch")
+        return True
+
+    if _private_replay_scout_post_contract_identity(experiment):
+        raise ValueError(
+            f"{experiment.get('experiment_id')} future private replay scout is "
+            "missing private_replay_scout_artifact_disposition_contract_version"
+        )
+    return False
+
+
+def _private_replay_scout_post_contract_identity(experiment):
+    cutoff = datetime.fromisoformat(
+        PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_ENFORCEMENT_STARTED_AT
+    )
+    timestamp_values = [
+        experiment.get(field)
+        for field in (
+            "created_at",
+            "reserved_at",
+        )
+    ]
+    hub_identity = experiment.get("hub_identity")
+    if isinstance(hub_identity, dict):
+        timestamp_values.append(hub_identity.get("reserved_at"))
+    post_enforcement_timestamp = False
+    for value in timestamp_values:
+        if value is None:
+            continue
+        try:
+            observed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            continue
+        if observed.tzinfo is None:
+            continue
+        if observed.astimezone(timezone.utc) >= cutoff.astimezone(timezone.utc):
+            post_enforcement_timestamp = True
+            break
+
+    normalized_id = normalize_experiment_id(experiment.get("experiment_id"))
+    experiment_day = normalized_id[4:12] if normalized_id else None
+    cutoff_day = cutoff.date().strftime("%Y%m%d")
+    post_enforcement_identity = (
+        experiment_day is None or experiment_day >= cutoff_day
+    )
+    return post_enforcement_timestamp or post_enforcement_identity
+
+
+def _private_replay_scout_contract_indicator(experiment):
+    return (
+        PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD in experiment
+        or PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD in experiment
+        or PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD in experiment
+        or "private_replay_scout_artifact_disposition_contract_version"
+        in experiment
+        or (
+            experiment.get("change_type") == PRIVATE_REPLAY_SCOUT_CHANGE_TYPE
+            and _private_replay_scout_post_contract_identity(experiment)
+        )
+    )
+
+
+def _validate_private_replay_scout_identity(experiment, *, metadata=None):
+    experiment_id = experiment.get("experiment_id")
+    if experiment.get("status") not in {
+        "proposed",
+        "claimed",
+        "running",
+        "observed_only",
+        "rejected",
+    }:
+        raise ValueError(
+            f"{experiment_id} private replay contract status must use an exact "
+            f"canonical lifecycle value, got {experiment.get('status')!r}"
+        )
+    if experiment.get("change_type") != PRIVATE_REPLAY_SCOUT_CHANGE_TYPE:
+        raise ValueError(
+            f"{experiment_id} private replay contract identity requires "
+            "change_type='private_replay_scout'"
+        )
+    anchor = experiment.get("alpha_promotion")
+    admission_class = (
+        metadata.get("admission_class")
+        if isinstance(metadata, dict)
+        else anchor.get("admission_class") if isinstance(anchor, dict) else None
+    )
+    if admission_class != RESEARCH_REPLAY_ADMISSION_CLASS:
+        raise ValueError(
+            f"{experiment_id} private replay contract identity requires "
+            "alpha_promotion.admission_class='research_replay'"
+        )
+
+
+def _private_replay_scout_claim_binding(ticket):
+    _private_replay_scout_scope_entries(ticket, "allowed_write_scope")
+    _private_replay_scout_scope_entries(ticket, "must_not_touch")
+    payload = {
+        "schema_version": 1,
+        "experiment_id": ticket.get("experiment_id"),
+        "experiment_uid": ticket.get("experiment_uid"),
+        "change_type": ticket.get("change_type"),
+        "artifact_disposition_contract_version": ticket.get(
+            "private_replay_scout_artifact_disposition_contract_version"
+        ),
+        "allowed_write_scope": list(ticket.get("allowed_write_scope")),
+        "must_not_touch": list(ticket.get("must_not_touch")),
+    }
+    payload["binding_hash"] = _canonical_json_hash(payload)
+    return payload
+
+
+def _private_replay_scout_registry_identity(ticket):
+    anchor = ticket.get("alpha_promotion")
+    claim_binding = ticket.get(PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD)
+    payload = {
+        "schema_version": 1,
+        "experiment_id": ticket.get("experiment_id"),
+        "experiment_uid": ticket.get("experiment_uid"),
+        "lane": ticket.get("lane"),
+        "change_type": ticket.get("change_type"),
+        "admission_class": (
+            anchor.get("admission_class") if isinstance(anchor, dict) else None
+        ),
+        "artifact_disposition_contract_version": ticket.get(
+            "private_replay_scout_artifact_disposition_contract_version"
+        ),
+        "allowed_write_scope": ticket.get("allowed_write_scope"),
+        "must_not_touch": ticket.get("must_not_touch"),
+        "claim_binding_hash": (
+            claim_binding.get("binding_hash")
+            if isinstance(claim_binding, dict)
+            else None
+        ),
+    }
+    payload["identity_hash"] = _canonical_json_hash(payload)
+    return payload
+
+
+def _private_replay_scout_registry_identity_is_valid(value):
+    if not isinstance(value, dict):
+        return False
+    payload = {key: item for key, item in value.items() if key != "identity_hash"}
+    return (
+        value.get("schema_version") == 1
+        and value.get("identity_hash") == _canonical_json_hash(payload)
+    )
+
+
+def _experiment_id_sequence(experiment_id):
+    normalized = normalize_experiment_id(experiment_id)
+    if not normalized:
+        return None
+    match = re.fullmatch(r"exp-(\d{8})-(\d+)", normalized)
+    if match is None:
+        return None
+    return match.group(1), int(match.group(2))
+
+
+def _experiment_reservation_identity_required(ticket):
+    if not isinstance(ticket, dict):
+        return False
+    if any(
+        field in ticket
+        for field in (
+            EXPERIMENT_RESERVATION_IDENTITY_FIELD,
+            EXPERIMENT_EVER_CLAIMED_FIELD,
+            EXPERIMENT_CLAIM_TRANSITION_FIELD,
+            EXPERIMENT_CLOSEOUT_LOG_INTENT_FIELD,
+            EXPERIMENT_CLOSEOUT_LOG_INTENT_SHA256_FIELD,
+        )
+    ):
+        return True
+    current = _experiment_id_sequence(ticket.get("experiment_id"))
+    minimum = _experiment_id_sequence(EXPERIMENT_RESERVATION_IDENTITY_MIN_ID)
+    if current is not None and minimum is not None and current >= minimum:
+        return True
+    cutoff = datetime.fromisoformat(
+        EXPERIMENT_RESERVATION_IDENTITY_ENFORCEMENT_STARTED_AT
+    )
+    for value in (
+        ticket.get("created_at"),
+        (ticket.get("hub_identity") or {}).get("reserved_at"),
+    ):
+        try:
+            observed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            continue
+        if observed.tzinfo is None:
+            observed = observed.replace(tzinfo=timezone.utc)
+        if observed.astimezone(timezone.utc) >= cutoff:
+            return True
+    return False
+
+
+def _experiment_reservation_clock_invalid(ticket):
+    if not isinstance(ticket, dict):
+        return False
+    for value in (
+        ticket.get("created_at"),
+        (ticket.get("hub_identity") or {}).get("reserved_at"),
+    ):
+        if value in (None, ""):
+            continue
+        try:
+            datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            return True
+    return False
+
+
+def experiment_reservation_identity_required(ticket):
+    """Public predicate for CLI callers governed by the rollout contract."""
+
+    return _experiment_reservation_identity_required(ticket)
+
+
+def _experiment_reservation_identity(ticket):
+    payload = {
+        "schema_version": 1,
+        "experiment_id": ticket.get("experiment_id"),
+        "experiment_uid": ticket.get("experiment_uid"),
+        "created_at": ticket.get("created_at"),
+        "lane": ticket.get("lane"),
+        "change_type": ticket.get("change_type"),
+        "hypothesis": ticket.get("hypothesis"),
+        "mechanism_family": ticket.get("mechanism_family"),
+        "trial_family": ticket.get("trial_family"),
+        "trial_variant_id": ticket.get("trial_variant_id"),
+        "single_causal_variable": ticket.get("single_causal_variable"),
+        "allowed_write_scope": ticket.get("allowed_write_scope"),
+        "must_not_touch": ticket.get("must_not_touch"),
+        "ticket_file": ticket.get("ticket_file"),
+        "revision_manifest_file": ticket.get("revision_manifest_file"),
+    }
+    payload["identity_hash"] = _canonical_json_hash(payload)
+    return payload
+
+
+def _experiment_reservation_identity_is_valid(value):
+    if not isinstance(value, dict):
+        return False
+    payload = {key: item for key, item in value.items() if key != "identity_hash"}
+    return (
+        value.get("schema_version") == 1
+        and value.get("identity_hash") == _canonical_json_hash(payload)
+    )
+
+
+def _build_experiment_claim_transition(ticket, *, force):
+    receipt = ticket.get("alpha_promotion_claim_receipt")
+    claim_binding = ticket.get(PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD)
+    payload = {
+        "schema_version": 1,
+        "experiment_id": ticket.get("experiment_id"),
+        "experiment_uid": ticket.get("experiment_uid"),
+        "reservation_identity_hash": _experiment_reservation_identity(ticket).get(
+            "identity_hash"
+        ),
+        "owner": ticket.get("owner"),
+        "claimed_at": ticket.get("claimed_at"),
+        "force": bool(force),
+        "alpha_promotion_claim_receipt_hash": (
+            _canonical_json_hash(receipt) if isinstance(receipt, dict) else None
+        ),
+        "private_replay_claim_binding_hash": (
+            claim_binding.get("binding_hash")
+            if isinstance(claim_binding, dict)
+            else None
+        ),
+    }
+    payload["transition_hash"] = _canonical_json_hash(payload)
+    return payload
+
+
+def _experiment_claim_transition_is_valid(value, ticket):
+    if not _experiment_claim_transition_payload_is_valid(value):
+        return False
+    return value == _build_experiment_claim_transition(
+        ticket,
+        force=value["force"],
+    )
+
+
+def _experiment_claim_transition_payload_is_valid(value):
+    if not isinstance(value, dict) or type(value.get("force")) is not bool:
+        return False
+    payload = {key: item for key, item in value.items() if key != "transition_hash"}
+    return (
+        value.get("schema_version") == 1
+        and value.get("transition_hash") == _canonical_json_hash(payload)
+    )
+
+
+def _validate_experiment_claim_lifecycle(ticket):
+    if not _experiment_reservation_identity_required(ticket):
+        return
+    ever_claimed = ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+    if type(ever_claimed) is not bool:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} requires an exact boolean "
+            f"{EXPERIMENT_EVER_CLAIMED_FIELD}"
+        )
+    status = ticket.get("status")
+    if status not in ({"proposed"} | ACTIVE_STATUSES | FINAL_STATUSES):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} lifecycle status must use an exact "
+            "canonical lifecycle value"
+        )
+    if status == "proposed" and ever_claimed:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} cannot roll an ever-claimed ticket "
+            "back to proposed"
+        )
+    if status in ACTIVE_STATUSES and not ever_claimed:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} active ticket must retain its "
+            "ever-claimed lifecycle marker"
+        )
+    if ever_claimed:
+        claimed_at = ticket.get("claimed_at")
+        try:
+            parsed_claimed_at = datetime.fromisoformat(
+                str(claimed_at).replace("Z", "+00:00")
+            )
+        except (TypeError, ValueError):
+            parsed_claimed_at = None
+        if parsed_claimed_at is None or parsed_claimed_at.tzinfo is None:
+            raise ValueError(
+                f"{ticket.get('experiment_id')} ever-claimed ticket requires "
+                "an exact timezone-aware claimed_at"
+            )
+    if ever_claimed and not _experiment_claim_transition_is_valid(
+        ticket.get(EXPERIMENT_CLAIM_TRANSITION_FIELD), ticket
+    ):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} ever-claimed ticket requires its "
+            "valid hash-bound claim transition"
+        )
+    if status in FINAL_STATUSES and not ever_claimed:
+        result = ticket.get("result") or {}
+        calibration = result.get("calibration") or {}
+        failure_mode = result.get("realized_failure_mode") or calibration.get(
+            "realized_failure_mode"
+        )
+        if failure_mode != "duplicate_reservation_accounting":
+            raise ValueError(
+                f"{ticket.get('experiment_id')} terminal ticket without a claim "
+                "must be duplicate-reservation accounting only"
+            )
+
+
+def _validate_private_replay_scout_claim_binding(ticket):
+    expected = _private_replay_scout_claim_binding(ticket)
+    actual = ticket.get(PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD)
+    if actual != expected:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay claim binding for "
+            "change_type/allowed_write_scope/must_not_touch/contract version "
+            "is missing or does not match claim-time identity"
+        )
+    return actual
+
+
+def _private_replay_scout_scope_entries(experiment, field_name, root=None):
+    raw_entries = experiment.get(field_name)
+    if not isinstance(raw_entries, list):
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay {field_name} "
+            "must be a list of non-empty repository-relative strings"
+        )
+    if root is None:
+        # Claim/audit marker validation needs the shape check even before a
+        # repository root is available. Artifact validation below resolves the
+        # same frozen entries against its explicit workspace root.
+        for raw_entry in raw_entries:
+            if type(raw_entry) is not str or not raw_entry.strip():
+                raise ValueError(
+                    f"{experiment.get('experiment_id')} private replay {field_name} "
+                    "must contain only non-empty strings"
+                )
+        return None
+
+    entries = []
+    for raw_entry in raw_entries:
+        if type(raw_entry) is not str or not raw_entry.strip():
+            raise ValueError(
+                f"{experiment.get('experiment_id')} private replay {field_name} "
+                "must contain only non-empty strings"
+            )
+        normalized_raw = raw_entry.strip().replace("\\", "/")
+        is_directory = normalized_raw.endswith("/")
+        source = Path(raw_entry.strip())
+        candidate = source if source.is_absolute() else root / source
+        try:
+            relative = candidate.resolve().relative_to(root).as_posix().rstrip("/")
+        except (OSError, ValueError) as exc:
+            raise ValueError(
+                f"{experiment.get('experiment_id')} private replay {field_name} "
+                f"entry {raw_entry!r} must resolve inside the repository"
+            ) from exc
+        if not relative:
+            raise ValueError(
+                f"{experiment.get('experiment_id')} private replay {field_name} "
+                "cannot grant the repository root"
+            )
+        entries.append((os.path.normcase(relative), is_directory))
+    return entries
+
+
+def _private_replay_scout_artifact_in_scope(experiment, relative_path, root):
+    relative = os.path.normcase(
+        str(relative_path).replace("\\", "/").strip("/")
+    )
+
+    allowed = _private_replay_scout_scope_entries(
+        experiment, "allowed_write_scope", root
+    )
+    if not any(
+        relative == scope or (is_directory and relative.startswith(scope + os.sep))
+        for scope, is_directory in allowed
+    ):
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact path "
+            f"{relative_path!r} is outside allowed_write_scope"
+        )
+
+    forbidden = _private_replay_scout_scope_entries(
+        experiment, "must_not_touch", root
+    )
+    if any(
+        relative == scope or (is_directory and relative.startswith(scope + os.sep))
+        for scope, is_directory in forbidden
+    ):
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact path "
+            f"{relative_path!r} is protected by must_not_touch"
+        )
+
+
+def _resolve_private_replay_scout_artifact(
+    experiment,
+    decision,
+    *,
+    result=None,
+    artifact_path=None,
+    artifact_sha256=None,
+    repo_root=None,
+):
+    root = Path(repo_root or REPO_ROOT).resolve()
+    binding_from_result = artifact_path is None
+    locator = artifact_path
+    expected_sha256 = artifact_sha256
+    if isinstance(result, dict):
+        locator = locator or result.get("artifact")
+        expected_sha256 = expected_sha256 or result.get("artifact_sha256")
+    if not isinstance(locator, (str, os.PathLike)) or not str(locator).strip():
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay closeout requires "
+            "a result artifact path"
+        )
+    if binding_from_result and expected_sha256 is None:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay closeout requires "
+            "result artifact_sha256"
+        )
+
+    source = Path(locator)
+    candidate = source if source.is_absolute() else root / source
+    try:
+        resolved = candidate.resolve(strict=True)
+        relative = resolved.relative_to(root).as_posix()
+    except (OSError, ValueError) as exc:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact path must "
+            "resolve to a file inside the repository"
+        ) from exc
+    if not resolved.is_file():
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact path is not a file"
+        )
+    _private_replay_scout_artifact_in_scope(experiment, relative, root)
+
+    try:
+        raw = resolved.read_bytes()
+    except OSError as exc:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact could not be read"
+        ) from exc
+    actual_sha256 = hashlib.sha256(raw).hexdigest()
+    if expected_sha256 is not None:
+        if (
+            not isinstance(expected_sha256, str)
+            or re.fullmatch(r"[0-9a-f]{64}", expected_sha256) is None
+            or expected_sha256 != actual_sha256
+        ):
+            raise ValueError(
+                f"{experiment.get('experiment_id')} private replay artifact_sha256 mismatch"
+            )
+    try:
+        artifact = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact must be valid JSON"
+        ) from exc
+    if not isinstance(artifact, dict):
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact must be a JSON object"
+        )
+
+    expected_identity = {
+        "experiment_id": experiment.get("experiment_id"),
+        "record_type": PRIVATE_REPLAY_SCOUT_ARTIFACT_RECORD_TYPE,
+        "status": decision,
+        "decision": decision,
+    }
+    identity_mismatches = [
+        f"{key}={artifact.get(key)!r}"
+        for key, expected in expected_identity.items()
+        if artifact.get(key) != expected
+    ]
+    if identity_mismatches:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact identity mismatch: "
+            + ", ".join(identity_mismatches)
+        )
+
+    disposition = artifact.get("disposition")
+    allowed = PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITIONS[decision]
+    if not isinstance(disposition, str) or disposition not in allowed:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact disposition "
+            f"{disposition!r} is invalid for status {decision!r}"
+        )
+    evidence_invalid = artifact.get("evidence_invalid")
+    expected_evidence_invalid = disposition == "invalid_contaminated"
+    if evidence_invalid is not expected_evidence_invalid:
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact disposition "
+            f"{disposition!r} requires evidence_invalid={str(expected_evidence_invalid).lower()}"
+        )
+    _reject_nested_research_replay_authority(
+        experiment.get("experiment_id"), artifact, "artifact"
+    )
+    return {
+        "artifact": relative,
+        "artifact_sha256": actual_sha256,
+        "artifact_disposition": disposition,
+        "evidence_invalid": evidence_invalid,
+    }
+
+
+def _enforce_research_replay_result_ceiling(
+    experiment,
+    decision,
+    result=None,
+    *,
+    artifact_path=None,
+    artifact_sha256=None,
+    repo_root=None,
+):
     """Prevent a research replay from acquiring paper/live authority.
 
     Only the two terminal registry dispositions permitted by the policy are
@@ -349,7 +1014,10 @@ def _enforce_research_replay_result_ceiling(experiment, decision, result=None):
     a custom result object through the self-registration API.
     """
 
+    private_contract_indicator = _private_replay_scout_contract_indicator(experiment)
     metadata = _research_replay_metadata(experiment)
+    if private_contract_indicator:
+        _validate_private_replay_scout_identity(experiment, metadata=metadata)
     if metadata is None:
         return None
     normalized_decision = str(decision or "").strip().lower()
@@ -394,7 +1062,451 @@ def _enforce_research_replay_result_ceiling(experiment, decision, result=None):
         _reject_nested_research_replay_authority(
             experiment.get("experiment_id"), result
         )
+    contract_required = _private_replay_scout_artifact_contract_required(
+        experiment, metadata
+    )
+    if contract_required:
+        _validate_private_replay_scout_claim_binding(experiment)
+        if not isinstance(decision, str) or decision != normalized_decision:
+            raise ValueError(
+                f"{experiment.get('experiment_id')} private replay closeout status "
+                f"must use canonical {normalized_decision!r}, got {decision!r}"
+            )
+        if isinstance(result, dict):
+            if result.get("decision") != normalized_decision:
+                raise ValueError(
+                    f"{experiment.get('experiment_id')} private replay result "
+                    f"decision must equal terminal status {normalized_decision!r}"
+                )
+            for field_name in ("decision", "status"):
+                if field_name in result and result[field_name] != normalized_decision:
+                    raise ValueError(
+                        f"{experiment.get('experiment_id')} private replay result "
+                        f"{field_name} must equal terminal status {normalized_decision!r}"
+                    )
+        artifact_metadata = _resolve_private_replay_scout_artifact(
+            experiment,
+            normalized_decision,
+            result=result,
+            artifact_path=artifact_path,
+            artifact_sha256=artifact_sha256,
+            repo_root=repo_root,
+        )
+        if isinstance(result, dict):
+            for field_name, expected in artifact_metadata.items():
+                if field_name not in result:
+                    continue
+                actual = result[field_name]
+                mismatch = (
+                    actual is not expected
+                    if field_name == "evidence_invalid"
+                    else actual != expected
+                )
+                if mismatch:
+                    raise ValueError(
+                        f"{experiment.get('experiment_id')} private replay result "
+                        f"{field_name} does not match the bound artifact"
+                    )
+        metadata.update(artifact_metadata)
     return metadata
+
+
+_PRIVATE_REPLAY_SCOUT_BINDING_FIELDS = (
+    "artifact",
+    "artifact_sha256",
+    "artifact_disposition",
+    "evidence_invalid",
+)
+
+_PRIVATE_REPLAY_SCOUT_LOG_MIRROR_FIELDS = (
+    "change_type",
+    "alpha_promotion",
+    "research_refs",
+)
+
+_PRIVATE_REPLAY_SCOUT_COMMITTED_LOG_MIRROR_FIELDS = (
+    "experiment_uid",
+    "private_replay_scout_artifact_disposition_contract_version",
+    PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD,
+)
+
+
+def _private_replay_scout_log_sha256(row):
+    """Hash exactly the compact row that canonical log persistence writes."""
+
+    return _canonical_json_hash(strip_oversized_fields(row))
+
+
+def _validate_private_replay_scout_log_draft_inputs(
+    ticket,
+    log_draft,
+    judgement,
+    before_path,
+    after_path,
+    repo_root,
+):
+    """Bind the committed draft to this exact close calculation.
+
+    Presentation fields such as notes/reflection remain caller-authored, but
+    identity, frozen design, paths, metrics, and calibration must be the values
+    derived from the ticket and this judgement.
+    """
+
+    result = ticket.get("result") or {}
+    expected = {
+        "experiment_id": ticket.get("experiment_id"),
+        "status": ticket.get("status"),
+        "decision": ticket.get("status"),
+        "hypothesis": ticket.get("hypothesis"),
+        "change_type": ticket.get("change_type"),
+        "mechanism_family": ticket.get("mechanism_family"),
+        "trial_family": ticket.get("trial_family"),
+        "trial_variant_id": ticket.get("trial_variant_id"),
+        "changed_variable": ticket.get("changed_variable"),
+        "causal_components": ticket.get("causal_components") or [],
+        "prior_trial_count": ticket.get("prior_trial_count", 0),
+        "nearby_prior_experiments": ticket.get("nearby_prior_experiments") or [],
+        "multiple_testing_risk_bucket": ticket.get("multiple_testing_risk_bucket"),
+        "new_evidence_type": ticket.get("new_evidence_type"),
+        "research_refs": ticket.get("research_refs") or [],
+        "alpha_promotion": ticket.get("alpha_promotion"),
+        "component": ", ".join(ticket.get("allowed_write_scope") or []),
+        "parameters": {
+            "single_causal_variable": ticket.get("single_causal_variable"),
+            "locked_variables": ticket.get("locked_variables") or [],
+        },
+        "date_range": (ticket.get("evaluation_windows") or [{}])[0],
+        "secondary_windows": (ticket.get("evaluation_windows") or [])[1:],
+        "before_metrics": judgement.get("before_metrics"),
+        "after_metrics": judgement.get("after_metrics"),
+        "delta_metrics": judgement.get("delta_metrics"),
+        "related_files": [
+            _repo_relative(before_path, repo_root),
+            _repo_relative(after_path, repo_root),
+        ],
+    }
+    prediction = normalize_prediction(ticket.get("prediction"))
+    if prediction:
+        expected["prediction"] = prediction
+        expected["calibration"] = result.get("calibration")
+    mismatches = [
+        field_name
+        for field_name, expected_value in expected.items()
+        if log_draft.get(field_name) != expected_value
+    ]
+    if mismatches:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay canonical log draft "
+            "does not match authoritative close inputs: " + ", ".join(mismatches)
+        )
+
+
+def _row_declares_private_replay_scout_contract(row):
+    if not isinstance(row, dict):
+        return False
+    anchor = row.get("alpha_promotion")
+    admission_class = row.get("admission_class")
+    if admission_class is None and isinstance(anchor, dict):
+        admission_class = anchor.get("admission_class")
+    return (
+        row.get("change_type") == PRIVATE_REPLAY_SCOUT_CHANGE_TYPE
+        and admission_class == RESEARCH_REPLAY_ADMISSION_CLASS
+    )
+
+
+def _private_replay_scout_binding_mismatch(left, right, field_name):
+    if field_name == "evidence_invalid":
+        return left is not right
+    return left != right
+
+
+def _validate_private_replay_scout_ticket_log_binding(ticket, log_row, repo_root):
+    if log_row.get("experiment_id") != ticket.get("experiment_id"):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay ticket/log "
+            "experiment_id binding mismatch"
+        )
+    metadata = _research_replay_metadata(ticket)
+    if metadata is None or not _private_replay_scout_artifact_contract_required(
+        ticket, metadata
+    ):
+        return False
+
+    ticket_status = ticket.get("status")
+    if not _closed_status(ticket_status):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay log requires a terminal ticket"
+        )
+    ticket_result = ticket.get("result")
+    if not isinstance(ticket_result, dict):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay terminal ticket requires result"
+        )
+
+    ticket_metadata = _enforce_research_replay_result_ceiling(
+        ticket,
+        ticket_status,
+        result=ticket_result,
+        repo_root=repo_root,
+    )
+    log_status = log_row.get("status") if isinstance(log_row, dict) else None
+    log_decision = log_row.get("decision") if isinstance(log_row, dict) else None
+    if log_status != ticket_status or log_decision != ticket_status:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay log status and decision "
+            "must equal the terminal ticket status"
+        )
+    log_metadata = _enforce_research_replay_result_ceiling(
+        ticket,
+        log_status,
+        result=log_row,
+        repo_root=repo_root,
+    )
+
+    if ticket_result.get("decision") != ticket_status:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay ticket result decision "
+            "must equal the terminal ticket status"
+        )
+    committed_sha256 = ticket_result.get(PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD)
+    if (
+        not isinstance(committed_sha256, str)
+        or re.fullmatch(r"[0-9a-f]{64}", committed_sha256) is None
+    ):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay terminal ticket "
+            "requires an exact canonical log payload commitment"
+        )
+    mirror_fields = _PRIVATE_REPLAY_SCOUT_LOG_MIRROR_FIELDS
+    mirror_fields += _PRIVATE_REPLAY_SCOUT_COMMITTED_LOG_MIRROR_FIELDS
+    for field_name in mirror_fields:
+        log_value = log_row.get(field_name)
+        ticket_value = ticket.get(field_name)
+        if field_name == "research_refs":
+            log_value = log_value or []
+            ticket_value = ticket_value or []
+        if log_value != ticket_value:
+            raise ValueError(
+                f"{ticket.get('experiment_id')} private replay ticket/log "
+                f"{field_name} binding mismatch"
+            )
+    for field_name in _PRIVATE_REPLAY_SCOUT_BINDING_FIELDS:
+        ticket_value = ticket_result.get(field_name)
+        log_value = log_row.get(field_name)
+        expected_ticket_value = ticket_metadata.get(field_name)
+        expected_log_value = log_metadata.get(field_name)
+        if _private_replay_scout_binding_mismatch(
+            ticket_value, expected_ticket_value, field_name
+        ):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} private replay ticket {field_name} "
+                "does not match the bound artifact"
+            )
+        if _private_replay_scout_binding_mismatch(
+            log_value, expected_log_value, field_name
+        ):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} private replay log {field_name} "
+                "does not match the bound artifact"
+            )
+        if _private_replay_scout_binding_mismatch(
+            ticket_value, log_value, field_name
+        ):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} private replay ticket/log "
+                f"{field_name} binding mismatch"
+            )
+    if committed_sha256 != _private_replay_scout_log_sha256(log_row):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} private replay canonical log "
+            "does not match the terminal ticket payload commitment"
+        )
+    return True
+
+
+def _validate_post_rollout_ticket_log_mirror(ticket, log_row):
+    """Prevent a log shard from granting terminal authority before the ticket."""
+
+    if not _experiment_reservation_identity_required(ticket):
+        return False
+    ticket_status = ticket.get("status")
+    if ticket_status not in FINAL_STATUSES:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} post-rollout log requires an exact "
+            "terminal canonical ticket"
+        )
+    ticket_result = ticket.get("result")
+    if (
+        not isinstance(ticket_result, dict)
+        or ticket_result.get("decision") != ticket_status
+    ):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} post-rollout terminal ticket result "
+            "decision must mirror its status"
+        )
+    if (
+        not isinstance(log_row, dict)
+        or log_row.get("experiment_id") != ticket.get("experiment_id")
+        or log_row.get("status") != ticket_status
+        or log_row.get("decision") != ticket_status
+    ):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} post-rollout log experiment_id, "
+            "status, and decision must mirror the terminal ticket"
+        )
+    return True
+
+
+def _bind_post_rollout_closeout_log_intent(ticket, log_row):
+    """Make the exact future canonical shard recoverable from the ticket.
+
+    The ticket is the first durable terminal source.  Persisting the compact
+    canonical row and its hash in that same write means a later shard/cache I/O
+    failure can be repaired by experiment id without rebuilding volatile fields
+    such as the log timestamp.
+    """
+
+    if not _experiment_reservation_identity_required(ticket):
+        return strip_oversized_fields(log_row)
+    canonical_row = strip_oversized_fields(log_row)
+    _validate_post_rollout_ticket_log_mirror(ticket, canonical_row)
+    ticket[EXPERIMENT_CLOSEOUT_LOG_INTENT_FIELD] = canonical_row
+    ticket[EXPERIMENT_CLOSEOUT_LOG_INTENT_SHA256_FIELD] = _canonical_json_hash(
+        canonical_row
+    )
+    return canonical_row
+
+
+def _validated_post_rollout_closeout_log_intent(ticket, repo_root):
+    """Return the exact hash-bound future shard carried by a terminal ticket."""
+
+    if not _experiment_reservation_identity_required(ticket):
+        return None
+    experiment_id = ticket.get("experiment_id")
+    row = ticket.get(EXPERIMENT_CLOSEOUT_LOG_INTENT_FIELD)
+    committed_hash = ticket.get(
+        EXPERIMENT_CLOSEOUT_LOG_INTENT_SHA256_FIELD
+    )
+    if not isinstance(row, dict) or not isinstance(committed_hash, str):
+        raise ValueError(
+            f"{experiment_id} post-rollout terminal ticket requires its exact "
+            "canonical log intent"
+        )
+    if committed_hash != _canonical_json_hash(row):
+        raise ValueError(
+            f"{experiment_id} post-rollout canonical log intent hash mismatch"
+        )
+    _validate_post_rollout_ticket_log_mirror(ticket, row)
+    if _private_replay_scout_contract_indicator(ticket):
+        _validate_private_replay_scout_ticket_log_binding(
+            ticket, row, repo_root
+        )
+    return row
+
+
+def _validate_terminal_close_retry_inputs(
+    ticket,
+    judgement,
+    before_path,
+    after_path,
+    *,
+    status_override,
+    realized_failure_mode,
+    repo_root,
+):
+    """Require a terminal repair request to describe the committed close."""
+
+    experiment_id = ticket.get("experiment_id")
+    result = ticket.get("result")
+    if not isinstance(result, dict):
+        raise ValueError(f"{experiment_id} terminal repair requires result")
+    requested_decision = final_decision(
+        judgement,
+        status_override,
+        experiment=ticket,
+    )
+    expected = {
+        "decision": requested_decision,
+        "before_result_file": _repo_relative(before_path, repo_root),
+        "after_result_file": _repo_relative(after_path, repo_root),
+        "delta_metrics": judgement.get("delta_metrics") or {},
+    }
+    if realized_failure_mode is not None:
+        expected["realized_failure_mode"] = realized_failure_mode
+    mismatches = [
+        field_name
+        for field_name, expected_value in expected.items()
+        if result.get(field_name) != expected_value
+    ]
+    if ticket.get("status") != requested_decision or mismatches:
+        details = ", ".join(mismatches) or "status"
+        raise ValueError(
+            f"{experiment_id} terminal results are immutable; repair request "
+            f"does not match {details}"
+        )
+
+
+def _validate_experiment_log_row_for_persistence(
+    row, logs_root, *, registry_path=None
+):
+    experiment_id = row.get("experiment_id") if isinstance(row, dict) else None
+    _require_canonical_experiment_id(experiment_id, field_name="log experiment_id")
+    logs_root = Path(logs_root).resolve()
+    repo_root = logs_root.parent.parent
+    ticket = load_ticket(experiment_id, logs_root.parent / "tickets")
+    if ticket is None:
+        if _row_declares_private_replay_scout_contract(row):
+            raise ValueError(
+                f"{experiment_id} private replay log requires its canonical ticket"
+            )
+        return None
+
+    if _experiment_reservation_identity_required(ticket):
+        resolved_registry_path = (
+            Path(registry_path)
+            if registry_path is not None
+            else repo_root / "docs" / "experiment_registry.json"
+        )
+        if not resolved_registry_path.exists():
+            raise ValueError(
+                f"{experiment_id} log persistence requires the selected "
+                "registry path for reservation-anchor validation"
+            )
+        _validate_file_backed_reservation_anchors(
+            resolved_registry_path, ticket
+        )
+        _validate_post_rollout_ticket_log_mirror(ticket, row)
+        committed_row = _validated_post_rollout_closeout_log_intent(
+            ticket, repo_root
+        )
+        if strip_oversized_fields(row) != committed_row:
+            raise ValueError(
+                f"{experiment_id} canonical log payload commitment does not "
+                "match the exact terminal closeout intent"
+            )
+
+    private_contract_indicator = _private_replay_scout_contract_indicator(ticket)
+    if private_contract_indicator:
+        _validate_private_replay_scout_identity(ticket)
+        _validate_private_replay_scout_claim_binding(ticket)
+    metadata = _research_replay_metadata(ticket)
+    if metadata is None:
+        if private_contract_indicator:
+            raise ValueError(
+                f"{experiment_id} future private replay log requires a "
+                "research-bound alpha_promotion anchor"
+            )
+        return ticket
+    if _private_replay_scout_artifact_contract_required(ticket, metadata):
+        _validate_private_replay_scout_ticket_log_binding(ticket, row, repo_root)
+    else:
+        _enforce_research_replay_result_ceiling(
+            ticket,
+            row.get("status") or row.get("decision"),
+            result=row,
+            repo_root=repo_root,
+        )
+    return ticket
 
 
 def _reject_nested_research_replay_authority(experiment_id, value, path="result"):
@@ -467,11 +1579,21 @@ def normalize_experiment_id(value):
     return f"exp-{date}-{int(sequence):03d}"
 
 
-def _repo_relative(path):
+def _require_canonical_experiment_id(value, *, field_name="experiment_id"):
+    if type(value) is not str or normalize_experiment_id(value) != value:
+        raise ValueError(
+            f"{field_name} must be an exact canonical exp-YYYYMMDD-NNN string, "
+            f"got {value!r}"
+        )
+    return value
+
+
+def _repo_relative(path, repo_root=None):
     p = Path(path)
     if p.is_absolute():
         try:
-            return p.resolve().relative_to(REPO_ROOT).as_posix()
+            root = Path(repo_root or REPO_ROOT).resolve()
+            return p.resolve().relative_to(root).as_posix()
         except ValueError:
             return p.as_posix()
     return p.as_posix()
@@ -487,6 +1609,12 @@ def load_registry(path=DEFAULT_REGISTRY):
     data.setdefault("updated_at", None)
     data.setdefault("experiments", [])
     return data
+
+
+def registry_workspace_root(registry_path):
+    """Derive the workspace root for both docs/ and flat registry layouts."""
+    path = Path(registry_path).resolve()
+    return path.parent.parent if path.parent.name == "docs" else path.parent
 
 
 def _atomic_write_text(text, path):
@@ -535,10 +1663,12 @@ def save_registry(registry, path=DEFAULT_REGISTRY):
 
 
 def ticket_path(experiment_id, tickets_dir=DEFAULT_TICKETS_DIR):
+    _require_canonical_experiment_id(experiment_id)
     return Path(tickets_dir) / f"{experiment_id}.json"
 
 
 def experiment_log_path(experiment_id, logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
+    _require_canonical_experiment_id(experiment_id)
     return Path(logs_dir) / f"{experiment_id}.json"
 
 
@@ -621,6 +1751,16 @@ def _canonical_json_hash(value):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _compact_canonical_json_hash(value):
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def _reservation_intent_payload(ticket_kwargs):
     """Return the stable reservation identity for retry/concurrency de-duping.
 
@@ -664,12 +1804,13 @@ def _reservation_intent_payload(ticket_kwargs):
 def reservation_intent_for(ticket_kwargs):
     payload = _reservation_intent_payload(ticket_kwargs)
     key = _canonical_json_hash(payload)
-    return {
+    manifest = {
         "schema_version": 1,
         "key": key,
         "payload_hash": key,
         "payload": payload,
     }
+    return manifest
 
 
 def reservation_intent_path(registry, intent):
@@ -727,17 +1868,45 @@ def save_reservation_intent(registry, intent, ticket):
 
 
 def _ticket_index_entry(ticket, tickets_dir=DEFAULT_TICKETS_DIR):
-    return {
+    tickets_dir = Path(tickets_dir).resolve()
+    workspace_root = tickets_dir.parent.parent
+    canonical_ticket_path = ticket_path(ticket["experiment_id"], tickets_dir)
+    index_ticket_file = (
+        _repo_relative(canonical_ticket_path, workspace_root)
+        if workspace_root.resolve() == REPO_ROOT.resolve()
+        else canonical_ticket_path.resolve().as_posix()
+    )
+    entry = {
         "experiment_id": ticket.get("experiment_id"),
         "status": ticket.get("status"),
         "lane": ticket.get("lane"),
         "owner": ticket.get("owner"),
         "hypothesis": ticket.get("hypothesis"),
-        "ticket_file": _repo_relative(ticket_path(ticket["experiment_id"], tickets_dir)),
+        "ticket_file": index_ticket_file,
         "card_file": ticket.get("card_file"),
         "revision_manifest_file": ticket.get("revision_manifest_file"),
         "updated_at": utc_now_iso(),
     }
+    if _experiment_reservation_identity_required(ticket):
+        _validate_experiment_claim_lifecycle(ticket)
+        entry[EXPERIMENT_RESERVATION_IDENTITY_FIELD] = (
+            _experiment_reservation_identity(ticket)
+        )
+        entry[EXPERIMENT_EVER_CLAIMED_FIELD] = ticket.get(
+            EXPERIMENT_EVER_CLAIMED_FIELD
+        )
+    if _private_replay_scout_contract_indicator(ticket):
+        entry[PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD] = (
+            _private_replay_scout_registry_identity(ticket)
+        )
+        result = ticket.get("result")
+        if isinstance(result, dict) and result.get(
+            PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD
+        ):
+            entry[PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD] = result[
+                PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD
+            ]
+    return entry
 
 
 def _sync_index_entry(registry, ticket):
@@ -745,6 +1914,95 @@ def _sync_index_entry(registry, ticket):
     entry = _ticket_index_entry(ticket, _registry_tickets_dir(registry))
     for i, existing in enumerate(experiments):
         if existing.get("experiment_id") == ticket.get("experiment_id"):
+            if _experiment_reservation_identity_required(ticket):
+                existing_reservation_identity = existing.get(
+                    EXPERIMENT_RESERVATION_IDENTITY_FIELD
+                )
+                if existing_reservation_identity is None:
+                    raise ValueError(
+                        f"{ticket.get('experiment_id')} registry cannot backfill "
+                        "a missing reservation identity"
+                    )
+                if (
+                    not _experiment_reservation_identity_is_valid(
+                        existing_reservation_identity
+                    )
+                    or existing_reservation_identity
+                    != _experiment_reservation_identity(ticket)
+                ):
+                    raise ValueError(
+                        f"{ticket.get('experiment_id')} registry reservation "
+                        "identity mismatch"
+                    )
+                existing_ever_claimed = existing.get(
+                    EXPERIMENT_EVER_CLAIMED_FIELD
+                )
+                candidate_ever_claimed = ticket.get(
+                    EXPERIMENT_EVER_CLAIMED_FIELD
+                )
+                if type(existing_ever_claimed) is not bool:
+                    raise ValueError(
+                        f"{ticket.get('experiment_id')} registry cannot backfill "
+                        "a missing ever-claimed marker"
+                    )
+                if existing_ever_claimed and not candidate_ever_claimed:
+                    raise ValueError(
+                        f"{ticket.get('experiment_id')} registry rejects lifecycle "
+                        "rollback after claim"
+                    )
+                entry[EXPERIMENT_RESERVATION_IDENTITY_FIELD] = (
+                    existing_reservation_identity
+                )
+                entry[EXPERIMENT_EVER_CLAIMED_FIELD] = bool(
+                    existing_ever_claimed or candidate_ever_claimed
+                )
+            # Registry provenance is first-write immutable. A later cache
+            # refresh may add the one-time terminal log commitment, but it may
+            # never bless changed claim/scope identity by recomputing it from a
+            # mutated ticket.
+            existing_identity = existing.get(
+                PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD
+            )
+            if existing_identity is not None:
+                expected_private_identity = (
+                    _private_replay_scout_registry_identity(ticket)
+                )
+                if (
+                    not _private_replay_scout_registry_identity_is_valid(
+                        existing_identity
+                    )
+                    or existing_identity != expected_private_identity
+                ):
+                    raise ValueError(
+                        f"{ticket.get('experiment_id')} registry private replay "
+                        "identity mismatch"
+                    )
+                entry[PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD] = (
+                    existing_identity
+                )
+            elif _private_replay_scout_contract_indicator(ticket):
+                raise ValueError(
+                    f"{ticket.get('experiment_id')} registry cannot backfill a "
+                    "missing private replay identity"
+                )
+            existing_log_sha256 = existing.get(
+                PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD
+            )
+            if existing_log_sha256 is not None:
+                result = ticket.get("result")
+                expected_log_sha256 = (
+                    result.get(PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD)
+                    if isinstance(result, dict)
+                    else None
+                )
+                if existing_log_sha256 != expected_log_sha256:
+                    raise ValueError(
+                        f"{ticket.get('experiment_id')} registry canonical log "
+                        "commitment conflicts with the terminal ticket"
+                    )
+                entry[PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD] = (
+                    existing_log_sha256
+                )
             experiments[i] = {**existing, **entry}
             return experiments[i]
     experiments.append(entry)
@@ -838,7 +2096,7 @@ def file_lock(path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
 def locked_registry_update(path, mutator, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     with file_lock(path, timeout_seconds=timeout_seconds):
         path = Path(path)
-        workspace_root = path.parent.parent if path.parent.name == "docs" else path.parent
+        workspace_root = registry_workspace_root(path)
         registry = load_registry(path)
         registry["_repo_root"] = str(workspace_root)
         registry["_tickets_dir"] = str(workspace_root / "experiments" / "tickets")
@@ -1547,7 +2805,7 @@ def build_revision_manifest(ticket, *, repo_root=None, ticket_file=None, card_fi
         value = next((promotion.get(key) for key in keys if promotion.get(key)), None)
         if value:
             files[label] = _file_manifest_entry(value, root=repo_root)
-    return {
+    manifest = {
         "schema_version": 1,
         "manifest_type": "ginger_experiment_revision_manifest",
         "experiment_id": ticket.get("experiment_id"),
@@ -1568,6 +2826,19 @@ def build_revision_manifest(ticket, *, repo_root=None, ticket_file=None, card_fi
             "after final artifacts exist if exact after-run hashes are required."
         ),
     }
+    if _experiment_reservation_identity_required(ticket):
+        _validate_experiment_claim_lifecycle(ticket)
+        manifest[EXPERIMENT_RESERVATION_IDENTITY_FIELD] = (
+            _experiment_reservation_identity(ticket)
+        )
+        manifest[EXPERIMENT_EVER_CLAIMED_FIELD] = ticket.get(
+            EXPERIMENT_EVER_CLAIMED_FIELD
+        )
+    if _private_replay_scout_contract_indicator(ticket):
+        manifest[PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD] = (
+            _private_replay_scout_registry_identity(ticket)
+        )
+    return manifest
 
 
 def save_revision_manifest(
@@ -1580,12 +2851,109 @@ def save_revision_manifest(
     overwrite=True,
 ):
     path = revision_manifest_path(ticket["experiment_id"], manifests_dir)
+    if (
+        not overwrite
+        and _experiment_reservation_identity_required(ticket)
+        and ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD) is True
+    ):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} cannot create a missing reservation "
+            "manifest from an already claimed ticket"
+        )
     manifest = build_revision_manifest(
         ticket,
         repo_root=repo_root,
         ticket_file=ticket_file,
         card_file=card_file,
     )
+    existing = _load_json_file(path) if path.exists() else None
+    if overwrite and _experiment_reservation_identity_required(ticket):
+        if not isinstance(existing, dict):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} cannot regenerate a missing "
+                "reservation manifest identity"
+            )
+        existing_reservation_identity = existing.get(
+            EXPERIMENT_RESERVATION_IDENTITY_FIELD
+        )
+        if (
+            not _experiment_reservation_identity_is_valid(
+                existing_reservation_identity
+            )
+            or existing_reservation_identity
+            != _experiment_reservation_identity(ticket)
+        ):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} manifest reservation identity "
+                "is missing or does not match the ticket"
+            )
+        existing_ever_claimed = existing.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+        ticket_ever_claimed = ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+        if type(existing_ever_claimed) is not bool:
+            raise ValueError(
+                f"{ticket.get('experiment_id')} manifest ever-claimed marker "
+                "is missing"
+            )
+        if existing_ever_claimed and not ticket_ever_claimed:
+            raise ValueError(
+                f"{ticket.get('experiment_id')} manifest rejects lifecycle "
+                "rollback after claim"
+            )
+        manifest[EXPERIMENT_RESERVATION_IDENTITY_FIELD] = (
+            existing_reservation_identity
+        )
+        manifest[EXPERIMENT_EVER_CLAIMED_FIELD] = bool(
+            existing_ever_claimed or ticket_ever_claimed
+        )
+        existing_claim_transition = existing.get(
+            EXPERIMENT_CLAIM_TRANSITION_FIELD
+        )
+        ticket_claim_transition = ticket.get(
+            EXPERIMENT_CLAIM_TRANSITION_FIELD
+        )
+        if ticket_ever_claimed:
+            if (
+                not _experiment_claim_transition_is_valid(
+                    ticket_claim_transition, ticket
+                )
+                or existing_claim_transition != ticket_claim_transition
+            ):
+                raise ValueError(
+                    f"{ticket.get('experiment_id')} manifest is missing the "
+                    "hash-bound claim transition intent"
+                )
+            manifest[EXPERIMENT_CLAIM_TRANSITION_FIELD] = (
+                existing_claim_transition
+            )
+        elif existing_claim_transition is not None:
+            # A crash may leave a pre-ticket claim intent in the reservation
+            # manifest. It grants no authority while all lifecycle markers are
+            # false, but it remains available for a fresh, fully revalidated
+            # claim attempt to replace.
+            manifest[EXPERIMENT_CLAIM_TRANSITION_FIELD] = (
+                existing_claim_transition
+            )
+    if overwrite and path.exists():
+        if isinstance(existing, dict) and existing.get(
+            PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD
+        ) is not None:
+            if (
+                _private_replay_scout_contract_indicator(ticket)
+                and existing[PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD]
+                != _private_replay_scout_registry_identity(ticket)
+            ):
+                raise ValueError(
+                    f"{ticket.get('experiment_id')} manifest private replay "
+                    "identity does not match the ticket"
+                )
+            manifest[PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD] = existing[
+                PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD
+            ]
+        elif _private_replay_scout_contract_indicator(ticket):
+            raise ValueError(
+                f"{ticket.get('experiment_id')} cannot backfill a missing "
+                "private replay manifest identity"
+            )
     text = json.dumps(manifest, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
     if not overwrite:
         # Atomic exclusive create, consistent with save_ticket / save_experiment_card:
@@ -1598,6 +2966,42 @@ def save_revision_manifest(
             os.fsync(f.fileno())
         return path
     _atomic_write_text(text, path)
+    return path
+
+
+def _save_claim_transition_manifest_intent(ticket, manifests_dir):
+    """Persist claim authorization independently before mutating the ticket."""
+
+    experiment_id = ticket.get("experiment_id")
+    transition = ticket.get(EXPERIMENT_CLAIM_TRANSITION_FIELD)
+    if (
+        ticket.get("status") != "claimed"
+        or ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD) is not True
+        or not _experiment_claim_transition_is_valid(transition, ticket)
+    ):
+        raise ValueError(
+            f"{experiment_id} cannot persist an invalid claim transition intent"
+        )
+    path = revision_manifest_path(experiment_id, manifests_dir)
+    manifest = _load_json_file(path)
+    if not isinstance(manifest, dict) or manifest.get("experiment_id") != experiment_id:
+        raise ValueError(
+            f"{experiment_id} claim requires its reservation-time manifest"
+        )
+    expected_identity = _experiment_reservation_identity(ticket)
+    if (
+        manifest.get(EXPERIMENT_RESERVATION_IDENTITY_FIELD) != expected_identity
+        or manifest.get(EXPERIMENT_EVER_CLAIMED_FIELD) is not False
+    ):
+        raise ValueError(
+            f"{experiment_id} claim transition intent requires an unclaimed, "
+            "matching reservation manifest"
+        )
+    manifest[EXPERIMENT_CLAIM_TRANSITION_FIELD] = transition
+    _atomic_write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+        path,
+    )
     return path
 
 
@@ -1658,6 +3062,10 @@ def normalize_allowed_write_scope(
 
 
 def get_experiment(registry, experiment_id):
+    if "_tickets_dir" in registry:
+        canonical = load_ticket(experiment_id, _registry_tickets_dir(registry))
+        if canonical is not None:
+            return canonical
     for exp in registry.get("experiments", []):
         if exp.get("experiment_id") == experiment_id:
             return materialize_experiment(exp)
@@ -1799,6 +3207,8 @@ def create_ticket(
         "completed_at": None,
         "result": None,
     }
+    if _experiment_reservation_identity_required(ticket):
+        ticket[EXPERIMENT_EVER_CLAIMED_FIELD] = False
     if reservation_intent:
         ticket["reservation_intent"] = {
             "schema_version": 1,
@@ -1808,6 +3218,21 @@ def create_ticket(
     if promotion_anchor:
         ticket["alpha_promotion"] = promotion_anchor
         ticket["research_refs"] = list(promotion_anchor.get("research_refs") or [])
+        if (
+            promotion_anchor.get("admission_class")
+            == RESEARCH_REPLAY_ADMISSION_CLASS
+            and change_type == PRIVATE_REPLAY_SCOUT_CHANGE_TYPE
+        ):
+            ticket[
+                "private_replay_scout_artifact_disposition_contract_version"
+            ] = PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_CONTRACT_VERSION
+            # Freeze identity and write scopes at reservation, not only after a
+            # successful claim.  The narrow never-claimed duplicate-abandonment
+            # path must remain auditable without inventing authority it never
+            # received.
+            ticket[PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD] = (
+                _private_replay_scout_claim_binding(ticket)
+            )
     if "_tickets_dir" in registry:
         workspace_root = _registry_repo_root(registry)
         ticket_file = ticket_path(experiment_id, _registry_tickets_dir(registry))
@@ -1816,9 +3241,11 @@ def create_ticket(
             experiment_id,
             _registry_manifests_dir(registry),
         )
-        ticket["ticket_file"] = _repo_relative(ticket_file)
-        ticket["card_file"] = _repo_relative(card_file)
-        ticket["revision_manifest_file"] = _repo_relative(manifest_file)
+        ticket["ticket_file"] = _repo_relative(ticket_file, workspace_root)
+        ticket["card_file"] = _repo_relative(card_file, workspace_root)
+        ticket["revision_manifest_file"] = _repo_relative(
+            manifest_file, workspace_root
+        )
         for label, path in (
             ("experiment ticket", ticket_file),
             ("experiment card", card_file),
@@ -1858,8 +3285,7 @@ def _file_backed_registry_context(registry_path):
     The reserve path uses this so it never needs the full (1.8 MB) registry
     object to allocate an id: the ticket file is the source of truth.
     """
-    path = Path(registry_path)
-    workspace_root = path.parent.parent if path.parent.name == "docs" else path.parent
+    workspace_root = registry_workspace_root(registry_path)
     return {
         "_repo_root": str(workspace_root),
         "_tickets_dir": str(workspace_root / "experiments" / "tickets"),
@@ -1959,7 +3385,8 @@ def find_conflicts(registry, experiment):
         # spuriously conflict with itself.
         if other.get("experiment_id") == experiment_id:
             continue
-        if other.get("status") not in ACTIVE_STATUSES:
+        normalized_status = str(other.get("status") or "").strip().lower()
+        if normalized_status not in ACTIVE_STATUSES:
             continue
         other_scopes = _conflict_scopes(other.get("allowed_write_scope") or [])
         scope_hits = [
@@ -1981,10 +3408,19 @@ def find_conflicts(registry, experiment):
 
 
 def claim_ticket(registry, experiment_id, owner, force=False):
+    _require_canonical_experiment_id(experiment_id)
     exp = get_experiment(registry, experiment_id)
     if not exp:
         raise ValueError(f"unknown experiment_id: {experiment_id}")
     status = str(exp.get("status") or "").strip().lower()
+    if (
+        _private_replay_scout_contract_indicator(exp)
+        and exp.get("status") != status
+    ):
+        raise ValueError(
+            f"{experiment_id} private replay contract status must use an exact "
+            f"canonical lifecycle value, got {exp.get('status')!r}"
+        )
     current_owner = exp.get("owner")
     if status == "claimed":
         if current_owner != owner:
@@ -1993,6 +3429,8 @@ def claim_ticket(registry, experiment_id, owner, force=False):
                 f"owner takeover by {owner!r} is forbidden"
             )
         _revalidate_alpha_promotion_for_claim(registry, exp)
+        if EXPERIMENT_EVER_CLAIMED_FIELD in exp:
+            _validate_experiment_claim_lifecycle(exp)
         return exp, []
     if status != "proposed":
         raise ValueError(
@@ -2007,6 +3445,8 @@ def claim_ticket(registry, experiment_id, owner, force=False):
             f"{experiment_id} proposed ticket is assigned to {current_owner!r}; "
             f"claim by {owner!r} is forbidden"
         )
+    if EXPERIMENT_EVER_CLAIMED_FIELD in exp:
+        _validate_experiment_claim_lifecycle(exp)
     # This is an admission proof, not a contention override.  It is checked
     # before conflicts so --force can never turn a missing/tampered debate or
     # D0-D3 promotion artifact into a valid alpha claim.
@@ -2021,6 +3461,12 @@ def claim_ticket(registry, experiment_id, owner, force=False):
             "alpha_promotion_claim_receipt"
         )
     receipt = _build_alpha_promotion_claim_receipt(registry, exp)
+    private_replay_claim_binding = None
+    research_metadata = _research_replay_metadata(exp)
+    if research_metadata is not None and _private_replay_scout_artifact_contract_required(
+        exp, research_metadata
+    ):
+        private_replay_claim_binding = _private_replay_scout_claim_binding(exp)
     claimed_at = (
         receipt.get("claimed_validation_at")
         if isinstance(receipt, dict)
@@ -2034,8 +3480,14 @@ def claim_ticket(registry, experiment_id, owner, force=False):
             "claimed_at": claimed_at,
         }
     )
+    if _experiment_reservation_identity_required(claim_candidate):
+        claim_candidate[EXPERIMENT_EVER_CLAIMED_FIELD] = True
     if receipt is not None:
         claim_candidate["alpha_promotion_claim_receipt"] = receipt
+    if private_replay_claim_binding is not None:
+        claim_candidate[PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD] = (
+            private_replay_claim_binding
+        )
     required = getattr(
         _alpha_promotion_api(), "claim_receipt_required_for_ticket", None
     )
@@ -2049,13 +3501,43 @@ def claim_ticket(registry, experiment_id, owner, force=False):
             f"{experiment_id} cannot be claimed after receipt enforcement "
             "without a promotion anchor and alpha_promotion_claim_receipt"
         )
+    if _experiment_reservation_identity_required(claim_candidate):
+        claim_candidate[EXPERIMENT_CLAIM_TRANSITION_FIELD] = (
+            _build_experiment_claim_transition(claim_candidate, force=force)
+        )
+        _validate_experiment_claim_lifecycle(claim_candidate)
     exp["owner"] = owner
     exp["status"] = "claimed"
     exp["claimed_at"] = claimed_at
+    if _experiment_reservation_identity_required(exp):
+        exp[EXPERIMENT_EVER_CLAIMED_FIELD] = True
     if receipt is not None:
         exp["alpha_promotion_claim_receipt"] = receipt
-    if "_tickets_dir" in registry:
+    if private_replay_claim_binding is not None:
+        exp[PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD] = private_replay_claim_binding
+    if _experiment_reservation_identity_required(exp):
+        exp[EXPERIMENT_CLAIM_TRANSITION_FIELD] = claim_candidate[
+            EXPERIMENT_CLAIM_TRANSITION_FIELD
+        ]
+    if "_tickets_dir" in registry and not registry.get("_ticket_shard_view"):
+        if _experiment_reservation_identity_required(exp):
+            _save_claim_transition_manifest_intent(
+                exp,
+                _registry_manifests_dir(registry),
+            )
         save_ticket(exp, _registry_tickets_dir(registry))
+        if _experiment_reservation_identity_required(exp):
+            save_revision_manifest(
+                exp,
+                _registry_manifests_dir(registry),
+                repo_root=_registry_repo_root(registry),
+                ticket_file=ticket_path(
+                    experiment_id, _registry_tickets_dir(registry)
+                ),
+                card_file=experiment_card_path(
+                    experiment_id, _registry_cards_dir(registry)
+                ),
+            )
         _sync_index_entry(registry, exp)
     return exp, []
 
@@ -2264,6 +3746,7 @@ def build_log_draft(
     realized_failure_mode=None,
     surprise_note=None,
     allow_missing_prediction=False,
+    repo_root=None,
 ):
     decision = final_decision(
         judgement,
@@ -2273,6 +3756,9 @@ def build_log_draft(
     research_replay = _enforce_research_replay_result_ceiling(
         experiment,
         decision,
+        result=experiment.get("result") if isinstance(experiment, dict) else None,
+        artifact_path=after_path,
+        repo_root=repo_root or REPO_ROOT,
     )
     require_pre_run_prediction(
         experiment,
@@ -2316,11 +3802,30 @@ def build_log_draft(
             else "No AGENTS.md Gate 4 acceptance condition was met."
         ),
         "next_retry_requires": [],
-        "related_files": [_repo_relative(before_path), _repo_relative(after_path)],
+        "related_files": [
+            _repo_relative(before_path, repo_root),
+            _repo_relative(after_path, repo_root),
+        ],
         "notes": notes if notes is not None else "; ".join(judgement.get("acceptance_reasons") or []),
     }
     if research_replay:
         row.update(research_replay)
+        if _private_replay_scout_artifact_contract_required(
+            experiment, _research_replay_metadata(experiment)
+        ):
+            row.update(
+                {
+                    "experiment_uid": experiment.get("experiment_uid"),
+                    "private_replay_scout_artifact_disposition_contract_version": (
+                        experiment.get(
+                            "private_replay_scout_artifact_disposition_contract_version"
+                        )
+                    ),
+                    PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD: experiment.get(
+                        PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD
+                    ),
+                }
+            )
     prediction = normalize_prediction(experiment.get("prediction"))
     if prediction:
         row["prediction"] = prediction
@@ -2351,13 +3856,13 @@ def update_result(
     realized_failure_mode=None,
     surprise_note=None,
     allow_missing_prediction=False,
+    log_draft=None,
 ):
+    _require_canonical_experiment_id(experiment_id)
     exp = get_experiment(registry, experiment_id)
     if not exp:
         raise ValueError(f"unknown experiment_id: {experiment_id}")
-    if str(exp.get("status") or "") in FINAL_STATUSES or str(
-        exp.get("status") or ""
-    ).startswith(("accepted", "rejected", "observed_only")):
+    if _closed_status(exp.get("status")):
         raise ValueError(
             f"{experiment_id} is already terminal ({exp.get('status')}); "
             "terminal results are immutable"
@@ -2383,7 +3888,13 @@ def update_result(
         decision=decision,
         realized_failure_mode=realized_failure_mode,
     )
-    research_replay = _enforce_research_replay_result_ceiling(exp, decision)
+    registry_root = _registry_repo_root(registry) or REPO_ROOT
+    research_replay = _enforce_research_replay_result_ceiling(
+        exp,
+        decision,
+        artifact_path=after_path,
+        repo_root=registry_root,
+    )
     require_pre_run_prediction(
         exp,
         allow_missing_prediction=allow_missing_prediction,
@@ -2393,13 +3904,25 @@ def update_result(
     exp["result"] = {
         "decision": decision,
         "acceptance_reasons": judgement.get("acceptance_reasons") or [],
-        "before_result_file": _repo_relative(before_path),
-        "after_result_file": _repo_relative(after_path),
+        "before_result_file": _repo_relative(before_path, registry_root),
+        "after_result_file": _repo_relative(after_path, registry_root),
         "delta_metrics": judgement.get("delta_metrics") or {},
         "research_refs": exp.get("research_refs") or [],
     }
+    if realized_failure_mode is not None:
+        exp["result"]["realized_failure_mode"] = realized_failure_mode
     if research_replay:
         exp["result"].update(research_replay)
+        if _private_replay_scout_artifact_contract_required(exp, research_replay):
+            if not isinstance(log_draft, dict):
+                raise ValueError(
+                    f"{experiment_id} private replay closeout requires a "
+                    "prevalidated canonical log draft before terminal mutation"
+                )
+            if isinstance(log_draft, dict):
+                exp["result"][PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD] = (
+                    _private_replay_scout_log_sha256(log_draft)
+                )
     prediction = normalize_prediction(exp.get("prediction"))
     if prediction:
         exp["result"]["calibration"] = build_prediction_calibration(
@@ -2409,7 +3932,19 @@ def update_result(
             realized_failure_mode=realized_failure_mode,
             surprise_note=surprise_note,
         )
-    if "_tickets_dir" in registry:
+    if research_replay and isinstance(log_draft, dict):
+        _validate_private_replay_scout_log_draft_inputs(
+            exp,
+            log_draft,
+            judgement,
+            before_path,
+            after_path,
+            registry_root,
+        )
+        _validate_private_replay_scout_ticket_log_binding(
+            exp, log_draft, registry_root
+        )
+    if "_tickets_dir" in registry and not registry.get("_ticket_shard_view"):
         save_ticket(exp, _registry_tickets_dir(registry))
         _sync_index_entry(registry, exp)
     return exp
@@ -2430,6 +3965,264 @@ def _best_effort_cache_upsert(registry_path, ticket, timeout_seconds=DEFAULT_LOC
         pass
 
 
+def _best_effort_full_cache_upsert(
+    registry_path, ticket, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS
+):
+    """Compatibility cache refresh for legacy self-registering runners.
+
+    Their registry rows historically retained result/prediction fields. Keep
+    that read shape while the canonical ticket remains authoritative.
+    """
+
+    def _upsert(registry):
+        experiments = registry.setdefault("experiments", [])
+        for index, existing in enumerate(experiments):
+            if existing.get("experiment_id") == ticket.get("experiment_id"):
+                experiments[index] = {**existing, **ticket}
+                break
+        else:
+            experiments.append(dict(ticket))
+        return _sync_index_entry(registry, ticket)
+
+    try:
+        locked_registry_update(
+            registry_path, _upsert, timeout_seconds=timeout_seconds
+        )
+    except Exception:
+        pass
+
+
+def _strict_claim_cache_upsert(
+    registry_path,
+    experiment_id,
+    expected_transition,
+    timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
+):
+    """Finish a post-rollout claim using the latest canonical ticket bytes."""
+
+    context = _file_backed_registry_context(registry_path)
+    tickets_dir = _registry_tickets_dir(context)
+
+    def _upsert(registry):
+        latest = load_ticket(experiment_id, tickets_dir)
+        if latest is None:
+            raise ValueError(f"unknown experiment_id: {experiment_id}")
+        _validate_experiment_claim_lifecycle(latest)
+        if (
+            latest.get("status") != "claimed"
+            or latest.get(EXPERIMENT_CLAIM_TRANSITION_FIELD)
+            != expected_transition
+        ):
+            raise ValueError(
+                f"{experiment_id} canonical claim changed before registry "
+                "anchor persistence"
+            )
+        _validate_strict_persisted_anchors(
+            registry,
+            latest,
+            allow_registry_claim_lag=True,
+        )
+        return _sync_index_entry(registry, latest)
+
+    return locked_registry_update(
+        registry_path,
+        _upsert,
+        timeout_seconds=timeout_seconds,
+    )
+
+
+def _validate_strict_persisted_anchors(
+    registry,
+    ticket,
+    *,
+    allow_registry_claim_lag=False,
+    require_terminal_log=False,
+):
+    """Recheck independent anchors in the exact locked cache snapshot."""
+
+    experiment_id = ticket.get("experiment_id")
+    rows = [
+        row
+        for row in registry.get("experiments", [])
+        if isinstance(row, dict) and row.get("experiment_id") == experiment_id
+    ]
+    if len(rows) != 1:
+        raise ValueError(
+            f"{experiment_id} strict cache persistence requires exactly one "
+            "existing reservation registry row"
+        )
+    registry_row = rows[0]
+    manifest = _load_json_file(
+        revision_manifest_path(
+            experiment_id, _registry_manifests_dir(registry)
+        )
+    )
+    if not isinstance(manifest, dict) or manifest.get(
+        "experiment_id"
+    ) != experiment_id:
+        raise ValueError(
+            f"{experiment_id} strict cache persistence requires its existing "
+            "reservation manifest"
+        )
+
+    if _experiment_reservation_identity_required(ticket):
+        expected_identity = _experiment_reservation_identity(ticket)
+        registry_identity = registry_row.get(
+            EXPERIMENT_RESERVATION_IDENTITY_FIELD
+        )
+        manifest_identity = manifest.get(
+            EXPERIMENT_RESERVATION_IDENTITY_FIELD
+        )
+        if (
+            not _experiment_reservation_identity_is_valid(registry_identity)
+            or registry_identity != expected_identity
+            or manifest_identity != expected_identity
+        ):
+            raise ValueError(
+                f"{experiment_id} strict cache persistence found a missing or "
+                "changed reservation identity"
+            )
+        ticket_ever_claimed = ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+        registry_ever_claimed = registry_row.get(
+            EXPERIMENT_EVER_CLAIMED_FIELD
+        )
+        manifest_ever_claimed = manifest.get(
+            EXPERIMENT_EVER_CLAIMED_FIELD
+        )
+        if (
+            type(ticket_ever_claimed) is not bool
+            or type(registry_ever_claimed) is not bool
+            or type(manifest_ever_claimed) is not bool
+            or (
+                not allow_registry_claim_lag
+                and registry_ever_claimed is not ticket_ever_claimed
+            )
+            or manifest_ever_claimed is not ticket_ever_claimed
+        ):
+            raise ValueError(
+                f"{experiment_id} strict cache persistence found inconsistent "
+                "ever-claimed anchors"
+            )
+        if ticket_ever_claimed:
+            transition = ticket.get(EXPERIMENT_CLAIM_TRANSITION_FIELD)
+            if (
+                not _experiment_claim_transition_is_valid(transition, ticket)
+                or manifest.get(EXPERIMENT_CLAIM_TRANSITION_FIELD)
+                != transition
+            ):
+                raise ValueError(
+                    f"{experiment_id} strict cache persistence requires the "
+                    "hash-bound manifest claim transition"
+                )
+
+    if _private_replay_scout_contract_indicator(ticket):
+        expected_private_identity = _private_replay_scout_registry_identity(
+            ticket
+        )
+        if (
+            registry_row.get(PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD)
+            != expected_private_identity
+            or manifest.get(PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD)
+            != expected_private_identity
+        ):
+            raise ValueError(
+                f"{experiment_id} strict cache persistence found a missing or "
+                "changed private replay identity"
+            )
+        result = ticket.get("result")
+        expected_log_sha256 = (
+            result.get(PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD)
+            if isinstance(result, dict)
+            else None
+        )
+        existing_log_sha256 = registry_row.get(
+            PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD
+        )
+        if (
+            existing_log_sha256 is not None
+            and existing_log_sha256 != expected_log_sha256
+        ):
+            raise ValueError(
+                f"{experiment_id} registry canonical log commitment conflicts "
+                "with the terminal ticket"
+            )
+
+    if require_terminal_log:
+        logs_dir = _registry_logs_dir(registry)
+        log_row = _load_json_file(
+            experiment_log_path(experiment_id, logs_dir)
+        )
+        if not isinstance(log_row, dict):
+            raise ValueError(
+                f"{experiment_id} strict terminal cache persistence requires "
+                "the canonical log shard"
+            )
+        if _experiment_reservation_identity_required(ticket):
+            committed_row = _validated_post_rollout_closeout_log_intent(
+                ticket, _registry_repo_root(registry)
+            )
+            if log_row != committed_row:
+                raise ValueError(
+                    f"{experiment_id} canonical log differs from the terminal "
+                    "closeout intent"
+                )
+        if _private_replay_scout_contract_indicator(ticket):
+            _validate_private_replay_scout_ticket_log_binding(
+                ticket, log_row, _registry_repo_root(registry)
+            )
+
+
+def _terminal_cache_contract_required(ticket):
+    return bool(
+        isinstance(ticket, dict)
+        and (
+            _experiment_reservation_identity_required(ticket)
+            or _private_replay_scout_contract_indicator(ticket)
+        )
+    )
+
+
+def _strict_terminal_cache_upsert(
+    registry_path,
+    terminal_ticket,
+    timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
+):
+    """Persist terminal cache commitments or fail with a same-id repair path."""
+
+    experiment_id = terminal_ticket.get("experiment_id")
+    expected_status = terminal_ticket.get("status")
+    expected_result_hash = _canonical_json_hash(terminal_ticket.get("result"))
+    context = _file_backed_registry_context(registry_path)
+    tickets_dir = _registry_tickets_dir(context)
+
+    def _upsert(registry):
+        latest = load_ticket(experiment_id, tickets_dir)
+        if latest is None:
+            raise ValueError(f"unknown experiment_id: {experiment_id}")
+        if (
+            latest.get("status") != expected_status
+            or expected_status not in FINAL_STATUSES
+            or _canonical_json_hash(latest.get("result")) != expected_result_hash
+        ):
+            raise ValueError(
+                f"{experiment_id} canonical terminal result changed before "
+                "registry commitment persistence"
+            )
+        _validate_experiment_claim_lifecycle(latest)
+        _validate_strict_persisted_anchors(
+            registry,
+            latest,
+            require_terminal_log=True,
+        )
+        return _sync_index_entry(registry, latest)
+
+    return locked_registry_update(
+        registry_path,
+        _upsert,
+        timeout_seconds=timeout_seconds,
+    )
+
+
 def rebuild_registry_from_tickets(registry_path):
     """Build a registry view (workspace dir keys + full ticket dicts) by scanning
     experiments/tickets/*.json, WITHOUT reading docs/experiment_registry.json.
@@ -2438,6 +4231,7 @@ def rebuild_registry_from_tickets(registry_path):
     conflict detection (and any reader that needs guaranteed-fresh data).
     """
     ctx = _file_backed_registry_context(registry_path)
+    ctx["_ticket_shard_view"] = True
     tickets_dir = Path(ctx["_tickets_dir"])
     experiments = []
     if tickets_dir.exists():
@@ -2450,7 +4244,160 @@ def rebuild_registry_from_tickets(registry_path):
             if isinstance(ticket, dict) and ticket.get("experiment_id"):
                 experiments.append(ticket)
     ctx["experiments"] = experiments
+    ctx["_ticket_shard_view"] = True
     return ctx
+
+
+def _validate_file_backed_reservation_anchors(
+    registry_path,
+    ticket,
+    *,
+    allow_incomplete_claim_transition=False,
+):
+    """Require both reservation-time anchors before a ticket can mutate.
+
+    A claim writes the canonical ticket first so no independent anchor can
+    grant authority that the ticket does not yet carry.  A process failure may
+    therefore leave the ticket marked claimed while one or both cache anchors
+    still carry the reservation-time ``False`` marker.  Only the claim path may
+    recognize that narrow, forward-only state and repair it under the same
+    per-ticket lock; close and log writers continue to fail closed.
+
+    Returns ``True`` only when that recoverable claim transition is present.
+    """
+
+    if _experiment_reservation_clock_invalid(ticket):
+        raise ValueError(
+            f"{ticket.get('experiment_id')} canonical reservation clock is "
+            "malformed"
+        )
+    if not _experiment_reservation_identity_required(ticket):
+        return
+    injected_anchor_fields = sorted(
+        field
+        for field in (
+            EXPERIMENT_RESERVATION_IDENTITY_FIELD,
+            PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD,
+            PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD,
+        )
+        if field in ticket
+    )
+    if injected_anchor_fields:
+        raise ValueError(
+            f"{ticket.get('experiment_id')} canonical ticket cannot carry "
+            "registry/manifest-only anchor fields: "
+            + ", ".join(injected_anchor_fields)
+        )
+    _validate_experiment_claim_lifecycle(ticket)
+    experiment_id = ticket.get("experiment_id")
+    expected_identity = _experiment_reservation_identity(ticket)
+    raw_registry = load_registry(registry_path)
+    registry_row = next(
+        (
+            row
+            for row in raw_registry.get("experiments", [])
+            if isinstance(row, dict) and row.get("experiment_id") == experiment_id
+        ),
+        None,
+    )
+    context = _file_backed_registry_context(registry_path)
+    manifest = _load_json_file(
+        revision_manifest_path(
+            experiment_id,
+            _registry_manifests_dir(context),
+        )
+    )
+    registry_identity = (
+        registry_row.get(EXPERIMENT_RESERVATION_IDENTITY_FIELD)
+        if isinstance(registry_row, dict)
+        else None
+    )
+    manifest_identity = (
+        manifest.get(EXPERIMENT_RESERVATION_IDENTITY_FIELD)
+        if isinstance(manifest, dict)
+        and manifest.get("experiment_id") == experiment_id
+        else None
+    )
+    if (
+        not _experiment_reservation_identity_is_valid(registry_identity)
+        or not _experiment_reservation_identity_is_valid(manifest_identity)
+        or registry_identity != manifest_identity
+        or registry_identity != expected_identity
+    ):
+        raise ValueError(
+            f"{experiment_id} reservation-time registry/manifest identity "
+            "is missing or does not match the canonical ticket"
+        )
+    registry_ever_claimed = registry_row.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+    manifest_ever_claimed = manifest.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+    ticket_ever_claimed = ticket.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+    markers_are_boolean = (
+        type(registry_ever_claimed) is bool
+        and type(manifest_ever_claimed) is bool
+        and type(ticket_ever_claimed) is bool
+    )
+    marker_state = (
+        ticket_ever_claimed,
+        manifest_ever_claimed,
+        registry_ever_claimed,
+    )
+    incomplete_claim_transition = bool(
+        allow_incomplete_claim_transition
+        and markers_are_boolean
+        and ticket.get("status") == "claimed"
+        and marker_state in {
+            (True, False, False),
+            (True, True, False),
+        }
+    )
+    if not markers_are_boolean or (
+        not incomplete_claim_transition
+        and (
+            registry_ever_claimed != manifest_ever_claimed
+            or registry_ever_claimed != ticket_ever_claimed
+        )
+    ):
+        raise ValueError(
+            f"{experiment_id} ever-claimed lifecycle anchors are missing or "
+            "inconsistent"
+        )
+    if ticket_ever_claimed:
+        ticket_claim_transition = ticket.get(
+            EXPERIMENT_CLAIM_TRANSITION_FIELD
+        )
+        manifest_claim_transition = manifest.get(
+            EXPERIMENT_CLAIM_TRANSITION_FIELD
+        )
+        if (
+            not _experiment_claim_transition_is_valid(
+                ticket_claim_transition, ticket
+            )
+            or manifest_claim_transition != ticket_claim_transition
+        ):
+            raise ValueError(
+                f"{experiment_id} claim recovery requires its independent, "
+                "hash-bound manifest transition intent"
+            )
+    if _private_replay_scout_contract_indicator(ticket):
+        expected_private_identity = _private_replay_scout_registry_identity(ticket)
+        registry_private_identity = registry_row.get(
+            PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD
+        )
+        manifest_private_identity = manifest.get(
+            PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD
+        )
+        if (
+            not _private_replay_scout_registry_identity_is_valid(
+                registry_private_identity
+            )
+            or registry_private_identity != manifest_private_identity
+            or registry_private_identity != expected_private_identity
+        ):
+            raise ValueError(
+                f"{experiment_id} reservation-time private replay identity "
+                "is missing or does not match the canonical ticket"
+            )
+    return incomplete_claim_transition
 
 
 def claim_experiment_decontended(registry_path, experiment_id, owner, *, force=False,
@@ -2459,21 +4406,103 @@ def claim_experiment_decontended(registry_path, experiment_id, owner, *, force=F
     step 2). The cross-experiment conflict view is read lock-free from tickets
     (advisory; a few-ms-stale overlap view is acceptable); the claim mutation is
     serialized by a per-id ticket lock so two agents cannot both claim the same
-    id. The registry cache is refreshed best-effort afterwards."""
+    id.  Post-rollout claims return only after the ticket, manifest, and
+    registry lifecycle anchors all record the monotonic claim transition."""
     view = rebuild_registry_from_tickets(registry_path)
     tickets_dir = Path(view["_tickets_dir"])
     target = ticket_path(experiment_id, tickets_dir)
+    should_refresh_cache = False
+    strict_transition = None
     with file_lock(target, timeout_seconds=timeout_seconds):
         current = load_ticket(experiment_id, tickets_dir)
         if current is None:
             raise ValueError(f"unknown experiment_id: {experiment_id}")
+        incomplete_claim_transition = _validate_file_backed_reservation_anchors(
+            registry_path,
+            current,
+            allow_incomplete_claim_transition=True,
+        )
         view["experiments"] = [
             e for e in view["experiments"]
             if e.get("experiment_id") != experiment_id
         ]
         view["experiments"].append(current)
-        ticket, conflicts = claim_ticket(view, experiment_id, owner, force=force)
-    if not conflicts or force:
+        if incomplete_claim_transition:
+            if current.get("owner") != owner:
+                raise ValueError(
+                    f"{experiment_id} interrupted claim belongs to "
+                    f"{current.get('owner')!r}; recovery by {owner!r} is forbidden"
+                )
+            # Re-run admission against current bytes. The persisted transition
+            # proves a real claim attempt reached the manifest-intent step, but
+            # it must not preserve stale promotion authority or hide a new
+            # conflicting active scope.
+            _revalidate_alpha_promotion_for_claim(view, current)
+            recovery_conflicts = find_conflicts(view, current)
+            transition = current[EXPERIMENT_CLAIM_TRANSITION_FIELD]
+            if recovery_conflicts and not transition.get("force"):
+                raise ValueError(
+                    f"{experiment_id} interrupted claim recovery is blocked by "
+                    "current scope conflicts"
+                )
+            save_revision_manifest(
+                current,
+                _registry_manifests_dir(view),
+                repo_root=_registry_repo_root(view),
+                ticket_file=target,
+                card_file=experiment_card_path(
+                    experiment_id, _registry_cards_dir(view)
+                ),
+            )
+            ticket = current
+            conflicts = []
+            strict_transition = transition
+        elif current.get("status") == "claimed":
+            # A complete same-owner claim is idempotent. claim_ticket still
+            # revalidates live promotion/receipt bytes and rejects owner
+            # takeover, but no reservation anchor may be rewritten.
+            return claim_ticket(
+                view, experiment_id, owner, force=force
+            )
+        else:
+            ticket, conflicts = claim_ticket(
+                view, experiment_id, owner, force=force
+            )
+            if not conflicts or force:
+                if _experiment_reservation_identity_required(ticket):
+                    _save_claim_transition_manifest_intent(
+                        ticket,
+                        _registry_manifests_dir(view),
+                    )
+                save_ticket(ticket, tickets_dir)
+                if _experiment_reservation_identity_required(ticket):
+                    save_revision_manifest(
+                        ticket,
+                        _registry_manifests_dir(view),
+                        repo_root=_registry_repo_root(view),
+                        ticket_file=target,
+                        card_file=experiment_card_path(
+                            experiment_id, _registry_cards_dir(view)
+                        ),
+                    )
+                    strict_transition = ticket[
+                        EXPERIMENT_CLAIM_TRANSITION_FIELD
+                    ]
+                else:
+                    should_refresh_cache = True
+    if strict_transition is not None:
+        _strict_claim_cache_upsert(
+            registry_path,
+            experiment_id,
+            strict_transition,
+            timeout_seconds,
+        )
+        latest = load_ticket(experiment_id, tickets_dir)
+        if latest is None:
+            raise ValueError(f"unknown experiment_id: {experiment_id}")
+        _validate_file_backed_reservation_anchors(registry_path, latest)
+        ticket = latest
+    elif should_refresh_cache:
         _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
     return ticket, conflicts
 
@@ -2482,34 +4511,151 @@ def update_result_decontended(registry_path, experiment_id, judgement, before_pa
                               after_path, *, status_override=None,
                               realized_failure_mode=None, surprise_note=None,
                               allow_missing_prediction=False,
+                              log_draft=None,
                               timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
     """Record an experiment result without the global registry lock (step 2).
-    Close touches a single ticket, so a per-id ticket lock fully serializes it;
-    the registry cache is refreshed best-effort afterwards."""
+    Close touches a single ticket, so a per-id ticket lock fully serializes it.
+    Contract-governed closes persist an exact recoverable shard before their
+    mandatory terminal cache commitment."""
     ctx = _file_backed_registry_context(registry_path)
+    ctx["_ticket_shard_view"] = True
     tickets_dir = Path(ctx["_tickets_dir"])
     target = ticket_path(experiment_id, tickets_dir)
+    log_row_to_persist = None
+    terminal_repair = False
     with file_lock(target, timeout_seconds=timeout_seconds):
         current = load_ticket(experiment_id, tickets_dir)
         if current is None:
             raise ValueError(f"unknown experiment_id: {experiment_id}")
-        ctx["experiments"] = [current]
-        exp = update_result(
-            ctx,
-            experiment_id,
-            judgement,
-            before_path,
-            after_path,
-            status_override=status_override,
-            realized_failure_mode=realized_failure_mode,
-            surprise_note=surprise_note,
-            allow_missing_prediction=allow_missing_prediction,
+        _validate_file_backed_reservation_anchors(registry_path, current)
+        effective_log_draft = log_draft
+        if (
+            effective_log_draft is None
+            and (
+                _private_replay_scout_contract_indicator(current)
+                or _experiment_reservation_identity_required(current)
+            )
+        ):
+            finish_intent = current.get("alpha_workflow_finish_intent")
+            intent_log_row = (
+                finish_intent.get("log_row")
+                if isinstance(finish_intent, dict)
+                else None
+            )
+            if (
+                isinstance(intent_log_row, dict)
+                and finish_intent.get("log_row_hash")
+                == _compact_canonical_json_hash(intent_log_row)
+            ):
+                effective_log_draft = intent_log_row
+        if (
+            _experiment_reservation_identity_required(current)
+            and not isinstance(effective_log_draft, dict)
+        ):
+            raise ValueError(
+                f"{experiment_id} post-rollout closeout requires a "
+                "prevalidated canonical log draft before terminal mutation"
+            )
+        terminal_repair = bool(
+            _terminal_cache_contract_required(current)
+            and current.get("status") in FINAL_STATUSES
         )
-    _best_effort_cache_upsert(registry_path, exp, timeout_seconds)
+        if terminal_repair:
+            _validate_terminal_close_retry_inputs(
+                current,
+                judgement,
+                before_path,
+                after_path,
+                status_override=status_override,
+                realized_failure_mode=realized_failure_mode,
+                repo_root=registry_workspace_root(registry_path),
+            )
+            if _experiment_reservation_identity_required(current):
+                log_row_to_persist = (
+                    _validated_post_rollout_closeout_log_intent(
+                        current, registry_workspace_root(registry_path)
+                    )
+                )
+            elif _private_replay_scout_contract_indicator(current):
+                _validate_private_replay_scout_ticket_log_binding(
+                    current,
+                    effective_log_draft,
+                    registry_workspace_root(registry_path),
+                )
+                log_row_to_persist = strip_oversized_fields(
+                    effective_log_draft
+                )
+            else:
+                _validate_post_rollout_ticket_log_mirror(
+                    current, effective_log_draft
+                )
+                log_row_to_persist = strip_oversized_fields(
+                    effective_log_draft
+                )
+            exp = current
+        else:
+            ctx["experiments"] = [current]
+            exp = update_result(
+                ctx,
+                experiment_id,
+                judgement,
+                before_path,
+                after_path,
+                status_override=status_override,
+                realized_failure_mode=realized_failure_mode,
+                surprise_note=surprise_note,
+                allow_missing_prediction=allow_missing_prediction,
+                log_draft=effective_log_draft,
+            )
+            if _experiment_reservation_identity_required(exp):
+                _validate_post_rollout_ticket_log_mirror(
+                    exp, effective_log_draft
+                )
+                log_row_to_persist = _bind_post_rollout_closeout_log_intent(
+                    exp, effective_log_draft
+                )
+            elif _private_replay_scout_contract_indicator(exp):
+                log_row_to_persist = strip_oversized_fields(
+                    effective_log_draft
+                )
+            if isinstance(log_row_to_persist, dict):
+                canonical_log_path = experiment_log_path(
+                    experiment_id,
+                    registry_workspace_root(registry_path)
+                    / "experiments"
+                    / "logs",
+                )
+                if canonical_log_path.exists():
+                    existing_log_row = _load_json_file(canonical_log_path)
+                    if existing_log_row != log_row_to_persist:
+                        raise ValueError(
+                            f"{experiment_id} existing canonical log conflicts "
+                            "with the terminal closeout candidate"
+                        )
+            _validate_experiment_claim_lifecycle(exp)
+            save_ticket(exp, tickets_dir)
+    if _terminal_cache_contract_required(exp):
+        if not isinstance(log_row_to_persist, dict):
+            raise ValueError(
+                f"{experiment_id} contract-governed terminal close requires "
+                "an exact canonical log row"
+            )
+        save_experiment_log_entry(
+            log_row_to_persist,
+            expected_experiment_id=experiment_id,
+            logs_dir=registry_workspace_root(registry_path)
+            / "experiments"
+            / "logs",
+            registry_path=registry_path,
+            timeout_seconds=timeout_seconds,
+        )
+        _strict_terminal_cache_upsert(registry_path, exp, timeout_seconds)
+    else:
+        _best_effort_cache_upsert(registry_path, exp, timeout_seconds)
     _sync_research_digest_quietly(
         exp,
         exp.get("status"),
-        repo_root=Path(registry_path).resolve().parent.parent,
+        repo_root=registry_workspace_root(registry_path),
         reason="experiment closeout propagated by experiment.py close",
     )
     return exp
@@ -2544,6 +4690,19 @@ def persist_self_registered_result(
     ``single_causal_variable``, etc.). Non-prediction-required lanes are accepted
     without a prediction, matching ``require_pre_run_prediction``.
     """
+    _require_canonical_experiment_id(experiment_id)
+    if isinstance(fields, dict):
+        forbidden = sorted(
+            key
+            for key in _SELF_REGISTER_FORBIDDEN_INPUT_FIELDS
+            if key in fields and fields[key] is not None
+        )
+        if forbidden:
+            raise ValueError(
+                f"{experiment_id} self-registration fields cannot set lifecycle/"
+                f"identity keys: {', '.join(forbidden)}"
+            )
+
     normalized = normalize_prediction(prediction)
     require_pre_run_prediction(
         {"experiment_id": experiment_id, "lane": lane, "prediction": normalized},
@@ -2554,14 +4713,182 @@ def persist_self_registered_result(
         allow_missing_prediction=allow_missing_prediction,
     )
 
-    def _mutator(registry):
+    workspace_root = registry_workspace_root(registry_path)
+    registry = _file_backed_registry_context(registry_path)
+    tickets_dir = Path(registry["_tickets_dir"])
+    target = ticket_path(experiment_id, tickets_dir)
+    canonical_log_row = None
+    terminal_repair_log_row = None
+
+    # Reject brand-new post-rollout self-registration before file_lock creates
+    # the ticket directory or lock sidecar. The guarded check is repeated after
+    # locking below; this read-only fast path only removes an avoidable durable
+    # side effect from a request that can never be authorized.
+    if not target.exists():
+        preflight_registry = load_registry(registry_path)
+        preflight_existing = next(
+            (
+                row
+                for row in preflight_registry.get("experiments", [])
+                if isinstance(row, dict)
+                and row.get("experiment_id") == experiment_id
+            ),
+            None,
+        )
+        if preflight_existing is None and _experiment_reservation_identity_required(
+            {"experiment_id": experiment_id, "created_at": utc_now_iso()}
+        ):
+            if (
+                _alpha_promotion_gate_enabled(preflight_registry)
+                and _alpha_promotion_required_for_lane(lane)
+            ):
+                raise ValueError(
+                    f"{experiment_id} cannot self-register new alpha work: "
+                    "reserve and claim a promotion-anchored ticket first"
+                )
+            raise ValueError(
+                f"{experiment_id} cannot self-register a new post-rollout "
+                "experiment; reserve its registry and manifest identity first"
+            )
+
+    # If a prior self-register attempt durably wrote both terminal sources but
+    # failed while committing the registry cache, the same input may repair the
+    # cache without rewriting either immutable source.
+    terminal_repair = None
+    if target.exists():
+        with file_lock(target, timeout_seconds=timeout_seconds):
+            repair_candidate = load_ticket(experiment_id, tickets_dir)
+            if (
+                _terminal_cache_contract_required(repair_candidate)
+                and repair_candidate.get("status") in FINAL_STATUSES
+            ):
+                _validate_file_backed_reservation_anchors(
+                    registry_path, repair_candidate
+                )
+                if status != repair_candidate.get("status") or lane != repair_candidate.get(
+                    "lane"
+                ):
+                    raise ValueError(
+                        f"{experiment_id} terminal results are immutable; "
+                        "repair status/lane does not match the canonical ticket"
+                    )
+                canonical_result = repair_candidate.get("result")
+                if not isinstance(result, dict) or not isinstance(
+                    canonical_result, dict
+                ) or any(
+                    canonical_result.get(key) != value
+                    for key, value in result.items()
+                ):
+                    raise ValueError(
+                        f"{experiment_id} is already terminal and terminal "
+                        "results are immutable; repair input does not match "
+                        "the canonical result"
+                    )
+                if isinstance(fields, dict) and any(
+                    value is not None and repair_candidate.get(key) != value
+                    for key, value in fields.items()
+                ):
+                    raise ValueError(
+                        f"{experiment_id} terminal repair fields do not match "
+                        "the canonical ticket"
+                    )
+                if _experiment_reservation_identity_required(
+                    repair_candidate
+                ):
+                    terminal_repair_log_row = (
+                        _validated_post_rollout_closeout_log_intent(
+                            repair_candidate, workspace_root
+                        )
+                    )
+                else:
+                    repair_log_path = experiment_log_path(
+                        experiment_id,
+                        workspace_root / "experiments" / "logs",
+                    )
+                    repair_log = _load_json_file(repair_log_path)
+                    if not isinstance(repair_log, dict):
+                        raise ValueError(
+                            f"{experiment_id} terminal repair requires its "
+                            "existing canonical log shard"
+                        )
+                    terminal_repair_log_row = repair_log
+                terminal_repair = repair_candidate
+    if terminal_repair is not None:
+        save_experiment_log_entry(
+            terminal_repair_log_row,
+            expected_experiment_id=experiment_id,
+            logs_dir=workspace_root / "experiments" / "logs",
+            registry_path=registry_path,
+            timeout_seconds=timeout_seconds,
+        )
+        _strict_terminal_cache_upsert(
+            registry_path, terminal_repair, timeout_seconds
+        )
+        return terminal_repair
+
+    # Standard close and self-registration share this exact per-ticket lock.
+    # Reload only after acquiring it so a stale runner cannot overwrite a
+    # terminal result committed by the other close path.
+    with file_lock(target, timeout_seconds=timeout_seconds):
+        canonical_existing = load_ticket(experiment_id, tickets_dir)
+        if canonical_existing is not None:
+            _validate_file_backed_reservation_anchors(
+                registry_path, canonical_existing
+            )
+        raw_registry = load_registry(registry_path)
+        raw_existing = next(
+            (
+                row
+                for row in raw_registry.get("experiments", [])
+                if isinstance(row, dict)
+                and row.get("experiment_id") == experiment_id
+            ),
+            None,
+        )
+        if canonical_existing is not None:
+            existing = canonical_existing
+        elif isinstance(raw_existing, dict) and (
+            raw_existing.get("ticket_file")
+            or _private_replay_scout_contract_indicator(raw_existing)
+        ):
+            raise ValueError(
+                f"{experiment_id} self-registration requires its exact canonical "
+                "workspace ticket shard"
+            )
+        else:
+            # Compatibility only for old registry-only, non-contract runners.
+            existing = raw_existing
+
+        if (
+            canonical_existing is None
+            and isinstance(existing, dict)
+            and _experiment_reservation_identity_required(existing)
+        ):
+            raise ValueError(
+                f"{experiment_id} post-rollout self-registration requires its "
+                "reservation-time canonical ticket, registry, and manifest anchors"
+            )
+
         now = utc_now_iso()
-        existing = get_experiment(registry, experiment_id)
         existing_lane = existing.get("lane") if existing is not None else None
         existing_research_replay = (
             _research_replay_metadata(existing) if existing is not None else None
         )
+        existing_private_contract = bool(
+            existing is not None
+            and _private_replay_scout_contract_indicator(existing)
+        )
+        registry["experiments"] = [existing] if existing is not None else []
+
         if existing is not None:
+            if canonical_existing is not None and _closed_status(
+                canonical_existing.get("status")
+            ):
+                raise ValueError(
+                    f"{experiment_id} canonical ticket is already terminal "
+                    f"({canonical_existing.get('status')}); terminal results "
+                    "are immutable"
+                )
             _require_alpha_promotion_claim_receipt_for_close(registry, existing)
             if existing_lane is not None and lane != existing_lane:
                 raise ValueError(
@@ -2579,32 +4906,45 @@ def persist_self_registered_result(
                             f"{experiment_id} cannot overwrite immutable existing "
                             f"ticket field {key!r} during closeout"
                         )
+
         if (
             _alpha_promotion_gate_enabled(registry)
             and _alpha_promotion_required_for_lane(lane)
+            and existing is None
         ):
-            if existing is None:
-                probe = {
-                    "experiment_id": experiment_id,
-                    "lane": lane,
-                    # A missing ticket is being created now. Caller-supplied
-                    # historical metadata must not backdate it across the
-                    # promotion-enforcement boundary.
-                    "created_at": now,
-                }
-                if _ticket_is_post_alpha_promotion_enforcement(probe):
-                    raise ValueError(
-                        f"{experiment_id} cannot self-register new alpha work: "
-                        "reserve and claim a promotion-anchored ticket first"
-                    )
-        exp = existing or {"experiment_id": experiment_id}
-        exp.setdefault("experiment_id", experiment_id)
+            probe = {
+                "experiment_id": experiment_id,
+                "lane": lane,
+                "created_at": now,
+            }
+            if _ticket_is_post_alpha_promotion_enforcement(probe):
+                raise ValueError(
+                    f"{experiment_id} cannot self-register new alpha work: "
+                    "reserve and claim a promotion-anchored ticket first"
+                )
+        if existing is None and _experiment_reservation_identity_required(
+            {"experiment_id": experiment_id, "created_at": now}
+        ):
+            raise ValueError(
+                f"{experiment_id} cannot self-register a new post-rollout "
+                "experiment; reserve its registry and manifest identity first"
+            )
+
+        exp = dict(existing) if existing is not None else {
+            "experiment_id": experiment_id
+        }
         exp.setdefault("created_at", now)
         if isinstance(fields, dict):
             for key, value in fields.items():
                 if value is not None:
                     exp[key] = value
+        if exp.get("experiment_id") != experiment_id:
+            raise ValueError(
+                f"{experiment_id} self-registration cannot redirect canonical identity"
+            )
+        _require_canonical_experiment_id(exp.get("experiment_id"))
         exp["lane"] = lane
+
         if existing_research_replay is not None and _research_replay_metadata(exp) is None:
             raise ValueError(
                 f"{experiment_id} cannot remove its research_replay admission during closeout"
@@ -2612,15 +4952,16 @@ def persist_self_registered_result(
         if existing is not None and (
             _alpha_promotion_required_for_lane(existing_lane)
             or _alpha_promotion_required_for_lane(lane)
+            or existing_private_contract
+            or existing_research_replay is not None
         ):
-            # Revalidate after applying caller-supplied fields so a runner
-            # cannot replace the admitted proposal/anchor or demote the lane
-            # during closeout.
             _revalidate_alpha_promotion_for_claim(registry, exp)
+
         research_replay = _enforce_research_replay_result_ceiling(
             exp,
             status,
             result=result,
+            repo_root=workspace_root,
         )
         exp["status"] = status
         if normalized:
@@ -2628,25 +4969,101 @@ def persist_self_registered_result(
         stored_result = dict(result) if isinstance(result, dict) else result
         if research_replay and isinstance(stored_result, dict):
             stored_result.update(research_replay)
+        private_contract = bool(
+            research_replay
+            and _private_replay_scout_artifact_contract_required(
+                exp, research_replay
+            )
+        )
+        if private_contract:
+            canonical_log_row = {
+                **stored_result,
+                "experiment_id": experiment_id,
+                "experiment_uid": exp.get("experiment_uid"),
+                "timestamp": now,
+                "status": status,
+                "decision": status,
+                "change_type": exp.get("change_type"),
+                "alpha_promotion": exp.get("alpha_promotion"),
+                "research_refs": exp.get("research_refs"),
+                "private_replay_scout_artifact_disposition_contract_version": (
+                    exp.get(
+                        "private_replay_scout_artifact_disposition_contract_version"
+                    )
+                ),
+                PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD: exp.get(
+                    PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD
+                ),
+            }
+            stored_result[PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD] = (
+                _private_replay_scout_log_sha256(canonical_log_row)
+            )
+        elif _experiment_reservation_identity_required(exp):
+            canonical_log_row = {
+                **(stored_result if isinstance(stored_result, dict) else {}),
+                "experiment_id": experiment_id,
+                "experiment_uid": exp.get("experiment_uid"),
+                "timestamp": now,
+                "status": status,
+                "decision": status,
+                "lane": exp.get("lane"),
+                "change_type": exp.get("change_type"),
+            }
         exp["result"] = stored_result
         exp["updated_at"] = now
         exp["completed_at"] = now
-        experiments = registry.setdefault("experiments", [])
-        for index, existing in enumerate(experiments):
-            if existing.get("experiment_id") == experiment_id:
-                experiments[index] = exp
-                break
-        else:
-            experiments.append(exp)
-        registry["updated_at"] = now
-        if "_tickets_dir" in registry:
-            save_ticket(exp, _registry_tickets_dir(registry))
-            _sync_index_entry(registry, exp)
-        return exp
+        if _experiment_reservation_identity_required(exp):
+            if exp.get("status") not in FINAL_STATUSES:
+                raise ValueError(
+                    f"{experiment_id} self-registered terminal status must be "
+                    f"one of {sorted(FINAL_STATUSES)}"
+                )
+            if not isinstance(stored_result, dict) or stored_result.get(
+                "decision"
+            ) != exp.get("status"):
+                raise ValueError(
+                    f"{experiment_id} self-registered result.decision must "
+                    "exactly mirror the terminal ticket status"
+                )
+            _validate_experiment_claim_lifecycle(exp)
+            if canonical_existing is not None:
+                _validate_file_backed_reservation_anchors(registry_path, exp)
+        if private_contract:
+            _validate_private_replay_scout_ticket_log_binding(
+                exp, canonical_log_row, workspace_root
+            )
+        if _experiment_reservation_identity_required(exp):
+            canonical_log_row = _bind_post_rollout_closeout_log_intent(
+                exp, canonical_log_row
+            )
+        if isinstance(canonical_log_row, dict):
+            canonical_log_path = experiment_log_path(
+                experiment_id,
+                workspace_root / "experiments" / "logs",
+            )
+            if canonical_log_path.exists():
+                existing_log_row = _load_json_file(canonical_log_path)
+                expected_log_row = strip_oversized_fields(canonical_log_row)
+                if existing_log_row != expected_log_row:
+                    raise ValueError(
+                        f"{experiment_id} existing canonical log conflicts with "
+                        "the self-registered terminal candidate"
+                    )
+        save_ticket(exp, tickets_dir, overwrite=canonical_existing is not None)
 
-    return locked_registry_update(
-        registry_path, _mutator, timeout_seconds=timeout_seconds
-    )
+    if isinstance(canonical_log_row, dict):
+        save_experiment_log_entry(
+            canonical_log_row,
+            expected_experiment_id=experiment_id,
+            logs_dir=workspace_root / "experiments" / "logs",
+            registry_path=registry_path,
+            timeout_seconds=timeout_seconds,
+        )
+    if _terminal_cache_contract_required(exp):
+        _strict_terminal_cache_upsert(registry_path, exp, timeout_seconds)
+    else:
+        _best_effort_full_cache_upsert(registry_path, exp, timeout_seconds)
+    return exp
 
 
 def _load_json_file(path):
@@ -2658,7 +5075,7 @@ def _load_json_file(path):
 
 
 def _closed_status(value):
-    status = str(value or "")
+    status = str(value or "").strip().lower()
     return status in FINAL_STATUSES or status.startswith(
         ("accepted", "rejected", "observed_only")
     )
@@ -2700,6 +5117,13 @@ def _lean_quality_enforcement_datetime():
     return parsed
 
 
+def _lean_hard_integrity_enforcement_datetime():
+    parsed = _parse_iso_datetime(LEAN_HARD_INTEGRITY_ENFORCEMENT_STARTED_AT)
+    if parsed is None:
+        raise ValueError("invalid LEAN_HARD_INTEGRITY_ENFORCEMENT_STARTED_AT")
+    return parsed
+
+
 def _enforcement_bucket(ticket, cutoff):
     """Classify prediction gaps as legacy or post-enforcement.
 
@@ -2737,37 +5161,840 @@ def lean_quality_enforcement_bucket(ticket):
     return _enforcement_bucket(ticket, _lean_quality_enforcement_datetime())
 
 
-def _ticket_records_for_audit(registry, tickets_dir=DEFAULT_TICKETS_DIR):
+def _reservation_identity_audit_violations(
+    experiment_id,
+    registry_row,
+    canonical_row,
+    manifest,
+    *,
+    ticket_path_value,
+    manifest_path_value,
+    require_persisted_anchors,
+):
+    source = canonical_row or registry_row or {"experiment_id": experiment_id}
+    violations = []
+
+    def add(record_type, path, error, declared_id=None):
+        violations.append(
+            {
+                "record_type": record_type,
+                "path": str(path),
+                "canonical_experiment_id": experiment_id,
+                "declared_experiment_id": declared_id,
+                "enforcement_bucket": "post_enforcement",
+                "error": error,
+            }
+        )
+
+    invalid_clock = bool(
+        require_persisted_anchors
+        and _experiment_reservation_clock_invalid(source)
+    )
+    anchored = bool(
+        _experiment_reservation_identity_required(source)
+        or any(
+            isinstance(row, dict)
+            and any(
+                field in row
+                for field in (
+                    EXPERIMENT_RESERVATION_IDENTITY_FIELD,
+                    EXPERIMENT_EVER_CLAIMED_FIELD,
+                    EXPERIMENT_CLAIM_TRANSITION_FIELD,
+                    EXPERIMENT_CLOSEOUT_LOG_INTENT_FIELD,
+                    EXPERIMENT_CLOSEOUT_LOG_INTENT_SHA256_FIELD,
+                )
+            )
+            for row in (registry_row, manifest)
+        )
+    )
+    if invalid_clock:
+        add(
+            "reservation_clock",
+            ticket_path_value,
+            "canonical reservation clock is malformed",
+            source.get("experiment_id") if isinstance(source, dict) else None,
+        )
+    if not anchored:
+        return violations
+
+    full_snapshot_fields = {
+        "experiment_uid",
+        "change_type",
+        "allowed_write_scope",
+        "must_not_touch",
+    }
+    registry_is_full = bool(
+        isinstance(registry_row, dict)
+        and full_snapshot_fields.issubset(registry_row)
+    )
+    registry_identity = (
+        registry_row.get(EXPERIMENT_RESERVATION_IDENTITY_FIELD)
+        if isinstance(registry_row, dict)
+        else None
+    )
+    if (
+        registry_identity is None
+        and registry_is_full
+        and not require_persisted_anchors
+    ):
+        registry_identity = _experiment_reservation_identity(registry_row)
+    if registry_identity is None:
+        add(
+            "registry_reservation_identity",
+            ticket_path_value,
+            "future canonical ticket is missing its registry reservation identity",
+            registry_row.get("experiment_id") if isinstance(registry_row, dict) else None,
+        )
+    elif not _experiment_reservation_identity_is_valid(registry_identity):
+        add(
+            "registry_reservation_identity",
+            ticket_path_value,
+            "invalid experiment registry reservation identity snapshot",
+            registry_row.get("experiment_id") if isinstance(registry_row, dict) else None,
+        )
+
+    manifest_identity = (
+        manifest.get(EXPERIMENT_RESERVATION_IDENTITY_FIELD)
+        if isinstance(manifest, dict)
+        and manifest.get("experiment_id") == experiment_id
+        else None
+    )
+    manifest_required = (
+        require_persisted_anchors or not registry_is_full or registry_row is None
+    )
+    if manifest_identity is None and manifest_required:
+        add(
+            "manifest_reservation_identity",
+            manifest_path_value,
+            "future canonical ticket is missing its manifest reservation identity",
+            manifest.get("experiment_id") if isinstance(manifest, dict) else None,
+        )
+    elif manifest_identity is not None and not _experiment_reservation_identity_is_valid(
+        manifest_identity
+    ):
+        add(
+            "manifest_reservation_identity",
+            manifest_path_value,
+            "invalid experiment manifest reservation identity snapshot",
+            manifest.get("experiment_id") if isinstance(manifest, dict) else None,
+        )
+
+    if (
+        registry_identity is not None
+        and manifest_identity is not None
+        and registry_identity != manifest_identity
+    ):
+        add(
+            "manifest_reservation_identity",
+            manifest_path_value,
+            "registry/manifest reservation identity mismatch",
+            manifest.get("experiment_id") if isinstance(manifest, dict) else None,
+        )
+    if isinstance(canonical_row, dict):
+        actual_identity = _experiment_reservation_identity(canonical_row)
+        for label, identity, path in (
+            ("registry", registry_identity, ticket_path_value),
+            ("manifest", manifest_identity, manifest_path_value),
+        ):
+            if identity is not None and identity != actual_identity:
+                add(
+                    f"{label}_reservation_identity",
+                    path,
+                    f"{label}/ticket reservation identity mismatch",
+                    canonical_row.get("experiment_id"),
+                )
+        try:
+            _validate_experiment_claim_lifecycle(canonical_row)
+        except ValueError as exc:
+            add(
+                "ticket_claim_lifecycle",
+                ticket_path_value,
+                str(exc),
+                canonical_row.get("experiment_id"),
+            )
+
+    ticket_ever_claimed = (
+        canonical_row.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+        if isinstance(canonical_row, dict)
+        else None
+    )
+    registry_ever_claimed = (
+        registry_row.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+        if isinstance(registry_row, dict)
+        else None
+    )
+    manifest_ever_claimed = (
+        manifest.get(EXPERIMENT_EVER_CLAIMED_FIELD)
+        if isinstance(manifest, dict)
+        else None
+    )
+    required_markers = [ticket_ever_claimed, registry_ever_claimed]
+    if manifest_required or manifest_identity is not None:
+        required_markers.append(manifest_ever_claimed)
+    if any(type(value) is not bool for value in required_markers):
+        add(
+            "ticket_claim_lifecycle",
+            ticket_path_value,
+            "future ticket is missing an exact ever-claimed lifecycle anchor",
+            canonical_row.get("experiment_id") if isinstance(canonical_row, dict) else None,
+        )
+    elif len(set(required_markers)) != 1:
+        add(
+            "ticket_claim_lifecycle",
+            ticket_path_value,
+            "ticket/registry/manifest ever-claimed lifecycle mismatch",
+            canonical_row.get("experiment_id") if isinstance(canonical_row, dict) else None,
+        )
+    elif isinstance(canonical_row, dict):
+        ticket_transition = canonical_row.get(
+            EXPERIMENT_CLAIM_TRANSITION_FIELD
+        )
+        manifest_transition = (
+            manifest.get(EXPERIMENT_CLAIM_TRANSITION_FIELD)
+            if isinstance(manifest, dict)
+            else None
+        )
+        if ticket_ever_claimed:
+            if (
+                not _experiment_claim_transition_is_valid(
+                    ticket_transition, canonical_row
+                )
+                or (
+                    (manifest_required or manifest_identity is not None)
+                    and manifest_transition != ticket_transition
+                )
+            ):
+                add(
+                    "ticket_claim_transition",
+                    manifest_path_value,
+                    "ever-claimed ticket is missing its exact hash-bound "
+                    "manifest claim transition",
+                    canonical_row.get("experiment_id"),
+                )
+        elif manifest_transition is not None:
+            expected_identity = _experiment_reservation_identity(canonical_row)
+            if (
+                not _experiment_claim_transition_payload_is_valid(
+                    manifest_transition
+                )
+                or manifest_transition.get("experiment_id") != experiment_id
+                or manifest_transition.get("experiment_uid")
+                != canonical_row.get("experiment_uid")
+                or manifest_transition.get("reservation_identity_hash")
+                != expected_identity.get("identity_hash")
+            ):
+                add(
+                    "manifest_claim_transition",
+                    manifest_path_value,
+                    "unclaimed manifest carries an invalid claim transition "
+                    "intent residue",
+                    canonical_row.get("experiment_id"),
+                )
+    return violations
+
+
+def _ticket_records_for_audit(
+    registry,
+    tickets_dir=DEFAULT_TICKETS_DIR,
+    *,
+    require_persisted_reservation_anchors=False,
+):
     records = {}
-    for exp in iter_experiments(registry):
-        experiment_id = exp.get("experiment_id")
-        if experiment_id:
-            records[experiment_id] = exp
-    tickets_path = Path(tickets_dir)
+    registry_records = {}
+    canonical_ticket_rows = {}
+    canonical_ticket_file_ids = set()
+    identity_violations = []
+    tickets_path = Path(tickets_dir).resolve()
+    audit_repo_root = tickets_path.parent.parent
+    manifests_path = tickets_path.parent / "manifests"
+    expected_ticket_prefix = Path("experiments") / "tickets"
+
+    # The registry is an independent provenance snapshot, not a path-following
+    # loader.  Never materialize its mutable ticket_file here: doing so can make
+    # registry id A disappear by redirecting it to ticket B (or outside a custom
+    # workspace).  Canonical shards are loaded independently below.
+    for raw in registry.get("experiments", []):
+        if not isinstance(raw, dict):
+            continue
+        experiment_id = raw.get("experiment_id")
+        if not experiment_id:
+            continue
+        registry_records[experiment_id] = raw
+        records[experiment_id] = dict(raw)
+        ticket_file = raw.get("ticket_file")
+        expected_ticket_file = (
+            expected_ticket_prefix / f"{experiment_id}.json"
+        ).as_posix()
+        pointer_is_exact = ticket_file == expected_ticket_file
+        if isinstance(ticket_file, str) and Path(ticket_file).is_absolute():
+            try:
+                pointer_is_exact = (
+                    Path(ticket_file).resolve()
+                    == (tickets_path / f"{experiment_id}.json").resolve()
+                )
+            except OSError:
+                pointer_is_exact = False
+        if ticket_file is not None and not pointer_is_exact:
+            identity_violations.append(
+                {
+                    "record_type": "registry_ticket_pointer",
+                    "path": str(ticket_file),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": experiment_id,
+                    "enforcement_bucket": _canonical_record_enforcement_bucket(
+                        raw, experiment_id
+                    ),
+                    "error": (
+                        "registry ticket_file must equal its exact workspace "
+                        f"canonical path {expected_ticket_file}"
+                    ),
+                }
+            )
     if tickets_path.exists():
-        for path in sorted(tickets_path.glob("exp-*.json")):
+        for path in sorted(
+            item
+            for item in tickets_path.iterdir()
+            if item.is_file() and item.suffix.lower() == ".json"
+        ):
             row = _load_json_file(path)
-            if not isinstance(row, dict):
+            path_experiment_id = normalize_experiment_id(path.stem)
+            declared_id = row.get("experiment_id") if isinstance(row, dict) else None
+            declared_experiment_id = normalize_experiment_id(declared_id)
+            path_looks_like_experiment = bool(
+                re.match(r"(?i)^exp[-_]", path.stem)
+            )
+            declared_looks_like_experiment = bool(
+                re.match(r"(?i)^exp[-_]", str(declared_id or ""))
+            )
+            if (
+                path_experiment_id is None
+                and declared_experiment_id is None
+                and not path_looks_like_experiment
+                and not declared_looks_like_experiment
+            ):
                 continue
-            experiment_id = row.get("experiment_id") or normalize_experiment_id(path.stem)
+            experiment_id = (
+                path_experiment_id
+                or declared_experiment_id
+                or str(declared_id or path.stem)
+            )
+            if path_experiment_id and path.stem == path_experiment_id:
+                canonical_ticket_file_ids.add(path_experiment_id)
+            if not isinstance(row, dict):
+                identity_violations.append(
+                    {
+                        "record_type": "ticket",
+                        "path": str(path),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": None,
+                        "enforcement_bucket": _canonical_record_enforcement_bucket(
+                            {}, experiment_id
+                        ),
+                        "error": "ticket file must contain a JSON object",
+                    }
+                )
+                continue
+            if (
+                path_experiment_id is None
+                or declared_experiment_id is None
+                or path.stem != experiment_id
+                or declared_id != experiment_id
+            ):
+                identity_violations.append(
+                    {
+                        "record_type": "ticket",
+                        "path": str(path),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": declared_id,
+                        "enforcement_bucket": _canonical_record_enforcement_bucket(
+                            row, experiment_id
+                        ),
+                        "error": "ticket filename stem must equal its exact experiment_id",
+                    }
+                )
             if experiment_id:
-                row.setdefault("experiment_id", experiment_id)
                 records[experiment_id] = {**records.get(experiment_id, {}), **row}
-    return records
+                if (
+                    path_experiment_id == experiment_id
+                    and declared_id == experiment_id
+                    and path.stem == experiment_id
+                ):
+                    canonical_ticket_rows[experiment_id] = row
+    for experiment_id, row in sorted(registry_records.items()):
+        if experiment_id not in canonical_ticket_file_ids:
+            identity_violations.append(
+                {
+                    "record_type": "ticket",
+                    "path": str(tickets_path / f"{experiment_id}.json"),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": row.get("experiment_id"),
+                    "enforcement_bucket": _canonical_record_enforcement_bucket(
+                        row, experiment_id
+                    ),
+                    "error": "registry experiment is missing its canonical ticket shard",
+                }
+            )
+
+        canonical_row = canonical_ticket_rows.get(experiment_id)
+        full_snapshot_fields = {
+            "experiment_uid",
+            "change_type",
+            "alpha_promotion",
+            "allowed_write_scope",
+            "must_not_touch",
+        }
+        raw_is_full_snapshot = full_snapshot_fields.issubset(row)
+        stored_identity = row.get(PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD)
+        expected_identity = None
+        if stored_identity is not None:
+            if (
+                not _private_replay_scout_registry_identity_is_valid(stored_identity)
+                or stored_identity.get("experiment_id") != experiment_id
+            ):
+                identity_violations.append(
+                    {
+                        "record_type": "registry_ticket_identity",
+                        "path": str(tickets_path / f"{experiment_id}.json"),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": row.get("experiment_id"),
+                        "enforcement_bucket": "post_enforcement",
+                        "error": "invalid private replay registry identity snapshot",
+                    }
+                )
+            else:
+                expected_identity = stored_identity
+        elif _private_replay_scout_contract_indicator(row) or (
+            isinstance(canonical_row, dict)
+            and _private_replay_scout_contract_indicator(canonical_row)
+        ):
+            # Full in-memory fixtures and legacy registry rows can themselves be
+            # the snapshot. Compact production index rows must carry the
+            # explicit identity field written by _ticket_index_entry.
+            if raw_is_full_snapshot and not require_persisted_reservation_anchors:
+                expected_identity = _private_replay_scout_registry_identity(row)
+            else:
+                identity_violations.append(
+                    {
+                        "record_type": "registry_ticket_identity",
+                        "path": str(tickets_path / f"{experiment_id}.json"),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": row.get("experiment_id"),
+                        "enforcement_bucket": "post_enforcement",
+                        "error": "missing private replay registry identity snapshot",
+                    }
+                )
+
+        manifest_path = manifests_path / f"{experiment_id}.json"
+        manifest = _load_json_file(manifest_path)
+        manifest_identity = (
+            manifest.get(PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD)
+            if isinstance(manifest, dict)
+            else None
+        )
+        compact_contract_record = bool(
+            (not raw_is_full_snapshot or require_persisted_reservation_anchors)
+            and (
+                stored_identity is not None
+                or _private_replay_scout_contract_indicator(row)
+                or (
+                    isinstance(canonical_row, dict)
+                    and _private_replay_scout_contract_indicator(canonical_row)
+                )
+            )
+        )
+        manifest_identity_is_exact = bool(
+            isinstance(manifest, dict)
+            and manifest.get("experiment_id") == experiment_id
+            and isinstance(manifest_identity, dict)
+            and manifest_identity.get("experiment_id") == experiment_id
+            and _private_replay_scout_registry_identity_is_valid(
+                manifest_identity
+            )
+        )
+        if manifest_identity is not None and not manifest_identity_is_exact:
+            identity_violations.append(
+                {
+                    "record_type": "manifest_ticket_identity",
+                    "path": str(manifest_path),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": (
+                        manifest.get("experiment_id")
+                        if isinstance(manifest, dict)
+                        else None
+                    ),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": "invalid private replay manifest identity snapshot",
+                }
+            )
+        elif compact_contract_record and manifest_identity is None:
+            identity_violations.append(
+                {
+                    "record_type": "manifest_ticket_identity",
+                    "path": str(manifest_path),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": (
+                        manifest.get("experiment_id")
+                        if isinstance(manifest, dict)
+                        else None
+                    ),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": "missing private replay manifest identity snapshot",
+                }
+            )
+        elif manifest_identity is not None:
+            if expected_identity is not None and manifest_identity != expected_identity:
+                identity_violations.append(
+                    {
+                        "record_type": "manifest_ticket_identity",
+                        "path": str(manifest_path),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": manifest.get("experiment_id"),
+                        "enforcement_bucket": "post_enforcement",
+                        "error": (
+                            "registry/manifest private replay identity mismatch"
+                        ),
+                    }
+                )
+            expected_identity = manifest_identity
+        if expected_identity is not None:
+            actual_identity = (
+                _private_replay_scout_registry_identity(canonical_row)
+                if isinstance(canonical_row, dict)
+                else None
+            )
+            if actual_identity != expected_identity:
+                identity_violations.append(
+                    {
+                        "record_type": "registry_ticket_identity",
+                        "path": str(tickets_path / f"{experiment_id}.json"),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": (
+                            canonical_row.get("experiment_id")
+                            if isinstance(canonical_row, dict)
+                            else None
+                        ),
+                        "enforcement_bucket": "post_enforcement",
+                        "error": (
+                            "registry/ticket private replay closeout identity mismatch"
+                        ),
+                    }
+                )
+        stored_log_sha256 = row.get(
+            PRIVATE_REPLAY_SCOUT_REGISTRY_LOG_SHA256_FIELD
+        )
+        actual_log_sha256 = (
+            (canonical_row.get("result") or {}).get(
+                PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD
+            )
+            if isinstance(canonical_row, dict)
+            and isinstance(canonical_row.get("result"), dict)
+            else None
+        )
+        if stored_log_sha256 is not None and (
+            not isinstance(stored_log_sha256, str)
+            or re.fullmatch(r"[0-9a-f]{64}", stored_log_sha256) is None
+        ):
+            identity_violations.append(
+                {
+                    "record_type": "registry_log_commitment",
+                    "path": str(tickets_path / f"{experiment_id}.json"),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": row.get("experiment_id"),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": "invalid private replay registry log commitment",
+                }
+            )
+        elif stored_log_sha256 != actual_log_sha256 and (
+            stored_log_sha256 is not None
+            or (
+                actual_log_sha256 is not None
+                and PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD in row
+            )
+        ):
+            identity_violations.append(
+                {
+                    "record_type": "registry_log_commitment",
+                    "path": str(tickets_path / f"{experiment_id}.json"),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": row.get("experiment_id"),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": (
+                        "registry/ticket private replay canonical log "
+                        "commitment mismatch"
+                    ),
+                }
+            )
+    for experiment_id, canonical_row in sorted(canonical_ticket_rows.items()):
+        if experiment_id in registry_records:
+            continue
+        manifest_path = manifests_path / f"{experiment_id}.json"
+        manifest = _load_json_file(manifest_path)
+        manifest_identity = (
+            manifest.get(PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD)
+            if isinstance(manifest, dict)
+            else None
+        )
+        if (
+            not _private_replay_scout_contract_indicator(canonical_row)
+            and manifest_identity is None
+        ):
+            continue
+        identity_violations.append(
+            {
+                "record_type": "registry_ticket_identity",
+                "path": str(tickets_path / f"{experiment_id}.json"),
+                "canonical_experiment_id": experiment_id,
+                "declared_experiment_id": canonical_row.get("experiment_id"),
+                "enforcement_bucket": "post_enforcement",
+                "error": (
+                    "private replay canonical ticket is missing its registry "
+                    "identity entry"
+                ),
+            }
+        )
+        if not (
+            isinstance(manifest, dict)
+            and manifest.get("experiment_id") == experiment_id
+            and isinstance(manifest_identity, dict)
+            and manifest_identity.get("experiment_id") == experiment_id
+            and _private_replay_scout_registry_identity_is_valid(
+                manifest_identity
+            )
+        ):
+            identity_violations.append(
+                {
+                    "record_type": "manifest_ticket_identity",
+                    "path": str(manifest_path),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": (
+                        manifest.get("experiment_id")
+                        if isinstance(manifest, dict)
+                        else None
+                    ),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": (
+                        "private replay canonical ticket is missing its valid "
+                        "manifest identity snapshot"
+                    ),
+                }
+            )
+        elif (
+            _private_replay_scout_registry_identity(canonical_row)
+            != manifest_identity
+        ):
+            identity_violations.append(
+                {
+                    "record_type": "manifest_ticket_identity",
+                    "path": str(manifest_path),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": canonical_row.get("experiment_id"),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": (
+                        "manifest/ticket private replay closeout identity mismatch"
+                    ),
+                }
+            )
+    for experiment_id in sorted(set(registry_records) | set(canonical_ticket_rows)):
+        manifest_path = manifests_path / f"{experiment_id}.json"
+        identity_violations.extend(
+            _reservation_identity_audit_violations(
+                experiment_id,
+                registry_records.get(experiment_id),
+                canonical_ticket_rows.get(experiment_id),
+                _load_json_file(manifest_path),
+                ticket_path_value=tickets_path / f"{experiment_id}.json",
+                manifest_path_value=manifest_path,
+                require_persisted_anchors=(
+                    require_persisted_reservation_anchors
+                ),
+            )
+        )
+    if manifests_path.exists():
+        for manifest_path in sorted(manifests_path.glob("exp-*.json")):
+            experiment_id = normalize_experiment_id(manifest_path.stem)
+            if not experiment_id or experiment_id in canonical_ticket_rows:
+                continue
+            manifest = _load_json_file(manifest_path)
+            manifest_identity = (
+                manifest.get(PRIVATE_REPLAY_SCOUT_REGISTRY_IDENTITY_FIELD)
+                if isinstance(manifest, dict)
+                else None
+            )
+            reservation_identity = (
+                manifest.get(EXPERIMENT_RESERVATION_IDENTITY_FIELD)
+                if isinstance(manifest, dict)
+                else None
+            )
+            if reservation_identity is not None:
+                identity_violations.append(
+                    {
+                        "record_type": "manifest_reservation_identity",
+                        "path": str(manifest_path),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": (
+                            manifest.get("experiment_id")
+                            if isinstance(manifest, dict)
+                            else None
+                        ),
+                        "enforcement_bucket": "post_enforcement",
+                        "error": (
+                            "reservation manifest identity is missing its "
+                            "canonical ticket shard"
+                        ),
+                    }
+                )
+            if manifest_identity is None:
+                continue
+            identity_violations.append(
+                {
+                    "record_type": "manifest_ticket_identity",
+                    "path": str(manifest_path),
+                    "canonical_experiment_id": experiment_id,
+                    "declared_experiment_id": (
+                        manifest.get("experiment_id")
+                        if isinstance(manifest, dict)
+                        else None
+                    ),
+                    "enforcement_bucket": "post_enforcement",
+                    "error": (
+                        "private replay manifest identity is missing its canonical "
+                        "ticket shard"
+                    ),
+                }
+            )
+    return records, identity_violations
 
 
 def _log_records_for_audit(logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR):
     records = {}
+    identity_violations = []
     logs_path = Path(logs_dir)
     if logs_path.exists():
-        for path in sorted(logs_path.glob("exp-*.json")):
+        for path in sorted(
+            item
+            for item in logs_path.iterdir()
+            if item.is_file() and item.suffix.lower() == ".json"
+        ):
             row = _load_json_file(path)
-            if not isinstance(row, dict):
+            path_experiment_id = normalize_experiment_id(path.stem)
+            declared_id = row.get("experiment_id") if isinstance(row, dict) else None
+            declared_experiment_id = normalize_experiment_id(declared_id)
+            path_looks_like_experiment = bool(
+                re.match(r"(?i)^exp[-_]", path.stem)
+            )
+            declared_looks_like_experiment = bool(
+                re.match(r"(?i)^exp[-_]", str(declared_id or ""))
+            )
+            if (
+                path_experiment_id is None
+                and declared_experiment_id is None
+                and not path_looks_like_experiment
+                and not declared_looks_like_experiment
+            ):
                 continue
-            experiment_id = row.get("experiment_id") or normalize_experiment_id(path.stem)
+            experiment_id = (
+                path_experiment_id
+                or declared_experiment_id
+                or str(declared_id or path.stem)
+            )
+            if not isinstance(row, dict):
+                identity_violations.append(
+                    {
+                        "record_type": "log",
+                        "path": str(path),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": None,
+                        "enforcement_bucket": _canonical_record_enforcement_bucket(
+                            {}, experiment_id
+                        ),
+                        "error": "log file must contain a JSON object",
+                    }
+                )
+                continue
+            if (
+                path_experiment_id is None
+                or declared_experiment_id is None
+                or path.stem != experiment_id
+                or declared_id != experiment_id
+            ):
+                identity_violations.append(
+                    {
+                        "record_type": "log",
+                        "path": str(path),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": declared_id,
+                        "enforcement_bucket": _canonical_record_enforcement_bucket(
+                            row, experiment_id
+                        ),
+                        "error": "log filename stem must equal its exact experiment_id",
+                    }
+                )
             if experiment_id:
                 records[experiment_id] = row
-    return records
+    return records, identity_violations
+
+
+def _canonical_record_enforcement_bucket(row, canonical_experiment_id):
+    """Keep pre-rollout filename debt visible without weakening new records."""
+
+    if _private_replay_scout_contract_indicator(row):
+        return "post_enforcement"
+    cutoff = datetime.fromisoformat(
+        PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_ENFORCEMENT_STARTED_AT
+    )
+    timestamp_values = [
+        row.get(field)
+        for field in (
+            "created_at",
+            "reserved_at",
+            "updated_at",
+            "claimed_at",
+            "completed_at",
+            "timestamp",
+        )
+    ]
+    hub_identity = row.get("hub_identity")
+    if isinstance(hub_identity, dict):
+        timestamp_values.append(hub_identity.get("reserved_at"))
+    legacy_evidence_seen = False
+    for value in timestamp_values:
+        if value is None:
+            continue
+        try:
+            observed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except (TypeError, ValueError):
+            continue
+        if observed.tzinfo is not None:
+            if observed.astimezone(timezone.utc) >= cutoff.astimezone(timezone.utc):
+                return "post_enforcement"
+            legacy_evidence_seen = True
+        elif observed.date() >= cutoff.date():
+            return "post_enforcement"
+        else:
+            legacy_evidence_seen = True
+    cutoff_day = cutoff.date().strftime("%Y%m%d")
+    for value in (canonical_experiment_id, row.get("experiment_id")):
+        normalized = normalize_experiment_id(value)
+        raw_date = None
+        if normalized:
+            raw_date = normalized[4:12]
+        else:
+            match = re.match(r"(?i)^exp[-_](\d{8})(?:[-_]|$)", str(value or ""))
+            if match:
+                raw_date = match.group(1)
+        if raw_date is None:
+            continue
+        if raw_date >= cutoff_day:
+            return "post_enforcement"
+        legacy_evidence_seen = True
+    if legacy_evidence_seen:
+        return "legacy_pre_enforcement"
+    if any(
+        re.match(r"(?i)^exp[-_]", str(value or ""))
+        for value in (canonical_experiment_id, row.get("experiment_id"))
+    ):
+        return "post_enforcement"
+    return "legacy_pre_enforcement"
 
 
 def audit_experiment_process(
@@ -2776,10 +6003,27 @@ def audit_experiment_process(
     tickets_dir=DEFAULT_TICKETS_DIR,
     logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
     lean=False,
+    file_backed_registry=False,
 ):
     """Audit whether experiment objects obey the code-enforced process contract."""
-    tickets = _ticket_records_for_audit(registry, tickets_dir=tickets_dir)
-    logs = _log_records_for_audit(logs_dir=logs_dir)
+    tickets, ticket_identity_violations = _ticket_records_for_audit(
+        registry,
+        tickets_dir=tickets_dir,
+        require_persisted_reservation_anchors=file_backed_registry,
+    )
+    logs, log_identity_violations = _log_records_for_audit(logs_dir=logs_dir)
+    identity_violations = ticket_identity_violations + log_identity_violations
+    canonical_record_violations = [
+        item
+        for item in identity_violations
+        if item.get("enforcement_bucket") == "post_enforcement"
+    ]
+    legacy_canonical_record_violations = [
+        item
+        for item in identity_violations
+        if item.get("enforcement_bucket") != "post_enforcement"
+    ]
+    legacy_orphan_logs = []
     alpha_ticket_count = 0
     legacy_alpha_ticket_count = 0
     post_alpha_ticket_count = 0
@@ -2811,6 +6055,212 @@ def audit_experiment_process(
     )
 
     for experiment_id, ticket in sorted(tickets.items()):
+        log_row = logs.get(experiment_id) or {}
+        result = ticket.get("result") or {}
+        if not isinstance(result, dict):
+            result = {}
+        anchor = ticket.get("alpha_promotion")
+        status = ticket.get("status")
+        is_closed = _closed_status(status)
+        if _experiment_reservation_identity_required(ticket):
+            committed_log_intent = None
+            if is_closed:
+                try:
+                    committed_log_intent = (
+                        _validated_post_rollout_closeout_log_intent(
+                            ticket, audit_repo_root
+                        )
+                    )
+                except ValueError as exc:
+                    canonical_record_violations.append(
+                        {
+                            "record_type": "ticket_log_closeout_intent",
+                            "path": str(
+                                Path(tickets_dir).resolve()
+                                / f"{experiment_id}.json"
+                            ),
+                            "canonical_experiment_id": experiment_id,
+                            "declared_experiment_id": experiment_id,
+                            "enforcement_bucket": "post_enforcement",
+                            "error": str(exc),
+                        }
+                    )
+            if is_closed and not log_row:
+                canonical_record_violations.append(
+                    {
+                        "record_type": "ticket_log_terminal_mirror",
+                        "path": str(
+                            Path(logs_dir).resolve()
+                            / f"{experiment_id}.json"
+                        ),
+                        "canonical_experiment_id": experiment_id,
+                        "declared_experiment_id": None,
+                        "enforcement_bucket": "post_enforcement",
+                        "error": (
+                            f"{experiment_id} post-rollout terminal ticket "
+                            "requires a canonical experiment log shard"
+                        ),
+                    }
+                )
+            elif log_row:
+                try:
+                    _validate_post_rollout_ticket_log_mirror(ticket, log_row)
+                    if (
+                        committed_log_intent is not None
+                        and log_row != committed_log_intent
+                    ):
+                        raise ValueError(
+                            f"{experiment_id} canonical log differs from the "
+                            "terminal closeout intent"
+                        )
+                except ValueError as exc:
+                    canonical_record_violations.append(
+                        {
+                            "record_type": "ticket_log_terminal_mirror",
+                            "path": str(
+                                Path(logs_dir).resolve()
+                                / f"{experiment_id}.json"
+                            ),
+                            "canonical_experiment_id": experiment_id,
+                            "declared_experiment_id": log_row.get(
+                                "experiment_id"
+                            ),
+                            "enforcement_bucket": "post_enforcement",
+                            "error": str(exc),
+                        }
+                    )
+        private_contract_indicator = _private_replay_scout_contract_indicator(ticket)
+        private_identity_violations = []
+        if private_contract_indicator:
+            if not prediction_required_for_lane(ticket.get("lane")):
+                private_identity_violations.append(
+                    f"{experiment_id} future private replay cannot demote lane to "
+                    f"{ticket.get('lane')!r}"
+                )
+            try:
+                _validate_private_replay_scout_identity(ticket)
+            except ValueError as exc:
+                private_identity_violations.append(str(exc))
+            try:
+                _validate_private_replay_scout_claim_binding(ticket)
+            except ValueError as exc:
+                private_identity_violations.append(str(exc))
+
+        is_research_replay = (
+            isinstance(anchor, dict)
+            and anchor.get("admission_class") == RESEARCH_REPLAY_ADMISSION_CLASS
+        )
+        if is_research_replay:
+            research_replay_count += 1
+            violation_reasons = list(private_identity_violations)
+            research_metadata = None
+            private_replay_contract_required = False
+            try:
+                research_metadata = _research_replay_metadata(ticket)
+            except ValueError as exc:
+                violation_reasons.append(str(exc))
+            if research_metadata is not None:
+                try:
+                    private_replay_contract_required = (
+                        _private_replay_scout_artifact_contract_required(
+                            ticket, research_metadata
+                        )
+                    )
+                    if private_replay_contract_required:
+                        _private_replay_scout_scope_entries(
+                            ticket, "allowed_write_scope", audit_repo_root
+                        )
+                        _private_replay_scout_scope_entries(
+                            ticket, "must_not_touch", audit_repo_root
+                        )
+                except ValueError as exc:
+                    violation_reasons.append(str(exc))
+            if not prediction_required_for_lane(ticket.get("lane")):
+                violation_reasons.append(
+                    f"{experiment_id} research replay cannot demote lane to "
+                    f"{ticket.get('lane')!r}"
+                )
+                if audit_promotion_enabled:
+                    try:
+                        _alpha_promotion_api().revalidate_ticket_promotion(
+                            ticket,
+                            repo_root=audit_repo_root,
+                        )
+                    except Exception as exc:
+                        violation_reasons.append(str(exc))
+            if is_closed:
+                try:
+                    _enforce_research_replay_result_ceiling(
+                        ticket,
+                        status,
+                        result=result,
+                        repo_root=audit_repo_root,
+                    )
+                except ValueError as exc:
+                    violation_reasons.append(str(exc))
+                if log_row:
+                    try:
+                        _enforce_research_replay_result_ceiling(
+                            ticket,
+                            log_row.get("status") or log_row.get("decision"),
+                            result=log_row,
+                            repo_root=audit_repo_root,
+                        )
+                    except ValueError as exc:
+                        violation_reasons.append(str(exc))
+            if private_replay_contract_required:
+                committed_log_sha256 = result.get(
+                    PRIVATE_REPLAY_SCOUT_LOG_SHA256_FIELD
+                )
+                if is_closed and (
+                    not isinstance(committed_log_sha256, str)
+                    or re.fullmatch(r"[0-9a-f]{64}", committed_log_sha256)
+                    is None
+                ):
+                    violation_reasons.append(
+                        f"{experiment_id} private replay terminal ticket requires "
+                        "an exact canonical log payload commitment"
+                    )
+                if is_closed and not log_row:
+                    violation_reasons.append(
+                        f"{experiment_id} private replay terminal ticket requires "
+                        "a canonical experiment log shard"
+                    )
+                elif log_row:
+                    # Validate a matching private shard even if the ticket was
+                    # rolled back to a nonterminal spelling/state afterwards.
+                    try:
+                        _validate_private_replay_scout_ticket_log_binding(
+                            ticket, log_row, audit_repo_root
+                        )
+                    except ValueError as exc:
+                        violation_reasons.append(str(exc))
+            if violation_reasons:
+                research_result_ceiling_violations.append(
+                    {
+                        "experiment_id": experiment_id,
+                        "lane": ticket.get("lane"),
+                        "status": status,
+                        "enforcement_bucket": _canonical_record_enforcement_bucket(
+                            ticket, experiment_id
+                        ),
+                        "violations": sorted(set(violation_reasons)),
+                    }
+                )
+        elif private_identity_violations:
+            research_replay_count += 1
+            research_result_ceiling_violations.append(
+                {
+                    "experiment_id": experiment_id,
+                    "lane": ticket.get("lane"),
+                    "status": status,
+                    "enforcement_bucket": _canonical_record_enforcement_bucket(
+                        ticket, experiment_id
+                    ),
+                    "violations": sorted(set(private_identity_violations)),
+                }
+            )
+
         if not prediction_required_for_lane(ticket.get("lane")):
             continue
         alpha_ticket_count += 1
@@ -2820,8 +6270,6 @@ def audit_experiment_process(
         else:
             legacy_alpha_ticket_count += 1
         reasons = prediction_missing_reasons(ticket)
-        status = ticket.get("status")
-        is_closed = _closed_status(status)
         if audit_promotion_enabled and _alpha_promotion_required_for_lane(
             ticket.get("lane")
         ):
@@ -2853,6 +6301,9 @@ def audit_experiment_process(
                     "experiment_id": experiment_id,
                     "lane": ticket.get("lane"),
                     "status": status,
+                    "hard_integrity_enforcement_bucket": _enforcement_bucket(
+                        ticket, _lean_hard_integrity_enforcement_datetime()
+                    ),
                 })
             elif should_validate:
                 try:
@@ -2866,6 +6317,9 @@ def audit_experiment_process(
                         "lane": ticket.get("lane"),
                         "status": status,
                         "error": str(exc),
+                        "hard_integrity_enforcement_bucket": _enforcement_bucket(
+                            ticket, _lean_hard_integrity_enforcement_datetime()
+                        ),
                     })
         if is_closed:
             closed_alpha_count += 1
@@ -2893,48 +6347,6 @@ def audit_experiment_process(
                 else:
                     closed_legacy_missing_prediction.append(item)
 
-        log_row = logs.get(experiment_id) or {}
-        result = ticket.get("result") or {}
-        if not isinstance(result, dict):
-            result = {}
-        anchor = ticket.get("alpha_promotion")
-        if (
-            isinstance(anchor, dict)
-            and anchor.get("admission_class") == RESEARCH_REPLAY_ADMISSION_CLASS
-        ):
-            research_replay_count += 1
-            violation_reasons = []
-            try:
-                _research_replay_metadata(ticket)
-            except ValueError as exc:
-                violation_reasons.append(str(exc))
-            if is_closed:
-                try:
-                    _enforce_research_replay_result_ceiling(
-                        ticket,
-                        status,
-                        result=result,
-                    )
-                except ValueError as exc:
-                    violation_reasons.append(str(exc))
-                if log_row:
-                    try:
-                        _enforce_research_replay_result_ceiling(
-                            ticket,
-                            log_row.get("status") or log_row.get("decision"),
-                            result=log_row,
-                        )
-                    except ValueError as exc:
-                        violation_reasons.append(str(exc))
-            if violation_reasons:
-                research_result_ceiling_violations.append(
-                    {
-                        "experiment_id": experiment_id,
-                        "lane": ticket.get("lane"),
-                        "status": status,
-                        "violations": sorted(set(violation_reasons)),
-                    }
-                )
         has_calibration = bool(log_row.get("calibration") or result.get("calibration"))
         if is_closed and not has_calibration:
             item = {
@@ -2977,6 +6389,53 @@ def audit_experiment_process(
                     if quality_bucket == "post_enforcement":
                         closed_post_weak_reflection.append(item)
 
+    for experiment_id, log_row in sorted(logs.items()):
+        if experiment_id in tickets:
+            continue
+        item = {
+            "record_type": "log",
+            "canonical_experiment_id": experiment_id,
+            "declared_experiment_id": log_row.get("experiment_id"),
+            "enforcement_bucket": _canonical_record_enforcement_bucket(
+                log_row, experiment_id
+            ),
+            "error": "orphan canonical experiment log is missing its ticket",
+        }
+        post_contract_orphan = (
+            _row_declares_private_replay_scout_contract(log_row)
+            or "private_replay_scout_artifact_disposition_contract_version"
+            in log_row
+            or item["enforcement_bucket"] == "post_enforcement"
+        )
+        if post_contract_orphan:
+            canonical_record_violations.append(item)
+        else:
+            legacy_canonical_record_violations.append(item)
+            legacy_orphan_logs.append(item)
+
+    post_research_result_ceiling_violations = [
+        item
+        for item in research_result_ceiling_violations
+        if item.get("enforcement_bucket") == "post_enforcement"
+    ]
+    legacy_research_result_ceiling_violations = [
+        item
+        for item in research_result_ceiling_violations
+        if item.get("enforcement_bucket") != "post_enforcement"
+    ]
+    promotion_integrity_violations = (
+        missing_alpha_promotion + invalid_alpha_promotion
+    )
+    post_hard_integrity_promotion_violations = [
+        item
+        for item in promotion_integrity_violations
+        if item.get("hard_integrity_enforcement_bucket") == "post_enforcement"
+    ]
+    legacy_hard_integrity_promotion_violations = [
+        item
+        for item in promotion_integrity_violations
+        if item.get("hard_integrity_enforcement_bucket") != "post_enforcement"
+    ]
     lean_passed = (
         not post_weak_prediction_quality
         and not closed_post_weak_reflection
@@ -2986,7 +6445,8 @@ def audit_experiment_process(
         and not closed_post_missing_calibration
         and not missing_alpha_promotion
         and not invalid_alpha_promotion
-        and not research_result_ceiling_violations
+        and not post_research_result_ceiling_violations
+        and not canonical_record_violations
         and (lean_passed if lean else True)
     )
     return {
@@ -2998,6 +6458,9 @@ def audit_experiment_process(
             LEAN_QUALITY_ENFORCEMENT_STARTED_AT if lean else None
         ),
         "alpha_promotion_enforcement_started_at": ALPHA_PROMOTION_ENFORCEMENT_STARTED_AT,
+        "lean_hard_integrity_enforcement_started_at": (
+            LEAN_HARD_INTEGRITY_ENFORCEMENT_STARTED_AT
+        ),
         "tickets_checked": len(tickets),
         "logs_checked": len(logs),
         "alpha_ticket_count": alpha_ticket_count,
@@ -3034,10 +6497,27 @@ def audit_experiment_process(
         "post_promotion_alpha_count": post_promotion_alpha_count,
         "missing_alpha_promotion_count": len(missing_alpha_promotion),
         "invalid_alpha_promotion_count": len(invalid_alpha_promotion),
+        "post_hard_integrity_alpha_promotion_violation_count": len(
+            post_hard_integrity_promotion_violations
+        ),
+        "legacy_hard_integrity_alpha_promotion_violation_count": len(
+            legacy_hard_integrity_promotion_violations
+        ),
         "research_replay_count": research_replay_count,
         "research_result_ceiling_violation_count": len(
             research_result_ceiling_violations
         ),
+        "post_enforcement_research_result_ceiling_violation_count": len(
+            post_research_result_ceiling_violations
+        ),
+        "legacy_research_result_ceiling_violation_count": len(
+            legacy_research_result_ceiling_violations
+        ),
+        "canonical_record_violation_count": len(canonical_record_violations),
+        "legacy_canonical_record_violation_count": len(
+            legacy_canonical_record_violations
+        ),
+        "legacy_orphan_log_count": len(legacy_orphan_logs),
         "prediction_coverage": (
             round((alpha_ticket_count - len(missing_prediction)) / alpha_ticket_count, 4)
             if alpha_ticket_count
@@ -3120,9 +6600,26 @@ def audit_experiment_process(
         ),
         "missing_alpha_promotion_examples": missing_alpha_promotion[:25],
         "invalid_alpha_promotion_examples": invalid_alpha_promotion[:25],
+        "post_hard_integrity_alpha_promotion_violation_examples": (
+            post_hard_integrity_promotion_violations[:25]
+        ),
+        "legacy_hard_integrity_alpha_promotion_violation_examples": (
+            legacy_hard_integrity_promotion_violations[:25]
+        ),
         "research_result_ceiling_violation_examples": (
             research_result_ceiling_violations[:25]
         ),
+        "post_enforcement_research_result_ceiling_violation_examples": (
+            post_research_result_ceiling_violations[:25]
+        ),
+        "legacy_research_result_ceiling_violation_examples": (
+            legacy_research_result_ceiling_violations[:25]
+        ),
+        "canonical_record_violation_examples": canonical_record_violations[:25],
+        "legacy_canonical_record_violation_examples": (
+            legacy_canonical_record_violations[:25]
+        ),
+        "legacy_orphan_log_examples": legacy_orphan_logs[:25],
         "lean_quality_passed": lean_passed if lean else None,
         "passed": passed,
         "strict_blocks_only_post_enforcement_gaps": True,
@@ -3170,28 +6667,50 @@ def strip_oversized_fields(row, *, max_field_bytes=LOG_FIELD_MAX_BYTES):
 def save_experiment_log_entry(row, *, allow_duplicate=False,
                               expected_experiment_id=None,
                               logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,
+                              registry_path=None,
                               timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS):
-    experiment_id = row.get("experiment_id")
-    if not experiment_id:
-        raise ValueError("log row must include experiment_id")
+    experiment_id = row.get("experiment_id") if isinstance(row, dict) else None
+    _require_canonical_experiment_id(experiment_id, field_name="log experiment_id")
     if expected_experiment_id is not None:
-        expected = normalize_experiment_id(expected_experiment_id)
-        actual = normalize_experiment_id(experiment_id)
-        if expected is None:
-            raise ValueError(
-                f"invalid expected_experiment_id: {expected_experiment_id}"
-            )
-        if actual != expected:
+        expected = _require_canonical_experiment_id(
+            expected_experiment_id, field_name="expected_experiment_id"
+        )
+        if experiment_id != expected:
             raise ValueError(
                 "experiment log identity mismatch: "
                 f"expected {expected}, got {experiment_id}"
             )
+    logs_root = Path(logs_dir).resolve()
+    ticket = _validate_experiment_log_row_for_persistence(
+        row, logs_root, registry_path=registry_path
+    )
+    immutable_closeout_contract = bool(
+        isinstance(ticket, dict)
+        and (
+            _experiment_reservation_identity_required(ticket)
+            or
+            ticket.get(
+                "private_replay_scout_artifact_disposition_contract_version"
+            )
+            == PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITION_CONTRACT_VERSION
+            or PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD in ticket
+        )
+    )
     row = strip_oversized_fields(row)
     path = experiment_log_path(experiment_id, logs_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
     with file_lock(path, timeout_seconds=timeout_seconds):
-        if path.exists() and not allow_duplicate:
-            raise ValueError(f"experiment log already exists: {path}")
+        if path.exists():
+            if immutable_closeout_contract:
+                existing = _load_json_file(path)
+                if existing == row:
+                    return path
+                raise ValueError(
+                    f"post-rollout canonical log is immutable and conflicts "
+                    f"with existing shard: {path}"
+                )
+            if not allow_duplicate:
+                raise ValueError(f"experiment log already exists: {path}")
         _atomic_write_text(
             json.dumps(row, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
             path)
@@ -3229,25 +6748,50 @@ def append_log_entry(log_path, row, *, allow_duplicate=False,
     log stops growing. Idempotent: an existing shard (e.g. one the runner already
     wrote) is left untouched. Returns the shard path.
     """
-    experiment_id = row.get("experiment_id")
-    if not experiment_id:
-        raise ValueError("log row must include experiment_id")
+    experiment_id = row.get("experiment_id") if isinstance(row, dict) else None
+    _require_canonical_experiment_id(experiment_id, field_name="log experiment_id")
     log_path = Path(log_path)
     workspace = (
         log_path.parent.parent if log_path.parent.name == "docs" else log_path.parent
     )
     logs_dir = workspace / "experiments" / "logs"
     shard = experiment_log_path(experiment_id, logs_dir)
+
+    def validate_existing_shard(existing):
+        if not isinstance(existing, dict):
+            raise ValueError(f"experiment log is not valid JSON: {shard}")
+        _validate_experiment_log_row_for_persistence(row, logs_dir)
+        _validate_experiment_log_row_for_persistence(existing, logs_dir)
+        if existing != strip_oversized_fields(row):
+            raise ValueError(
+                f"existing experiment log conflicts with incoming row: {shard}"
+            )
+
     if shard.exists():
+        existing = _load_json_file(shard)
+        validate_existing_shard(existing)
         return shard
     try:
         return save_experiment_log_entry(
             row, logs_dir=logs_dir, timeout_seconds=timeout_seconds
         )
-    except (FileExistsError, ValueError):
+    except FileExistsError:
         # Raced with the runner's own shard write; the shard exists, which is the
         # goal of this call.
-        return shard
+        if shard.exists():
+            existing = _load_json_file(shard)
+            validate_existing_shard(existing)
+            return shard
+        raise
+    except ValueError as exc:
+        if str(exc).startswith("experiment log already exists:") and shard.exists():
+            existing = _load_json_file(shard)
+            try:
+                validate_existing_shard(existing)
+            except ValueError as validation_exc:
+                raise validation_exc from exc
+            return shard
+        raise
 
 
 def rebuild_experiment_log_from_shards(logs_dir=DEFAULT_EXPERIMENT_LOGS_DIR,

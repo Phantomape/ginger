@@ -1,0 +1,251 @@
+{
+  "acceptance_rule": "All focused provenance, redirect, terminal CAS, log first-writer, duplicate-abandonment, and custom-root regressions pass; standard lean-strict remains green with legacy debt report-only; trade_enabled stays false.",
+  "allowed_write_scope": [
+    "scripts/experiment_registry.py",
+    "scripts/judge_experiment.py",
+    "quant/test_private_replay_closeout_contract.py",
+    "quant/test_persist_self_registered_result.py",
+    "docs/agent_experiment_protocol.md",
+    "docs/quant_agent_protocol_v2.md",
+    "docs/experiment_ticket_schema.md",
+    "docs/experiment_registry.json",
+    "docs/frozen_families.jsonl",
+    "data/experiments/exp-20260826-005/",
+    "experiments/tickets/exp-20260826-005.json",
+    "experiments/cards/exp-20260826-005.md",
+    "experiments/manifests/exp-20260826-005.json",
+    "experiments/logs/exp-20260826-005.json",
+    "data/v2/hourly_runs/20260826T0509Z_measurement_repair_private_replay_artifact_disposition.json"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260826-005.md",
+  "causal_components": [
+    "registry identity snapshot",
+    "canonical ticket path",
+    "per-ticket terminal CAS",
+    "full log payload hash",
+    "reservation identity binding"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "closeout_integrity_contract",
+  "claimed_at": "2026-08-26T07:43:21+00:00",
+  "completed_at": "2026-08-26T09:33:46+00:00",
+  "created_at": "2026-08-26T07:42:59+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260826-005",
+  "experiment_uid": "expuid-25d40a5685a24ef4",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260826-005",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-26T07:42:59+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "private_replay_closeout_provenance_and_terminal_write_commitment"
+  },
+  "hypothesis": "Future private-replay closeout must preserve canonical registry provenance, serialize every terminal writer on one ticket lock, and commit the full immutable log payload before ticket mutation so races and identity drift fail closed without granting research authority.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "private replay closeout contract"
+  ],
+  "mechanism_family": "private_replay_closeout_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/experiments/exp_20260822_001_sec_8k_event_drift_h1.py",
+    "data/experiments/exp-20260822-001/exp_20260822_001_sec_8k_event_drift_h1.json",
+    "experiments/tickets/exp-20260822-001.json",
+    "experiments/logs/exp-20260822-001.json",
+    "live configuration",
+    "orders"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "concurrency_counterexample",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "authority",
+        "before",
+        "canonical",
+        "closed",
+        "closeout",
+        "commit",
+        "commitment",
+        "drift",
+        "every",
+        "fail",
+        "full",
+        "future",
+        "granting",
+        "identity",
+        "immutable",
+        "integrity",
+        "lock",
+        "log",
+        "must",
+        "mutation",
+        "on",
+        "one",
+        "payload",
+        "preserve",
+        "private",
+        "provenance",
+        "races",
+        "registry",
+        "research",
+        "serialize",
+        "so",
+        "terminal",
+        "ticket",
+        "without",
+        "write",
+        "writer"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "massive_full_market_ohlcv",
+        "family_key": "massive_split_normalization",
+        "reopen_condition": "Freeze an effective-dated research-PIT identity surface that maps each candidate (ticker, trade_date) to exactly one lifecycle without current-reference leakage; then complete outcome-blind D0-D3, model-diverse debate, and a separate private_replay_scout promotion request.",
+        "score": 0.0426,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "v2_private_replay_scout_closeout_integrity",
+        "reopen_condition": "Reopen only for a reproducible post-ticket log I/O or race failure that leaves a missing canonical shard, a new alternate workspace layout, or a root propagation regression outside the fixture.",
+        "score": 0.04,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_completed_close_settlement_integrity",
+        "reopen_condition": "Let the v2 routine pipeline accumulate at least 100 strict effective next-close cohorts, then generate a fresh outcome-blind D0-D3 scope before any separately reserved alpha hypothesis.",
+        "score": 0.0364,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "investment_team_research_card",
+        "reopen_condition": "A future version needs a materially new admission capability such as immutable source-snapshot hash binding or a labeled false-positive/false-negative corpus from actual D0-D3 decisions; field reshuffling alone is insufficient.",
+        "score": 0.0308,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "massive_full_market_ohlcv",
+        "family_key": "massive_forward_split_execution_drift_research_replay",
+        "reopen_condition": "Split ANNOUNCEMENT dates as a genuinely earlier decision clock (the literature effect is announcement-anchored), canonical as-published Massive vintages, or materially more settled conventional forward-split events (>= +50% and >= +10 rows per window under the frozen predicate). The Massive source itself stays open for genuinely different mechanisms per exp-20260728-005 calibration.",
+        "score": 0.0279,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-edge-v2-automation",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [
+      "sharpe improved 1.0000"
+    ],
+    "before_result_file": "data/experiments/exp-20260826-005/before_closeout_integrity_contract.json",
+    "after_result_file": "data/experiments/exp-20260826-005/after_closeout_integrity_contract.json",
+    "delta_metrics": {
+      "sharpe": 1.0
+    },
+    "research_refs": [],
+    "realized_failure_mode": "hash_only_log_recovery_gap"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260826-005.json",
+  "single_causal_variable": "private replay closeout provenance and terminal write commitment",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260826-005.json",
+  "trial_family": "v2_private_replay_closeout_integrity",
+  "trial_variant_id": "exp-20260826-005"
+}

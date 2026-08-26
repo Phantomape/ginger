@@ -115,7 +115,10 @@ def _summarize_lean_audit(result, *, lean_strict):
         out = []
         for row in rows:
             if isinstance(row, dict):
-                out.append(row.get("experiment_id"))
+                out.append(
+                    row.get("experiment_id")
+                    or row.get("canonical_experiment_id")
+                )
             else:
                 out.append(row)
         return out[:limit]
@@ -145,7 +148,32 @@ def _summarize_lean_audit(result, *, lean_strict):
     playbook_contract = result.get(
         "alpha_playbook_contract", {"passed": True, "violations": []}
     )
+    hard_integrity_sources = {
+        "alpha_promotion_integrity": {
+            "count": result.get(
+                "post_hard_integrity_alpha_promotion_violation_count", 0
+            ),
+            "rows": result.get(
+                "post_hard_integrity_alpha_promotion_violation_examples", []
+            ),
+        },
+        "research_closeout_integrity": {
+            "count": result.get(
+                "post_enforcement_research_result_ceiling_violation_count", 0
+            ),
+            "rows": result.get(
+                "post_enforcement_research_result_ceiling_violation_examples", []
+            ),
+        },
+        "canonical_record_integrity": {
+            "count": result.get("canonical_record_violation_count", 0),
+            "rows": result.get("canonical_record_violation_examples", []),
+        },
+    }
     failure_domains = list(quality_failure_domains)
+    failure_domains.extend(
+        key for key, detail in hard_integrity_sources.items() if detail["count"]
+    )
     if not playbook_contract.get("passed", False):
         failure_domains.append("alpha_playbook_contract")
     blocking = bool(failure_domains)
@@ -157,11 +185,15 @@ def _summarize_lean_audit(result, *, lean_strict):
     return {
         "view": "lean_summary",
         "lean_quality_passed": result.get("lean_quality_passed"),
+        "hard_integrity_passed": result.get("hard_integrity_passed"),
         "lean_strict_passed": result.get("lean_strict_passed"),
         "lean_strict_would_block": bool(lean_strict and blocking),
         "blocks_lean_strict": [
             "weak_prediction_quality",
             "weak_reflection",
+            "alpha_promotion_integrity",
+            "research_closeout_integrity",
+            "canonical_record_integrity",
             "alpha_playbook_contract",
         ],
         "lean_strict_failure_domains": failure_domains,
@@ -170,13 +202,32 @@ def _summarize_lean_audit(result, *, lean_strict):
             "post_enforcement_alpha_ticket_count"
         ),
         "post_enforcement_gaps": actionable,
+        "hard_integrity_violations": {
+            key: {"count": detail["count"], "example_ids": _ids(detail["rows"])}
+            for key, detail in hard_integrity_sources.items()
+            if detail["count"]
+        },
+        "legacy_closeout_debt": {
+            "alpha_promotion_integrity": result.get(
+                "legacy_hard_integrity_alpha_promotion_violation_count", 0
+            ),
+            "research_closeout_integrity": result.get(
+                "legacy_research_result_ceiling_violation_count", 0
+            ),
+            "canonical_record_integrity": result.get(
+                "legacy_canonical_record_violation_count", 0
+            ),
+            "orphan_logs": result.get("legacy_orphan_log_count", 0),
+        },
         "legacy_pre_enforcement_alpha_ticket_count": result.get(
             "legacy_pre_enforcement_alpha_ticket_count"
         ),
         "note": (
             "lean_quality_passed remains the experiment prediction/reflection "
             "sub-verdict. lean_strict_passed is the end-of-turn gate and also "
-            "requires the alpha playbook contract. missing_prediction/"
+            "requires post-enforcement hard closeout integrity and the alpha "
+            "playbook contract. Historical closeout debt stays report-only. "
+            "missing_prediction/"
             "missing_calibration are mostly already-closed tickets shown for "
             "visibility (counts capped at 25 in the report). Legacy pre-enforcement "
             "gaps are never backfilled (AGENTS.md). Run `experiment.py audit "
@@ -231,6 +282,7 @@ def _audit(argv):
         tickets_dir=args.tickets_dir or workspace_root / "experiments" / "tickets",
         logs_dir=args.logs_dir or workspace_root / "experiments" / "logs",
         lean=args.lean or args.lean_strict,
+        file_backed_registry=True,
     )
     sr_new = _self_register_new_offenders()
     result["self_registration"] = {
@@ -248,8 +300,19 @@ def _audit(argv):
     result["alpha_playbook_contract"] = playbook_contract
     result["repository_contracts_passed"] = bool(playbook_contract["passed"])
     if args.lean or args.lean_strict:
+        result["hard_integrity_passed"] = bool(
+            not result.get(
+                "post_hard_integrity_alpha_promotion_violation_count"
+            )
+            and not result.get(
+                "post_enforcement_research_result_ceiling_violation_count"
+            )
+            and not result.get("canonical_record_violation_count")
+        )
         result["lean_strict_passed"] = bool(
-            result["lean_quality_passed"] and playbook_contract["passed"]
+            result["lean_quality_passed"]
+            and result["hard_integrity_passed"]
+            and playbook_contract["passed"]
         )
     if (args.lean or args.lean_strict) and not args.full:
         summary = _summarize_lean_audit(result, lean_strict=args.lean_strict)
