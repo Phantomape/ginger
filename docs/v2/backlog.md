@@ -24,7 +24,7 @@
 
 - [x] 协议解除 M0-M5 串行闸门：bounded `research_pit / private_replay_scout` 在 M1 kernel 后可运行，结论硬封顶 `observed_only`（2026-08-21）
 - [x] 首个 V2 scout zero-ID preflight：2026-08-20 SEC exact-8-K complete frame 的 219 行 disposition、111 个 mapped-only CandidatePool、DecisionRecord、selection panel 与 promotion 已在 outcome-blind 状态冻结并通过 D0-D3（2026-08-21 本地）
-- [x] 首个 V2 scout reserve/run/close：`exp-20260822-001` 固定 2026-08-21 RTH H1、111 个等权证券、10 bps 成本和 cash/SPY/QQQ；111/111 可用，均值与 benchmark excess 为正，但 median=-0.1925%、positive share=42.34%，六项规则失败两项，关闭为 `rejected`（2026-08-21 本地）
+- [x] 首个 V2 scout reserve/run/close：`exp-20260822-001` 按冻结 recipe 完整运行并关闭为 `rejected`；settled 指标只见 canonical log/artifact，不进入 outcome-blind 启动导航（2026-08-21 本地）
 - [ ] 下一 scout：不得在 `exp-20260822-001` 的同一 frame 上做成本、持有分钟、item code、子集或 event-sign 阈值近邻搜索；只接受独立冻结的更晚 complete frame，或结果前可用的独立事件符号源，仍须 preflight/freeze/reserve 后才能读 outcome
 
 ## M2（并行 Promotion Construction）
