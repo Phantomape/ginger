@@ -522,6 +522,9 @@ def _persist_daily_structured_news_observation(today):
         snapshot["second_order_exposure_observer"] = (
             _persist_news_event_exposure_observer()
         )
+        snapshot["news_propagation_pair_paper_sleeve"] = (
+            _persist_news_propagation_pair_paper_sleeve()
+        )
         return snapshot
     except Exception as e:
         log.warning(f"Structured-news observation snapshot unavailable: {e}")
@@ -553,6 +556,31 @@ def _persist_news_event_exposure_observer():
         return manifest
     except Exception as e:
         log.warning(f"Structured-news second-order exposure observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_news_propagation_pair_paper_sleeve():
+    """Default-off dollar-neutral pair sleeve over measurement_ready batches
+    (exp-20260827-001). Observation only; trade_enabled stays false."""
+    try:
+        from news_propagation_pair_paper_sleeve import run as run_pair_sleeve
+
+        summary = run_pair_sleeve()
+        log.info(
+            "News-propagation pair paper sleeve: decisions=%s settled=%s pending=%s appended=%s",
+            summary.get("decisions"),
+            summary.get("settled_baskets"),
+            summary.get("pending_baskets"),
+            summary.get("appended_this_run"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"News-propagation pair paper sleeve unavailable: {e}")
         return {
             "status": "unavailable",
             "error": str(e),

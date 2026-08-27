@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-26T16:30Z（exp-20260826-001 first-seen 前定向借券预抓取接线）
+> 最后更新：2026-08-27T16:45Z（exp-20260827-001 pair paper sleeve build，d-0003 gate 已消费）
 
 ## 里程碑
 
@@ -46,6 +46,13 @@
 
 - exp-20260826-001（measurement_repair, accepted）：readiness 借券 PIT 规则（archived_at ≤ first_seen_at 且 ≤3 日历日）只有在抓取先于 first_seen 冻结时才可能满足——盲目 stalest-first 轮转结构性做不到且跳过 universe 外 microcap,导致每个 batch 永久 fail-close。修复：`news_event_exposure_observer.run` 在 stamp first_seen 之前对本轮**新增**正极性（short 侧）exposure ticker 定向 refresh_archive（仅生产路径、fail-open、共用 IBORROWDESK_REFRESH_DISABLED 开关）;run.py Step 1.65 shard 预算 150→60,在 ~90 请求 www 限流下给预抓取留余量。闭环验证：27 测试通过;当前受阻 batch 的 23/23 stale/missing short 侧 ticker 实抓成功（+1328 行,含 microcap ALMU/AMBQ/ASTI,未触限流）;生产 rollout smoke 干净。已冻结 batch 不倒填,今日 measurement_ready 仍为 0（by design）;economic_progress=false。
 - **转化检查（下一轮第一件事）**：下一个每日 run 产出新 first-seen batch 后看 `data/non_ohlcv/news_propagation_pair_forward_readiness/latest_snapshot.json`——若 measurement_ready_batches ≥ 1,d-0003 gate 打开,立即 reserve 单次 shared-paper-first dollar-neutral pair-build 实验（exp-20260824-001 资格）;若新 batch 仍有 stale/missing_pit_borrow,说明 prefetch 失败,查 exposure manifest 的 short_side_borrow_prefetch 摘要,不得 park。合法残余 blocker 只有 cross_side_ticker_overlap（数据决定）和个别 microcap 经验性无覆盖。
+
+## 最新可执行证据状态（2026-08-27）
+
+- exp-20260827-001（alpha_search / observed_only, 已关闭）：**d-0003 conversion gate 打开当轮即消费**。exp-20260826-001 的 prefetch 生效——2026-08-27T03:07:27Z 的新 first-seen batch（news-first-seen-845025fae409b81adeb3）成为首个真实 measurement_ready batch（29/29 借券覆盖、无跨侧重叠、集中度合规），exp-20260824-001 的单次 pair-build 资格已花在 shared-paper-first build 上：`quant/news_propagation_pair_paper_sleeve.py` 机械 admit 每个 measurement_ready batch 为一个 dollar-neutral basket（负极性做多 / 正极性做空、侧内等行权重、$1000/腿、双腿同步次日开盘入场、缺腿 fail-closed、H10 收盘退出、45bp/腿冻结成本、cash/SPY/QQQ 对照），默认关、接线在 run.py readiness observer 之后。replay/daily parity、同日幂等、default-off 边界全部验证（8/8 build checks、9 sleeve tests、4 wiring tests、lean-strict audit）。
+- 首个 basket 已 admit（41 long / 29 short ticker），pending，入场即 2026-08-27 开盘，预计 ~2026-09-10 结算。08-25 / 08-26 两个 blocked batch 永不回填 admit。
+- 冻结 forward 验收合同（唯一评判标准，不得中途放宽）：≥20 closed baskets 跨 ≥10 decision dates、45bp/腿成本后净总 PnL 为正、前后两半均为正、单 ticker 绝对毛贡献 ≤40%。
+- 边界不变：iBorrowDesk 仅 indicative，非 broker locate——无论 forward 结果如何 sleeve 封顶 default-off paper；live short 讨论需真实 locate 合同。新闻族 attribution 再读仍 park 在 ≥1508 行；d-0005 历史回放 park 不变。
 
 ## 现场事实（2026-08-18）
 
