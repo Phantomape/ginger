@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-27T16:45Z（exp-20260827-001 pair paper sleeve build，d-0003 gate 已消费）
+> 最后更新：2026-08-28T16:55Z（exp-20260828-001 phase2 estimate-revision cash bar 合同修约，数值 gate 首次打开）
 
 ## 里程碑
 
@@ -53,6 +53,12 @@
 - 首个 basket 已 admit（41 long / 29 short ticker），pending，入场即 2026-08-27 开盘，预计 ~2026-09-10 结算。08-25 / 08-26 两个 blocked batch 永不回填 admit。
 - 冻结 forward 验收合同（唯一评判标准，不得中途放宽）：≥20 closed baskets 跨 ≥10 decision dates、45bp/腿成本后净总 PnL 为正、前后两半均为正、单 ticker 绝对毛贡献 ≤40%。
 - 边界不变：iBorrowDesk 仅 indicative，非 broker locate——无论 forward 结果如何 sleeve 封顶 default-off paper；live short 讨论需真实 locate 合同。新闻族 attribution 再读仍 park 在 ≥1508 行；d-0005 历史回放 park 不变。
+
+## 最新可执行证据状态（2026-08-28）
+
+- pair sleeve 采证健康：昨夜 daily run 自动 admit 第 2 个 measurement_ready batch（news-first-seen-0d1d4dcda48056d673f7，58 long / 30 short ticker），接线首次无人值守生效；2 baskets pending，0 due_unsettled，首结算 ~2026-09-10。move_relief sleeve 仍 0 行（事件饥饿，30 行 bar 遥远）。
+- exp-20260828-001（measurement_repair / contract review, accepted）：执行 exp-20260811-001 预登记的单次 contract review——phase2_estimate_revision 的 `actual_cash_conflicts>=10` bar 是结构性不可达的决策重合罕见事件计数（trace 32 session 全 ok、终身仅 1 次结构化冲突、0 次与 1972 个合格决策重合，其余 bar 全部超阈 17-38 倍）。修约为能力条件：`cash_admission_trace_ok_sessions>=30` 且 `structured_cash_conflict_observations_lifetime>=1`（从持久化 quant_signals 工件 fail-closed 重算，0.92s/日）。其余五项数值 bar、source-contract 与 D0-D3 要求不变。
+- **phase2_estimate_revision 数值 gate 首次 ready**（reopen_readiness 2026-08-28T16:47Z，其余 lane 状态全部不变）。这是一笔未消费 conversion_debt：下一工作单元必须跑冻结的 outcome-blind D0-D3 discovery scope（估计修订 surface，发现层，不读结果）；只有 scope 实际选出候选，Phase 2 才算重开。禁止：动其余数值 bar、按决策重合冲突数重新设 gate、把 gate-open 当作候选资格。
 
 ## 现场事实（2026-08-18）
 

@@ -1,7 +1,7 @@
 import json
 import sqlite3
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -10,6 +10,7 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 from estimate_revision_outcomes import (  # noqa: E402
+    _summarize_cash_admission_traces,
     build_estimate_revision_readiness,
     load_effective_instrument_mappings,
     materialize_estimate_revision_instrument_map,
@@ -833,3 +834,86 @@ def test_readiness_merges_duplicate_annotations_without_replacing_identity(tmp_p
     # The first row remains canonical despite a later duplicate carrying a
     # conflicting ticker solely to make identity replacement observable.
     assert readiness["mapped_tickers"] == ["BKNG"]
+
+
+def _write_quant_signals_trace(root, tag, trace):
+    folder = root / "daily" / "signals" / "quant"
+    folder.mkdir(parents=True, exist_ok=True)
+    payload = {"as_of": tag, "signals": []}
+    if trace is not None:
+        payload["entry_cash_admission"] = trace
+    (folder / f"quant_signals_{tag}.json").write_text(
+        json.dumps(payload), encoding="utf-8"
+    )
+
+
+def test_cash_admission_trace_summary_counts_ok_sessions_and_conflicts(tmp_path):
+    """exp-20260828-001: the amended phase-2 cash bar counts persisted trace
+    capability, fail-closed on absent/malformed traces and future files."""
+    _write_quant_signals_trace(
+        tmp_path, "20260721", {"status": "ok", "cash_conflict_count": 0}
+    )
+    _write_quant_signals_trace(
+        tmp_path, "20260722", {"status": "ok", "cash_conflict_count": 1}
+    )
+    # Not ok: must not count as a capable session.
+    _write_quant_signals_trace(
+        tmp_path, "20260723", {"status": "unavailable", "cash_conflict_count": 0}
+    )
+    # Missing trace block entirely.
+    _write_quant_signals_trace(tmp_path, "20260724", None)
+    # Malformed conflict counts must not contribute.
+    _write_quant_signals_trace(
+        tmp_path, "20260727", {"status": "ok", "cash_conflict_count": "2"}
+    )
+    _write_quant_signals_trace(
+        tmp_path, "20260728", {"status": "ok", "cash_conflict_count": True}
+    )
+    # After as_of: excluded.
+    _write_quant_signals_trace(
+        tmp_path, "20260901", {"status": "ok", "cash_conflict_count": 5}
+    )
+
+    summary = _summarize_cash_admission_traces(tmp_path, date(2026, 8, 28))
+
+    assert summary == {
+        "trace_ok_sessions": 4,
+        "lifetime_structured_conflicts": 1,
+    }
+
+
+def test_cash_admission_trace_summary_missing_dir_is_zero(tmp_path):
+    assert _summarize_cash_admission_traces(tmp_path, date(2026, 8, 28)) == {
+        "trace_ok_sessions": 0,
+        "lifetime_structured_conflicts": 0,
+    }
+
+
+def test_readiness_reports_capability_counters_and_amended_reopen_condition(
+    tmp_path,
+):
+    output_dir = tmp_path / "non_ohlcv"
+    map_path = tmp_path / "reference" / "estimate_revision_instrument_map.jsonl"
+    _write_instrument_map(map_path)
+    _write_jsonl(
+        output_dir / "estimate_revision_ledger_20260629.jsonl",
+        [_qualified_revision_row()],
+    )
+    _write_quant_signals_trace(
+        tmp_path, "20260626", {"status": "ok", "cash_conflict_count": 1}
+    )
+
+    readiness = build_estimate_revision_readiness(
+        as_of="2026-06-30",
+        data_dir=tmp_path,
+        output_dir=output_dir,
+        instrument_map_path=map_path,
+        generated_at=datetime(2026, 6, 30, 23, tzinfo=timezone.utc),
+    )
+
+    assert readiness["cash_admission_trace_ok_sessions"] == 1
+    assert readiness["structured_cash_conflict_observations_lifetime"] == 1
+    condition = readiness["reopen_condition"]
+    assert condition["cash_admission_trace_ok_sessions_gte"] == 30
+    assert condition["structured_cash_conflict_observations_lifetime_gte"] == 1
+    assert "actual_cash_conflict_decisions_gte" not in condition

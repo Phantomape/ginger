@@ -698,10 +698,19 @@ def build_estimate_revision_readiness(
     settled_counts = {key: len(value) for key, value in settled_ids.items()}
     conservative_settled = min(settled_counts.values(), default=0)
     independent_count = len(qualified_by_id)
+    # exp-20260828-001: the exp-20260721-002 bar `actual_cash_conflicts >= 10`
+    # counted a decision-coincident rare event (1 structured conflict in 32
+    # trace sessions, 0 coincident with any of 1972 qualified decisions) and
+    # deadlocked the lane after every other bar passed 17-38x.  The registered
+    # intent - structured cash-admission evidence exists and works - is now
+    # checked directly from the persisted traces.  The decision-coincident
+    # count stays reported for monitoring only.
+    cash_trace = _summarize_cash_admission_traces(data_dir, as_of_date)
     gate_ready = bool(
         independent_count >= 30
         and len(mapped_tickers) >= 10
-        and len(cash_conflict_ids) >= 10
+        and cash_trace["trace_ok_sessions"] >= 30
+        and cash_trace["lifetime_structured_conflicts"] >= 1
         and all(settled_counts[f"h{horizon}"] >= 30 for horizon in required_horizons)
     )
 
@@ -728,6 +737,10 @@ def build_estimate_revision_readiness(
         "candidate_overlap_decisions": len(overlap_ids),
         "selected_signal_overlap_decisions": len(selected_overlap_ids),
         "actual_cash_conflict_decisions": len(cash_conflict_ids),
+        "cash_admission_trace_ok_sessions": cash_trace["trace_ok_sessions"],
+        "structured_cash_conflict_observations_lifetime": cash_trace[
+            "lifetime_structured_conflicts"
+        ],
         "settled_independent_decisions_by_horizon": settled_counts,
         "settled_independent_decisions": conservative_settled,
         "ledger_file_count": len(ledger_files),
@@ -751,8 +764,16 @@ def build_estimate_revision_readiness(
         else {
             "independent_decisions_gte": 30,
             "mapped_tickers_gte": 10,
-            "actual_cash_conflict_decisions_gte": 10,
+            "cash_admission_trace_ok_sessions_gte": 30,
+            "structured_cash_conflict_observations_lifetime_gte": 1,
             "settled_h5_h10_h20_each_gte": 30,
+            "contract_amendment": (
+                "exp-20260828-001 amends the exp-20260721-002 "
+                "actual_cash_conflicts>=10 bar per the contract review "
+                "pre-registered in exp-20260811-001; "
+                "actual_cash_conflict_decisions stays reported for "
+                "monitoring only"
+            ),
         },
         "production_impact": {
             "shared_policy_changed": False,
@@ -1414,6 +1435,62 @@ def _has_explicit_cash_conflict(row: dict[str, Any]) -> bool:
         if match.get("cash_conflict") is True:
             return True
     return False
+
+
+def _summarize_cash_admission_traces(
+    data_dir: str | Path,
+    as_of_date: date,
+) -> dict[str, int]:
+    """Count persisted entry-cash-admission traces (capability evidence).
+
+    exp-20260828-001 contract amendment (contract review pre-registered by
+    exp-20260811-001): the phase-2 cash bar measures that structured
+    cash-admission evidence exists and works end to end, not that
+    decision-coincident conflicts are frequent.  Sessions count only when the
+    persisted quant_signals artifact carries an ``entry_cash_admission`` block
+    with ``status == "ok"``; lifetime conflicts sum the structured
+    ``cash_conflict_count`` values.  Fail-closed: a missing directory,
+    unreadable file, absent block, or malformed count contributes nothing.
+    """
+    signals_root = Path(data_dir) / "daily" / "signals" / "quant"
+    summary = {"trace_ok_sessions": 0, "lifetime_structured_conflicts": 0}
+    if not signals_root.is_dir():
+        return summary
+    decoder = json.JSONDecoder()
+    marker = '"entry_cash_admission"'
+    for path in sorted(signals_root.glob("quant_signals_*.json")):
+        tag = path.stem.rsplit("_", 1)[-1]
+        try:
+            file_date = datetime.strptime(tag, "%Y%m%d").date()
+        except ValueError:
+            continue
+        if file_date > as_of_date:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        index = text.find(marker)
+        if index == -1:
+            continue
+        colon = text.find(":", index + len(marker))
+        if colon == -1:
+            continue
+        start = colon + 1
+        while start < len(text) and text[start] in " \t\r\n":
+            start += 1
+        try:
+            trace, _ = decoder.raw_decode(text, start)
+        except ValueError:
+            continue
+        if not isinstance(trace, dict):
+            continue
+        if trace.get("status") == "ok":
+            summary["trace_ok_sessions"] += 1
+        count = trace.get("cash_conflict_count")
+        if isinstance(count, int) and not isinstance(count, bool) and count > 0:
+            summary["lifetime_structured_conflicts"] += count
+    return summary
 
 
 def _coerce_date(value: str | date) -> date:

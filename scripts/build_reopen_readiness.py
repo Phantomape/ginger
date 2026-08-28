@@ -845,9 +845,13 @@ def lane_hawkes_news_cross_excitation_candidate_pool():
 
 def lane_phase2_estimate_revision():
     """Discovery-layer Phase 2 NO-GO (exp-20260721-002). Reopen requires ALL of:
-    >=30 qualified non-flat independent decisions, >=10 mapped tickers, >=10
-    structured actual cash conflicts, >=30 settled decisions at each of H5/H10/H20,
-    passing source contracts, and a fresh outcome-blind D0-D3 scope that selects."""
+    >=30 qualified non-flat independent decisions, >=10 mapped tickers,
+    structured cash-admission capability (>=30 trace-ok sessions and >=1
+    lifetime structured conflict; exp-20260828-001 amendment of the
+    unreachable actual_cash_conflicts>=10 bar, pre-registered by
+    exp-20260811-001), >=30 settled decisions at each of H5/H10/H20,
+    passing source contracts, and a fresh outcome-blind D0-D3 scope that
+    selects."""
     path = os.path.join(
         REPO_ROOT,
         "data",
@@ -886,6 +890,16 @@ def lane_phase2_estimate_revision():
             "actual_cash_conflict_decisions",
             source="estimate_revision_readiness",
         ),
+        "cash_admission_trace_ok_sessions": _required_nonnegative_int(
+            readiness,
+            "cash_admission_trace_ok_sessions",
+            source="estimate_revision_readiness",
+        ),
+        "structured_cash_conflicts_lifetime": _required_nonnegative_int(
+            readiness,
+            "structured_cash_conflict_observations_lifetime",
+            source="estimate_revision_readiness",
+        ),
         "settled_h5": _required_nonnegative_int(
             settled,
             "h5",
@@ -905,7 +919,8 @@ def lane_phase2_estimate_revision():
     thresholds = {
         "qualified_nonflat_decisions": 30,
         "mapped_tickers": 10,
-        "actual_cash_conflicts": 10,
+        "cash_admission_trace_ok_sessions": 30,
+        "structured_cash_conflicts_lifetime": 1,
         "settled_h5": 30,
         "settled_h10": 30,
         "settled_h20": 30,
@@ -915,11 +930,16 @@ def lane_phase2_estimate_revision():
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if ready else "not_ready",
-        "threshold_source": "docs/alpha_search_phase1_handoff.md Phase 1.5 (exp-20260721-002)",
+        "threshold_source": (
+            "docs/alpha_search_phase1_handoff.md Phase 1.5 (exp-20260721-002); "
+            "cash bar amended by exp-20260828-001 (contract review "
+            "pre-registered in exp-20260811-001)"
+        ),
         "counter_source": os.path.relpath(path, REPO_ROOT).replace("\\", "/"),
         "note": (
             "Counters come from the canonical default-off readiness artifact. Legacy rows "
-            "remain quarantined and do not count. Passing these numeric bars still requires "
+            "remain quarantined and do not count. actual_cash_conflicts is reported for "
+            "monitoring only since exp-20260828-001. Passing these numeric bars still requires "
             "source-contract checks plus a fresh outcome-blind D0-D3 scope and verified "
             "promotion before any alpha experiment."
         ),

@@ -11,6 +11,8 @@ def _write_estimate_revision_readiness(
     independent=115,
     mapped=115,
     conflicts=0,
+    trace_ok_sessions=0,
+    conflicts_lifetime=0,
     h5=0,
     h10=0,
     h20=0,
@@ -27,6 +29,8 @@ def _write_estimate_revision_readiness(
         "independent_decisions": independent,
         "mapped_ticker_count": mapped,
         "actual_cash_conflict_decisions": conflicts,
+        "cash_admission_trace_ok_sessions": trace_ok_sessions,
+        "structured_cash_conflict_observations_lifetime": conflicts_lifetime,
         "settled_independent_decisions_by_horizon": {
             "h5": h5,
             "h10": h10,
@@ -495,6 +499,8 @@ def test_phase2_estimate_revision_maps_canonical_counters(monkeypatch, tmp_path)
         "qualified_nonflat_decisions": 115,
         "mapped_tickers": 115,
         "actual_cash_conflicts": 0,
+        "cash_admission_trace_ok_sessions": 0,
+        "structured_cash_conflicts_lifetime": 0,
         "settled_h5": 0,
         "settled_h10": 0,
         "settled_h20": 0,
@@ -506,11 +512,16 @@ def test_phase2_estimate_revision_maps_canonical_counters(monkeypatch, tmp_path)
 
 
 def test_phase2_estimate_revision_requires_every_reopen_bar(monkeypatch, tmp_path):
+    # exp-20260828-001: decision-coincident conflicts (0 here) no longer gate;
+    # the amended capability bars (trace-ok sessions and lifetime structured
+    # conflicts) do.
     _write_estimate_revision_readiness(
         tmp_path,
         independent=30,
         mapped=10,
-        conflicts=10,
+        conflicts=0,
+        trace_ok_sessions=30,
+        conflicts_lifetime=1,
         h5=30,
         h10=30,
         h20=30,
@@ -522,12 +533,43 @@ def test_phase2_estimate_revision_requires_every_reopen_bar(monkeypatch, tmp_pat
     assert lane["status"] == "ready"
 
 
+def test_phase2_estimate_revision_capability_bars_fail_closed(monkeypatch, tmp_path):
+    _write_estimate_revision_readiness(
+        tmp_path,
+        independent=30,
+        mapped=10,
+        conflicts=0,
+        trace_ok_sessions=29,
+        conflicts_lifetime=1,
+        h5=30,
+        h10=30,
+        h20=30,
+    )
+    monkeypatch.setattr(readiness, "REPO_ROOT", str(tmp_path))
+    assert readiness.lane_phase2_estimate_revision()["status"] == "not_ready"
+
+    _write_estimate_revision_readiness(
+        tmp_path,
+        independent=30,
+        mapped=10,
+        conflicts=0,
+        trace_ok_sessions=30,
+        conflicts_lifetime=0,
+        h5=30,
+        h10=30,
+        h20=30,
+    )
+    assert readiness.lane_phase2_estimate_revision()["status"] == "not_ready"
+
+
 @pytest.mark.parametrize(
     "field,value",
     [
         ("independent_decisions", True),
         ("mapped_ticker_count", -1),
         ("actual_cash_conflict_decisions", "10"),
+        ("cash_admission_trace_ok_sessions", "30"),
+        ("structured_cash_conflict_observations_lifetime", -1),
     ],
 )
 def test_phase2_estimate_revision_rejects_malformed_counts(

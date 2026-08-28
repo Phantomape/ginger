@@ -40,6 +40,13 @@
 - [ ] 建立 unchanged acceptance-time 实时 observer + 决策时点真实 locate 证据，累计 settled forward replacement value；在此之前不得将 exp-003 接入 paper/live
 - [ ] 历史近邻回放线关闭：禁止 EFFECT-only/424-only 切片，以及 form/parser/clock/amount/liquidity/cooldown/cost/borrow/hold/hedge/sample 调参
 
+### Phase-2 estimate-revision 重开链（数值 gate 已开）
+
+- [x] 结算人口修复（exp-20260811-001）；h20 于 2026-08-19+ 日历成熟（08-28 实测 518/30）
+- [x] cash-conflict bar 合同修约（exp-20260828-001, accepted）：不可达罕见事件计数 → trace 能力条件（ok sessions>=30 且终身结构化冲突>=1）；reopen_readiness phase2 lane 首次 ready，其余 lane 不变
+- [ ] **下一工作单元（未消费 conversion_debt）**：跑冻结 outcome-blind D0-D3 discovery scope（estimate-revision surface）+ source-contract 检查；scope 实际选出候选才算 Phase 2 重开
+- [ ] 禁止：动其余五项数值 bar；按决策重合冲突数重新设 gate；在 scope 选出前做任何 phase-2 alpha 实验
+
 ## 注意事项
 
 - V1 资产清单不按历史收益排序，按机制覆盖 / 合同完整度 / 授权 / 可回放性 / 工程依赖。
