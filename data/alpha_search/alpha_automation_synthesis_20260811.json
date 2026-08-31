@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "created_at": "2026-08-11T15:35:30Z",
+  "data_cutoff": "2026-08-11T15:35:00Z",
+  "outcome_blind_generation": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "baseline_universe": [
+    "43 canonical core-trade tickers",
+    "13 governance-tradeable pilot tickers",
+    "42 observation tickers"
+  ],
+  "cross_sectional_opportunity_cost": {
+    "market_regime": "BULL",
+    "core_signal_count": 0,
+    "pilot_signal_count": 0,
+    "entry_candidate_count": 0,
+    "live_buy_count": 0,
+    "available_core_slots": 4,
+    "position_control_pass": false,
+    "position_control_blockers": [
+      "exit_now",
+      "manual_bracket_orders_not_broker_confirmed",
+      "stale_target"
+    ],
+    "opportunity_cost_winner": "cash_no_new_entry",
+    "basis": "At the latest completed session there is no executable core or pilot entry, while all twenty controlled rows are blocked. Research candidates therefore cannot displace cash today."
+  },
+  "opportunity_cost_winner": "cash_no_new_entry",
+  "evidence_surface_inventory": [
+    {
+      "category": "price",
+      "surface": "cash_feasible_core_price_prior_20260715",
+      "artifacts": [
+        "data/experiments/exp-20260715-010/after_measurement.json",
+        "data/daily/signals/quant/quant_signals_20260810.json"
+      ],
+      "pit_boundary": "canonical_pit",
+      "settled_count": 49,
+      "status": "available_as_market_prior_and_opportunity_cost"
+    },
+    {
+      "category": "flow",
+      "surface": "moomoo_capital_flow_forward",
+      "artifacts": [
+        "data/paper_sleeves/moomoo_capital_flow/state.json",
+        "data/paper_sleeves/moomoo_capital_flow/snapshots.jsonl"
+      ],
+      "pit_boundary": "forward snapshots only; post-2026-07-20 dates",
+      "settled_count": 15,
+      "status": "not_sufficient_for_fixed_flow_options_pair"
+    },
+    {
+      "category": "derivatives",
+      "surface": "options_forward_onclickmedia",
+      "artifacts": [
+        "data/experiments/current/options_forward_refresh_probe/options_collection_quality_gate.json",
+        "data/experiments/current/options_forward_refresh_probe/options_forward_candidate_ledger.jsonl"
+      ],
+      "pit_boundary": "forward quality-approved snapshots; no unique current alpha-search surface registration for the fixed pair",
+      "settled_count": 13,
+      "status": "not_sufficient_for_twenty_paired_decisions"
+    },
+    {
+      "category": "event",
+      "surface": "news_event_exposure_forward",
+      "artifacts": [
+        "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+        "data/reopen_readiness.json"
+      ],
+      "pit_boundary": "settled_forward_sufficient_observed_only",
+      "settled_count": 504,
+      "status": "parked_below_650_and_touch_density"
+    },
+    {
+      "category": "positioning",
+      "surface": "moomoo_daily_short_volume_broad",
+      "artifacts": [
+        "data/non_ohlcv/moomoo_daily_short_volume_broad/manifest.json",
+        "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+        "data/paper_sleeves/forward_replacement_value.jsonl"
+      ],
+      "pit_boundary": "not_pit for the current Q5 decision face: one-time 2026-06-23 collection, null usable_trade_date, stale source activity",
+      "settled_count": 18,
+      "status": "raw_reopen_count_not_honest_pit_count"
+    },
+    {
+      "category": "portfolio_exposure",
+      "surface": "broker_positions_and_position_control",
+      "artifacts": [
+        "operator_inputs/open_positions.json",
+        "data/live_pilot/position_control/state.json",
+        "data/live_pilot/live_drift/state.json"
+      ],
+      "pit_boundary": "broker snapshot as of 2026-08-11 and daily control generated 2026-08-11T04:20:48Z",
+      "settled_count": 20,
+      "status": "live_drift_reconciled_but_new_entries_control_blocked"
+    },
+    {
+      "category": "research_digest",
+      "surface": "research_digest_20260727",
+      "artifacts": [
+        "data/research_digest/latest_digest.md",
+        "data/research_digest/ledger.jsonl"
+      ],
+      "pit_boundary": "digest grants no admission or novelty authority",
+      "settled_count": 9,
+      "status": "all_entries_previously_consumed_no_fresh_entry"
+    }
+  ],
+  "evidence_surfaces_used": [
+    "cash_feasible_core_price_prior_20260715",
+    "moomoo_capital_flow_forward",
+    "options_forward_onclickmedia",
+    "news_event_exposure_forward",
+    "moomoo_daily_short_volume_broad",
+    "broker_positions_and_position_control",
+    "research_digest_20260727"
+  ],
+  "evidence_surfaces_missing": [
+    "append_only_daily_authorized_short_volume_archive_with_publication_and_revision_vintages",
+    "unique_gate_ready_options_component_surface_for_the_fixed_flow_options_pair",
+    "canonical_standard_window_PIT_flow_options_overlap",
+    "five_executable_treatment_touches_in_each_standard_window_for_any_selected_narrow_mechanism"
+  ],
+  "generation_policy": {
+    "queues": {
+      "exploration": 1,
+      "adjacent": 1,
+      "exploitation": 1
+    },
+    "ranking_inputs": [
+      "economic_mechanism",
+      "current_machine_readiness",
+      "source_and_PIT_contract_completeness",
+      "touch_density",
+      "live_realistic_execution_envelope"
+    ],
+    "ranking_inputs_forbidden": [
+      "historical_winner_returns",
+      "adapter_maturity",
+      "prior_family_success_rate"
+    ]
+  },
+  "hypothesis_candidates": [
+    {
+      "candidate_key": "fixed_q5_short_volume_soft_tilt",
+      "search_queue": "exploitation",
+      "baseline": {
+        "policy": "Keep each otherwise eligible paper cash-equity decision at its unchanged full notional."
+      },
+      "treatment": {
+        "policy": "For a decision-time own-history Q5 Moomoo short-volume-ratio observation only, multiply notional by the frozen 0.75 scalar and hold the freed 25% as cash; do not exclude the entry or recycle the cash."
+      },
+      "economic_mechanism": "Unusually high off-exchange short-sale activity may reflect informed negative flow or temporary liquidity stress, so a soft cash-preserving haircut can reduce adverse selection without asserting that gross short volume is short interest.",
+      "expected_horizon": "the unchanged underlying paper-sleeve exit horizon",
+      "replacement_value_comparator": "The exact same decision at full notional, zero-return cash for the freed 25%, and identical-interval SPY and QQQ under unchanged costs.",
+      "execution_envelope": {
+        "intended_instrument": "liquid long common stock only",
+        "liquidity_dependency": "existing cash-equity liquidity and gap-cancel controls",
+        "costs_and_carry": "existing cash-equity commissions and slippage; freed notional earns zero-return cash",
+        "borrow_dependency": "none; no short or option leg",
+        "capacity_constraint": "aggregate same-ticker and same-entry exposures across sleeves before the haircut; preserve existing name, sector and slot caps",
+        "timing_constraint": "actual source activity and publication/retrieval vintage must be known before the next regular-session decision",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "falsifier": "Park or reject if the honest known-at-valid Q5 count is below 20, valid-set ticker concentration exceeds 40%, any standard window has fewer than five executable touches, source venue/denominator or authorization is unbound, or a correctly reconstructed next-session Q5 face lacks robust separation. Do not retune Q5 or 0.75."
+    },
+    {
+      "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+      "search_queue": "adjacent",
+      "baseline": {
+        "policy": "Within the frozen deep-drawdown cohort, select the lowest-RSI candidate at the same date, notional, costs and H10 exit."
+      },
+      "treatment": {
+        "policy": "Within that same frozen cohort, select the top square-root product of capital-flow-strength percentile and near-put-open-interest-share percentile."
+      },
+      "economic_mechanism": "Cash accumulation can signal sponsorship while near-put open interest measures hedging or downside-demand structure; their interaction may distinguish absorbable drawdowns from fragile rebounds.",
+      "expected_horizon": "next_regular_open_to_h10",
+      "replacement_value_comparator": "Same-date lowest-RSI control, cash, SPY and QQQ at $4,000 notional and 35-basis-point round-trip cost.",
+      "execution_envelope": {
+        "intended_instrument": "liquid long common stock only",
+        "liquidity_dependency": "existing deep-drawdown liquidity and next-open availability rules",
+        "costs_and_carry": "35-basis-point round trip; no option position is traded",
+        "borrow_dependency": "none",
+        "capacity_constraint": "one decision per eligible date under existing concentration caps",
+        "timing_constraint": "both flow and option snapshots must be quality-approved and known before the next regular open",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "falsifier": "Park if fewer than 20 genuine paired decisions exist or standard-window PIT touches cannot reach five per window; reject after a legal replay if treatment fails the same-date comparator without concentration or cost deterioration."
+    },
+    {
+      "candidate_key": "fixed_negative_news_peer_rotation_tilt",
+      "search_queue": "exploration",
+      "baseline": {
+        "policy": "Keep the current core-entry decision and its unchanged notional when no active negative event-to-peer mapping applies."
+      },
+      "treatment": {
+        "policy": "Apply the frozen negative-event peer-rotation tag only to exact mapped core entries, without changing horizon, polarity, costs, thresholds, orders or exits."
+      },
+      "economic_mechanism": "A negative issuer event can redirect relative demand toward economically linked peers, but the tradeable edge must survive mapping lag, implementation costs and executable-entry overlap.",
+      "expected_horizon": "next_regular_open_to_h10",
+      "replacement_value_comparator": "Same entry without the tag, cash, SPY and QQQ under the frozen event-level settlement protocol.",
+      "execution_envelope": {
+        "intended_instrument": "existing long cash-equity core entries only",
+        "liquidity_dependency": "existing core-entry liquidity and next-open controls",
+        "costs_and_carry": "no marginal trade for a tag; any two-leg implementation must independently clear two-sided costs",
+        "borrow_dependency": "none for the entry tilt; a pair is out of scope",
+        "capacity_constraint": "no new slots and no exposure expansion",
+        "timing_constraint": "event first_seen_at must precede the next regular-session decision and mapping must be frozen",
+        "trade_enabled": false,
+        "orders_enabled": false,
+        "live_ready": false
+      },
+      "falsifier": "Park below 650 closed negative rows or below five executable touches in any standard window; reject if a later fixed-cost replay lacks breadth or replacement value."
+    }
+  ],
+  "selected_hypothesis": "fixed_q5_short_volume_soft_tilt_for_readiness_research_only",
+  "selection_basis": "Before any candidate outcome inspection, the registered readiness surface showed Q5 at 18/20 with raw concentration 38.89%, closer to its frozen numeric bar than the other two candidates. Selection did not use historical returns or implementation maturity.",
+  "economic_mechanism": "high_short_sale_activity_may_proxy_informed_negative_flow_but_requires_soft_cash_preservation_due_to_venue_and_facilitation_noise",
+  "falsifier": "honest_PIT_valid_count_or_touch_density_or_source_contract_or_concentration_failure",
+  "pit_tier": "not_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "invalid",
+  "next_machine_action": "freeze_park_card_and_call_authoritative_qualify_once_with_no_candidate_projection",
+  "post_selection_integrity_event": {
+    "occurred_after_selection_and_four_role_park_recommendations": true,
+    "description": "A later field-name inspection command unintentionally printed three generic settled-ledger rows including prohibited return fields, one from the Q5 face. Those values were discarded and are not represented in this synthesis, preflight, ranking or research card.",
+    "effect": "Fail closed: no Q5 candidate projection, D0-D3 admission, start or experiment ID is permitted in this run."
+  }
+}

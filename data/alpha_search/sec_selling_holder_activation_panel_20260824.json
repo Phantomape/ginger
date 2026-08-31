@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "record_type": "panel_selection",
+  "selection_scope_id": "scope-ddb4ecd34acb00226155b7c6",
+  "created_at": "2026-08-24T20:58:00Z",
+  "data_cutoff": "2026-08-24T20:55:00Z",
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "cash_feasible_core_price_prior_20260715",
+      "massive_reference_asof_identity_research_pit_20260728",
+      "sec_registration_activation_clock_research_pit_20260824",
+      "sec_s1_f1_selling_holder_overhang_research_pit_20260824"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generated_before_candidate_outcome_access": true,
+      "generator_version": "sec-selling-holder-activation-v1",
+      "mechanism_coverage": [
+        "selling_holder_registration_supply_overhang_activation_clock"
+      ],
+      "outcome_fields_allowed": false,
+      "queue_budgets": {
+        "adjacent": 0,
+        "exploitation": 0,
+        "exploration": 1
+      },
+      "required_evidence_roles": [
+        "market_expectation",
+        "opportunity_cost",
+        "independent_evidence",
+        "candidate_universe",
+        "identity"
+      ],
+      "required_precommitments": [
+        "affirmative_selling_holder_evidence_only",
+        "later_of_exact_effect_and_424_clock_when_both_exist",
+        "research_pit_active_common_stock_membership_at_activation",
+        "completed_bar_liquidity_floor_at_activation",
+        "same_ticker_entry_dedup_and_10_session_cooldown",
+        "activation_next_open_h10_fixed_hold",
+        "short_stock_long_spy_equal_notional_pair",
+        "90bp_two_leg_cost_plus_20pct_annual_borrow",
+        "double_two_leg_cost_stress",
+        "83_rows_and_31_23_29_windows",
+        "two_of_three_window_sign_gate",
+        "cluster_bootstrap_and_concentration_limits"
+      ],
+      "required_queues": [
+        "exploration"
+      ],
+      "schema_version": 1,
+      "selection_anchor": "The 83-row outcome-blind activation roster in data/alpha_search/sec_selling_holder_activation_roster_20260824.json was frozen before post-activation price access: 31/23/29 rows across old_thin/mid_weak/late_strong, 67 unique tickers, 74 entry dates, and no more than two rows on one date.",
+      "selection_limit": 1,
+      "selection_policy": "Generate exactly one research-only validation candidate that changes only the decision clock from SEC acceptance to exact legal activation. Do not sweep clock combination, form set, parser, amount, liquidity, cooldown, cost, borrow, hold, hedge, or sample.",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-08-24T20:55:00Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-08-24T20:58:00Z",
+    "generator_version": "sec-selling-holder-activation-v1",
+    "manifest_hash": "ddb4ecd34acb00226155b7c6483674ea6f46afec79d7ff8dd5ca1b4c1745a2b5",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-08-24T20:55:00Z",
+    "prior_fingerprint_count": 1483,
+    "prior_fingerprint_snapshot_hash": "ae4c2120d2908f892967a3361663d55cdc9920c1d86c94ca46d8244db3988f36",
+    "queue_budgets": {
+      "adjacent": 0,
+      "exploitation": 0,
+      "exploration": 1
+    },
+    "schema_version": 1,
+    "scope_name": "sec_selling_holder_activation_20260824",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "c809cbfc81054c88845157f58929e7896bb0181cfd5ec033681d02dd7171bbb7",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "ddb4ecd34acb00226155b7c6483674ea6f46afec79d7ff8dd5ca1b4c1745a2b5",
+  "surface_registry_hash": "c809cbfc81054c88845157f58929e7896bb0181cfd5ec033681d02dd7171bbb7",
+  "prior_fingerprint_snapshot_hash": "ae4c2120d2908f892967a3361663d55cdc9920c1d86c94ca46d8244db3988f36",
+  "prior_fingerprint_count": 1483,
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "queue_budgets": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "queue_actual_counts": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "expected_candidate_count": 1,
+  "candidate_pool_complete": true,
+  "selection_pool_complete": true,
+  "candidate_ids": [
+    "cand-03d8e9f3c30a97e7131d"
+  ],
+  "candidate_snapshots": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-03d8e9f3c30a97e7131d",
+      "search_queue": "exploration",
+      "hypothesis": "The acceptance-time selling-holder lead remains positive when the decision clock is moved without retuning to the later of the official SEC EFFECT XML clock and the first 424B3/424B4 acceptance clock when both exist, because legally activated resale supply should underperform equal-notional SPY over the following ten sessions if the measured effect is genuine rather than an acceptance-date artifact.",
+      "fingerprint": {
+        "data_source": "sec_registration_activation_clock",
+        "component_sources": [
+          "massive_reference_asof_identity",
+          "ohlcv_warehouse",
+          "sec_registration_activation_clock",
+          "sec_s1_f1_offering_economics"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "selling_holder_registration_supply_overhang",
+        "decision_surface": "candidate_pool",
+        "payoff_shape": "short_stock_long_spy_h10_pair_replacement_value",
+        "horizon": "activation_next_open_to_10_session_close",
+        "execution_dependency": "short_locate_and_synchronous_two_leg_next_open",
+        "portfolio_role": "market_hedged_event_short_research_only"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "massive_reference_asof_identity_research_pit_20260728",
+        "sec_registration_activation_clock_research_pit_20260824",
+        "sec_s1_f1_selling_holder_overhang_research_pit_20260824"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "cash_feasible_core_price_prior_20260715",
+          "known_at": "2026-08-24T20:55:00Z",
+          "provenance": {
+            "baseline_policy": "Equal-notional long SPY over each frozen activation interval; zero pair return is the hurdle.",
+            "price_clock": "Both legs enter at the first regular-session open strictly after activation_at and exit at the tenth session close."
+          }
+        },
+        "independent_evidence": [
+          {
+            "decision_exclusions": "Current reference metadata and bars not completed by activation_at are excluded.",
+            "field": "activation_time_active_common_stock_membership_and_completed_bar_liquidity",
+            "known_at": "2026-08-24T20:55:00Z",
+            "policy_version": "sec_selling_holder_activation_h10_v1",
+            "source": "massive_reference_asof_identity_research_pit_20260728"
+          },
+          {
+            "decision_exclusions": "No outcome, parser alternative, amount threshold, or form reslice enters selection.",
+            "field": "primary_document_affirmative_selling_holder_resale_evidence",
+            "known_at": "2026-08-24T20:55:00Z",
+            "policy_version": "sec_offering_economics_v1",
+            "source": "sec_s1_f1_selling_holder_overhang_research_pit_20260824"
+          },
+          {
+            "decision_exclusions": "The clock linkage and 83-row roster were frozen before any post-activation price access.",
+            "field": "official_effect_xml_or_resale_prospectus_activation_clock",
+            "known_at": "2026-08-24T20:55:00Z",
+            "policy_version": "sec_selling_holder_activation_h10_v1",
+            "source": "sec_registration_activation_clock_research_pit_20260824"
+          }
+        ],
+        "gap_definition": "Acceptance-time replay is positive but acceptance is not legal resale activation. Exact EFFECT and final-prospectus clocks provide an independent execution-time falsifier without changing the mechanism, cost, hedge, hold, or eligibility rules.",
+        "transmission": {
+          "affected_tickers": [
+            "67 unique liquid active common stocks in the frozen 83-row activation roster"
+          ],
+          "catalyst": "The later exact clock of official EFFECT and first 424B3/424B4 when both exist; the sole exact activation evidence otherwise.",
+          "expected_direction": "Event stock underperforms equal-notional SPY from activation next open through H10.",
+          "half_life": "First regular-session open strictly after activation through the tenth session close."
+        }
+      },
+      "why_not_arbitraged": "Registration effectiveness is not a standardized trade feed, final prospectus timing can differ from acceptance, borrow is uncertain, and file-number linkage plus historical identity are operationally noisy.",
+      "falsifier": "Reject unless the roster remains exactly 83 rows with 31/23/29 across old_thin/mid_weak/late_strong, every row executes, at least 20 rows remain in each window, aggregate and at least two windows are strictly positive after 90bp pair cost plus 20% annualized borrow for 10/252 years, aggregate remains positive after 180bp pair cost, the overlapping-hold cluster bootstrap 90% lower bound is positive, max single-ticker positive contribution is at most 40%, top-five at most 60%, and absolute contribution HHI at most 0.25. Missing rows invalidate rather than resize the sample.",
+      "baseline": {
+        "policy": "Equal-notional long SPY over each frozen activation interval; zero market-hedged pair return."
+      },
+      "treatment": {
+        "policy": "Short the event stock and buy equal-notional SPY at activation next open, close both at H10, apply the unchanged 90bp base pair cost plus 20% annualized borrow and 180bp cost stress."
+      },
+      "replacement_value_comparator": "Zero-return cash on the equal-dollar market-hedged pair.",
+      "expected_horizon": "activation_next_open_to_10_session_close",
+      "execution_envelope": {
+        "borrow_dependency": "20% annualized research borrow assumption; paper/live blocked until broker locate is proven at decision time.",
+        "capacity_constraint": "Fixed $2,000 per leg, at most two rows on one activation entry date; no capital allocated.",
+        "costs_and_carry": "90bp total pair round-trip cost plus 20% annualized borrow for 10/252; stress doubles pair cost to 180bp.",
+        "intended_instrument": "Short active common stock plus equal-notional long SPY.",
+        "liquidity_dependency": "Latest 20 completed sessions known at activation require median dollar volume at least $1,000,000 and last close at least $3.",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "Activation_at is the later exact EFFECT and final-prospectus clock when both exist; entry is the first regular-session open strictly afterward.",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [
+        {
+          "surface_id": "cash_feasible_core_price_prior_20260715",
+          "snapshot_hash": "2f2e8de44562e4797ab1b3845024317f1962dfce441312d927128f12b9bb0053"
+        },
+        {
+          "surface_id": "massive_reference_asof_identity_research_pit_20260728",
+          "snapshot_hash": "4b49ba1acacc5995c5d08394048cce5bea972aa81cc7f4bed0ebf12ff914637f"
+        },
+        {
+          "surface_id": "sec_registration_activation_clock_research_pit_20260824",
+          "snapshot_hash": "44aad73f0a89d1a913f8c355c8d68b7eddb9f8dadb6ba17851adaa79c70f3296"
+        },
+        {
+          "surface_id": "sec_s1_f1_selling_holder_overhang_research_pit_20260824",
+          "snapshot_hash": "98d1cf5816ae96e97733de0b095b73cf0ea84c5e47b9b594c70876d04a603c6e"
+        }
+      ],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "title": "Selling-holder legal-activation overhang validation",
+      "created_at": "2026-08-24T20:55:00Z",
+      "created_by": "codex",
+      "prediction": {
+        "success_probability": 0.35,
+        "main_failure_modes": [
+          "acceptance_effect_dissipates_before_legal_activation",
+          "activation_clock_clusters_duplicate_supply_events",
+          "borrow_stress_consumes_edge",
+          "research_pit_identity_ceiling",
+          "window_instability"
+        ],
+        "confidence_reason": "The acceptance-time lead was broad and large, but this independent clock moves many entries later and directly tests whether the effect survives legal activation rather than anticipation."
+      },
+      "reopen_condition": "If rejected, do not change form, parser, clock-combination, amount, liquidity, cooldown, cost, borrow, hold, hedge, or sample. Reopen only with verified actual shares sold, true takedown dates, historical broker locate, immutable identity vintages, or materially new settled forward rows.",
+      "next_machine_action": "Run outcome-blind D0-D3 against history including exp-20260824-003 and reserve one observed-only activation-clock validation only if all gates pass."
+    }
+  ],
+  "candidate_snapshot_hashes": {
+    "cand-03d8e9f3c30a97e7131d": "384527b55a960655764b5bc8b4408880b9fd5a2d95207a33cfa87e53e2136ecf"
+  },
+  "preflight_decisions": {
+    "cand-03d8e9f3c30a97e7131d": {
+      "schema_version": 1,
+      "record_type": "preflight_decision",
+      "candidate_id": "cand-03d8e9f3c30a97e7131d",
+      "selection_scope_id": "scope-ddb4ecd34acb00226155b7c6",
+      "evaluated_at": "2026-08-24T20:58:00Z",
+      "preflight_version": "alpha_search_preflight_v1",
+      "data_cutoff": "2026-08-24T20:55:00Z",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "source_snapshot_hashes": {
+        "cash_feasible_core_price_prior_20260715": "2f2e8de44562e4797ab1b3845024317f1962dfce441312d927128f12b9bb0053",
+        "massive_reference_asof_identity_research_pit_20260728": "4b49ba1acacc5995c5d08394048cce5bea972aa81cc7f4bed0ebf12ff914637f",
+        "sec_registration_activation_clock_research_pit_20260824": "44aad73f0a89d1a913f8c355c8d68b7eddb9f8dadb6ba17851adaa79c70f3296",
+        "sec_s1_f1_selling_holder_overhang_research_pit_20260824": "98d1cf5816ae96e97733de0b095b73cf0ea84c5e47b9b594c70876d04a603c6e"
+      },
+      "declared_evidence_grade": "lead",
+      "maximum_supported_evidence_grade": "lead",
+      "fingerprint_hash": "79eeb047ef75ce17d95a00c8b3e14a9ee0eca37563fb3fda67e1af5361a6e8e6",
+      "gates": {
+        "D0": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D1": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D2": {
+          "status": "pass",
+          "reasons": []
+        },
+        "D3": {
+          "status": "pass",
+          "reasons": []
+        }
+      },
+      "decision": "pass",
+      "failure_reasons": [],
+      "reopen_condition": "If rejected, do not change form, parser, clock-combination, amount, liquidity, cooldown, cost, borrow, hold, hedge, or sample. Reopen only with verified actual shares sold, true takedown dates, historical broker locate, immutable identity vintages, or materially new settled forward rows.",
+      "trade_enabled": false,
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "preflight_hash": "8c6c2ce4106f5186c8665fa99d0f0b6c2b9bb63d470777271ca3207a69d719cf"
+    }
+  },
+  "preflight_decision_hashes": {
+    "cand-03d8e9f3c30a97e7131d": "8c6c2ce4106f5186c8665fa99d0f0b6c2b9bb63d470777271ca3207a69d719cf"
+  },
+  "scores": {
+    "cand-03d8e9f3c30a97e7131d": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 1.0,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 1.0,
+        "unresolved_source_or_contract_risk": 0.0
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": 0.86,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "rejection_reasons": {},
+  "selection_limit": 1,
+  "batch_policy_bundle_id": null,
+  "selected_candidate_ids": [
+    "cand-03d8e9f3c30a97e7131d"
+  ],
+  "selected_candidate_id": "cand-03d8e9f3c30a97e7131d",
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "panel_hash": "ac5fff7f2e8d1b204a28d1b100bec559a64b14c7efa39c370efe9d15ee9623ee"
+}

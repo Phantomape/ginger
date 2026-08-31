@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "created_at": "2026-08-16T19:27:30Z",
+  "data_cutoff": "2026-08-16T19:26:44Z",
+  "outcome_blind_generation": true,
+  "candidate_outcomes_read_before_selection": false,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "baseline_universe": [
+    "cash-feasible core Gate-1 stack across late_strong, mid_weak, and old_thin",
+    "480 unique recoverable long strategy surfaces frozen by exp-20260716-011",
+    "21 current forward paper sleeves with 196 settled replacement-value rows",
+    "current 20-position broker portfolio and cash exposure"
+  ],
+  "opportunity_cost_winner": "100_percent_cash_feasible_core_until_a_capital_neutral_joint_allocator_beats_it",
+  "cross_sectional_opportunity_cost": {
+    "core_baseline_aggregate_ev": 6.2057,
+    "core_baseline_total_pnl_usd": 130992.36,
+    "historical_strategy_surface_count": 480,
+    "recent_settled_forward_row_count": 196,
+    "recent_forward_sleeve_count": 21,
+    "latest_recent_exit_date": "2026-08-14",
+    "decision": "No single historical sleeve receives a privileged rank. The joint allocator must beat the full funded core after displacement cost, or the optimal allocation is 100% core."
+  },
+  "evidence_surface_inventory": [
+    {
+      "category": "price",
+      "surface": "cash_feasible_core_and_frozen_candidate_ohlcv_paths",
+      "status": "available",
+      "pit_boundary": "three frozen canonical windows; identical candidate/core calendars; no recent window in formal Gate arithmetic"
+    },
+    {
+      "category": "flow",
+      "surface": "moomoo_capital_flow_and_finra_forward_rows",
+      "status": "available_as_recent_observer_only",
+      "pit_boundary": "forward rows only; no historical relabelling"
+    },
+    {
+      "category": "derivatives",
+      "surface": "options_forward_quality_gated_snapshots",
+      "status": "available_but_not_joint_allocator_ready",
+      "pit_boundary": "forward snapshot and partial source contract; excluded from formal classic-window allocation"
+    },
+    {
+      "category": "event",
+      "surface": "SEC_and_news_default_off_strategy_paths",
+      "status": "represented_in_historical_and_forward_strategy_surfaces",
+      "pit_boundary": "only each frozen strategy's existing decision clock; no new semantic selection"
+    },
+    {
+      "category": "positioning",
+      "surface": "FINRA_ORTEX_and_borrow_context",
+      "status": "represented_where_a_frozen_strategy_already_used_it",
+      "pit_boundary": "no new positioning rule or threshold"
+    },
+    {
+      "category": "portfolio_exposure",
+      "surface": "cash_feasible_core_plus_current_broker_book",
+      "status": "available",
+      "pit_boundary": "classic Gate uses frozen core; recent diagnostic uses the 2026-08-15 broker snapshot"
+    },
+    {
+      "category": "research_digest",
+      "surface": "research_digest_20260727",
+      "status": "no_fresh_entries",
+      "pit_boundary": "all nine displayed entries already consumed twice; no duplicate ledger append"
+    }
+  ],
+  "evidence_surfaces_used": [
+    "cash_feasible_core_classic_windows",
+    "exp_20260716_011_frozen_480_strategy_panel",
+    "paper_forward_replacement_value_196_settled_rows",
+    "current_broker_portfolio_exposure"
+  ],
+  "evidence_surfaces_missing": [
+    "an untouched historical selection panel covering the original adaptive strategy search",
+    "daily MTM forward equity curves for every one of the 480 historical surfaces",
+    "sufficient settled forward breadth for every current paper sleeve",
+    "live execution parity for a joint multi-sleeve allocator"
+  ],
+  "hypothesis_candidates": [
+    {
+      "candidate_key": "hierarchical_joint_strategy_allocator",
+      "baseline": "100% cash-feasible core",
+      "treatment": "90-100% core plus 0-10% capital-neutral joint satellite, with all 480 surfaces mapped outcome-blind into eight source-mechanism buckets, equal-weighted within bucket, and bucket weights exhaustively searched on a 1% grid then locally refined to 0.25%",
+      "expected_horizon": "three classic windows; recent settled-forward cohort is observe-only",
+      "replacement_value_comparator": "100% cash-feasible core primary; core-plus-cash diagnostic secondary",
+      "economic_mechanism": "diversification can turn individually sub-champion but differently timed strategy cashflows into a better funded portfolio, while source buckets and hard caps prevent trial-rich families from dominating",
+      "falsifier": "reject if no capital-neutral weight vector has positive aggregate EV and PnL delta, if more than one classic window materially regresses, if drawdown worsens over 0.5pp or ES95 over 5%, if walk-forward validation fails, or if recent mapped sleeves contradict the classic allocation after costs",
+      "decision": "selected"
+    },
+    {
+      "candidate_key": "recent_forward_only_mean_variance_allocator",
+      "baseline": "equal capital across current paper sleeves",
+      "treatment": "optimize weights directly on 196 recent settled rows",
+      "expected_horizon": "2026-05-05 through 2026-08-14",
+      "replacement_value_comparator": "cash/SPY/QQQ replacement values",
+      "economic_mechanism": "recent sleeve dispersion may identify regime-relevant capital allocation",
+      "falsifier": "small samples, asynchronous exits, and missing daily MTM paths make optimized weights unstable",
+      "decision": "declined_recent_outcomes_cannot_drive_formal_selection"
+    },
+    {
+      "candidate_key": "single_best_sleeve_replacement",
+      "baseline": "100% cash-feasible core",
+      "treatment": "90% core plus 10% one historical strategy",
+      "expected_horizon": "three classic windows",
+      "replacement_value_comparator": "100% core",
+      "economic_mechanism": "one low-correlation sleeve may add frontier value",
+      "falsifier": "the complete 480-surface Gate 4-P audit already found zero simultaneous passes",
+      "decision": "declined_frozen_near_neighbor"
+    }
+  ],
+  "selected_hypothesis": "hierarchical_joint_strategy_allocator",
+  "economic_mechanism": "capital_neutral_hierarchical_diversification_across_source_mechanisms",
+  "falsifier": "no_joint_weight_vector_beats_full_core_with_risk_and_walk_forward_guards",
+  "pit_tier": "research_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "qualify one research-only joint-allocation candidate, reserve exactly one alpha_search ID, reconstruct the frozen return panel, exhaust the predeclared weight grid, and keep production trade_enabled=false"
+}

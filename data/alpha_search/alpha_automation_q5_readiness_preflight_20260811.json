@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "record_type": "outcome_blind_readiness_preflight",
+  "candidate_key": "fixed_q5_short_volume_soft_tilt",
+  "created_at": "2026-08-11T15:35:30Z",
+  "data_cutoff": "2026-08-11T15:35:00Z",
+  "trade_enabled": false,
+  "candidate_outcome_metrics_used": false,
+  "source_identity": {
+    "registered_component": "moomoo_daily_short_volume",
+    "vendor_endpoint": "moomoo.get_daily_short_volume",
+    "forbidden_alias": "FINRA",
+    "archive_experiment_id": "exp-20260623-008",
+    "archive_rows": 25152,
+    "archive_updated_at": "2026-06-23T05:50:28.217111Z",
+    "maximum_source_activity_date": "2026-06-22",
+    "usable_trade_date": null,
+    "identity_status": "corrected_for_this_unfrozen_bundle"
+  },
+  "observable_market_prior": {
+    "status": "pass",
+    "surface_id": "cash_feasible_core_price_prior_20260715",
+    "proxy_type": "price_revealed",
+    "source": "ohlcv_warehouse",
+    "known_at": "2026-08-11T04:20:48Z",
+    "different_from_independent_source": true
+  },
+  "independent_evidence": {
+    "status": "partial",
+    "mechanism_sources": [
+      "FINRA daily short-sale-volume definitions and publication timing",
+      "Diether-Lee-Werner short-sale research",
+      "Wang-Yan-Zheng public shorting-flow research",
+      "Reed-Samadi-Sokobin venue informativeness research"
+    ],
+    "candidate_row_source": "moomoo_daily_short_volume",
+    "reason": "The literature and official definitions are independent of the OHLCV market prior and support a testable mechanism, but they do not supply or authorize the local Moomoo decision rows."
+  },
+  "pit_contract": {
+    "status": "fail",
+    "pit_tier": "not_pit",
+    "known_future_leakage": true,
+    "reason": "Thirteen of eighteen tagged Q5 decisions precede the archive collection. The remaining five inherit source activity no later than 2026-06-22 with lags of 3, 10, 10, 32 and 32 calendar days. The tag records entry_short_volume_asof_date as the entry date rather than the actual source activity date."
+  },
+  "source_contract": {
+    "status": "partial",
+    "reason": "Moomoo documents strategy and analysis use, but the frozen archive does not bind an entitlement or license version, archive/redistribution permission, publication timestamp, revision identity or content hash by daily vintage. FINRA website terms cannot be used as a same-run bulk historical substitute."
+  },
+  "reopen_and_saturation": {
+    "status": "park",
+    "prior_experiment": "exp-20260716-007",
+    "signal_and_response_locked": true,
+    "frozen_signal": "own_history_Q5_short_volume_ratio",
+    "frozen_response": "0.75_notional_plus_0.25_cash_hold",
+    "forbidden": [
+      "change_Q5_threshold",
+      "change_0.75_scalar",
+      "hard_exclusion_retune",
+      "same_surface_response_retune",
+      "treat_raw_count_as_PIT_valid"
+    ],
+    "governing_reopen_condition": "At least 20 honestly PIT-tagged closed Q5 decisions with maximum ticker share at most 40%, plus at least five executable treatment touches in each standard window and a passing source contract."
+  },
+  "settled_and_concentration": {
+    "raw_tagged_settled_count": 98,
+    "raw_q5_settled_count": 18,
+    "required_q5_settled_count": 20,
+    "raw_q5_max_ticker": "CRDO",
+    "raw_q5_max_ticker_count": 7,
+    "raw_q5_max_ticker_share": 0.388889,
+    "raw_concentration_limit": 0.4,
+    "raw_count_status": "fail",
+    "raw_concentration_status": "pass",
+    "known_before_entry_upper_bound_count": 5,
+    "known_before_entry_unique_ticker_entry_clusters": 4,
+    "known_before_entry_max_ticker": "GE",
+    "known_before_entry_max_ticker_count": 3,
+    "known_before_entry_max_ticker_share": 0.6,
+    "honest_pit_count_status": "fail",
+    "honest_pit_concentration_status": "fail",
+    "pending_q5_count": 0
+  },
+  "raw_q5_ticker_counts": {
+    "CRDO": 7,
+    "GE": 4,
+    "COIN": 2,
+    "BKNG": 1,
+    "HOOD": 1,
+    "NOW": 1,
+    "NVO": 1,
+    "V": 1
+  },
+  "executable_touch_density": {
+    "identity": "exact Q5-tagged decision_id whose entry_date lies inside the frozen standard window",
+    "required_per_window": 5,
+    "windows": [
+      {
+        "name": "old_thin",
+        "start": "2024-10-02",
+        "end": "2025-04-22",
+        "touches": 0,
+        "status": "fail"
+      },
+      {
+        "name": "mid_weak",
+        "start": "2025-04-23",
+        "end": "2025-10-22",
+        "touches": 0,
+        "status": "fail"
+      },
+      {
+        "name": "late_strong",
+        "start": "2025-10-23",
+        "end": "2026-04-21",
+        "touches": 0,
+        "status": "fail"
+      }
+    ],
+    "status": "fail"
+  },
+  "transmission_mapping": {
+    "status": "semantically_mapped_but_not_executable",
+    "input": "own-ticker short_volume_ratio percentile using only a source row known before decision time",
+    "condition": "fixed quintile equals Q5",
+    "action": "multiply otherwise eligible long common-stock notional by 0.75 and leave 0.25 as cash",
+    "affected_tickers": "the exact baseline decision ticker only",
+    "direction": "reduce_long_notional",
+    "catalyst": "unusually high reported short-sale activity",
+    "half_life": "underlying decision's unchanged exit horizon",
+    "machine_field_gap": "actual source_activity_date is not carried into the Q5 tag"
+  },
+  "replacement_comparator": {
+    "status": "pass_as_design_only",
+    "comparators": [
+      "same_decision_full_notional",
+      "zero_return_cash_for_freed_25_percent",
+      "same_interval_SPY",
+      "same_interval_QQQ"
+    ],
+    "cash_reuse_forbidden": true
+  },
+  "execution_envelope": {
+    "status": "pass_as_research_design_only",
+    "intended_instrument": "long common stock only",
+    "liquidity_and_costs": "unchanged baseline cash-equity rules",
+    "borrow_or_leverage": "none",
+    "concentration": "aggregate same-ticker/same-entry exposure across sleeves; existing name, sector, heat and slot limits remain binding",
+    "live_control": "position_control_pass is false; no live order or allocation change is permitted",
+    "trade_enabled": false,
+    "orders_enabled": false,
+    "live_ready": false
+  },
+  "repair_attempts_this_run": [
+    "Regenerated canonical reopen readiness without reading candidate outcomes.",
+    "Corrected the component identity from FINRA to Moomoo.",
+    "Bound the one-time collection timestamp, maximum activity date and null usable-trade-date contract.",
+    "Recounted raw and known-before-entry Q5 rows using decision metadata only.",
+    "Recomputed raw and honest-subset ticker concentration.",
+    "Computed exact standard-window executable touches as 0/0/0.",
+    "Checked official source-use and publication contracts through global-stock-data source hierarchy.",
+    "Preserved the fixed Q5 threshold, 0.75 response, comparator and execution envelope."
+  ],
+  "candidate_paths_exhausted": [
+    {
+      "candidate_key": "fixed_q5_short_volume_soft_tilt",
+      "machine_conditions_satisfied": [
+        "observable OHLCV market prior",
+        "raw concentration 38.89 percent at or below 40 percent",
+        "fixed replacement comparator",
+        "deterministic transmission rule",
+        "paper-only execution envelope"
+      ],
+      "unsatisfied": [
+        "raw Q5 18 below 20",
+        "honest known-before-entry count at most 5 below 20",
+        "honest-subset GE share 60 percent above 40 percent",
+        "standard-window touches 0/0/0 below 5/5/5",
+        "source contract partial",
+        "actual source activity date absent from tag",
+        "post-selection outcome-display contamination"
+      ],
+      "why_not_fixable_now": "Requires an authorized append-only daily archive, new calendar observations and settlements, and historical standard-window reconstruction under a newly bound source contract. No field or wording repair can create those rows."
+    },
+    {
+      "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+      "machine_conditions_satisfied": [
+        "fixed mechanism, cohort, comparator, notional, H10 and cost contract",
+        "independent flow and derivatives components exist prospectively"
+      ],
+      "unsatisfied": [
+        "at most 13 quality-approved flow/options intersection dates below 20 paired decisions",
+        "no canonical standard-window PIT coverage",
+        "no unique current alpha-search options component registration"
+      ],
+      "why_not_fixable_now": "At least seven additional genuine eligible intersection dates must occur and their H10 windows must settle; manufacturing historical dates or creating a new observer as Alpha progress is forbidden."
+    },
+    {
+      "candidate_key": "fixed_negative_news_peer_rotation_tilt",
+      "machine_conditions_satisfied": [
+        "504 closed negative-side rows",
+        "fixed event-to-peer mapping and H10 settlement contract"
+      ],
+      "unsatisfied": [
+        "504 below frozen 650-row reread bar",
+        "core executable touches 1/0/0 below 5/5/5"
+      ],
+      "why_not_fixable_now": "The lane is parked until 650 genuine closed rows and adequate executable overlap; rereading outcomes or retuning before that point is prohibited."
+    }
+  ],
+  "integrity_event": {
+    "occurred_after_candidate_selection_and_team_decision": true,
+    "candidate_return_fields_unintentionally_displayed": true,
+    "used_in_any_count_ranking_or_decision": false,
+    "containment": "No candidate projection, D0-D3 panel, start or experiment ID. Formal qualification receives a PARK card with candidate null."
+  },
+  "authoritative_preflight_decision": "park",
+  "result_ceiling": "invalid",
+  "experiment_id_allowed": false,
+  "quantitative_reopen_condition": {
+    "earliest_calendar_date": null,
+    "reason_no_date": "The archive is stale and pending Q5 count is zero; elapsed time alone cannot guarantee an eligible Q5 observation.",
+    "conditions": [
+      "Bind an authorized append-only Moomoo or separately licensed independent daily archive with source_activity_date, published_at, retrieved_at, revision identity and content hash.",
+      "Map each immutable source vintage fail-closed to the next regular-session decision.",
+      "Reach at least 20 unique settled Q5 decision identities known before decision time; current upper bound is 5, so at least 15 additional valid settlements are required.",
+      "Keep maximum ticker share at or below 40 percent on the valid set.",
+      "Provide at least five executable treatment touches in each frozen standard window.",
+      "Re-run a fresh outcome-blind source-contract and integrity preflight with no candidate returns exposed."
+    ]
+  }
+}

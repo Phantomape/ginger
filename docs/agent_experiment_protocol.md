@@ -1,6 +1,7 @@
 # Agent Experiment Protocol
 
-Operational runbook for experiments. Durable rules live in `AGENTS.md`;
+Operational runbook for experiments. Durable quant rules live in
+`docs/quant_agent_protocol_v2.md`, which is linked from `AGENTS.md`;
 canonical metrics and windows live in `docs/backtesting.md`; production parity
 lives in `docs/production_backtest_parity.md`, with adapter rows in
 `docs/production_backtest_parity_matrix.md`. This file tells agents which
@@ -8,7 +9,8 @@ commands to run and what an experiment must leave behind.
 
 ## Source Map
 
-- `AGENTS.md`: top-level rules, priority, required startup questions.
+- `AGENTS.md`: repository-wide working rules.
+- `docs/quant_agent_protocol_v2.md`: V2 quant rules, priorities, and startup contract.
 - `docs/backtesting.md`: Gate 1-4 commands, windows, baselines, metrics.
 - `docs/alpha_context_pack.md`: compact alpha memory for current runs.
 - `docs/current_state_snapshot.md`: compact current-state entrypoint.
@@ -20,13 +22,14 @@ commands to run and what an experiment must leave behind.
 - `docs/experiment_ticket_schema.md`: ticket fields and conflict rules.
 - `docs/experiment_log_format.md`: JSON / JSONL closeout shape.
 
-If sources conflict, the more specific source wins. Do not copy full rules into
-multiple docs.
+If sources conflict, follow the priority in `docs/quant_agent_protocol_v2.md`
+§2. A specific runbook may add detail but cannot loosen V2 hard rules. Do not
+copy full rules into multiple docs.
 
 ## Standard Workflow
 
-1. Read the startup sources from `AGENTS.md`.
-2. Answer the five pre-run questions in the ticket, card, artifact, or log.
+1. Read the startup sources from `docs/quant_agent_protocol_v2.md`.
+2. Answer the required pre-run questions in the ticket, card, artifact, or log.
 3. For `alpha_search`, `alpha_discovery`, or `universe_scout`, first complete the outcome-blind D0-D3 panel and tracked promotion request. These discovery artifacts do not consume an experiment ID; multi-model debate is not required.
 4. Reserve an ID before writing runner, artifact, data, ticket, or log files.
 5. Claim the ticket before work when other agents may be active; claim revalidates the promotion proof.
@@ -149,7 +152,8 @@ missing it silently skips. Check ad hoc with
 The frozen-family data above only covers **closed** experiments, so two
 concurrent agents — or one agent retrying a reserve call that actually
 succeeded asynchronously — could reserve the same hypothesis twice; the loser
-burned the ID as `duplicate_reservation_accounting` (AGENTS.md §7). Since
+burned the ID as `duplicate_reservation_accounting`
+(`docs/quant_agent_protocol_v2.md` §5 “Alpha 实验顺序”). Since
 exp-20260714-007, `experiment.py new` also fingerprints every **open**
 (proposed/claimed/running) ticket whose ID date is within the last 7 days and
 **refuses the reservation on every lane** when the best score (classified
@@ -358,7 +362,7 @@ summaries. The verdict helper consumes the full CLI report and recomputes its
 retained panel; a summary dict alone is not evidence. The full contract is
 `docs/deflated_sharpe_protocol.md`.
 
-Gate-4 evaluation note: `evaluate_gate4` includes the AGENTS.md scout
+Gate-4 evaluation note: `evaluate_gate4` includes the existing scout
 materiality floor (>= $500 average per-trade PnL delta or >= 5pp average return
 delta). That floor is calibrated for support-field / notional-scalar scouts on
 existing sleeves; at the fixed $4,000 paper notional used by candidate-pool

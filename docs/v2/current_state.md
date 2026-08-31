@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-28T16:55Z（exp-20260828-001 phase2 estimate-revision cash bar 合同修约，数值 gate 首次打开）
+> 最后更新：2026-08-31T08:25Z（exp-20260831-001：quiet-tape 延迟 repricing 候选按冻结 F1-F6 反证 REJECTED；adjacent 候选被本轮次要报告污染，只许在 2026-08-31 后新结算的干净 forward 切片上评估）
 
 ## 里程碑
 
@@ -59,6 +59,21 @@
 - pair sleeve 采证健康：昨夜 daily run 自动 admit 第 2 个 measurement_ready batch（news-first-seen-0d1d4dcda48056d673f7，58 long / 30 short ticker），接线首次无人值守生效；2 baskets pending，0 due_unsettled，首结算 ~2026-09-10。move_relief sleeve 仍 0 行（事件饥饿，30 行 bar 遥远）。
 - exp-20260828-001（measurement_repair / contract review, accepted）：执行 exp-20260811-001 预登记的单次 contract review——phase2_estimate_revision 的 `actual_cash_conflicts>=10` bar 是结构性不可达的决策重合罕见事件计数（trace 32 session 全 ok、终身仅 1 次结构化冲突、0 次与 1972 个合格决策重合，其余 bar 全部超阈 17-38 倍）。修约为能力条件：`cash_admission_trace_ok_sessions>=30` 且 `structured_cash_conflict_observations_lifetime>=1`（从持久化 quant_signals 工件 fail-closed 重算，0.92s/日）。其余五项数值 bar、source-contract 与 D0-D3 要求不变。
 - **phase2_estimate_revision 数值 gate 首次 ready**（reopen_readiness 2026-08-28T16:47Z，其余 lane 状态全部不变）。这是一笔未消费 conversion_debt：下一工作单元必须跑冻结的 outcome-blind D0-D3 discovery scope（估计修订 surface，发现层，不读结果）；只有 scope 实际选出候选，Phase 2 才算重开。禁止：动其余数值 bar、按决策重合冲突数重新设 gate、把 gate-open 当作候选资格。
+
+## 最新可执行证据状态（2026-08-29）
+
+- **d-0011 conversion debt 已消费**：预注册 scope `phase2-estimate-revision-20260829`（scope-2d453592cbe4b7b822ff9fdf）在 estimate-revision surface 上完成一轮全新 outcome-blind D0-D3。estimate surface 以 canonical_pit / gate_candidate / saturation open 入场（机器依据：reopen_readiness lane ready + source contract 6/6）。3 个候选（exploitation 延迟价格吸收 / adjacent 预期外抢跑回吐 / exploration 同 session breadth 冲击）全部 D0-D3 pass、零 legacy 近邻命中；冻结多样性选择器选中 exploration 候选 `cand-c748224bb9bc0f6a9118`（panel e9ca292b...，verify-panel valid）。**Phase 2 按 Phase-1.5 冻结合同正式重开**。
+- **被选候选当轮 park（零 ID）**：falsifier 冻结前的 outcome-blind 可达性检查（只读身份字段）发现 consensus feed 按日批量落盘——1518 个合格决策集中在 21 个 session（单 session 最多 209 个），breadth(≥3 同向) 成员 1510 个 vs 孤立对照仅 8 个。冻结对照腿（breadth vs isolated）结构性不可达，按 08-28 协议"数值 bar 可达性"规则 park，机器 blocker + 定量重开条件见 `data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json`。禁止在同一 daily-batch 时钟上重定义 breadth 阈值。
+- **下一工作单元（已锁定）**：对 D0-D3 已通过、未被选中的 exploitation 注册候选 `cand-1a665d7350fd8d6349e8`（延迟价格吸收）先做 outcome-blind quiet-tape 条件密度检查（五日价格路径 vs 波动包络，仅 OHLCV 身份数据）；条件 cohort ≥30/horizon 则同单元跑单候选 scope 复验→冻结 falsifier→reserve→run 正式反证实验。
+- pair sleeve 健康：5 个 lifetime batch，2 ready 已全部 admit（2 pending，~09-10 首结算），昨夜 batch 被 cross_side_ticker_overlap（数据决定、合法）fail-close；eligible_unadmitted=0、due_unsettled=0。
+
+## 最新可执行证据状态（2026-08-31）
+
+- exp-20260831-001（alpha_search / private_replay_scout, **rejected**）：08-29 receipt 锁定的 scope debt 当轮完整消费。outcome-blind quiet-tape 密度检查通过（1522 个合格非平映射决策 → 802 个 quiet-tape conditioned，settled h5/h10/h20 = 656/427/142，全部 gated leg ≥30）；exploitation 注册候选 cand-1a665d7350fd8d6349e8 经全新单候选 scope 字节不变复验（prior 快照锚定其注册之前以避免自命中；D0-D3 全过、零近邻）；OHLCV pre-event 上下文面以行级 updated_at 保守重建诚实升级 research_pit（620/802 决策全部 pre-entry 写入，fail-closed；h20 PIT 腿 26<30 仅报告不 gate）；falsifier F1-F6 冻结进 promotion 后 reserve→claim→run。
+- 反证结果：F1 方向 spread 失败（h5 −0.017% / h10 +0.63% / h20 −0.27%，需 ≥2/3 horizon 含 h10 为正）；F3 失败（up 腿 h10 对 QQQ −$5,781）；F5 ticker shuffle 失败（真实 simple spread 0.21% 低于 shuffle p90 1.58%——表观 spread 是 session 漂移而非 issuer 特异）；F6 PIT 子集失败（h5 −0.26%）。F2（长腿对现金全 horizon 为正）与 F4（日期 placebo）通过但不能独立支撑。realized failure mode = already_priced（命中预测）。幅度单调性在 h10/h20 破裂。
+- **污染围栏（重要）**：预登记的次要报告暴露了 non-quiet（overshoot）cohort 的方向 spread（h5 −1.11% / h10 −0.42% / h20 +6.48%），与已注册 adjacent 候选 cand-68d2f5dad2f903488307（事前 overshoot 部分回吐）机制重叠。该候选在现有已结算决策上的评估已污染：其反证只允许 gate 在 **2026-08-31 之后首次结算** 的干净 forward 切片上，falsifier 措辞须从其 08-29 注册冻结，不得向观测到的 contrast 调参。
+- 家族重开条件（quiet-tape 延迟 repricing）：settled h5/h10/h20 ≥ 2704/2144/1400（2× 当前 closed）且资格规则不变，或来源合同新增真正的 intra-session 逐条发布时钟，或真正不同的条件变量；包络阈值/窗口调参一律禁止。
+- pair sleeve 健康：2 baskets pending（~09-10 首结算），eligible_unadmitted=0、due_unsettled=0。
 
 ## 现场事实（2026-08-18）
 

@@ -25,6 +25,25 @@ maximum disposition. Full definitions live in
   candidate, rule, threshold, and decision clock are frozen. Feeding them back
   into candidate generation or selection is leakage.
 
+## Gate 1-4
+
+Any change that affects entry, exit, filtering, ranking, sizing, risk budget,
+LLM decision boundaries, or backtest measurement must pass all four gates:
+
+1. **Gate 1 — Baseline:** read or create a baseline under the same frozen
+   protocol and input identity.
+2. **Gate 2 — Runtime fields:** prove every required field exists on the real
+   path. At minimum, check `entry_date` and `target_price`; missing either means
+   the signal/position contract is broken, not that an optional field is empty.
+3. **Gate 3 — Survival:** record `signals_generated`, `signals_survived`, and
+   `survival_rate`. If survival is below 5%, do not add another filter.
+4. **Gate 4 — Before/after:** run the same frozen windows and inputs on both
+   sides. Judge EV, PnL, drawdown/tail risk, trade count, survival, window
+   stability, concentration, costs, and cash feasibility together.
+
+Unit tests do not replace Gate 4. A strategy change that fails Gate 4 must be
+rolled back while its failed experiment record is retained.
+
 ## Canonical Command
 
 Use exactly this command shape for production-parity fixed-window backtests.

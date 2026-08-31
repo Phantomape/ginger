@@ -1,0 +1,424 @@
+{
+  "batch_policy_bundle_id": null,
+  "candidate_ids": [
+    "cand-2225347516300e7f9533"
+  ],
+  "candidate_pool_complete": true,
+  "candidate_snapshot_hashes": {
+    "cand-2225347516300e7f9533": "fe8786eae1fdab36b410615f09787674e01a616cafbca47bd92fbc2a506b2dc7"
+  },
+  "candidate_snapshots": [
+    {
+      "baseline": {
+        "policy": "100% active cash-feasible core on the exact three classic calendars."
+      },
+      "candidate_id": "cand-2225347516300e7f9533",
+      "candidate_kind": "expectation_gap",
+      "created_at": "2026-08-16T19:27:30Z",
+      "created_by": "codex-root",
+      "evidence_grade": "lead",
+      "execution_envelope": {
+        "borrow_dependency": "none; long-only",
+        "capacity_constraint": "total satellite <=10% NAV, each mechanism bucket <=5% NAV, null 100% core allowed, source/ticker concentration disclosed",
+        "costs_and_carry": "inherit the frozen 45bp round-trip candidate paths and cash-feasible core costs; no leverage or financing credit",
+        "execution_dependency": "exact frozen daily paths, deterministic grid, nonnegative capital weights, no production orders",
+        "intended_instrument": "existing long-only U.S. cash-equity strategy sleeves in a research replay",
+        "liquidity_dependency": "inherit each frozen strategy's own eligibility; no new ticker or fill rule",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "weights are static inside each evaluation window; chronological walk-forward fitting only",
+        "trade_enabled": false
+      },
+      "expectation_gap": {
+        "gap": {
+          "pricing_map": "100_percent_core versus core_plus_joint_satellite",
+          "selection_contract": "all 480 surfaces to eight frozen mechanism buckets; equal weight within bucket; 0-10% total satellite; 1% exhaustive grid; 0.25% local refinement; no outcome-ranked strategy inclusion"
+        },
+        "gap_definition": "A capital-neutral joint satellite is valuable only if its diversification benefit exceeds the opportunity cost of displaced cash-feasible core capital.",
+        "independent_evidence": [
+          {
+            "artifact": "data/experiments/exp-20260716-011/historical_evidence_manifest.json",
+            "claim": "480 unique frozen long strategy paths can be reconstructed on identical classic calendars.",
+            "known_at": "2026-07-16T20:23:10Z",
+            "source": "frozen_historical_strategy_panel_20260816"
+          },
+          {
+            "artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+            "claim": "196 settled forward rows across 21 current sleeves provide a recent observe-only contradiction check.",
+            "known_at": "2026-08-16T04:10:44Z",
+            "source": "paper_forward_replacement_recent_20260816"
+          }
+        ],
+        "market_prior": {
+          "known_at": "2026-07-15T22:26:16Z",
+          "observable": true,
+          "provenance": {
+            "artifact": "data/experiments/exp-20260715-010/after_measurement.json",
+            "artifact_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+          },
+          "proxy_type": "price_revealed",
+          "source": "cash_feasible_core_classic_20260816",
+          "units": "daily_return_and_USD100000_funded_portfolio",
+          "value": "100_percent_cash_feasible_core"
+        },
+        "schema_version": 1,
+        "transmission": {
+          "affected_tickers": [
+            "ALL_RECOVERABLE_LONG_STRATEGY_SURFACES"
+          ],
+          "catalyst": "cross-strategy cashflow timing diversification",
+          "expected_direction": "positive funded aggregate EV and PnL delta with bounded risk",
+          "half_life": "six-month classic windows with recent forward stability check"
+        }
+      },
+      "expected_horizon": "old_thin, mid_weak, late_strong; recent 2026-05-05 through 2026-08-14 observe-only",
+      "falsifier": "Reject unless a capital-neutral vector improves aggregate classic-window EV and PnL versus 100% core, has at most one material window regression under Gate 4-P, worsens max drawdown by no more than 0.5pp and ES95 by no more than 5%, passes chronological walk-forward checks, respects 10% total satellite and concentration caps, and is not contradicted by mapped recent forward replacement value. Any positive result remains observed_only.",
+      "fingerprint": {
+        "component_sources": [
+          "cash_feasible_core",
+          "forward_replacement_value",
+          "historical_strategy_artifacts"
+        ],
+        "data_source": "portfolio_covariance_lane",
+        "decision_surface": "joint_multi_strategy_allocator_10pct",
+        "economic_mechanism": "capital_neutral_hierarchical_diversification_across_source_mechanisms",
+        "execution_dependency": "frozen_daily_paths_exact_weight_grid_cash_conservation",
+        "expectation_proxy": "price_revealed",
+        "horizon": "old_thin, mid_weak, late_strong; recent 2026-05-05 through 2026-08-14 observe-only",
+        "payoff_shape": "long_only_cash_equity_portfolio_contribution",
+        "portfolio_role": "satellite_risk_budget_competing_with_full_core"
+      },
+      "hypothesis": "Equalizing the influence of eight outcome-blind source-mechanism buckets and exhaustively allocating at most 10% of capital across their aggregate return paths can combine differently timed strategy cashflows into higher classic-window expected value than the full cash-feasible core, while recent settled forward rows should not contradict the selected source mix.",
+      "next_machine_action": "run outcome-blind D0-D3",
+      "prediction": {
+        "confidence_reason": "A joint covariance shape is economically distinct from the failed single-sleeve lane, but the cash-feasible core is strong, the classic panel is adaptively reused, and recent forward sleeve results are immature; a robust positive allocation is plausible but unlikely.",
+        "main_failure_modes": [
+          "drawdown_or_tail_risk_failure",
+          "full_core_opportunity_cost_not_covered",
+          "recent_forward_contradiction",
+          "selection_history_incompleteness",
+          "source_bucket_dilution",
+          "walk_forward_instability"
+        ],
+        "success_probability": 0.2
+      },
+      "production_impact": {
+        "alters_candidate_ranking": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "alters_signal_generation": false,
+        "alters_sizing": false,
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "reopen_condition": "If rejected, do not retune bucket definitions, capital grid, total budget, objective or recent mapping on the same frozen paths. Reopen only with a prospective pre-frozen joint portfolio ledger, a materially new strategy family, or an owner-authorized execution/risk gate shape backed by new evidence.",
+      "replacement_value_comparator": "100% cash-feasible core primary; core plus the same unallocated satellite budget held as zero-return cash secondary diagnostic.",
+      "schema_version": 1,
+      "search_queue": "exploration",
+      "source_readiness_snapshot": [
+        {
+          "snapshot_hash": "daee5cf976bd00d4ea4957b5271e13dd63d07f4b79929ce0fdc3d32761c7766c",
+          "surface_id": "cash_feasible_core_classic_20260816"
+        },
+        {
+          "snapshot_hash": "81f528371bebe60a44fba8b3b244ae48e8637cd0285b3b94063c42a31da9916c",
+          "surface_id": "current_portfolio_exposure_20260816"
+        },
+        {
+          "snapshot_hash": "11ae6f892f67f14e420b73eb6a3ea6dac07cc7d808da8099c58ff7f2646cf1fd",
+          "surface_id": "frozen_historical_strategy_panel_20260816"
+        },
+        {
+          "snapshot_hash": "ec91c30ebd3927c3a0b3933f10df9d15017975ace92e517f0dd3beff99ae0f0b",
+          "surface_id": "paper_forward_replacement_recent_20260816"
+        }
+      ],
+      "surface_ids": [
+        "cash_feasible_core_classic_20260816",
+        "current_portfolio_exposure_20260816",
+        "frozen_historical_strategy_panel_20260816",
+        "paper_forward_replacement_recent_20260816"
+      ],
+      "title": "Capital-neutral hierarchical joint strategy allocator",
+      "treatment": {
+        "policy": "Consider all 480 frozen long surfaces; map them deterministically into eight source-mechanism buckets; equal-weight unique paths inside each bucket; enumerate every 1% capital vector with total satellite <=10%, retain the null, refine around the best feasible point at 0.25%, and never use the recent cohort in formal Gate arithmetic."
+      },
+      "why_not_arbitraged": "The repository accumulated many individually tested strategies, but capital displacement and covariance were historically evaluated one sleeve at a time. Joint funding can expose diversification that standalone champion comparisons miss, while capacity, costs, regime correlation and estimation error can erase it."
+    }
+  ],
+  "created_at": "2026-08-16T20:00:00Z",
+  "data_cutoff": "2026-08-16T19:26:44Z",
+  "expected_candidate_count": 1,
+  "experiment_id_reserved": false,
+  "outcome_blind": true,
+  "panel_hash": "2b17f768ce94f7fd6badc8eb7897e7aa2b60d79a37638d06cb433a03cb408dd7",
+  "preflight_decision_hashes": {
+    "cand-2225347516300e7f9533": "d458045483fa9b27d8bf19a34babeaee8605edbea1a8d61c47c393afb16b2f00"
+  },
+  "preflight_decisions": {
+    "cand-2225347516300e7f9533": {
+      "candidate_id": "cand-2225347516300e7f9533",
+      "data_cutoff": "2026-08-16T19:26:44Z",
+      "decision": "reject",
+      "declared_evidence_grade": "lead",
+      "evaluated_at": "2026-08-16T20:00:00Z",
+      "failure_reasons": [
+        "duplicate_or_frozen",
+        "market_expectation_unidentified",
+        "pit_or_source_failure"
+      ],
+      "fingerprint_hash": "c7b95a0e23d5ffb6deb6831137289a72dc5e7cb7598ea5a6269dac24e2993d43",
+      "gates": {
+        "D0": {
+          "reasons": [
+            "component_source_not_registered:cash_feasible_core",
+            "component_source_not_registered:historical_strategy_artifacts",
+            "fingerprint_component_sources_mismatch:declared=['cash_feasible_core', 'forward_replacement_value', 'historical_strategy_artifacts', 'portfolio_covariance_lane'] registry=['broker_portfolio', 'cash_feasible_core', 'forward_replacement_value', 'frozen_ohlcv_rowset', 'gate4p_cash_ledger', 'historical_strategy_artifacts', 'moomoo_broker_sync', 'ohlcv_warehouse', 'paper_sleeve_forward_ledgers', 'portfolio_covariance_lane', 'position_control']"
+          ],
+          "status": "reject"
+        },
+        "D1": {
+          "reasons": [
+            "prior_evidence_component_overlap:1"
+          ],
+          "status": "reject"
+        },
+        "D2": {
+          "reasons": [],
+          "status": "pass"
+        },
+        "D3": {
+          "reasons": [
+            "legacy_near_neighbor:exp-20260715-002:score=0.6138"
+          ],
+          "status": "reject"
+        }
+      },
+      "maximum_supported_evidence_grade": "lead",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "preflight_hash": "d458045483fa9b27d8bf19a34babeaee8605edbea1a8d61c47c393afb16b2f00",
+      "preflight_version": "alpha_search_preflight_v1",
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "record_type": "preflight_decision",
+      "reopen_condition": "If rejected, do not retune bucket definitions, capital grid, total budget, objective or recent mapping on the same frozen paths. Reopen only with a prospective pre-frozen joint portfolio ledger, a materially new strategy family, or an owner-authorized execution/risk gate shape backed by new evidence.",
+      "schema_version": 1,
+      "selection_scope_id": "scope-c5d3d82b6d07b53f7d4206a6",
+      "source_snapshot_hashes": {
+        "cash_feasible_core_classic_20260816": "daee5cf976bd00d4ea4957b5271e13dd63d07f4b79929ce0fdc3d32761c7766c",
+        "current_portfolio_exposure_20260816": "81f528371bebe60a44fba8b3b244ae48e8637cd0285b3b94063c42a31da9916c",
+        "frozen_historical_strategy_panel_20260816": "11ae6f892f67f14e420b73eb6a3ea6dac07cc7d808da8099c58ff7f2646cf1fd",
+        "paper_forward_replacement_recent_20260816": "ec91c30ebd3927c3a0b3933f10df9d15017975ace92e517f0dd3beff99ae0f0b"
+      },
+      "trade_enabled": false
+    }
+  },
+  "prior_fingerprint_count": 1468,
+  "prior_fingerprint_snapshot_hash": "aeebef3704798c6a1f51262e559818799f50c7caa0c677c98d3dbf45063a788e",
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "queue_actual_counts": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "queue_budgets": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "record_type": "panel_selection",
+  "rejection_reasons": {
+    "cand-2225347516300e7f9533": [
+      "duplicate_or_frozen",
+      "market_expectation_unidentified",
+      "pit_or_source_failure"
+    ]
+  },
+  "schema_version": 1,
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "cash_feasible_core_classic_20260816",
+      "current_portfolio_exposure_20260816",
+      "frozen_historical_strategy_panel_20260816",
+      "paper_forward_replacement_recent_20260816"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_kinds": [
+        "expectation_gap"
+      ],
+      "candidate_specific_results_access": false,
+      "experiment_reservation_enabled": false,
+      "generated_before_history_veto": true,
+      "generator_version": "joint-strategy-allocator-v1",
+      "mechanism_coverage": [
+        "capital_neutral_hierarchical_multi_strategy_allocation"
+      ],
+      "outcome_fields_allowed": false,
+      "queue_budgets": {
+        "adjacent": 0,
+        "exploitation": 0,
+        "exploration": 1
+      },
+      "required_evidence_roles": [
+        "market_expectation",
+        "opportunity_cost",
+        "independent_evidence",
+        "candidate_pool",
+        "positioning",
+        "portfolio_exposure"
+      ],
+      "required_precommitments": [
+        "all_480_frozen_surfaces_considered",
+        "eight_outcome_blind_source_mechanism_buckets",
+        "equal_weight_within_bucket",
+        "capital_neutral_total_satellite_budget_at_most_10_percent",
+        "global_1_percent_grid_plus_local_0p25_percent_refinement",
+        "classic_windows_formal_recent_forward_observe_only",
+        "walk_forward_validation",
+        "trade_enabled_false"
+      ],
+      "required_queues": [
+        "exploration"
+      ],
+      "schema_version": 1,
+      "selection_anchor": "The prior complete Gate 4-P audit tested one sleeve at a time; the owner-requested joint allocator is a new portfolio gate shape that considers every frozen surface without outcome-ranked candidate generation.",
+      "selection_limit": 1,
+      "selection_policy": "Project exactly one joint-allocation research candidate. No individual strategy is selected before the full frozen panel is reconstructed.",
+      "trade_enabled": false
+    },
+    "data_cutoff": "2026-08-16T19:26:44Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-08-16T20:00:00Z",
+    "generator_version": "joint-strategy-allocator-v1",
+    "manifest_hash": "c5d3d82b6d07b53f7d4206a613a491b081e3f4b36c925cd38f2f31c8a80af245",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-08-16T19:26:44Z",
+    "prior_fingerprint_count": 1468,
+    "prior_fingerprint_snapshot_hash": "aeebef3704798c6a1f51262e559818799f50c7caa0c677c98d3dbf45063a788e",
+    "queue_budgets": {
+      "adjacent": 0,
+      "exploitation": 0,
+      "exploration": 1
+    },
+    "schema_version": 1,
+    "scope_name": "joint_strategy_allocator_20260816",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "2497de0a1a087965ac655b08746958c22d93305ad3226f7272b3605c3faf67b7",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "c5d3d82b6d07b53f7d4206a613a491b081e3f4b36c925cd38f2f31c8a80af245",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "scores": {
+    "cand-2225347516300e7f9533": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 1.0,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.75
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": -0.338,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "selected_candidate_id": null,
+  "selected_candidate_ids": [],
+  "selection_limit": 1,
+  "selection_pool_complete": true,
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "selection_scope_id": "scope-c5d3d82b6d07b53f7d4206a6",
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "surface_registry_hash": "2497de0a1a087965ac655b08746958c22d93305ad3226f7272b3605c3faf67b7",
+  "trade_enabled": false
+}

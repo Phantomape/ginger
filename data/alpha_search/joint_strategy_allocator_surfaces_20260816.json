@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_classic_20260816",
+      "data_source": "cash_feasible_core",
+      "component_sources": ["cash_feasible_core"],
+      "roles": ["market_expectation", "opportunity_cost", "price"],
+      "artifacts": ["data/experiments/exp-20260715-010/after_measurement.json"],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {"type": "price_revealed", "field": "cash_feasible_core_daily_return_path", "source": "data/experiments/exp-20260715-010/after_measurement.json"},
+      "saturation_status": "open",
+      "reopen_condition": "Comparator only; grants no novelty or promotion exemption.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-15T22:26:16Z",
+      "artifact_snapshot_hashes": {"data/experiments/exp-20260715-010/after_measurement.json": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"},
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "frozen_historical_strategy_panel_20260816",
+      "data_source": "joint_strategy_allocator",
+      "component_sources": ["joint_strategy_allocator"],
+      "roles": ["independent_evidence", "candidate_pool"],
+      "artifacts": [
+        "data/experiments/exp-20260716-011/historical_evidence_manifest.json",
+        "data/experiments/exp-20260716-011/historical_gate4p_panel.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 480,
+      "candidate_overlap_count": 480,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "This is an owner-authorized new joint-allocation gate shape; a positive result remains observed-only until prospective portfolio evidence exists.",
+      "source_contract_status": "pass",
+      "as_of": "2026-07-16T20:23:10Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260716-011/historical_evidence_manifest.json": "ab1fceea636e1d3624c7ddbbd8ab40eb9b190760707ced313603932a80bf2007",
+        "data/experiments/exp-20260716-011/historical_gate4p_panel.json": "4415600227868145f27e4f2769689bbe45d80fcf764425cf8adc6e410575ee94"
+      },
+      "research_pit_basis": "All 480 strategy surfaces have explicit frozen trade clocks and exact classic-window rowsets, but the original adaptive selection history is incomplete and the reused classic windows are not an untouched vintage panel.",
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "paper_forward_replacement_recent_20260816",
+      "data_source": "forward_replacement_value",
+      "component_sources": ["paper_sleeve_forward_ledgers", "ohlcv_warehouse"],
+      "roles": ["independent_evidence", "positioning"],
+      "artifacts": ["data/paper_sleeves/forward_replacement_value.jsonl"],
+      "pit_status": "settled_forward_sufficient",
+      "evidence_grade": "observed_only",
+      "settled_count": 196,
+      "independent_count": 196,
+      "candidate_overlap_count": 196,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Recent rows are diagnostic only; live promotion needs daily MTM portfolio paths and a prospective pre-frozen allocator ledger.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-16T04:10:44Z",
+      "artifact_snapshot_hashes": {"data/paper_sleeves/forward_replacement_value.jsonl": "f577a0784bdb64664d1fb6e3504f8b9acc6cbe8053329d593214465f450d7f78"},
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "current_portfolio_exposure_20260816",
+      "data_source": "broker_portfolio",
+      "component_sources": ["moomoo_broker_sync", "position_control"],
+      "roles": ["portfolio_exposure", "positioning", "opportunity_cost"],
+      "artifacts": ["operator_inputs/open_positions.json", "data/daily/signals/trend/trend_signals_20260815.json"],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 20,
+      "independent_count": 20,
+      "candidate_overlap_count": 20,
+      "gate_ready": true,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Snapshot supplies exposure constraints only; it does not promote historical allocation weights.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-16T03:05:41Z",
+      "artifact_snapshot_hashes": {
+        "operator_inputs/open_positions.json": "c86d2f802f7da6b98dab4028ec14fe09a84bb81995d7fedfd3a163ff1cb37123",
+        "data/daily/signals/trend/trend_signals_20260815.json": "88bcb68aead91480c1cbaa7df292d03ae7bf85de052589a1cc1a56e9deb413de"
+      },
+      "known_future_leakage": false
+    }
+  ]
+}

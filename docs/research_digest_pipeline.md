@@ -106,9 +106,9 @@ Append-only，一行一个状态事件：
   abstain，alpha pass 核对 `latest_mechanism_scan.scan_completed_at` 与 run id 后再消费。
 - 若扫描任务 prompt 存放在仓库外，codex 更新后在 mailbox 回复中注明位置。
 
-### E. AGENTS.md synthesis pass 消费步骤
+### E. V2 protocol synthesis pass 消费步骤
 
-在 §2 Alpha Synthesis Pass 的证据面盘点（第 2 步）中追加一句：
+在 `docs/quant_agent_protocol_v2.md` §5 “Alpha 实验顺序”的证据面盘点中执行：
 盘点必须包含读取 `data/research_digest/latest_digest.md` 当日增量，
 对每条 fresh 条目给出挑中/放弃与一句理由（写回 ledger，不占实验 ID）；
 挑中条目进入候选假设时在票据 `research_refs` 里引用 entry_id。
@@ -141,7 +141,7 @@ Append-only，一行一个状态事件：
 2. digest 从当前 map 生成成功，<8KB，且**至少一条**被预过滤标为
    lane_blocked（map 里现存与已烧车道同形的条目应该不止一条——若为零，
    说明预检没接通，视为失败）。
-3. AGENTS.md synthesis pass 步骤已更新。
+3. V2 protocol synthesis pass 步骤已更新。
 4. 扫描任务 prompt 已更新（或在 mailbox 注明其位置与修改内容）。
 5. 下一次天级扫描运行后 digest 自动刷新（本条可留待次日验证，
    在实验票 follow-up 中注明）。

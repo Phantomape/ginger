@@ -1,0 +1,42 @@
+{
+ "artifact_kind": "research_pit_conservative_reconstruction",
+ "candidate_id": "cand-1a665d7350fd8d6349e8",
+ "counts": {
+  "conditioned_missing_entry_date": 0,
+  "conditioned_quiet_tape": 802,
+  "pit_failed_late_bar_write": 182,
+  "pit_verified_conditioned": 620,
+  "qualified_nonflat_mapped_decisions": 1522
+ },
+ "density_check_artifact": "data/alpha_search/phase2_estimate_revision_quiet_tape_density_20260830.json",
+ "generated_at": "2026-08-31T06:54:33Z",
+ "method": "For every quiet-tape conditioned decision, all 66 pre-event warehouse bars (5-session path + 60-session envelope + anchor) must have row-level updated_at <= entry_date 13:30:00Z (entry session open). updated_at is the last write clock, so passing rows prove the exact bytes read today were already in the warehouse before the decision entry; any later rewrite fails the decision closed.",
+ "outcome_blind": true,
+ "outcome_fields_read": [],
+ "outcome_files_count": 81,
+ "outcome_fileset_sha256": "49d29402d848d86186367858497cdff883cc30d2584ab252a5ace7115e509885",
+ "pit_verified_settled_per_horizon": {
+  "h10": 310,
+  "h20": 26,
+  "h5": 475
+ },
+ "pit_verified_settled_per_horizon_by_direction": {
+  "h10": {
+   "down": 173,
+   "up": 137
+  },
+  "h20": {
+   "down": 15,
+   "up": 11
+  },
+  "h5": {
+   "down": 267,
+   "up": 208
+  }
+ },
+ "schema_version": 1,
+ "surface_id": "ohlcv_price_revealed_context",
+ "trade_enabled": false,
+ "unresolved_vintage_caveat": "updated_at proves content identity at entry only for rows never rewritten after entry; it cannot recover what an even earlier vintage looked like, and split/dividend adjustments before the last write are invisible. Conclusions from this surface are therefore capped at research_pit / observed_only lead.",
+ "warehouse": "data/warehouse/warehouse_main_hot.sqlite"
+}

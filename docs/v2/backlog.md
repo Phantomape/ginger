@@ -40,12 +40,15 @@
 - [ ] 建立 unchanged acceptance-time 实时 observer + 决策时点真实 locate 证据，累计 settled forward replacement value；在此之前不得将 exp-003 接入 paper/live
 - [ ] 历史近邻回放线关闭：禁止 EFFECT-only/424-only 切片，以及 form/parser/clock/amount/liquidity/cooldown/cost/borrow/hold/hedge/sample 调参
 
-### Phase-2 estimate-revision 重开链（数值 gate 已开）
+### Phase-2 estimate-revision 重开链（已重开，2026-08-29）
 
 - [x] 结算人口修复（exp-20260811-001）；h20 于 2026-08-19+ 日历成熟（08-28 实测 518/30）
 - [x] cash-conflict bar 合同修约（exp-20260828-001, accepted）：不可达罕见事件计数 → trace 能力条件（ok sessions>=30 且终身结构化冲突>=1）；reopen_readiness phase2 lane 首次 ready，其余 lane 不变
-- [ ] **下一工作单元（未消费 conversion_debt）**：跑冻结 outcome-blind D0-D3 discovery scope（estimate-revision surface）+ source-contract 检查；scope 实际选出候选才算 Phase 2 重开
-- [ ] 禁止：动其余五项数值 bar；按决策重合冲突数重新设 gate；在 scope 选出前做任何 phase-2 alpha 实验
+- [x] conversion_debt 消费（2026-08-29, d-0012, 零 ID）：全新 outcome-blind D0-D3 scope `phase2-estimate-revision-20260829` 实际选出候选 → **Phase 2 重开**；3 候选全 pass、selector 选中 exploration breadth 候选
+- [x] 被选候选 cand-c748224bb9bc0f6a9118 当轮 park：feed 日批时钟使孤立对照仅 8 决策（vs 1510 breadth 成员），对照腿结构性不可达；blocker+定量重开条件落 `data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json`
+- [x] exploitation 候选 quiet-tape 反证已执行并 REJECTED（exp-20260831-001, 2026-08-31, d-0013）：密度检查通过（802 conditioned / 656/427/142 settled）→ 单候选 scope 复验 → research_pit 升级（updated_at 保守重建 620/802）→ F1-F6 冻结反证 4 挂 2 过；already_priced 命中预测
+- [ ] adjacent 注册候选 `cand-68d2f5dad2f903488307`（事前 overshoot 部分回吐）：**已被 08-31 次要报告污染**——反证只允许 gate 在 2026-08-31 后首次结算的干净 forward 决策上（falsifier 从 08-29 注册措辞冻结，观测 contrast 不得进 bar）；干净切片每个 gated horizon 需 ≥30 才可评估
+- [ ] 禁止：quiet-tape 包络阈值/窗口调参重试（重开条件见 d-0013）；在 daily-batch 时钟上重定义 breadth 阈值；动其余五项数值 bar
 
 ## 注意事项
 

@@ -1,0 +1,148 @@
+{
+ "admission_class": "research_replay",
+ "after_metrics": {
+  "expected_value_score": null,
+  "max_drawdown_pct": null,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": null,
+  "total_pnl": null,
+  "total_return_pct": null,
+  "trade_count": null,
+  "win_rate": null
+ },
+ "alpha_promotion": {
+  "admission_class": "research_replay",
+  "candidate_id": "cand-1a665d7350fd8d6349e8",
+  "candidate_snapshot_hash": "f738e611b27d1cc0fbfba0b92e2daa0bd68660484ac1ad1150a0c9cfca64c973",
+  "panel_hash": "e5356fb1ce351615194aa7e50f1041e142399b195c95b2c740e25d87f4e1b521",
+  "panel_path": "data/alpha_search/phase2_exploitation_selection_panel_20260830.json",
+  "panel_sha256": "51d24aa935dbc373b7a4a8f926b01a2d8fa8bd898a184bb930b55c78da2c3622",
+  "paper_live_eligible": false,
+  "preflight_hash": "8885717a51bfc45a26c14e933f13b7fcadbb16ac6477b01d82f34bcfd1ab6208",
+  "promotion_hash": "6f143172bcee66de0d4c956d521bd3740fb5d1b9fd440d827c6395dbe2c38ea9",
+  "promotion_request_path": "data/alpha_search/promotions/phase2_exploitation_quiet_tape_20260830.json",
+  "promotion_request_sha256": "50621e45058d1d56cba1bf3d1c414e92f2c59f50730116088c3ebc2b5313caea",
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "selected_evidence_grade": "lead",
+  "selection_scope_id": "scope-636adc12eb4748ccf2a9a052",
+  "source_readiness_bindings": [
+   {
+    "pit_status": "canonical_pit",
+    "readiness_hash": "6ee7a48a59ac31a2e4a995c92274f787147241937981ed947f3270612bf7d151",
+    "source_contract_hash": "9ed7cab3ea09eafda7803ff8f22bc7e3d1101b623452a1ae7a8fca04d929288e",
+    "surface_id": "estimate_revision_consensus_observer"
+   },
+   {
+    "pit_status": "research_pit",
+    "readiness_hash": "53fba6f61ec2e565e71306ed28ab7decef9d71749f38ef571a917614b4f83ecf",
+    "source_contract_hash": "2cf409cad578851f4ce43510503d1bc3e1d359d4fd1fe44e6fb2f67457d10b37",
+    "surface_id": "ohlcv_price_revealed_context"
+   }
+  ]
+ },
+ "before_metrics": {
+  "expected_value_score": null,
+  "max_drawdown_pct": null,
+  "sharpe": null,
+  "sharpe_daily": null,
+  "survival_rate": null,
+  "total_pnl": null,
+  "total_return_pct": null,
+  "trade_count": null,
+  "win_rate": null
+ },
+ "calibration": {
+  "actual_decision": "rejected",
+  "actual_ev_delta": null,
+  "actual_pnl_delta": null,
+  "actual_success": 0,
+  "brier_score": 0.04,
+  "calibration_direction": "directionally_calibrated",
+  "ev_prediction_error": null,
+  "expected_ev_delta": 0.0,
+  "expected_pnl_delta": 0.0,
+  "pnl_prediction_error": null,
+  "predicted_failure_mode_hit": true,
+  "predicted_failure_modes": [
+   "already_priced",
+   "placebo_indistinguishable",
+   "long_leg_costs_exceed_drift"
+  ],
+  "predicted_success_probability": 0.2,
+  "realized_failure_mode": "already_priced",
+  "surprise_level": "very_low",
+  "surprise_note": "The long quiet-tape leg did beat cash at every horizon (F2 pass) yet lost to QQQ and showed no issuer-specific direction signal: the session-level ticker shuffle produced larger spreads than the real assignment 10%+ of the time (real 0.21% vs shuffle p90 1.58%), so the apparent H10 spread is market/session drift, not delayed incorporation of the consensus update."
+ },
+ "causal_components": [
+  "frozen conditioning rule and cohort: the quiet-tape membership set is computed outcome-blind from identity fields plus pre-event OHLCV closes only; exactly as recorded in data/alpha_search/phase2_estimate_revision_quiet_tape_density_20260830.json (k_sigma=1.0; path_sessions=5; envelope_sessions=60; min_envelope_returns=40); membership is frozen before any outcome field is read",
+  "frozen acceptance/falsification bars; ALL required for an observed_only accept; any failure rejects: F1 directional sign spread mean(h_return_pct|up;quiet) - mean(h_return_pct|down;quiet) > 0 at >=2 of 3 horizons including H10; F2 long-leg net economics sum(h_replacement_value_vs_cash_usd|up;quiet) > 0 at >=2 of 3 horizons including H10; F3 comparators sum(h_replacement_value_vs_spy_usd|up;quiet) > 0 AND sum(h_replacement_value_vs_qqq_usd|up;quiet) > 0 at H10; F4 exact-clock date placebo at H10: real up-minus-down directional spread computed with a single simple methodology (entry next warehouse session open strictly after as_of_date; exit at the 10th session close; gross) must exceed the 90th percentile of 200 draws reassigning each conditioned decision an as_of session uniformly from the other decision sessions with ticker and direction kept; F5 ticker shuffle at H10: same methodology; real spread must exceed the 90th percentile of 200 draws permuting tickers among decisions within the same session with dates and directions kept",
+  "F6 research-PIT robustness bar: the F1 directional sign spread must also be > 0 at BOTH H5 and H10 on the conservative PIT-verified conditioned subset (620 decisions whose 66 pre-event bars were all last written at or before entry open per data/alpha_search/phase2_estimate_revision_ohlcv_context_pit_reconstruction_20260830.json; settled legs h5=475 up208/down267; h10=310 up137/down173; every gated leg >= 30); the H20 PIT-verified leg (26 settled) is below any credible bar and is REPORTED ONLY; never gated; per the 2026-08-28 protocol rule against structurally unreachable bars",
+  "secondary reported non-gating evidence: magnitude monotonicity of directional response across relative terciles of abs(eps_estimate_delta_prev); quiet-tape versus already-moved-tape contrast (comparator leg settled counts 178/127/41); H20 PIT-verified subset spread",
+  "no production surface changes: the runner only reads the append-only settled outcome ledgers and the OHLCV warehouse; no signal; entry; exit; sizing; order; or observer behavior changes; trade_enabled stays false; maximum conclusion is an observed_only lead per the V2 pre-Engine-0 boundary; with the next conversion step (default-off daily admission of new quiet-tape decisions) reserved for a separate experiment only if this falsification survives",
+  "negative-update decisions are evaluated as foregone-long avoidance evidence only (no borrow assumed anywhere); the tradable economic claim is confined to the long leg per the candidate's frozen execution envelope"
+ ],
+ "change_summary": "exp-20260831-001 quiet-tape delayed repricing falsification REJECTED on the frozen F1-F6 contract: F1 sign spread failed (h5 -0.017%, h10 +0.63%, h20 -0.27%; needed >0 at >=2/3 horizons incl h10 - only h10 positive), F3 failed (up-leg h10 replacement value -$5,781 vs QQQ despite +$1,958 vs SPY), F5 ticker-shuffle failed (real simple spread 0.21% below shuffle p90 1.58%), F6 PIT-verified subset failed (h5 spread -0.26%). F2 (long leg vs cash positive at all horizons) and F4 (date placebo) passed but cannot carry the verdict alone. Cohort: 802 quiet-tape conditioned decisions (620 PIT-verified) over 21 sessions from 1522 qualified non-flat mapped decisions; settled legs h5/h10/h20 = 656/427/142. Read-only over the settled outcome ledgers and OHLCV warehouse; no production behavior changed; trade_enabled false throughout.",
+ "change_type": "private_replay_scout",
+ "changed_variable": "quiet_tape_delayed_repricing_forward_attribution_v1",
+ "component": "quant/experiments/exp_20260831_001_quiet_tape_delayed_repricing.py, data/experiments/exp-20260831-001/exp_20260831_001_quiet_tape_delayed_repricing.json, experiments/cards/exp-20260831-001.md, experiments/manifests/exp-20260831-001.json, experiments/tickets/exp-20260831-001.json, experiments/logs/exp-20260831-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+ "date_range": {},
+ "decision": "rejected",
+ "delta_metrics": {},
+ "experiment_id": "exp-20260831-001",
+ "hypothesis": "Registered exploitation registrant cand-1a665d7350fd8d6349e8: when the schema-v3 estimate ledger records a qualified non-flat consensus EPS forecast update for a mapped issuer and the pre-event five-session price path shows no same-direction move beyond its recent volatility envelope (frozen rule: dir_sign * ln(close_A/close_{A-5}) <= 1.0 * sigma5, sigma5 = stdev of 60 prior daily log returns * sqrt(5), >=40 returns required fail-closed, anchor A = last warehouse session <= as_of_date), the equity reprices toward the updated forecast over H5-H20 from the following tradable session. The falsification runs as a forward attribution read over the canonical settled default-off outcome ledger (79+ dated files, fileset bound by sha256 in the density artifact) over the 802 quiet-tape conditioned decisions with settled legs h5=656 (up 293 / down 363), h10=427 (196/231), h20=142 (70/72), every leg >= 30 and pre-verified reachable outcome-blind in data/alpha_search/phase2_estimate_revision_quiet_tape_density_20260830.json.",
+ "llm_metrics": {
+  "used_llm": false
+ },
+ "market_regime_summary": {},
+ "mechanism_family": "staged_diffusion_of_analyst_forecast_updates_into_prices",
+ "multiple_testing_risk_bucket": "minimal",
+ "nearby_prior_experiments": [
+  "exp-20260811-001",
+  "exp-20260721-002",
+  "exp-20260828-001"
+ ],
+ "new_evidence_type": "not_declared",
+ "next_retry_requires": [],
+ "notes": "Frozen contract consumed exactly as pre-registered: outcome-blind quiet-tape density check (2026-08-30 artifact) -> one-candidate scope revalidation (scope-636adc12eb4748ccf2a9a052, panel e5356fb1..., D0-D3 pass, zero legacy hits vs 1484 priors) -> promotion (research_replay admission, result ceiling observed_only) -> reserve -> run. The OHLCV context surface was honestly upgraded to research_pit via a conservative updated_at reconstruction (620/802 decisions fully pre-entry-written, artifact-bound); the h20 PIT-verified leg (26) was reported, never gated. Magnitude monotonicity broke at h10/h20. Reopen only with: (a) settled h5/h10/h20 >= 2704/2144/1400 (2x current 1352/1072/700 closed) under unchanged qualification, or (b) a true intra-session per-update publication clock added to the source contract, or (c) a genuinely different conditioning variable; quiet-tape envelope threshold moves (k-sigma, window lengths) are forbidden near-neighbor retries. The adjacent registrant cand-68d2f5dad2f903488307 (pre-event overshoot partial reversion) remains registered and unconsumed.",
+ "paper_live_eligible": false,
+ "parameters": {
+  "locked_variables": [
+   "quiet_tape_delayed_repricing_forward_attribution_v1"
+  ],
+  "single_causal_variable": "quiet_tape_delayed_repricing_forward_attribution_v1"
+ },
+ "post_run_reflection": {
+  "forbidden_near_neighbor_retry": "Forbidden: k-sigma/window/threshold moves on the same quiet-tape envelope; horizon swaps; re-reading the same settled cohort with a different response field; redefining the conditioning on the same daily-batch consensus clock; any re-run before the registered reopen counts.",
+  "new_evidence_required": "Reopen only with (a) settled h5/h10/h20 >= 2704/2144/1400 closed decisions (2x current 1352/1072/700) under unchanged qualification, or (b) a true intra-session per-update publication clock added to the estimate-revision source contract, or (c) a genuinely different conditioning variable that is not a transformation of the pre-event price path. The registered adjacent candidate cand-68d2f5dad2f903488307 (pre-event overshoot partial reversion) is a distinct pre-registered mechanism and may proceed through its own reachability check and one-candidate scope without reopening this family.",
+  "realized_failure_mode": "already_priced",
+  "why_result_happened": "The long quiet-tape leg did beat cash at every horizon (F2 pass) yet lost to QQQ and showed no issuer-specific direction signal: the session-level ticker shuffle produced larger spreads than the real assignment 10%+ of the time (real 0.21% vs shuffle p90 1.58%), so the apparent H10 spread is market/session drift, not delayed incorporation of the consensus update."
+ },
+ "prediction": {
+  "confidence_reason": "The registered candidate put 0.15 on this mechanism before the conditioning density was known; the density check removed the insufficient_rows failure mode (every direction-horizon leg >= 70 settled) and both conditioned and control legs are populated, but the mechanism family has many frozen underreaction ancestors on the legacy quarantined surface and the daily-batch consensus feed may already price updates by the entry session.",
+  "expected_ev_delta": 0.0,
+  "expected_pnl_delta": 0.0,
+  "main_failure_modes": [
+   "already_priced",
+   "placebo_indistinguishable",
+   "long_leg_costs_exceed_drift"
+  ],
+  "recorded_at": "2026-08-31T07:04:03+00:00",
+  "success_probability": 0.2
+ },
+ "prior_trial_count": 0,
+ "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+ "related_files": [
+  "data/experiments/exp-20260831-001/before_metrics.json",
+  "data/experiments/exp-20260831-001/after_metrics.json"
+ ],
+ "research_refs": [],
+ "result_ceiling": "observed_only",
+ "secondary_windows": [],
+ "selected_evidence_grade": "lead",
+ "status": "rejected",
+ "timestamp": "2026-08-31T07:08:06+00:00",
+ "trial_family": "estimate_revision_qualified_consensus_update_forward_validation",
+ "trial_variant_id": "exp-20260831-001"
+}

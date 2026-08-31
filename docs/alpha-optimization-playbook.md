@@ -26,7 +26,7 @@ Use each repository surface for one time scale of memory:
 
 | Information | Single source of truth |
 |---|---|
-| Exact trial hypothesis, metrics, artifacts, hashes, decision, and reflection | `experiments/logs/*.json`, `experiments/tickets/*.json`, and `docs/experiment_log.jsonl` |
+| Exact trial hypothesis, metrics, artifacts, hashes, decision, and reflection | `experiments/logs/*.json` and `experiments/tickets/*.json` (`docs/experiment_log.jsonl` is a rebuildable search view) |
 | Compact current state and recent work | `docs/alpha_context_pack.md` and `docs/current_state_snapshot.md` |
 | Machine-enforced frozen families and reopen text | `docs/frozen_families.jsonl` |
 | Recurring mechanism lessons with supporting history | `docs/lessons/*.md` |
@@ -213,7 +213,8 @@ Before reserving an alpha experiment, answer all of the following:
 1. What economic mechanism should create profit, and which decision surface
    changes: entry, exit, ranking, capital/risk allocation, LLM event scoring, or
    candidate pool?
-2. Is the evidence axis genuinely new under `AGENTS.md` and the novelty gate?
+2. Is the evidence axis genuinely new under `docs/quant_agent_protocol_v2.md`
+   and the novelty gate?
 3. Does an open ticket already own this hypothesis?
 4. Is the source point-in-time, replayable, permitted, mapped, dense, and not
    dominated by one issuer or one query?

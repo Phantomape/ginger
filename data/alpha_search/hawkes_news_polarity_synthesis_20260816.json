@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "generated_at": "2026-08-16T19:38:30Z",
+  "generated_by": "codex-root",
+  "task": "explore_a_hawkes_process_edge",
+  "outcome_blind": true,
+  "baseline_universe": [
+    "cash",
+    "SPY same-window hold",
+    "QQQ same-window hold",
+    "active cash-feasible core baseline exp-20260715-010",
+    "all out-of-replay structured-news SIC4/theme group-dates with at least three closed peer legs"
+  ],
+  "opportunity_cost_winner": "signed structured-news Hawkes conditional-intensity observer candidate; no current ticker buy is authorized",
+  "evidence_surfaces_used": [
+    "canonical OHLCV warehouse and SPY H10 settlement",
+    "run.py-wired structured-news second-order exposure observer",
+    "deterministic SIC4 peer index with theme fallback",
+    "current portfolio exposure snapshot"
+  ],
+  "evidence_surfaces_missing": [
+    "PIT option-trade arrival timestamps; available option chains are snapshots, not event arrivals",
+    "usable borrow availability; current snapshot has zero populated rows",
+    "canonical intraday news-arrival timestamps across a sufficiently long history"
+  ],
+  "hypothesis_candidates": [
+    {
+      "name": "signed_news_cross_excitation",
+      "status": "selected",
+      "baseline": "zero next-open-to-H10 SPY excess, equal-notional positive-score cohort, and all OOS group-date cohort",
+      "treatment": "long second-order peers with notional scaled by the pre-outcome signed Hawkes intensity imbalance",
+      "expected_horizon": "next_open_to_10_session_close",
+      "replacement_value_comparator": "cash/SPY plus equal-notional cohort controls",
+      "mechanism": "clustered negative and positive public-news arrivals can shift the conditional sign distribution for economically linked peers; slow second-order diffusion may leave residual drift after the first-order name is priced",
+      "falsifier": "no positive net H10 SPY-excess after 45bp, no improvement versus both equal-notional controls, either chronological half non-positive, fewer than four positive groups, or positive-PnL concentration above 40%"
+    },
+    {
+      "name": "option_trade_arrival_hawkes",
+      "status": "declined_before_reservation",
+      "reason": "available option-chain files are PIT cross-sectional snapshots and do not expose the trade-arrival clock required by a Hawkes likelihood"
+    },
+    {
+      "name": "peer_price_jump_mutual_hawkes",
+      "status": "declined_before_reservation",
+      "reason": "pure-OHLCV lead-lag and rolling-peer relation families are frozen without a new relation source or materially larger settled-forward surface"
+    },
+    {
+      "name": "daily_capital_flow_hawkes",
+      "status": "declined_before_reservation",
+      "reason": "daily aggregates are not arrival events and the retrospective vendor-as-of surface cannot support canonical promotion"
+    }
+  ],
+  "selected_hypothesis": "A fixed bivariate exponential Hawkes model of positive and negative structured-news arrivals, fit on 2026-07-01 through 2026-07-20 without price outcomes and rolled forward from 2026-07-21, produces a signed conditional-intensity imbalance that identifies SIC4/theme peer group-dates with positive net H10 SPY-excess after a 45bp round-trip cost; scale long-only notional continuously by that imbalance.",
+  "economic_mechanism": "The Hawkes state measures endogenous clustering and sign transition in public information, while the peer-exposure map identifies the second-order transmission channel. The test asks whether a conditional arrival-state posterior adds information beyond static event polarity and beyond holding the same cohort equally.",
+  "falsifier": "The candidate fails unless the event-arrival likelihood improves out of sample and the frozen trading read has positive mean and median decision contribution, positive chronological halves, higher net return per deployed dollar than both equal-notional controls, at least four of seven groups positive, and no group or decision above 40% of positive PnL.",
+  "pit_tier": "canonical_pit",
+  "evidence_grade": "observed_only",
+  "result_ceiling": "observed_only",
+  "next_machine_action": "freeze the outcome-blind cohort and model contract, validate D0-D3, reserve one observed-only attribution ID, then read only the frozen H10 outcomes",
+  "research_digest_decisions": {
+    "ledger_updated_at": "2026-08-16T19:35:27Z",
+    "picked_entry_ids": [],
+    "declined_entry_count": 9,
+    "reason": "none of the fresh digest items supplies a Hawkes event-arrival clock or a new lawful evidence axis for this hypothesis"
+  },
+  "portfolio_context": {
+    "open_position_rows": 20,
+    "cash_usd": 11390.24,
+    "overlap_policy": "observer only; no position, order, ranking, sizing, or exit changes",
+    "instrument_mapping": "no leveraged ETF, option, short, or borrow mapping"
+  }
+}

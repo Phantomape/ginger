@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_core_price_prior_20260715",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "opportunity_cost",
+        "price"
+      ],
+      "artifacts": [
+        "data/experiments/exp-20260715-010/after_measurement.json"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_or_same_clock_SPY_opportunity_cost",
+        "source": "data/experiments/exp-20260715-010/after_measurement.json"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Comparator only; grants no novelty, reopen, or promotion authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-24T20:31:00Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260715-010/after_measurement.json": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "sec_s1_f1_selling_holder_overhang_research_pit_20260824",
+      "data_source": "sec_s1_f1_offering_economics",
+      "component_sources": [
+        "sec_s1_f1_offering_economics"
+      ],
+      "roles": [
+        "event",
+        "independent_evidence",
+        "candidate_universe"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/sec_offering_economics/manifest.json",
+        "data/non_ohlcv/sec_offering_economics_tradeable/manifest.json",
+        "data/non_ohlcv/sec_offering_economics_tradeable/rows.jsonl",
+        "data/alpha_search/sec_offering_tradeable_prefilter_20260824.json",
+        "data/alpha_search/sec_selling_holder_overhang_roster_20260824.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 118,
+      "candidate_overlap_count": 118,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "The prior resolved S-1/F-1 overhang family may be read once using the frozen selling-holder field and 118-row roster; a rejection cannot be retried by changing forms, text regexes, liquidity floors, cooldown, costs, or H10.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-24T20:31:00Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/sec_offering_economics/manifest.json": "577e3fbfe4627abe2ec40f4c3ecd50690d22f261a46f5b35c1cc438ffdbc26f8",
+        "data/non_ohlcv/sec_offering_economics_tradeable/manifest.json": "acfee258a8764c9ded01d061b93e98e4dde8045b12dc4bc8c2b6b27984de1c85",
+        "data/non_ohlcv/sec_offering_economics_tradeable/rows.jsonl": "6f70df04a1bded732f4bb9541751739fa3f90c945549dbab1a4da0022a00cc1e",
+        "data/alpha_search/sec_offering_tradeable_prefilter_20260824.json": "18f701521ed38d2af8e1b1cf54294450133cc49d661fae92bb15ee77765e48b2",
+        "data/alpha_search/sec_selling_holder_overhang_roster_20260824.json": "b35b6078b19f3ab0aa90d23a4080e60a3e31ecfdeacff3bc02435882e83bd616"
+      },
+      "known_future_leakage": false,
+      "research_pit_basis": "SEC accepted_at and filing text are public event clocks; every roster row enters only after accepted_at. Instrument membership uses only the latest dated active common-stock snapshot known by accepted_at, and liquidity uses only completed bars known by accepted_at. The dated identity archive lacks immutable as-published proof, so the result ceiling remains observed_only."
+    },
+    {
+      "surface_id": "massive_reference_asof_identity_research_pit_20260728",
+      "data_source": "massive_reference_asof_identity",
+      "component_sources": [
+        "massive_reference_asof_identity"
+      ],
+      "roles": [
+        "independent_evidence",
+        "candidate_universe",
+        "identity"
+      ],
+      "artifacts": [
+        "data/alpha_search/massive_asof_identity_readiness_20260728.json"
+      ],
+      "pit_status": "research_pit",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 188528,
+      "candidate_overlap_count": 118,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "A positive private replay remains observed-only until the dated reference endpoint has immutable as-published vintage proof; descriptive revisions and FIGIs remain excluded from decisions.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-24T20:31:00Z",
+      "artifact_snapshot_hashes": {
+        "data/alpha_search/massive_asof_identity_readiness_20260728.json": "04bae7c39f5bb76980c9553165c53c1110e0570b8d4279cf130a9094344e0a00"
+      },
+      "research_pit_basis": "The dated reference query freezes active=true,type=CS membership by reference snapshot date. Roster decisions use only as_of, ticker, type and active; future descriptive revisions are quarantined and immutable as-published vintage proof remains absent.",
+      "known_future_leakage": false
+    }
+  ]
+}

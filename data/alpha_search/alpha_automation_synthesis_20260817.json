@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "automation_id": "alpha",
+  "generated_at": "2026-08-17T16:45:30Z",
+  "data_cutoff": "2026-08-17T16:45:30Z",
+  "outcome_blind": true,
+  "experiment_id_reserved": false,
+  "trade_enabled": false,
+  "contamination_firewall": {
+    "candidate_generation_fixed_before_history_veto": true,
+    "candidate_future_returns_used": false,
+    "current_portfolio_unrealized_pnl_used": false,
+    "historical_acceptance_rate_used_for_ranking": false,
+    "contaminated_agent_ranking_excluded": true,
+    "allowed_history_use": "novelty, saturation, reopen, source-contract and governance vetoes only"
+  },
+  "baseline_universe": [
+    "P",
+    "ESTC",
+    "MDB",
+    "DDOG",
+    "MRVL",
+    "MU",
+    "COHR",
+    "current 20-position broker exposure",
+    "41 registered default-off paper surfaces"
+  ],
+  "cross_sectional_opportunity_cost": {
+    "as_of_market_session": "2026-08-14",
+    "formal_core_entries": 0,
+    "paper_entries": 0,
+    "pending_paper_candidates": 4,
+    "pending_candidates_execution_blocked": 4,
+    "position_control_allows_new_risk": false,
+    "stock_winner": null,
+    "reason": "No same-session stock candidate is executable under the frozen control state; naming one as a winner would ignore broker-control and displacement constraints."
+  },
+  "opportunity_cost_winner": "cash_and_no_new_risk_until_position_control_passes",
+  "evidence_surfaces_used": [
+    {
+      "surface": "price",
+      "status": "canonical",
+      "facts": "OHLCV hot range 2024-09-20 through 2026-08-14; 106321 rows and 1348 tickers; classic rowset and calendar hashes available."
+    },
+    {
+      "surface": "flow",
+      "status": "mixed",
+      "facts": "FINRA SI/ATS/OTC have publication-time PIT contracts; Moomoo flow is forward PIT only after 2026-07-02 and cannot supply old_thin canonical history."
+    },
+    {
+      "surface": "derivatives",
+      "status": "forward_research_only",
+      "facts": "Onclick archive has 5564 rows and a current PIT-safe daily join, but lacks authorized canonical history across all three standard windows."
+    },
+    {
+      "surface": "event",
+      "status": "mixed",
+      "facts": "SEC event rows are PIT-safe; Form 4 forward effective decisions remain immature; entity-theme remains observer-grade."
+    },
+    {
+      "surface": "positioning",
+      "status": "mixed",
+      "facts": "FINRA publication-time surfaces are canonical; borrow availability is effectively unpopulated; prediction-market identity concentration remains above its frozen bars."
+    },
+    {
+      "surface": "portfolio_exposure",
+      "status": "canonical_control_snapshot",
+      "facts": "20 positions, four pending paper entries blocked, and ok_to_add_control_pass=false; all proposed alpha remains default-off."
+    },
+    {
+      "surface": "research_digest",
+      "status": "consumed_none",
+      "facts": "latest digest was generated 2026-07-27; all nine visible entries were previously declined or consumed; no fresh entry was used."
+    }
+  ],
+  "evidence_surfaces_missing": [
+    "canonical three-window derivatives term structure",
+    "auditable pre-frozen dynamic allocator decision ledger",
+    "independent owner authorization for a time-varying portfolio risk gate",
+    "candidate-specific open-position state-transfer and complete selection/DSR panel",
+    "forward H20 estimate-revision settlements and real cash-conflict decisions",
+    "mature exit-lifecycle severity cohorts and 5/5/5 executable treatment touches"
+  ],
+  "research_digest": {
+    "artifact": "data/research_digest/latest_digest.md",
+    "fresh_entry_count": 0,
+    "selected_entry_ids": [],
+    "ledger_event_id": "digest-scan-20260817-alpha",
+    "decision": "No digest item supplies novelty, reopening, authorization, or admission evidence."
+  },
+  "hypothesis_candidates": [
+    {
+      "candidate_id": "mechanism-dynamic-risk-budget-20260817",
+      "search_queue": "exploration",
+      "category": "capital_allocation_and_risk_allocation",
+      "baseline": "100 percent cash-feasible core with no satellite risk budget.",
+      "treatment": "On the current-enabled canonical-PIT panel, require at least five raw trades in every classic window; on the first session of each ISO week use only the prior 60 completed sessions, require at least five nonzero return sessions, rank by lowest absolute core correlation with lexical tie-breaks, select at most four exact-parent-child-disjoint sleeves, and assign capped inverse-volatility weights with 10 percent total and 5 percent per-sleeve caps. Hold residual capital as cash and never rank by mean return.",
+      "economic_mechanism": "Information clocks across event, fundamental, macro and technical sleeves are asynchronous. A strictly lagged risk budget may reduce marginal portfolio variance and displacement cost when diversification changes more slowly than expected returns.",
+      "expected_horizon": "Weekly decisions using a 60-completed-session lookback across old_thin, mid_weak and late_strong.",
+      "replacement_value_comparator": "100 percent cash-feasible core primary; static capped equal-risk and 90 percent core plus 10 percent cash diagnostics.",
+      "execution_envelope": "Default-off only; total satellite <=10 percent NAV, each sleeve <=5 percent, at most four sleeves, exact parent-child exclusion, shared cash/cost calendar, no leverage, cash residual, weekly rebalance, no production orders, and fail-closed kill switch for missing state or hash drift.",
+      "falsifier": "Park or reject if owner/novelty admission is absent, state transfer or source identity is incomplete, fewer than five executable weight changes occur in any standard window, overlap or concentration caps fail, or Gate 4-P fails against full core.",
+      "pit_tier": "canonical_pit",
+      "evidence_grade": "lead",
+      "result_ceiling": "invalid_without_independent_owner_authorization_and_ordinary_start_admission"
+    },
+    {
+      "candidate_id": "mechanism-estimate-revision-price-transmission-20260817",
+      "search_queue": "adjacent",
+      "category": "candidate_pool_and_positioning",
+      "baseline": "Current price-led candidate pool and full cash-feasible core.",
+      "treatment": "Admit only genuinely point-in-time estimate-revision decisions whose independent evidence and next-session price transmission disagree with the market prior, with a frozen 20-session horizon and explicit same-day cash-conflict comparator.",
+      "economic_mechanism": "Analyst expectation revisions can diffuse into prices over several sessions, but value exists only where the revision changes an executable cash-allocation decision rather than restating momentum.",
+      "expected_horizon": "5, 10 and 20 sessions after the revision; formal readiness requires the 20-session window.",
+      "replacement_value_comparator": "Cash-feasible core, cash, SPY, QQQ, and the unconditioned price-led candidate.",
+      "execution_envelope": "Next-open cash equity only, top-one displacement, at most 5 percent NAV, no leverage, liquidity and overlap caps, default-off, missing consensus vintage fails closed.",
+      "falsifier": "Park when H20 settled decisions are below 30, real cash conflicts below 10, or executable standard-window touches below 5/5/5; reject on no replacement-value transmission after those bars are met.",
+      "pit_tier": "canonical_pit",
+      "evidence_grade": "lead",
+      "result_ceiling": "observer_until_forward_settlement_and_conflict_bars_pass"
+    },
+    {
+      "candidate_id": "mechanism-exit-lifecycle-slot-reuse-20260817",
+      "search_queue": "exploitation",
+      "category": "exit_and_capital_allocation",
+      "baseline": "Current frozen exit lifecycle and unused slot held as cash.",
+      "treatment": "Use predeclared advisory and hard-stop lifecycle severities to release a slot only when a machine-verifiable next-session replacement candidate exists, without changing the underlying entry ranker or exit thresholds.",
+      "economic_mechanism": "Exit value is the avoided opportunity cost of stale capital, not merely the exited trade return; severity should transmit through a real executable replacement decision.",
+      "expected_horizon": "Next session replacement plus 5 and 20 session replacement-value settlement.",
+      "replacement_value_comparator": "Frozen current exit policy, continued hold, cash, SPY, QQQ, and the actual replacement candidate.",
+      "execution_envelope": "One released slot, no leverage, existing liquidity and exposure limits, default-off, no threshold retune, missing replacement timestamp fails closed.",
+      "falsifier": "Park when hard-stop actions are below 33, advisory actions below 60, or executable touches below 5/5/5; reject if mature replacement value does not cover turnover and displacement cost.",
+      "pit_tier": "canonical_pit",
+      "evidence_grade": "lead",
+      "result_ceiling": "observer_until_action_and_touch_bars_pass"
+    }
+  ],
+  "selection_basis": {
+    "selected_candidate_id": "mechanism-dynamic-risk-budget-20260817",
+    "criteria": "Most complete canonical data, surface identity, overlap graph and raw touch substrate among the three generated mechanisms; no return or historical acceptance metric used.",
+    "selected_for": "Investment Team lead-level research only",
+    "admission_not_granted": true
+  },
+  "selected_hypothesis": "mechanism-dynamic-risk-budget-20260817",
+  "economic_mechanism": "Trailing-only covariance and volatility may deconcentrate a small satellite budget across asynchronous information clocks without expected-return ranking.",
+  "falsifier": "No independent owner authorization or ordinary-start novelty admission, incomplete state-transfer/selection contracts, fewer than five candidate-specific touches per window, or failure of capital-neutral Gate 4-P.",
+  "pit_tier": "canonical_pit",
+  "evidence_grade": "lead",
+  "result_ceiling": "invalid_until_authorized_and_qualified",
+  "next_machine_action": "Complete outcome-blind readiness, generate a four-role Investment Team card, freeze all inputs, and invoke authoritative qualify exactly once."
+}

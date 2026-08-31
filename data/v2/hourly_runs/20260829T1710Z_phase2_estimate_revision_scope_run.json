@@ -1,0 +1,85 @@
+{
+ "schema_version": 1,
+ "run_id": "20260829T1710Z_phase2_estimate_revision_scope_run",
+ "started_at": "2026-08-29T16:15:00Z",
+ "finished_at": "2026-08-29T17:10:00Z",
+ "agent": "claude-scheduled-alpha",
+ "work_unit": "alpha_search_discovery_scope",
+ "experiment_id": null,
+ "status": "completed",
+ "alpha_pulse_24h": {
+  "alpha_trials": 0,
+  "canonical_gate4_passes": 0,
+  "forward_decisions": 0,
+  "settled_outcomes": 0,
+  "net_replacement_value_usd": 0.0,
+  "active_forward_sleeves": {
+   "news_propagation_pair": {
+    "observer_health": "ok - overnight daily run produced one new first-seen batch which fail-closed on cross_side_ticker_overlap (data-determined, legal per exp-20260826-001 residual-blocker contract); both ready batches remain admitted",
+    "decisions": 2,
+    "pending_baskets": 2,
+    "due_unsettled": 0,
+    "eligible_unadmitted": 0,
+    "eta_first_settlement": "2026-09-10",
+    "eta_contract_completion": "contract needs >=20 closed baskets over >=10 decision dates; ready-batch flow is data-dependent (2 of 5 lifetime batches ready), earliest realistically late September 2026"
+   },
+   "move_rate_volatility_relief": {
+    "observer_health": "ok but event-starved: 0 closed / 0 open / 0 pending; 30-row reopen bar has no calendar ETA"
+   }
+  },
+  "observer_stale_sleeves": 0,
+  "eligible_unadmitted": 0,
+  "due_unsettled": 0,
+  "note": "The D0-D3 selection scope burns no experiment ID and does not count as an alpha trial. Zero-pulse SLA satisfied via the completed outcome-blind preflight (this scope) with the next unit locked to a concrete frozen experiment path."
+ },
+ "conversion_debt": [
+  {
+   "trigger_artifact": "data/reopen_readiness.json phase2_estimate_revision lane status=ready",
+   "opened_at": "2026-08-28T16:47:00Z",
+   "frozen_contract_ref": "docs/alpha_search_phase1_handoff.md Phase 1.5 reopen contract (exp-20260721-002; cash bar amended by exp-20260828-001 per exp-20260811-001)",
+   "consumed_at": "2026-08-29T16:25:18Z",
+   "consumed_by_experiment_id": null,
+   "consumed_by": "selection scope scope-2d453592cbe4b7b822ff9fdf (phase2-estimate-revision-20260829); scope runs burn no experiment ID per protocol",
+   "selected_candidate": "cand-c748224bb9bc0f6a9118",
+   "resolution": "CONSUMED. The fresh outcome-blind D0-D3 scope actually selected a candidate, so Phase 2 is reopened per the frozen Phase-1.5 contract. The selected candidate was then parked before reserve on a structural falsifier-reachability blocker (see scope_debt below and data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json)."
+  }
+ ],
+ "scope_debt": [
+  {
+   "debt_type": "scope_debt",
+   "trigger_artifact": "data/alpha_search/phase2_estimate_revision_selection_panel_20260829.json (panel_hash e9ca292b1f7b832c8b88aa7cbe5d17a6dc666a12436c272750ce7d5841999a81) + data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json",
+   "opened_at": "2026-08-29T16:55:00Z",
+   "frozen_contract_ref": "Registered D0-D3-passed exploitation candidate cand-1a665d7350fd8d6349e8 (delayed price incorporation of qualified consensus forecast updates) in data/alpha_search/phase2_estimate_revision_candidate_pool_20260829.json and the discovery ledger",
+   "consumed_at": null,
+   "blocker": "Phase 2 is reopened but the selected exploration candidate is parked (isolated-control cohort 8 decisions lifetime vs any credible >=30 bar; daily-batch feed clock). The standing exploitation registrant passed D0-D3 this round but was not selected (selection_limit=1). Next unit must run its outcome-blind quiet-tape conditioning density check; if >=30 conditioned decisions per horizon, revalidate it through a one-candidate scope, freeze the falsifier, and reserve->claim->run the frozen falsification in the same unit; if unreachable, close with a machine-readable no-candidate record and fall back to the registered low-friction surfaces."
+  }
+ ],
+ "economic_progress": false,
+ "economic_progress_note": "Phase 2 reopened via a real selection (first candidate selected by the discovery layer since it was built in July), but no alpha trial ran, nothing settled, and the selected candidate parked on a structural control-cohort starvation found by the pre-freeze reachability check. No experiment ID was burned on the unreachable design.",
+ "changes": [
+  "data/alpha_search/phase2_estimate_revision_prior_fingerprints_20260829.json (build-history canonical snapshot: 1484 records = 1351 frozen families + 133 discovery)",
+  "data/alpha_search/phase2_estimate_revision_surfaces_20260829.json (fresh as-of surface snapshot; estimate surface canonical_pit/gate_candidate/open with machine reopen evidence in reopen_condition)",
+  "data/alpha_search/phase2_estimate_revision_generation_config_20260829.json (phase-1 budgets/limits mirrored; generator alpha-search-phase2-estimate-revision-v1)",
+  "data/alpha_search/phase2_estimate_revision_scope_manifest_20260829.json (pre-registered before candidate authoring)",
+  "data/alpha_search/phase2_estimate_revision_candidate_pool_20260829.json (3 outcome-blind candidates, semantic IDs)",
+  "data/alpha_search/phase2_estimate_revision_preflight_{exploitation,adjacent,exploration}_20260829.json (all pass D0-D3)",
+  "data/alpha_search/phase2_estimate_revision_selection_panel_20260829.json + panel_verification (valid=true, 1 selected)",
+  "data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json (park artifact, identity-fields-only)",
+  "data/alpha_search/events.jsonl (+4 append-only discovery records)",
+  "docs/v2/current_state.md, docs/v2/backlog.md, docs/v2/decision_log.jsonl d-0012"
+ ],
+ "verification": [
+  "source contract: quant/test_estimate_revision_source_contract.py 6/6 passed",
+  "reopen_readiness phase2_estimate_revision lane status=ready (generated 2026-08-28T16:27:15Z, sha256 2feaa682a41b4a14f5e150db159285da278137473ad6d377a630e9dbc414146e)",
+  "3/3 candidates D0-D3 pass with zero legacy near-neighbor hits against 1484 prior records (dry-run reproduced with the engine's own candidate_legacy_fingerprints/legacy_near_neighbors before freezing)",
+  "verify-panel: valid=true, outcome_blind=true, candidate_count=3, selected_count=1, panel_hash e9ca292b1f7b832c8b88aa7cbe5d17a6dc666a12436c272750ce7d5841999a81",
+  "reachability check read identity fields only (decision_id/ticker/direction/clock/qualification flags); zero outcome fields touched; outcome_fileset sha256 recorded in the park artifact",
+  "no experiment ID reserved; trade_enabled=false throughout; no signals, order intents, or orders"
+ ],
+ "next_alpha_action": {
+  "primary": "Run the outcome-blind quiet-tape conditioning density check for cand-1a665d7350fd8d6349e8 (delayed price incorporation): per qualified non-flat mapped decision, compute the pre-event five-session price path and volatility envelope from OHLCV identity data only, count conditioned decisions per horizon. Success gate: >=30 conditioned decisions at each of H5/H10/H20 -> in the same unit revalidate the candidate through a fresh one-candidate scope (build-panel + build-promotion), freeze the falsifier numerically (placebo/shuffle/monotonicity/comparator bars with pre-checked reachable counts), then reserve->claim->run the frozen falsification experiment on the settled ledger. Failure gate: <30 -> machine-readable no_candidate record, park the phase-2 lane with the measured counts as the new quantitative bar, and switch to the registered low-friction surface list.",
+  "secondary": "Watch the pair sleeve daily run: both pending baskets settle ~2026-09-10; any due-unsettled or eligible-unadmitted is an economic_incident that preempts new work.",
+  "forbidden": "No breadth redefinition on the daily-batch clock; no touching the other five phase-2 numeric bars; no outcome reads before falsifier freeze + ID reserve; no news-family attribution re-reads below 1508 closed negative-side rows."
+ },
+ "trade_enabled": false
+}

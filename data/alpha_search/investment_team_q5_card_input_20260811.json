@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "record_type": "investment_team_research_card",
+  "card_id": "pending",
+  "created_at": "2026-08-11T15:35:30Z",
+  "data_cutoff": "2026-08-11T15:35:00Z",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "subject": {
+    "company": "Cross-sectional liquid U.S. equities",
+    "tickers": [
+      "BKNG",
+      "COIN",
+      "CRDO",
+      "GE",
+      "HOOD",
+      "NOW",
+      "NVO",
+      "V"
+    ],
+    "research_question": "Can the frozen own-history Q5 Moomoo daily-short-volume activity tag support a 0.75 long-notional soft tilt with the freed 25 percent held as cash under an honest PIT, source-contract, concentration and executable-touch contract?"
+  },
+  "researchability": {
+    "grade": "B",
+    "basis": "Official microstructure definitions and a local 25,152-row Moomoo archive make the mechanism researchable, while the fixed Q5 and 0.75 response are explicit. Admission is not researchable from the current face because the archive is a stale one-time collection, actual source activity dates are not carried into the tag, only five rows are even known before entry, valid-subset concentration is 60 percent and standard-window touches are zero.",
+    "limitations": [
+      "Moomoo short volume is activity, not short interest or a direct position measure.",
+      "The local archive lacks an immutable daily publication/revision vintage and a bound entitlement/license version.",
+      "Thirteen of eighteen Q5 decisions predate archive collection; the other five consume stale source activity.",
+      "The honest known-before-entry subset has only five rows, four ticker-entry clusters and 60 percent GE concentration.",
+      "All eighteen tagged entries occur after the three frozen standard windows, so touch density is 0/0/0.",
+      "A later command accidentally displayed prohibited outcome fields after all four roles had independently recommended PARK; no candidate projection is allowed this run.",
+      "Current live position control blocks additions, so cash/no-new-entry remains the executable opportunity-cost winner."
+    ]
+  },
+  "roles": {
+    "business_analyst": {
+      "status": "complete",
+      "conclusion": "The business mechanism is coherent only as a noisy soft-risk lead. High short-sale activity can reflect informed negative flow, dealer facilitation or liquidity provision; it does not establish a bearish position. The fixed 0.75 cash-preserving response is more defensible than exclusion but has no causal calibration, so the card must PARK until the source and density contracts pass.",
+      "evidence": [
+        {
+          "claim": "FINRA explains that daily short-sale volume excludes some venues and can show a dealer short sale without the offsetting customer purchase, so the measure is not short interest.",
+          "source": "https://www.finra.org/rules-guidance/notices/information-notice-051019",
+          "source_group": "finra_market_structure_guidance",
+          "source_kind": "primary",
+          "known_at": "2026-08-11T15:30:00Z"
+        },
+        {
+          "claim": "The local manifest labels the endpoint as moomoo.get_daily_short_volume and warns that it is activity-only sell-pressure context mapped after the close.",
+          "source": "data/non_ohlcv/moomoo_daily_short_volume_broad/manifest.json",
+          "source_group": "local_moomoo_archive_contract",
+          "source_kind": "primary",
+          "known_at": "2026-06-23T05:50:28.217111Z"
+        }
+      ],
+      "uncertainty": "Venue composition, dealer facilitation, revisions and the vendor denominator may dominate the signal. A properly versioned next-session reconstruction could falsify the mechanism without any threshold retune."
+    },
+    "financial_analyst": {
+      "status": "complete",
+      "conclusion": "The financial opportunity cost favors cash. Broker value is approximately $60,704 with $12,260.81 cash, current core and pilot signals are zero, and position control blocks additions despite reported heat headroom. The Q5 tilt therefore has no current executable displacement target and cannot receive trade authority.",
+      "evidence": [
+        {
+          "claim": "The broker snapshot reports portfolio value 60704.3114 dollars and cash 12260.81 dollars as of 2026-08-11.",
+          "source": "operator_inputs/open_positions.json",
+          "source_group": "broker_portfolio_snapshot",
+          "source_kind": "primary",
+          "known_at": "2026-08-11T04:20:48Z"
+        },
+        {
+          "claim": "The latest canonical quant snapshot is BULL but has no core or pilot signal, no entry candidate and no live buy; the report states no signals generated today.",
+          "source": "data/daily/signals/quant/quant_signals_20260810.json",
+          "source_group": "canonical_daily_quant",
+          "source_kind": "secondary",
+          "known_at": "2026-08-11T04:20:48.384516Z"
+        },
+        {
+          "claim": "Position control reports ok_to_add_control_pass false with exit-now, unconfirmed manual brackets and stale-target blockers across twenty controlled rows.",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "live_execution_control",
+          "source_kind": "secondary",
+          "known_at": "2026-08-11T04:20:48Z"
+        }
+      ],
+      "uncertainty": "The broker snapshot has a small value mismatch versus the session manifest and several positions lack a governed sleeve tag. Neither issue creates Q5 admission evidence."
+    },
+    "industry_researcher": {
+      "status": "complete",
+      "conclusion": "Microstructure research supports testing whether unusually heavy shorting predicts negative returns, but venue informativeness is heterogeneous. A Moomoo-derived off-exchange activity ratio cannot inherit FINRA or exchange provenance by label, and the current local snapshot is not a functioning daily PIT signal face.",
+      "evidence": [
+        {
+          "claim": "FINRA states consolidated daily files cover its reporting facilities rather than exchange data, post by 6:00 p.m. Eastern on trade date and may later be updated.",
+          "source": "https://www.finra.org/finra-data/browse-catalog/short-sale-volume-data/daily-short-sale-volume-files",
+          "source_group": "finra_daily_file_contract",
+          "source_kind": "primary",
+          "known_at": "2026-08-11T15:30:00Z"
+        },
+        {
+          "claim": "Diether, Lee and Werner find that heavier daily shorting predicts negative abnormal returns in their historical sample, providing independent mechanism evidence rather than admission evidence for the local rows.",
+          "source": "https://academic.oup.com/rfs/article-pdf/22/2/575/24429483/hhn047.pdf",
+          "source_group": "peer_reviewed_short_sale_research",
+          "source_kind": "secondary",
+          "known_at": "2026-08-11T15:30:00Z"
+        },
+        {
+          "claim": "The local archive contains 25,152 Moomoo rows collected in one June 2026 batch and leaves usable_trade_date null, so a historical activity date alone does not establish decision-time observability.",
+          "source": "data/non_ohlcv/moomoo_daily_short_volume_broad/rows.jsonl",
+          "source_group": "local_moomoo_archive_rows",
+          "source_kind": "primary",
+          "known_at": "2026-06-23T05:50:28.217111Z"
+        }
+      ],
+      "uncertainty": "An authorized original-and-revision-vintage archive may produce a different Q5 membership and concentration pattern. The frozen local tag cannot answer that question."
+    },
+    "risk_assessor": {
+      "status": "complete",
+      "conclusion": "PARK is mandatory. Raw Q5 count is 18/20, honest known-before-entry count is at most 5/20, valid-subset GE concentration is 60 percent versus 40 percent, touches are 0/0/0 versus 5/5/5, the source contract is partial and the frozen Q5/0.75 response cannot be retuned. A later accidental outcome display independently bars candidate projection this run.",
+      "evidence": [
+        {
+          "claim": "The machine readiness surface reports 18 Q5 settled rows and raw maximum ticker share 38.89 percent, below the required count of 20.",
+          "source": "data/reopen_readiness.json",
+          "source_group": "canonical_reopen_readiness",
+          "source_kind": "secondary",
+          "known_at": "2026-08-11T15:08:46Z"
+        },
+        {
+          "claim": "The non-outcome preflight shows only five rows even collected before entry, four unique ticker-entry clusters, 60 percent GE concentration and zero exact touches in each standard window.",
+          "source": "data/alpha_search/alpha_automation_q5_readiness_preflight_20260811.json",
+          "source_group": "frozen_readiness_preflight",
+          "source_kind": "secondary",
+          "known_at": "2026-08-11T15:35:00Z"
+        },
+        {
+          "claim": "FINRA terms permit limited non-commercial professional use but prohibit bulk copying or creating a database from website content, so official website files cannot silently replace the Moomoo archive for this project.",
+          "source": "https://www.finra.org/terms-of-use",
+          "source_group": "finra_source_use_terms",
+          "source_kind": "primary",
+          "known_at": "2026-08-11T15:30:00Z"
+        }
+      ],
+      "uncertainty": "No honest earliest calendar date exists because the archive is stale and pending Q5 count is zero. The minimum machine increment is at least fifteen additional valid settled Q5 decisions, subject to concentration and all three touch windows."
+    }
+  },
+  "conflicts": [
+    "A post-selection field-inspection command accidentally displayed prohibited settled return fields. Although all role conclusions and PARK readiness facts predated the display and no outcome value is used in this card, the run is treated as contaminated and no candidate may be projected."
+  ],
+  "decision": {
+    "disposition": "park",
+    "rationale": "All four Investment Team roles independently find a coherent but noisy mechanism and no admission authority. The current source is correctly Moomoo rather than FINRA, the PIT and source contracts fail, honest count and concentration fail, standard-window touches are zero, the frozen response cannot be retuned, and the later integrity event requires fail-closed containment.",
+    "next_machine_action": "Restore and hash an authorized append-only daily source with actual activity, publication, retrieval and revision vintages; then require at least 20 unique valid settled Q5 decisions, maximum valid-set ticker share at most 40 percent, at least five executable touches in each standard window, and a fresh uncontaminated outcome-blind preflight.",
+    "candidate": null
+  }
+}

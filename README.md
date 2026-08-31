@@ -2,6 +2,9 @@
 
 Ginger 是一个每日运行一次的中短线交易辅助系统。它用共享的量化规则生成买卖、加仓、减仓和风控信息，再把新闻与持仓上下文整理成可审计的 LLM 提示词。
 
+> 本 README 主要描述现有 V1 系统。V2 的重建、实验和 default-off 规则以
+> `docs/quant_agent_protocol_v2.md` 为准。
+
 核心原则：
 
 - 代码负责硬规则：信号、仓位、止损、目标位、组合热度、候选排序。
@@ -14,6 +17,7 @@ Ginger 是一个每日运行一次的中短线交易辅助系统。它用共享�
 README 是使用入口。策略实验、回测口径、生产/回测一致性和 LLM 边界以这些文档为准：
 
 - `AGENTS.md`
+- `docs/quant_agent_protocol_v2.md`
 - `docs/alpha-optimization-playbook.md`
 - `docs/backtesting.md`
 - `docs/production_backtest_parity.md`

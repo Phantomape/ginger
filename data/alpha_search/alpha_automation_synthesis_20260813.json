@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "created_at": "2026-08-13T15:23:23Z",
+  "data_cutoff": "2026-08-13T15:20:00Z",
+  "outcome_blind_generation": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "baseline_universe": [
+    "current 21-holding broker portfolio",
+    "fixed 37-name common-stock rebound universe",
+    "canonical cash-feasible core opportunity-cost baseline"
+  ],
+  "cross_sectional_opportunity_cost": {
+    "latest_complete_market_session": "2026-08-12",
+    "latest_complete_quant_report_session": "2026-08-11",
+    "market_regime": "BULL at latest complete quant report",
+    "core_signal_count": 0,
+    "live_buy_count": 0,
+    "portfolio_value_usd": 60426.5214,
+    "cash_usd": 11807.91,
+    "holding_count": 21,
+    "position_control_pass": false,
+    "opportunity_cost_winner": "cash_no_new_entry",
+    "research_cross_section_lead": "TSM",
+    "basis": "TSM was the 2026-08-12 intraday research leader, but the latest complete production report contains no executable entry and current position control blocks additions; cash therefore remains the executable winner."
+  },
+  "opportunity_cost_winner": "cash_no_new_entry",
+  "evidence_surface_inventory": [
+    {
+      "category": "price",
+      "surface": "canonical_cold_plus_hot_ohlcv_union",
+      "pit_boundary": "canonical PIT through 2026-08-12; hot overlay required after cold cutoff",
+      "row_count": 5070927,
+      "ticker_count": 8523,
+      "status": "available_market_prior_and_opportunity_cost"
+    },
+    {
+      "category": "flow",
+      "surface": "moomoo_capital_flow_day",
+      "pit_boundary": "forward PIT only; historical backfill cannot support decision-time claims",
+      "row_count": 13813,
+      "ticker_count": 62,
+      "latest_flow_date": "2026-08-11",
+      "status": "sixteen_post_reopen_forward_dates"
+    },
+    {
+      "category": "derivatives",
+      "surface": "onclickmedia_options_forward_daily",
+      "pit_boundary": "next-session forward research only",
+      "latest_snapshot_rows": 5700,
+      "latest_snapshot_tickers": 57,
+      "status": "two_expiries_and_truncated_strikes_source_contract_partial"
+    },
+    {
+      "category": "event",
+      "surface": "news_event_exposure_forward",
+      "pit_boundary": "settled forward attribution",
+      "settled_negative_rows": 581,
+      "required_settled_negative_rows": 650,
+      "status": "parked_and_touch_density_1_0_0"
+    },
+    {
+      "category": "positioning",
+      "surface": "short_volume_q5_and_ortex_borrow_context",
+      "pit_boundary": "Q5 current face not PIT; ORTEX generic rows are frozen/parked",
+      "status": "Q5_raw_ready_but_honest_PIT_source_and_touch_contract_failed"
+    },
+    {
+      "category": "portfolio_exposure",
+      "surface": "broker_positions_and_position_control",
+      "pit_boundary": "broker snapshot current 2026-08-13; production control current through 2026-08-11 session",
+      "holding_count": 21,
+      "status": "ok_to_add_false"
+    },
+    {
+      "category": "research_digest",
+      "surface": "research_digest_20260727",
+      "pit_boundary": "digest gives no novelty or admission authority",
+      "entry_count": 9,
+      "status": "all_entries_previously_consumed_no_fresh_entry"
+    }
+  ],
+  "evidence_surfaces_used": [
+    "canonical_cold_plus_hot_ohlcv_union",
+    "moomoo_capital_flow_day",
+    "onclickmedia_options_forward_daily",
+    "news_event_exposure_forward",
+    "short_volume_q5_and_ortex_borrow_context",
+    "broker_positions_and_position_control",
+    "research_digest_20260727"
+  ],
+  "evidence_surfaces_missing": [
+    "twenty_H10_settled_flow_options_paired_disagreements",
+    "canonical_standard_window_PIT_flow_options_overlap",
+    "full_untruncated_three_expiry_options_chain_with_authorized_lineage",
+    "authorized_append_only_short_volume_vintages",
+    "five_executable_treatment_touches_per_standard_window"
+  ],
+  "hypothesis_candidates": [
+    {
+      "candidate_key": "fixed_q5_short_volume_soft_tilt",
+      "search_queue": "exploitation",
+      "baseline": "same eligible long decision at unchanged full notional",
+      "treatment": "fixed own-history Q5 tag receives 0.75 notional and holds 0.25 as cash",
+      "economic_mechanism": "extreme short-sale activity may proxy informed negative flow or temporary liquidity stress",
+      "expected_horizon": "unchanged underlying sleeve horizon",
+      "replacement_value_comparator": "same decision full notional, cash, SPY and QQQ",
+      "execution_envelope": "long common stock only; existing caps; no options, borrow, leverage or live order",
+      "falsifier": "not PIT, source contract partial, honest valid count below 20, concentration above 40%, or touches below 5/5/5",
+      "readiness": "raw 20 and 35% concentration, but honest PIT/source contract fails and touches are 0/0/0",
+      "decision": "park"
+    },
+    {
+      "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+      "search_queue": "adjacent",
+      "baseline": "same-date lowest-RSI top1 in the identical deep-drawdown cohort",
+      "treatment": "same-date top1 by sqrt(flow-strength rank times captured near-put-OI-share rank)",
+      "economic_mechanism": "large-order absorption combined with near-price option inventory may identify short-lived stabilization states",
+      "expected_horizon": "next open to H10",
+      "replacement_value_comparator": "same-date RSI top1 primary; cash, SPY and QQQ secondary; identical clock, notional and 35bp cost",
+      "execution_envelope": "long common stock, one slot, USD4000 cap, 10% NAV per-name cap, next-open fail-closed data clock, trade disabled",
+      "falsifier": "no H10 replacement value after 20 settled disagreements, high concentration, full-chain identity reversal, or event-confounded effect",
+      "readiness": "16/10 forward dates, 15 disagreements, 9/20 H10 settled disagreements, canonical touches 0/0/0",
+      "decision": "selected_for_investment_team_then_park"
+    },
+    {
+      "candidate_key": "fixed_negative_news_peer_rotation_tilt",
+      "search_queue": "exploration",
+      "baseline": "unchanged core-entry decision without the mapped negative-event tag",
+      "treatment": "frozen negative-event peer-rotation tag on exact mapped core entries",
+      "economic_mechanism": "negative issuer events can redirect relative demand toward economically linked peers",
+      "expected_horizon": "next open to H10",
+      "replacement_value_comparator": "same entry without tag, cash, SPY and QQQ",
+      "execution_envelope": "existing core entries only; no new slot or exposure expansion",
+      "falsifier": "below 650 closed negative rows, touches below 5/5/5, or cost-dominated mapping",
+      "readiness": "581/650 closed negative rows and 1/0/0 executable touches",
+      "decision": "park"
+    }
+  ],
+  "selected_hypothesis": "fixed_drawdown_flow_near_put_oi_allocator",
+  "selection_basis": "It has the strongest honest readiness after correcting Q5's false PIT readiness: its forward-date bar is passed, source clocks are observable, and the remaining primary gap is a quantitative 9/20 settlement bar. Selection used no candidate return or prior-family success rate.",
+  "economic_mechanism": "deep_drawdown_large_order_absorption_times_near_price_option_inventory_state",
+  "falsifier": "frozen_formula_fails_same_date_RSI_replacement_value_or_is_driven_by_chain_coverage_event_or_concentration",
+  "pit_tier": "pit_forward_unsettled",
+  "evidence_grade": "observer",
+  "result_ceiling": "invalid_until_reopen_then_observed_only",
+  "next_machine_action": "freeze_PARK_research_card_and_call_authoritative_qualify_once_without_candidate_projection"
+}

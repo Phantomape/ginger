@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_price_prior_20260818",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": ["ohlcv_warehouse"],
+      "roles": ["market_expectation", "opportunity_cost", "price"],
+      "artifacts": ["data/experiments/exp-20260715-010/after_measurement.json"],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_or_same_clock_SPY_opportunity_cost",
+        "source": "data/experiments/exp-20260715-010/after_measurement.json"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Comparator only; grants no novelty, reopen or promotion authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-18T15:04:58Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260715-010/after_measurement.json": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "reopen_readiness_20260818",
+      "data_source": "reopen_readiness",
+      "component_sources": ["experiment_history", "forward_ledgers"],
+      "roles": ["candidate_pool", "novelty", "reopen"],
+      "artifacts": ["data/reopen_readiness.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 14,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "Readiness governance only; individual lanes define their own bars.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-17T16:31:52Z",
+      "artifact_snapshot_hashes": {
+        "data/reopen_readiness.json": "4232d4d6b7c49bf8c7791f2dfbf0d28464e815b156463ce4e2eff165dfda4eca"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "news_event_exposure_forward_20260818",
+      "data_source": "news_event_exposure",
+      "component_sources": ["news_event_exposure"],
+      "roles": ["event", "independent_evidence"],
+      "artifacts": [
+        "data/non_ohlcv/news_event_exposure_observations/manifest.json",
+        "data/non_ohlcv/news_event_exposure_observations/rows.jsonl"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 5666,
+      "independent_count": 5666,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Current run is parked after outcome-field contamination; Hawkes face separately needs >=38 independent group-date decisions and >=18 dates.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-18T03:08:49Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/news_event_exposure_observations/manifest.json": "9c5b0952a22fb69f71b6472576ed0b5933ef8f94f93b5c1feff2d3e3a012ab50",
+        "data/non_ohlcv/news_event_exposure_observations/rows.jsonl": "6447a7999eb07488287ede3076d087324c68456427b5f8da0208685e34976696"
+      },
+      "known_future_leakage": false,
+      "research_pit_basis": "Published/event dates precede simulated next-open decisions, but current run is quarantined after outcome-field exposure."
+    },
+    {
+      "surface_id": "flow_options_context_20260818",
+      "data_source": "moomoo_flow_plus_options",
+      "component_sources": ["moomoo_capital_flow", "onclickmedia_options"],
+      "roles": ["flow", "derivatives", "positioning"],
+      "artifacts": [
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl",
+        "data/non_ohlcv/options_forward/options_collection_quality_gate.json"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 9,
+      "independent_count": 19,
+      "candidate_overlap_count": 15,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Keep fixed flow-options formula; need >=20 H10-settled paired disagreements and source-contract/touch-density pass.",
+      "source_contract_status": "partial",
+      "as_of": "2026-08-18T15:04:58Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json": "9652f3bd466c21d0811d2d86bef3812c2fda90bda07a28abdff858e26b44059c",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl": "77e350db103d9530c77355e2e166fd2313bd6e134f4a20f76da2e6083a9f3148",
+        "data/non_ohlcv/options_forward/options_collection_quality_gate.json": "4ff4a345c06394f60e35d8629cf23d58ff559d4ea9c9f75e56e5e71103af4120"
+      },
+      "known_future_leakage": false,
+      "research_pit_basis": "Moomoo flow rows carry forward observation/trade dates and options rows carry usable trade dates; immutable vendor vintages, full option term structure and use-specific authorization remain unproven."
+    },
+    {
+      "surface_id": "broker_portfolio_exposure_20260818",
+      "data_source": "moomoo_broker_account",
+      "component_sources": ["moomoo_broker_account", "position_control"],
+      "roles": ["portfolio_exposure", "opportunity_cost"],
+      "artifacts": ["operator_inputs/open_positions.json", "data/live_pilot/position_control/state.json"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 19,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "New exposure remains fail-closed until position-control blockers clear.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-18T04:18:39Z",
+      "artifact_snapshot_hashes": {
+        "operator_inputs/open_positions.json": "9a9265d75a3a5b7f44300fd3cb4c2c82bc338a43804ba021eb77279283034ed5",
+        "data/live_pilot/position_control/state.json": "0e4f5e79db9ddc6013004a1ec18999d3717e6ac59fb7d632d9fe44e9cc860e6c"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "research_digest_20260818",
+      "data_source": "research_digest",
+      "component_sources": ["research_digest"],
+      "roles": ["research_digest"],
+      "artifacts": ["data/research_digest/latest_digest.md"],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 9,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Recheck when digest generated_at or entry set advances; digest grants no admission authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-18T15:04:58Z",
+      "artifact_snapshot_hashes": {
+        "data/research_digest/latest_digest.md": "9e89108d4079521a6eca89202523e8f656a90bebd808fbd0ff75db016f42be3b"
+      },
+      "known_future_leakage": false
+    }
+  ]
+}

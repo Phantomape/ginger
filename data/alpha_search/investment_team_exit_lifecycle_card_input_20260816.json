@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "record_type": "investment_team_research_card",
+  "card_id": "pending",
+  "created_at": "2026-08-16T15:18:37Z",
+  "data_cutoff": "2026-08-16T15:11:17Z",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "subject": {
+    "company": "Cross-sectional held-position exit lifecycle policy",
+    "tickers": [
+      "CURRENT_HELD_CASH_EQUITY_BOOK"
+    ],
+    "research_question": "Does the unchanged hard-stop/high-urgency advisory-severity mechanism have enough breadth, touch density, replacement-value accounting and execution realism to justify an attributable default-off paper decision test?"
+  },
+  "researchability": {
+    "grade": "B",
+    "basis": "The canonical forward ledger has an auditable decision clock, a monotone severity mapping, a fixed H5 settlement clock and 429 settled rows. The mechanism is economically coherent, but the frozen treatment subtypes remain below 33 hard-stop and 60 advisory decisions, no 5/5/5 standard-window touch proof is bound, and portfolio controls block executable action.",
+    "limitations": [
+      "The 429 total settled rows do not substitute for the frozen 33 hard-stop and 60 advisory subtype bars.",
+      "Nineteen pending rows cannot be counted as closed and their future subtype mix cannot be inferred.",
+      "No machine artifact currently proves at least five executable treatment touches in each canonical standard window.",
+      "Winner collateral, slot reuse, concentration and shared-helper parity remain required before an attributable decision test.",
+      "All twenty current position-control rows are blocked by unconfirmed manual bracket instructions.",
+      "No PnL, return, replacement-return, exit-price or candidate-outcome direction was used in this review."
+    ]
+  },
+  "roles": {
+    "business_analyst": {
+      "status": "complete",
+      "conclusion": "PARK. Severity-conditioned bounded de-risking is a coherent held-position risk mechanism, but value cannot be attributed until the same-held-notional H5 baseline, winner collateral and slot reuse are all carried through one frozen replacement comparator. The current shadow state is observable and default-off, while subtype breadth and treatment touches remain insufficient.",
+      "evidence": [
+        {
+          "claim": "The frozen scope defines an outcome-blind, trade-disabled exit-lifecycle reopen question rather than an order-changing policy.",
+          "source": "data/alpha_search/exit_lifecycle_reopen_scope_manifest_20260806.json",
+          "source_group": "frozen_governance_contract",
+          "source_kind": "primary",
+          "known_at": "2026-08-06T18:24:00Z"
+        },
+        {
+          "claim": "The latest shadow state contains twenty held-position rows, only one high-urgency advisory, nineteen no-advisory rows, and every row is read-only with trade and order alteration disabled.",
+          "source": "data/exit_lifecycle/exit_lifecycle_20260815.jsonl",
+          "source_group": "canonical_advisory_state",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T03:05:41Z"
+        },
+        {
+          "claim": "Canonical readiness is 429 settled, 26 hard-stop and 47 advisory with nineteen pending; the frozen bars are 422, 33 and 60 and machine status is not_ready.",
+          "source": "data/reopen_readiness.json",
+          "source_group": "canonical_reopen_readiness",
+          "source_kind": "secondary",
+          "known_at": "2026-08-16T15:03:37Z"
+        },
+        {
+          "claim": "All twenty position-control rows are blocked by manual bracket orders not broker-confirmed, and ok_to_add_control_pass is false.",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "live_execution_control",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T04:10:45Z"
+        }
+      ],
+      "uncertainty": "The direction and magnitude of any lifecycle effect were intentionally not inspected. One current advisory cannot establish five executable touches per historical window, and pending rows may not supply the missing subtype breadth."
+    },
+    "financial_analyst": {
+      "status": "complete",
+      "conclusion": "PARK. Total settlement maturity passes, but the treatment cohort lacks seven hard-stop and thirteen advisory decisions. Any later test must debit spread, slippage, fees and foregone recovery, credit slot reuse only when a contemporaneously executable replacement exists, and separately report same-held-notional H5, cash, SPY and QQQ comparators.",
+      "evidence": [
+        {
+          "claim": "The readiness builder reports 429 settled versus 422 required, 26 hard-stop versus 33, 47 total advisory versus 60, and nineteen pending rows.",
+          "source": "data/reopen_readiness.json",
+          "source_group": "canonical_reopen_readiness",
+          "source_kind": "secondary",
+          "known_at": "2026-08-16T15:03:37Z"
+        },
+        {
+          "claim": "The frozen replacement contract requires same-held-notional H5 continuation plus cash, SPY and QQQ context, with concentration and winner-collateral constraints binding.",
+          "source": "data/alpha_search/alpha_automation_readiness_preflight_20260815.json",
+          "source_group": "prior_frozen_readiness_contract",
+          "source_kind": "secondary",
+          "known_at": "2026-08-15T15:19:00Z"
+        },
+        {
+          "claim": "The primary shadow snapshot covers twenty held positions and remains a read-only, trade-disabled, no-order-alteration surface.",
+          "source": "data/exit_lifecycle/exit_lifecycle_20260815.jsonl",
+          "source_group": "exit_lifecycle_daily_shadow_log",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T03:05:41Z"
+        },
+        {
+          "claim": "Current portfolio control fails closed because protection brackets are not broker-confirmed, so a freed slot is not an executable replacement-value asset today.",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "broker_position_control",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T04:10:45Z"
+        }
+      ],
+      "uncertainty": "No outcome-direction field was read. Pending rows may not close at H5 or deliver the missing hard-stop mix, and current-book notional concentration is not a substitute for the frozen cohort concentration test."
+    },
+    "industry_researcher": {
+      "status": "complete",
+      "conclusion": "PARK. This is a cross-industry lifecycle policy, not an industry alpha. In a BULL/low-volatility grind with no executable new entry, the defensible mechanism is name-specific contract deterioration, not macro timing or automatic slot reuse. External CBOE, FINRA, Yahoo or Nasdaq data are neither needed nor authorized to manufacture the missing lifecycle decisions.",
+      "evidence": [
+        {
+          "claim": "The current daily state is BULL and low_vol_grind, portfolio heat is 3.5%, and no new core signal is present.",
+          "source": "data/daily/reports/report_20260815.txt",
+          "source_group": "canonical_daily_market_portfolio_report",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T04:10:45Z"
+        },
+        {
+          "claim": "The canonical lifecycle cohort has 429 H5-settled rows but remains seven hard-stop and thirteen advisory decisions below its frozen subtype bars.",
+          "source": "data/reopen_readiness.json",
+          "source_group": "canonical_exit_lifecycle_forward_ledger",
+          "source_kind": "secondary",
+          "known_at": "2026-08-16T15:03:37Z"
+        },
+        {
+          "claim": "The latest position-control snapshot has nineteen open positions, four reported entry slots and ok_to_add_control_pass false because manual bracket orders are not broker-confirmed.",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "broker_position_control",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T04:10:45Z"
+        }
+      ],
+      "uncertainty": "The current regime is only a snapshot and cannot establish the future H5 state. Sector/theme collateral and the subtype composition of pending settlements remain unknown."
+    },
+    "risk_assessor": {
+      "status": "complete",
+      "conclusion": "PARK before candidate projection. The total row counter cannot waive subtype breadth, 5/5/5 executable treatment touches, source identity, winner-collateral and slot-reuse accounting, concentration, shared-helper parity or portfolio controls. Any promotion today would violate the frozen reopen and touch-density contracts.",
+      "evidence": [
+        {
+          "claim": "The canonical reopen surface contains thirteen lanes and none is ready; exit lifecycle passes only its total settled bar and fails both frozen treatment-subtype bars.",
+          "source": "data/reopen_readiness.json",
+          "source_group": "canonical_reopen_readiness",
+          "source_kind": "secondary",
+          "known_at": "2026-08-16T15:03:37Z"
+        },
+        {
+          "claim": "Repository governance requires at least five executable treatment touches per standard window and forbids source-row density from substituting for touch density.",
+          "source": "AGENTS.md",
+          "source_group": "repository_governance",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T15:00:00Z"
+        },
+        {
+          "claim": "Canonical shared default-off acceptance requires a shared decision helper, historical replay, daily default-off snapshot, parity and Gate 1-4 while trade remains disabled.",
+          "source": "docs/production_backtest_parity.md",
+          "source_group": "repository_parity_contract",
+          "source_kind": "secondary",
+          "known_at": "2026-08-16T15:00:00Z"
+        },
+        {
+          "claim": "Current live control is fail-closed on unconfirmed protection brackets, so the candidate is not live-realistic even if a research-only count later matures.",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "live_execution_control",
+          "source_kind": "primary",
+          "known_at": "2026-08-16T04:10:45Z"
+        }
+      ],
+      "uncertainty": "The economic mechanism may still be real, but this review intentionally does not establish its outcome direction. The missing touch proof and action-helper parity could reveal additional mapping or concentration failures after the count bars mature."
+    }
+  },
+  "conflicts": [
+    "All four roles agree on PARK. Business and industry roles find the mechanism plausible but stress that slot reuse has no current executable replacement; financial and risk roles additionally require subtype breadth, touch density, winner-collateral and shared-helper parity. The coordinator resolves the researchability-versus-admission distinction in favor of no candidate projection."
+  ],
+  "decision": {
+    "disposition": "park",
+    "rationale": "The held-position severity mechanism is researchable and its total settlement counter is mature, but the frozen hard-stop and advisory bars, 5/5/5 touch proof, winner-collateral/slot-reuse comparator, shared-helper parity and portfolio controls are not. Investment Team cannot grant admission, so projecting a lead would evade rather than satisfy the contracts.",
+    "next_machine_action": "Keep taxonomy, H5 clock and comparator unchanged. Rebuild outcome-blind readiness after the canonical cohort reaches hard_stop>=33 and advisory_total>=60; only then bind 5/5/5 executable touches, winner-collateral, slot-reuse, concentration and shared default-off helper parity before a new qualification.",
+    "candidate": null
+  }
+}
