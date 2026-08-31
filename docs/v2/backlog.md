@@ -47,7 +47,8 @@
 - [x] conversion_debt 消费（2026-08-29, d-0012, 零 ID）：全新 outcome-blind D0-D3 scope `phase2-estimate-revision-20260829` 实际选出候选 → **Phase 2 重开**；3 候选全 pass、selector 选中 exploration breadth 候选
 - [x] 被选候选 cand-c748224bb9bc0f6a9118 当轮 park：feed 日批时钟使孤立对照仅 8 决策（vs 1510 breadth 成员），对照腿结构性不可达；blocker+定量重开条件落 `data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json`
 - [x] exploitation 候选 quiet-tape 反证已执行并 REJECTED（exp-20260831-001, 2026-08-31, d-0013）：密度检查通过（802 conditioned / 656/427/142 settled）→ 单候选 scope 复验 → research_pit 升级（updated_at 保守重建 620/802）→ F1-F6 冻结反证 4 挂 2 过；already_priced 命中预测
-- [ ] adjacent 注册候选 `cand-68d2f5dad2f903488307`（事前 overshoot 部分回吐）：**已被 08-31 次要报告污染**——反证只允许 gate 在 2026-08-31 后首次结算的干净 forward 决策上（falsifier 从 08-29 注册措辞冻结，观测 contrast 不得进 bar）；干净切片每个 gated horizon 需 ≥30 才可评估
+- [x] adjacent 注册候选 `cand-68d2f5dad2f903488307`（事前 overshoot 部分回吐）：干净 forward 反证合同已冻结（d-0014, 2026-08-31, 零 ID）——到达率检查通过（冻结规则下干净 stock 已 57 个 / 20 up / 37 down），bars B1-B5 从 08-29 注册措辞逐条冻结，样本 gate ≥30/gated horizon + ≥10/腿；现为 blocked_watch_item 等结算，保守 ETA h5 ~09-08 / h10 ~09-11，trigger 到达即 reserve→claim→run（≤24h）。合同：`data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json`
+- [ ] adjacent 合同 trigger 监视：每日 outcome append 后常数时间重算干净 conditioned settled 计数；达 bar 前不得碰该候选，不得读干净切片结果值
 - [ ] 禁止：quiet-tape 包络阈值/窗口调参重试（重开条件见 d-0013）；在 daily-batch 时钟上重定义 breadth 阈值；动其余五项数值 bar
 
 ## 注意事项

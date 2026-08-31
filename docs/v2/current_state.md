@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-31T08:25Z（exp-20260831-001：quiet-tape 延迟 repricing 候选按冻结 F1-F6 反证 REJECTED；adjacent 候选被本轮次要报告污染，只许在 2026-08-31 后新结算的干净 forward 切片上评估）
+> 最后更新：2026-08-31T16:35Z（d-0014：adjacent overshoot 候选干净 forward 反证合同冻结，到达率通过（干净 stock 57），blocked_watch_item 等结算 ETA ~09-11；front lane 切 moomoo capital-flow DAY 低摩擦 long-only preflight）
 
 ## 里程碑
 
@@ -74,6 +74,14 @@
 - **污染围栏（重要）**：预登记的次要报告暴露了 non-quiet（overshoot）cohort 的方向 spread（h5 −1.11% / h10 −0.42% / h20 +6.48%），与已注册 adjacent 候选 cand-68d2f5dad2f903488307（事前 overshoot 部分回吐）机制重叠。该候选在现有已结算决策上的评估已污染：其反证只允许 gate 在 **2026-08-31 之后首次结算** 的干净 forward 切片上，falsifier 措辞须从其 08-29 注册冻结，不得向观测到的 contrast 调参。
 - 家族重开条件（quiet-tape 延迟 repricing）：settled h5/h10/h20 ≥ 2704/2144/1400（2× 当前 closed）且资格规则不变，或来源合同新增真正的 intra-session 逐条发布时钟，或真正不同的条件变量；包络阈值/窗口调参一律禁止。
 - pair sleeve 健康：2 baskets pending（~09-10 首结算），eligible_unadmitted=0、due_unsettled=0。
+
+## 最新可执行证据状态（2026-08-31 第二单元：adjacent 干净 forward 合同冻结）
+
+- **d-0014（零 ID）**：08-31 receipt 锁定动作当轮执行。outcome-blind 到达率检查（仅身份/状态字段）：干净池 = h5 未结算的 170 个合格映射决策（只会在 08-31 后首次结算，位于 d-0013 污染围栏之外）；按 08-29 注册措辞冻结的 conditioning 规则（常数倍数更新隐含 repricing：dir_sign·R5 > |ΔEPS/(EPS−ΔEPS)|，|prior EPS|≥0.10、delta 方向一致、fail-closed）下干净 conditioned stock 已 57（20 up / 37 down，entry 08-24..08-30）。零新增到达保守 ETA：h5 ≥30 于 ~09-08、h10 ≥30 于 ~09-11、双腿 ≥10。可达性通过 → **合同当场冻结**（任何干净切片结果访问之前）。
+- 冻结合同要点：B1 残差衰减 spread（down−up）在 h5 与 h10 均 >0；B2 down-overshoot 可交易腿 h10 对现金 >0；B3 h10 对 SPY 与 QQQ 均 >0；B4/B5 日期 placebo 与同 session ticker shuffle（200 draws，seed 20260901，h10）；displaced-core 对照 reported-only（ledger 无逐决策序列）；h20 仅报告（注册 half-life=H5-H10）；样本 gate ≥30/gated horizon 且 ≥10/方向腿；结论上限 observed_only。合同与生成脚本：`data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json`、`quant/experiments/adjacent_overshoot_clean_forward_contract_freeze_20260831.py`。
+- 候选转为 blocked_watch_item：trigger = 每日 outcome append 使干净 conditioned settled 计数达 bar（常数时间重算）；到达后下一 alpha slot 内 reserve→claim→run（≤24h）。观测到的 08-31 non-quiet contrast 未塑造任何 bar——方向、horizon、腿与 falsifier 族均来自 08-29 注册原文。
+- pair sleeve 健康（今日）：第 3 个 measurement_ready batch 昨夜无人值守自动 admit（appended_this_run=1），3 baskets pending，0 due_unsettled、0 eligible_unadmitted，首结算仍 ~09-10。
+- **front lane 切换（下一单元已锁定）**：estimate-revision 家族等待期间，做 registered `moomoo_capital_flow_day_observer` surface 的 outcome-blind 低摩擦 long-only alpha preflight（本地 canonical DAY archive、07-21 起每日刷新、无借券/locate/付费源依赖、H1-H5 快结算可行）。
 
 ## 现场事实（2026-08-18）
 
