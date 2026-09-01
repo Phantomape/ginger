@@ -1,7 +1,8 @@
 """Evaluate the frozen PCAOB audit-amendment stress scout exactly once.
 
 This runner is research-only. It verifies the claim-bound inputs before reading
-the frozen SPY open/close outcomes and can close only as observed_only/rejected.
+the frozen SPY open/close outcomes, refuses existing outputs, and can close only
+as observed_only/rejected.
 """
 
 from __future__ import annotations
@@ -23,13 +24,17 @@ for entry in (ROOT, ROOT / "scripts"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
-from experiment_registry import persist_self_registered_result  # noqa: E402
+from experiment_registry import (  # noqa: E402
+    _validate_file_backed_reservation_anchors,
+    persist_self_registered_result,
+)
 
 
 EXPERIMENT_ID = "exp-20260901-001"
 OWNER = "codex-edge-v2"
 SCOUT_DIR = ROOT / "data/v2/scouts/pcaob_audit_amendment_stress_h5_20260901"
 TICKET = ROOT / f"experiments/tickets/{EXPERIMENT_ID}.json"
+LOG = ROOT / f"experiments/logs/{EXPERIMENT_ID}.json"
 REGISTRY = ROOT / "docs/experiment_registry.json"
 DECISION = SCOUT_DIR / "decision_record.json"
 RECIPE = SCOUT_DIR / "evaluation_recipe.json"
@@ -78,10 +83,11 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    with path.open("x", encoding="utf-8") as handle:
+        handle.write(
+            json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True)
+            + "\n"
+        )
 
 
 def _relative(path: Path) -> str:
@@ -96,6 +102,67 @@ def _finite_positive(value: Any, label: str) -> float:
     if not math.isfinite(number) or number <= 0:
         raise ContaminationError(f"non-positive/non-finite {label}")
     return number
+
+
+def _verify_claimed_ticket_state(ticket: dict[str, Any]) -> None:
+    if ticket.get("experiment_id") != EXPERIMENT_ID:
+        raise ContaminationError("ticket experiment identity drifted")
+    if ticket.get("status") != "claimed" or ticket.get("owner") != OWNER:
+        raise ContaminationError("ticket is not an active claim by the frozen owner")
+    if ticket.get("completed_at") is not None or ticket.get("result") is not None:
+        raise ContaminationError("ticket already carries terminal result state")
+
+
+def _verify_strict_claim_anchors(ticket: dict[str, Any]) -> None:
+    try:
+        _validate_file_backed_reservation_anchors(REGISTRY, ticket)
+    except (OSError, TypeError, ValueError) as exc:
+        raise ContaminationError(
+            "ticket/manifest/registry claim anchors are not complete 111"
+        ) from exc
+
+
+def _verify_single_run_state(ticket: dict[str, Any]) -> None:
+    _verify_claimed_ticket_state(ticket)
+    existing = [
+        str(path)
+        for path in (RAW_INPUT, ARTIFACT, LOG)
+        if path.exists()
+    ]
+    if existing:
+        raise ContaminationError(
+            "single-run output already exists: " + ", ".join(existing)
+        )
+    _verify_strict_claim_anchors(ticket)
+
+
+def _reserve_run_attempt():
+    RAW_INPUT.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        return RAW_INPUT.open("x", encoding="utf-8")
+    except FileExistsError as exc:
+        raise ContaminationError(
+            f"single-run output already exists: {RAW_INPUT}"
+        ) from exc
+
+
+def _revalidate_reserved_run_state() -> dict[str, Any]:
+    ticket = _read_json(TICKET)
+    _verify_claimed_ticket_state(ticket)
+    existing = [str(path) for path in (ARTIFACT, LOG) if path.exists()]
+    if existing:
+        raise ContaminationError(
+            "single-run output already exists: " + ", ".join(existing)
+        )
+    _verify_strict_claim_anchors(ticket)
+    return ticket
+
+
+def _write_reserved_json(handle, payload: Any) -> None:
+    handle.write(
+        json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
+    )
+    handle.flush()
 
 
 def _verify_claim_bound_inputs(
@@ -441,6 +508,28 @@ def main() -> int:
     parser.add_argument("--warehouse-path", type=Path, required=True)
     args = parser.parse_args()
     ticket = _read_json(TICKET)
+    raw_output_handle = None
+    try:
+        _verify_single_run_state(ticket)
+        raw_output_handle = _reserve_run_attempt()
+        ticket = _revalidate_reserved_run_state()
+    except ContaminationError as exc:
+        if raw_output_handle is not None:
+            raw_output_handle.close()
+        print(
+            json.dumps(
+                {
+                    "experiment_id": EXPERIMENT_ID,
+                    "status": "refused",
+                    "reason": str(exc),
+                    "trade_enabled": False,
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            ),
+            file=sys.stderr,
+        )
+        return 2
     identities: dict[str, str] = {}
     raw: dict[str, Any] | None = None
     contamination_reason: str | None = None
@@ -451,7 +540,9 @@ def main() -> int:
         _verify_calendar_identity(args.warehouse_path, calendar)
         decisions = _frozen_decisions(decision)
         raw = _read_exact_prices(args.warehouse_path, decisions)
-        _write_json(RAW_INPUT, raw)
+        _write_reserved_json(raw_output_handle, raw)
+        raw_output_handle.close()
+        raw_output_handle = None
         evaluation = evaluate(
             decisions, raw, cost_bps=float(recipe["round_trip_cost_bps"])
         )
@@ -462,6 +553,9 @@ def main() -> int:
             "acceptance_checks": {},
             "decision_outcomes": [],
         }
+    finally:
+        if raw_output_handle is not None:
+            raw_output_handle.close()
     status, disposition, evidence_invalid = _status_and_disposition(evaluation)
     payload = _artifact_payload(
         ticket=ticket,

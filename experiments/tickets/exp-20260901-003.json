@@ -1,0 +1,326 @@
+{
+  "acceptance_rule": "Focused regressions prove terminal or existing-output reruns and incomplete 111 claim anchors fail before outcome access or writes; the original exp-20260901-001 ticket, log, and result artifact remain byte-identical; lean-strict passes.",
+  "allowed_write_scope": [
+    "quant/experiments/exp-20260901-001_pcaob_audit_amendment_stress_h5.py",
+    "quant/test_pcaob_audit_amendment_stress_runner.py",
+    "experiments/cards/exp-20260901-003.md",
+    "experiments/manifests/exp-20260901-003.json",
+    "experiments/tickets/exp-20260901-003.json",
+    "experiments/logs/exp-20260901-003.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "data/v2/hourly_runs/20260901T2047Z_pcaob_audit_amendment_stress_scout_rejected.json"
+  ],
+  "baseline_result_file": "experiments/logs/exp-20260901-001.json",
+  "card_file": "experiments/cards/exp-20260901-003.md",
+  "causal_components": [],
+  "change_type": "audit_measurement_repair",
+  "changed_variable": "runner_pre_outcome_lifecycle_guard",
+  "claimed_at": "2026-09-01T21:21:21+00:00",
+  "completed_at": "2026-09-01T21:28:10+00:00",
+  "created_at": "2026-09-01T21:21:13+00:00",
+  "evaluation_windows": [],
+  "experiment_ever_claimed": true,
+  "experiment_id": "exp-20260901-003",
+  "experiment_uid": "expuid-0151cfeb964348ad",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260901-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-09-01T21:21:13+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "private_replay_runner_single_execution_claim_anchor_guard"
+  },
+  "hypothesis": "A completed private-replay runner must reject terminal tickets, pre-existing outputs, and incomplete ticket-manifest-registry claim anchors before any outcome read or write, while a clean fully claimed state may proceed exactly once.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "outcome_artifacts_immutable",
+    "strict_111_required",
+    "trade_enabled_false"
+  ],
+  "mechanism_family": "experiment_lifecycle_integrity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "data/experiments/exp-20260901-001/",
+    "experiments/tickets/exp-20260901-001.json",
+    "experiments/logs/exp-20260901-001.json",
+    "docs/quant_agent_protocol_v2.md",
+    "quant/run.py",
+    "data/open_positions.json"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "a",
+        "anchor",
+        "anchors",
+        "any",
+        "before",
+        "claim",
+        "claimed",
+        "clean",
+        "completed",
+        "exactly",
+        "execution",
+        "existing",
+        "experiment",
+        "fully",
+        "guard",
+        "incomplete",
+        "integrity",
+        "lifecycle",
+        "manifest",
+        "may",
+        "must",
+        "once",
+        "or",
+        "outcome",
+        "outputs",
+        "pre",
+        "private",
+        "proceed",
+        "read",
+        "registry",
+        "reject",
+        "runner",
+        "single",
+        "state",
+        "terminal",
+        "ticket",
+        "tickets",
+        "while",
+        "write"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "pre_earnings_entry_state_lifecycle_allocation",
+        "reopen_condition": "['Do not retry nearby pre_earnings_8_21 risk multipliers on the same sample.', 'A valid retry needs forward entry-state outcomes or an orthogonal event/news quality discriminator.', 'Any promotion must move the rule into a shared risk policy consumed by run.py and backtester.py with parity tests.']",
+        "score": 0.0286,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "deep_drawdown",
+        "family_key": "deep_drawdown_observer_guard_registry_integrity",
+        "reopen_condition": "No further measurement repair is justified unless the builder or daily materialization actually faults. Alpha evaluation reopens only after at least 20 independent closed single-slot decisions, survival at least 5%, positive net replacement value in both chronological halves, single-ticker positive-PnL share at most 40%, at least 5 selected and 5 settled decisions per evaluation window, and model-",
+        "score": 0.0267,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "intraday_completed_close_settlement_integrity",
+        "reopen_condition": "Let the v2 routine pipeline accumulate at least 100 strict effective next-close cohorts, then generate a fresh outcome-blind D0-D3 scope before any separately reserved alpha hypothesis.",
+        "score": 0.025,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "duplicate_reservation_accounting",
+        "family_key": "claim_receipt_deadlock_abandonment_path",
+        "reopen_condition": "A third deadlock shape that the never-claimed predicate cannot express (e.g. claim partially persisted claimed_at before receipt failure) would justify reopening this contract; otherwise none.",
+        "score": 0.0235,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "state_aware_candidate_pool_lifecycle",
+        "reopen_condition": "Keep the accepted 20-day state-surface paper hold; next state-surface alpha should use a different production-visible discriminator or forward replacement-value evidence.",
+        "score": 0.0195,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-edge-v2",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "experiments/logs/exp-20260901-001.json",
+    "after_result_file": "experiments/logs/exp-20260901-001.json",
+    "delta_metrics": {},
+    "research_refs": []
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260901-003.json",
+  "single_causal_variable": "private_replay_runner_single_execution_claim_anchor_guard",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260901-003.json",
+  "trial_family": "private_replay_runner_execution_integrity",
+  "trial_variant_id": "exp-20260901-003",
+  "experiment_claim_transition": {
+    "schema_version": 1,
+    "experiment_id": "exp-20260901-003",
+    "experiment_uid": "expuid-0151cfeb964348ad",
+    "reservation_identity_hash": "6a560492ab1afc918182c4dc7e6919e3ad11e0e9d7e05c79d08a59dc21ccc2c5",
+    "owner": "codex-edge-v2",
+    "claimed_at": "2026-09-01T21:21:21+00:00",
+    "force": false,
+    "alpha_promotion_claim_receipt_hash": null,
+    "private_replay_claim_binding_hash": null,
+    "transition_hash": "6554740331c13beceafd9a3bf2d6310e8cbd42db9a26bd75d2f71893265ddca3"
+  },
+  "experiment_closeout_log_intent": {
+    "experiment_id": "exp-20260901-003",
+    "timestamp": "2026-09-01T21:28:10+00:00",
+    "status": "accepted",
+    "hypothesis": "A completed private-replay runner must reject terminal tickets, pre-existing outputs, and incomplete ticket-manifest-registry claim anchors before any outcome read or write, while a clean fully claimed state may proceed exactly once.",
+    "change_summary": "Harden the PCAOB private-replay runner with a pre-outcome O_EXCL attempt marker, post-marker ticket and strict-111 revalidation, terminal rerun refusal, and create-only outputs.",
+    "change_type": "audit_measurement_repair",
+    "mechanism_family": "experiment_lifecycle_integrity",
+    "trial_family": "private_replay_runner_execution_integrity",
+    "trial_variant_id": "exp-20260901-003",
+    "changed_variable": "runner_pre_outcome_lifecycle_guard",
+    "causal_components": [],
+    "prior_trial_count": 0,
+    "nearby_prior_experiments": [],
+    "multiple_testing_risk_bucket": "minimal",
+    "new_evidence_type": "not_declared",
+    "research_refs": [],
+    "alpha_promotion": null,
+    "component": "quant/experiments/exp-20260901-001_pcaob_audit_amendment_stress_h5.py, quant/test_pcaob_audit_amendment_stress_runner.py, experiments/cards/exp-20260901-003.md, experiments/manifests/exp-20260901-003.json, experiments/tickets/exp-20260901-003.json, experiments/logs/exp-20260901-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json, docs/v2/current_state.md, docs/v2/backlog.md, data/v2/hourly_runs/20260901T2047Z_pcaob_audit_amendment_stress_scout_rejected.json",
+    "parameters": {
+      "single_causal_variable": "private_replay_runner_single_execution_claim_anchor_guard",
+      "locked_variables": [
+        "outcome_artifacts_immutable",
+        "strict_111_required",
+        "trade_enabled_false"
+      ]
+    },
+    "date_range": {},
+    "secondary_windows": [],
+    "market_regime_summary": {},
+    "before_metrics": {
+      "expected_value_score": null,
+      "sharpe": null,
+      "sharpe_daily": null,
+      "total_return_pct": null,
+      "max_drawdown_pct": null,
+      "win_rate": null,
+      "trade_count": null,
+      "survival_rate": null,
+      "total_pnl": null
+    },
+    "after_metrics": {
+      "expected_value_score": null,
+      "sharpe": null,
+      "sharpe_daily": null,
+      "total_return_pct": null,
+      "max_drawdown_pct": null,
+      "win_rate": null,
+      "trade_count": null,
+      "survival_rate": null,
+      "total_pnl": null
+    },
+    "delta_metrics": {},
+    "llm_metrics": {
+      "used_llm": false
+    },
+    "decision": "accepted",
+    "rejection_reason": null,
+    "next_retry_requires": [],
+    "related_files": [
+      "experiments/logs/exp-20260901-001.json",
+      "experiments/logs/exp-20260901-001.json"
+    ],
+    "notes": "Accepted lifecycle measurement repair only. The original exp-20260901-001 ticket, log, raw input, and result artifact remained byte-identical across an actual terminal rerun refusal. Two-attempt barrier tests prove only one process reaches outcome helpers; an empty crash marker remains fail-closed. The exact executed runner bytes remain preserved in commit 8d5da7a9e7e27486c9e26384e39f11da7c306fc1. No signal, ranking, sizing, exit, order, paper/live, or trade-enabled behavior changed.",
+    "post_run_reflection": {
+      "why_result_happened": "TODO",
+      "realized_failure_mode": null,
+      "forbidden_near_neighbor_retry": "TODO",
+      "new_evidence_required": "TODO"
+    }
+  },
+  "experiment_closeout_log_intent_sha256": "9e41aa9e256add00b5907c0324c435bbd5592348d58faab8ea206d2d3f683e13"
+}

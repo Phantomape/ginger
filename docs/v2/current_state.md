@@ -375,7 +375,9 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-两个已运行 scout 均已关闭为 rejected；不得在已消费的 SEC frame 或 PCAOB count/H5/window/cost 上做近邻参数搜索。下一实验只接受
+两个已运行 scout 均已关闭为 rejected；其 compact-log reflection 与 runner 单次执行完整性分别由
+`exp-20260901-002/003` 修复并关闭为 accepted，未改写 `exp-20260901-001` 的终态证据。不得在已消费的 SEC frame 或
+PCAOB count/H5/window/cost 上做近邻参数搜索。下一实验只接受
 独立、outcome-blind 冻结且满足 fast-scout kernel 的新 surface/机制；若本地 surface 无合格候选，则回到 M2/M3 promotion construction。
 并行的仓库外 append anchor 仍为 absent；其 connector、
 A1-A14 和 shadow outage/rollback 演练继续等待用户选择并授权 provider/product、account/namespace、retention、principal、secret

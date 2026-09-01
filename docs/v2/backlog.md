@@ -27,6 +27,7 @@
 - [x] 首个 V2 scout reserve/run/close：`exp-20260822-001` 按冻结 recipe 完整运行并关闭为 `rejected`；settled 指标只见 canonical log/artifact，不进入 outcome-blind 启动导航（2026-08-21 本地）
 - [x] 第二个 V2 scout：`exp-20260901-001` 冻结完整 942 行 PCAOB audit-report amendment frame、48 个 stress 与 29 个 count-one control 决策后 reserve/claim/run，两个 primary comparison 均失败并关闭为 `rejected`；无 policy/parity/交易改动（2026-09-01）
 - [x] Private-replay reflection audit repair：`exp-20260901-002` 只在 result artifact path/hash/terminal/scope/authority 全部绑定且结构化 boolean checks 可确定归因时解析 compact-log reflection；lean-strict 恢复通过，原终态记录不变（2026-09-01）
+- [x] Private-replay runner lifecycle repair：`exp-20260901-003` 在任何 outcome 前用 `RAW_INPUT` O_EXCL marker 取得单次执行权，并在 marker 后重读 ticket、重验 strict 111 与输出状态；terminal、并发 loser 和 crash marker 均 fail closed（2026-09-01）
 - [ ] 下一 scout：不得在已消费的 SEC frame 或 PCAOB count/H5/window/cost 上做近邻搜索；只接受独立 outcome-blind 冻结的新 surface/机制，仍须 preflight/freeze/reserve 后才能读 outcome；无合格候选时回 M2/M3 promotion construction
 
 ## M2（并行 Promotion Construction）
