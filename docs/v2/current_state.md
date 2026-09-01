@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-26T12:10Z（启动导航 outcome hygiene；无实验、ceiling 或 parity 状态变化）
+> 最后更新：2026-09-01T22:38Z（M3 research-only market decision clock 合同）
 > Outcome hygiene：本导航只记录 terminal 状态、证据位置和重开条件；settled 指标只保留在 canonical
 > ticket / log / artifact 中，outcome-blind 启动阶段不得读取。
 
@@ -17,7 +17,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
 | Research scout lane | 已运行 2 个：`exp-20260822-001` SEC exact-8-K H1 与 `exp-20260901-001` PCAOB audit-amendment stress H5 均以 `rejected` 关闭；完整结果只见 canonical log/artifact |
-| M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
+| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock 合同已绑定；动态 PIT 市场 universe、共享 feature/policy/decision chain 与 Engine-0 baseline 仍未建立 |
 | M4-M9 | 未开始 |
 
 ## T0（已确认）
@@ -91,8 +91,21 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   canonical order、security/listing 唯一性及完整 research-only ceiling；重封后的 ceiling 提升、矛盾身份、额外 rank/signal/outcome
   字段、非法 hash/state/clock、行值漂移、乱序与重复身份均 fail closed。
 - `observation_parity_status=daily_replay_alias_verified_research_only` 只证明这一个 source frame 的 membership/state/identity/default-off
-  handoff。`engine0_policy_invoked=false`、`engine0_baseline_established=false`、`market_decision_clock_status=unwired`；M3 仍未开始，
-  source/manifest 仍为 `contract_only_unwired`，不声称 scheduler、production/backtest、execution、canonical 或 paper/live parity。
+  handoff。原 observation 仍固定 `engine0_policy_invoked=false`、`engine0_baseline_established=false` 和
+  `market_decision_clock_status=unwired`；后续 clock consumer 不会回写或提升它。
+
+### Research-only market decision clock boundary
+
+- `quant/v2_market_decision_clock.py` 对同一显式 SEC observation 只调用一次既有 adapter，并用已建立的
+  `SessionClock -> complete calendar sessions -> EvidenceRecord -> SourceContract` 链验证市场决策时钟。observation
+  `as_of` 必须与 `assignment_cutoff` 为同一 UTC instant，clock 的 freeze 与 record 必须严格早于 session open；
+  process wall clock、未来/迟到时钟、PIT/authority/default-off 或身份重封漂移均 fail closed。
+- 输出同时绑定 observation/adapter/backend/hot-tip/manifest/universe/membership 与 clock/calendar/session/cutoff 身份，
+  daily/replay 是同一 callable，`market_decision_clock_status=bound_research_only`。它不生成 candidate、signal、decision、
+  outcome 或 order。
+- 该合同仅关闭了 M3 的 research-only clock-binding 结构缺口；`engine0_policy_invoked=false`、
+  `engine0_baseline_established=false`、`parity_status=contract_only_unwired`、`paper_live_eligible=false` 且
+  `trade_enabled=false`。不声称 scheduler、production/backtest、execution、canonical 或 paper/live parity。
 
 ### 外部 coverage 逐行因果时钟
 
@@ -382,4 +395,5 @@ PCAOB count/H5/window/cost 上做近邻参数搜索。下一实验只接受
 并行的仓库外 append anchor 仍为 absent；其 connector、
 A1-A14 和 shadow outage/rollback 演练继续等待用户选择并授权 provider/product、account/namespace、retention、principal、secret
 reference、deployment owner、threat model、网络/成本与 cutover。真实 population/churn/retention/SLO 仍是自动 cadence 前提；
-M3 Engine-0 仍需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。
+M3 下一个可运行单元是让 research-only Engine-0 baseline 合同消费新 clock envelope，但完整 M3 仍需
+动态 PIT 市场 universe 与共享 feature/policy/decision chain。
