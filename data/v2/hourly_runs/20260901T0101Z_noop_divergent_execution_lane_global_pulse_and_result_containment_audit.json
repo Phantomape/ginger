@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-09-01T01:01:59.5227985Z",
+  "run_finished_at": "2026-09-01T01:19:21.5781790Z",
+  "milestone": "execution_lane_reconciliation",
+  "work_unit": "divergent_execution_lane_global_pulse_and_result_containment_audit",
+  "outcome": "no-op audit",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "d2137e1ced5bba22b735eecdedb7631fe8e45d00",
+  "authoritative_state_ref": null,
+  "selection_rationale": {
+    "priority": "Cross-ref startup reconciliation supersedes the unchanged SEC admission watch item. A checked-out ref outside the dedicated Edge lane contains post-T0 V2 lifecycle activity inside the strict rolling 24-hour window, and the two checked-out V2 state surfaces disagree on protocol, state, backlog, decisions, receipts, and experiment identity.",
+    "chosen_unit": "Contain the divergent execution lane and correct the management-only global pulse without opening outcome artifacts, selecting a candidate, changing either lane, or guessing authoritative ownership.",
+    "stop_condition": "The protocol requires a user decision when authoritative ownership is unclear and the refs cannot be safely aligned without touching a dirty checkout or choosing between incompatible state histories. This unit therefore records the incident and remains zero-ID/default-off."
+  },
+  "outcome_access_containment": {
+    "status": "historical_result_values_rendered_and_quarantined",
+    "historical_result_values_rendered": true,
+    "historical_result_values_used": false,
+    "canonical_result_log_or_artifact_opened": false,
+    "current_or_future_target_frame_outcomes_accessed": false,
+    "protected_untracked_payload_bytes_rendered": false,
+    "source_fetch_or_materialization": "not_attempted",
+    "candidate_hypothesis_or_recipe_selection": "not_attempted",
+    "admission_artifact_freeze": "not_attempted",
+    "experiment_reservation": "not_attempted",
+    "incident": "A bounded delegated state/backlog read encountered protected result content and stopped without forwarding values. Separately, an overbroad Git lifecycle log command rendered a historical commit subject containing result values in the main context. Those values were immediately quarantined and were not used for candidate, recipe, threshold, readiness, Gate, blocker, lane-authority, or scientific judgment.",
+    "containment_boundary": "Only management fields, ref identities, blob hashes, path existence, timestamps, ticket lifecycle anchors, and boolean guards informed this receipt. No result file, canonical experiment log/artifact, current/future target outcome, or protected untracked payload was opened."
+  },
+  "execution_lane_reconciliation": {
+    "economic_incident": "divergent_execution_lane",
+    "incident_status": "open_needs_user_authority_decision",
+    "incident_fingerprint_sha256": "6c578b96ec4e588015ff2a8763954b5f42a7f9e3fbcaef9a8afd98dfca452738",
+    "configured_automation_id": "edge-v2",
+    "dedicated_lane": {
+      "worktree": "D:/Github/ginger/.codex/worktrees/edge-v2",
+      "branch": "refs/heads/automation/edge-v2",
+      "head": "d2137e1ced5bba22b735eecdedb7631fe8e45d00",
+      "upstream": "refs/remotes/origin/automation/edge-v2",
+      "direct_origin_head": "d2137e1ced5bba22b735eecdedb7631fe8e45d00",
+      "upstream_divergence": "0/0",
+      "agents_blob": "274dc67814c3831fd9adf889677c3660751253ae",
+      "protocol_blob": "567a57bf56fa30a4652335724e2df3901b2a3964",
+      "state_blob": "bb182274d5c18f181dfbc54b894d70f03aabbc70",
+      "backlog_blob": "29e4d14cc68dc957dcd6e71d452aa4a3bf3cdc8d",
+      "decision_log_blob": "c0c9c299dd095cd89c082d2c380c84a5ab0c1e86",
+      "latest_receipt": "data/v2/hourly_runs/20260901T0001Z_noop_unchanged_pre_recheck_conjunctive_admission_block_and_historical_summary_containment_audit.json"
+    },
+    "other_active_v2_ref": {
+      "worktree": "D:/Github/ginger",
+      "branch": "refs/heads/fix/alpha-score-sleeve-same-day-idempotency",
+      "head": "5967838aeddddd14a3874904931e3558e6e99e32",
+      "upstream": "refs/remotes/origin/fix/alpha-score-sleeve-same-day-idempotency",
+      "direct_origin_head": "b3dffa5aa73b8ddfeb1676905a7d02de0ea8fa18",
+      "upstream_divergence": "23/0",
+      "agents_blob": "274dc67814c3831fd9adf889677c3660751253ae",
+      "protocol_blob": "200c846e70edcda59ead9bdfb4fc38ee06c6608e",
+      "working_protocol_sha256": "776aa08cf1980e529b17bb691862bef0aa6df682f1da0acede94dbdfa240067f",
+      "working_protocol_dirty": true,
+      "state_blob": "d3187f074544ea81d5522350fb7bd04b55b87479",
+      "backlog_blob": "cfaba61e729252a2d347801036ebd233b2d943c2",
+      "decision_log_blob": "f85e0da1423ca084b2f2700b12da094e5c9aee9a",
+      "latest_receipt": "data/v2/hourly_runs/20260831T1640Z_adjacent_overshoot_clean_forward_contract_freeze.json",
+      "tracked_or_index_clean": false,
+      "active_post_t0_lifecycle_writer_detected": false
+    },
+    "safe_alignment_attempted": false,
+    "safe_alignment_reason": "The other checkout is dirty, its committed and working protocols differ from the dedicated lane, and its V2 state/backlog/decision history is distinct. Merging, rebasing, copying ledgers, or selecting a winner would require an authority decision and risk evidence loss or semantic mixing.",
+    "containment_write_freeze": {
+      "status": "required_pending_user_decision",
+      "scope": [
+        "refs/heads/automation/edge-v2",
+        "refs/heads/fix/alpha-score-sleeve-same-day-idempotency"
+      ],
+      "effective_after_this_receipt": true,
+      "prohibited_until_reconciled": "New V2 experiment reservation, claim, runner/build start, ticket/registry/state/backlog/decision writes, scientific receipt writes, and alpha selection on either ref; all new V2 receipt writes on the non-dedicated fix ref.",
+      "allowed": "Read-only identity, trigger, and authority audits that do not open outcome values; management-only containment/no-op receipts on the dedicated Edge lane with authoritative_state_ref left unresolved; external automation memory updates; and a user-authorized append-only reconciliation mapping after policy selection.",
+      "enforcement_limit": "This receipt records the required cross-lane freeze but cannot mutate or lock the dirty other checkout. Its owner must honor the freeze or the user must designate an enforcement owner."
+    },
+    "preserve_first_reconciliation_default": {
+      "existing_evidence": "Do not rewrite, delete, move, renumber, or overwrite either terminal ticket or either immutable UID.",
+      "collision_identity": "Treat source_ref plus immutable_uid as the temporary globally unique identity for every cross-ref projection.",
+      "future_id_allocation": "Do not allocate the colliding experiment ID again. After authority is chosen, create an append-only alias/namespace mapping before any new reservation.",
+      "scientific_results": "Do not copy or merge scientific result payloads during management reconciliation; bind any later import to explicit source ref, commit, content hash, and authorization.",
+      "separate_namespace_management_anchor": "If both scientific namespaces remain separate, use refs/heads/automation/edge-v2 only as the neutral management aggregation anchor for an append-only source-ref/UID alias ledger; this does not make Edge the scientific authority for either namespace."
+    }
+  },
+  "global_lifecycle_pulse": {
+    "pulse_as_of": "2026-09-01T01:02:51Z",
+    "rolling_24h_window": "[2026-08-31T01:02:51Z,2026-09-01T01:02:51Z]",
+    "project_t0_floor_used": "2026-08-19T00:00:00Z",
+    "generic_reservation_contract_enforcement_cutoff": "2026-08-26T08:20:00Z",
+    "post_t0_ticket_identity_count": 15,
+    "post_t0_unique_experiment_id_count": 14,
+    "post_t0_terminal_ticket_identity_count": 15,
+    "post_t0_open_or_active_ticket_count": 0,
+    "alpha_trials_created": 1,
+    "alpha_trials_claimed": 1,
+    "alpha_trials_run_or_built": 1,
+    "alpha_trials_terminal": 1,
+    "canonical_gate4_passes": null,
+    "forward_decisions": null,
+    "settled_outcomes": null,
+    "net_replacement_value": null,
+    "active_forward_sleeves": null,
+    "observer_stale_sleeves": null,
+    "eligible_unadmitted": null,
+    "due_unsettled": null,
+    "oldest_actionable_debt_age_hours": null,
+    "next_alpha_action_due_at": null,
+    "missed_alpha_execution_slots": null,
+    "counter_withholding_reason": "Only outcome-blind ticket lifecycle management fields were reconciled. Gate, debt, forward, settlement, replacement, observer, ETA, and economic-result counters remain withheld because no independent outcome-blind canonical counter common to both refs was established.",
+    "economic_progress": false
+  },
+  "lifecycle_integrity_findings": {
+    "cross_ref_experiment_id_collision": {
+      "experiment_id": "exp-20260826-001",
+      "dedicated_lane_immutable_uid": "expuid-83c12a36877a414e",
+      "other_ref_immutable_uid": "expuid-26e1182fcaf74209",
+      "both_terminal": true,
+      "live_scope_conflict": false,
+      "resolution_status": "unresolved_namespace_collision"
+    },
+    "post_enforcement_terminal_contract_partial_count": 4,
+    "post_enforcement_terminal_contract_partial_experiment_ids": [
+      "exp-20260826-001",
+      "exp-20260827-001",
+      "exp-20260828-001",
+      "exp-20260831-001"
+    ],
+    "partial_definition": "Terminal ticket identity created after the generic reservation-contract enforcement cutoff but missing experiment_ever_claimed and/or generic reservation identity management anchors. No scientific result status was inspected."
+  },
+  "unchanged_dedicated_lane_watch_item": {
+    "prior_blocker_fingerprint_sha256": "9f33db1842ed94dfc100c97d77bf20912578024a1c8e0a84807ce86daef12a0f",
+    "audit_clock": "2026-09-01T01:05:25Z",
+    "recheck_trigger": "2026-09-01T10:00:00Z",
+    "recheck_trigger_fired": false,
+    "trade_enabled": false,
+    "target_source_and_universe_roots_20260828_through_20260901_all_absent": true,
+    "admission_capability_families_unchanged_and_absent": true,
+    "note": "The prior SEC admission blocker remains parked. The new cross-ref lifecycle activity and namespace collision, not the SEC clock, triggered this management unit."
+  },
+  "protected_input_identity": {
+    "untracked_file_count": 17,
+    "untracked_total_bytes": 2987777,
+    "untracked_aggregate_sha256": "6f9afabdef128df5ce68e7d9879956df7bf9c9a4a849516ad163e049a050ba8a",
+    "protected_payload_bytes_rendered": false,
+    "protected_payload_bytes_changed": false
+  },
+  "verification": [
+    "Read the automation memory, dedicated AGENTS.md, complete dedicated V2 protocol, Git status, latest dedicated receipt, decision-log management keys, and bounded current-state/backlog navigation.",
+    "Fetched origin/automation/edge-v2 and confirmed the dedicated local HEAD, upstream, and direct origin tracking ref matched at 0/0 before this receipt.",
+    "Compared checked-out ref identities and management blobs without opening scientific result artifacts; the protocol, state, backlog, decision log, and latest receipt differ between the two V2-bearing refs.",
+    "Reconciled outcome-blind ticket management fields across checked-out refs: 15 terminal identities, zero open/active identities, rolling-24h create/claim/run/terminal 1/1/1/1, four terminal contract-partial identities, and one experiment ID mapped to two immutable UIDs.",
+    "Confirmed the dedicated lane had no tracked, staged, unmerged, or index-lock change before this receipt and no active post-T0 lifecycle writer was found in any checked-out worktree.",
+    "Confirmed the 17 protected untracked files remained 2,987,777 bytes with unchanged aggregate SHA-256 without rendering their bytes.",
+    "Quarantined both historical-result exposures; no rendered result informed this receipt or any scientific decision.",
+    "No tests, builders, source contact, admission, experiment, strategy, parity, observer, order, permission, or live action ran because this was a management-only containment unit.",
+    "The receipt passed strict JSON parsing with duplicate-key and non-finite rejection, UTF-8 LF/no-BOM/final-newline checks, and recursive default-off checks before staging."
+  ],
+  "changed_files": [
+    "data/v2/hourly_runs/20260901T0101Z_noop_divergent_execution_lane_global_pulse_and_result_containment_audit.json"
+  ],
+  "scientific_credibility_impact": "Defensive and corrective at the management layer. The receipt prevents a false zero global alpha pulse, exposes a cross-ref experiment namespace collision, and quarantines historical-result exposure. No alpha, Gate, PIT, readiness, forward, settlement, replacement-value, or promotion claim changed.",
+  "parity_impact": "None. No replay, daily, forward, adapter, scheduler, allocator, policy, execution, paper, live, broker, or runtime behavior changed, and no parity claim was added or upgraded.",
+  "production_impact": "None. No order, position, permission, credential, account, deployment, external source, or live setting changed; V2 remains trade_enabled=false.",
+  "next_alpha_action": null,
+  "blocked_watch_items": [
+    {
+      "item": "execution_lane_authority_and_namespace_reconciliation",
+      "blocker_fingerprint_sha256": "6c578b96ec4e588015ff2a8763954b5f42a7f9e3fbcaef9a8afd98dfca452738",
+      "blocked_until": null,
+      "recheck_trigger": "The user designates the authoritative V2 state ref, or supplies an explicit non-destructive reconciliation/namespace policy for the two checked-out V2 histories.",
+      "why_not_runnable": "Any experiment, debt consumption, receipt aggregation, or state alignment would otherwise guess authority across distinct protocols and ledgers while one checkout is dirty."
+    },
+    {
+      "item": "dedicated_lane_complete_frame_sec_admission",
+      "blocker_fingerprint_sha256": "9f33db1842ed94dfc100c97d77bf20912578024a1c8e0a84807ce86daef12a0f",
+      "blocked_until": "2026-09-01T10:00:00Z",
+      "recheck_trigger": "Legal complete-frame clock plus controlled contact, authenticated parent-writer authority, complete frozen inputs, successor/cross-frame identity, generic admission/novelty, and full causal-clock capability.",
+      "why_not_runnable": "The clock trigger has not fired and every named admission predicate remains absent."
+    }
+  ],
+  "next_step": "After this receipt, freeze new V2 lifecycle writes and alpha execution on both divergent refs. Preserve both terminal identities unchanged and use source_ref plus immutable_uid for read-only aggregation. After the user selects the authoritative ref or separate namespace policy, create an append-only alias/reconciliation mapping and rerun management-only cross-ref reconciliation before any experiment.",
+  "user_decisions_needed": [
+    "Choose one immediate policy: (A) automation/edge-v2 is authoritative and the fix ref becomes read-only V2 history; (B) fix/alpha-score-sleeve-same-day-idempotency is authoritative and the Edge automation is paused; or (C) both remain separate scientific namespaces while automation/edge-v2 serves only as the neutral management aggregation anchor for a source_ref plus immutable_uid contract.",
+    "Authorize the preserve-first follow-up: keep both existing terminal records byte-unchanged, forbid reuse of exp-20260826-001, and append a source-ref/UID alias mapping on the A/B authority or the Option-C neutral Edge management anchor without importing scientific result payloads."
+  ],
+  "deferred_non_blocking_user_decisions": [
+    "Controlled SEC contact and authenticated parent-writer authorization for a later complete-frame scout.",
+    "External append-anchor provider, target, IAM, retention, credential, deployment, threat-model, network/cost, and cutover authorization."
+  ],
+  "made_by": "codex-edge-v2-automation"
+}
