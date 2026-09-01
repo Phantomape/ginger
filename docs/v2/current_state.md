@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-08-31T16:35Z（d-0014：adjacent overshoot 候选干净 forward 反证合同冻结，到达率通过（干净 stock 57），blocked_watch_item 等结算 ETA ~09-11；front lane 切 moomoo capital-flow DAY 低摩擦 long-only preflight）
+> 最后更新：2026-09-01T16:45Z（d-0015：moomoo capital-flow preflight 全轴机器关闭 + fallback prediction-market 同样关闭 → no_candidate close；本单元一例展示污染（第 3 例）已围栏零 ID；全部前台等事件 trigger，最早 ~09-08）
 
 ## 里程碑
 
@@ -82,6 +82,14 @@
 - 候选转为 blocked_watch_item：trigger = 每日 outcome append 使干净 conditioned settled 计数达 bar（常数时间重算）；到达后下一 alpha slot 内 reserve→claim→run（≤24h）。观测到的 08-31 non-quiet contrast 未塑造任何 bar——方向、horizon、腿与 falsifier 族均来自 08-29 注册原文。
 - pair sleeve 健康（今日）：第 3 个 measurement_ready batch 昨夜无人值守自动 admit（appended_this_run=1），3 baskets pending，0 due_unsettled、0 eligible_unadmitted，首结算仍 ~09-10。
 - **front lane 切换（下一单元已锁定）**：estimate-revision 家族等待期间，做 registered `moomoo_capital_flow_day_observer` surface 的 outcome-blind 低摩擦 long-only alpha preflight（本地 canonical DAY archive、07-21 起每日刷新、无借券/locate/付费源依赖、H1-H5 快结算可行）。
+
+## 最新可执行证据状态（2026-09-01）
+
+- **d-0015（零 ID）**：08-31 receipt 锁定的 moomoo capital-flow DAY long-only preflight 当轮执行，surface 全轴机器关闭：同规则 top1 forward 复测只有 11 个 closed（低于 materially-more bar）且本轮被展示污染围栏；H1-H5 变体 = 禁止的 hold-day 近邻；bucket/impact/response 重切被 exp-20260702-019 + exp-20260709-019 围栏禁止；flow×put-OI 在同 proxy 行禁止且 sleeve 结算轴 event-starved；intraday decomposition 需新管道非本单元可跑。fallback prediction_market_postfix 重建 readiness 后仍 not_ready 4/7（top_query 93.87%>50%、top_ticker 15.64%>15%、prob-change markets 17<20，unique markets 自 08-04 冻在 34，指纹停滞）。全 14 条已登记 readiness lane 机器关闭或已消费 → 按冻结 fallback 顺序产出 no_candidate artifact：`data/alpha_search/moomoo_capital_flow_day_longonly_preflight_20260901.json`。
+- **展示污染第 3 例（2026-08-11、2026-08-18 之后）**：子串黑名单遮罩让 `realized_pnl_to_date`（含 'date'）打印，暴露 top1-accumulation sleeve 截至 08-31 的聚合已实现 PnL（~-1979 美元 / 11 closed）。围栏：该机制只能在 08-31 后首次结算的 position 上评估，冻结重开 trigger = 干净 closed ≥20 跨 ≥10 entry dates（ETA ~11 月中）；零 ID。**规则：含结果值的文件只允许 ALLOWED 身份白名单读取，禁止黑名单遮罩。**
+- d-0014 recount（常数时间，与冻结合同字节对账 170/57/20/37）：h5 已结算 24/30（8 up/16 down）、h10 0/30，未触发；绑定 bar 是 h10，ETA ~09-08..09-11。
+- 事件 trigger 集中窗口：d-0014 bar ~09-08..09-11；negative-side 1508 re-read（1222/1508，~40/日）~09-08；pair sleeve 首结算 ~09-10；moomoo 干净 forward ~11 月中。**在任一 trigger 触发前，后续小时单元只做常数时间 recount，no-op suppressed 退出（不建文件、不 commit）。**
+- 备注：`daily_news_structured_event_observations_*.jsonl`（353 行全 pending_forward_close）无任何结算消费者，实际结算面在 entity_theme observers——退役/合并候选，留给未来管理单元；family-271 的 target_price 谓词在现行合同下结构性不可达（如需修约须预登记 contract review；当前无必要，因 exp-20260718-002 gate 独立失败）。
 
 ## 现场事实（2026-08-18）
 

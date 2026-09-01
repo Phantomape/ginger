@@ -48,8 +48,16 @@
 - [x] 被选候选 cand-c748224bb9bc0f6a9118 当轮 park：feed 日批时钟使孤立对照仅 8 决策（vs 1510 breadth 成员），对照腿结构性不可达；blocker+定量重开条件落 `data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json`
 - [x] exploitation 候选 quiet-tape 反证已执行并 REJECTED（exp-20260831-001, 2026-08-31, d-0013）：密度检查通过（802 conditioned / 656/427/142 settled）→ 单候选 scope 复验 → research_pit 升级（updated_at 保守重建 620/802）→ F1-F6 冻结反证 4 挂 2 过；already_priced 命中预测
 - [x] adjacent 注册候选 `cand-68d2f5dad2f903488307`（事前 overshoot 部分回吐）：干净 forward 反证合同已冻结（d-0014, 2026-08-31, 零 ID）——到达率检查通过（冻结规则下干净 stock 已 57 个 / 20 up / 37 down），bars B1-B5 从 08-29 注册措辞逐条冻结，样本 gate ≥30/gated horizon + ≥10/腿；现为 blocked_watch_item 等结算，保守 ETA h5 ~09-08 / h10 ~09-11，trigger 到达即 reserve→claim→run（≤24h）。合同：`data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json`
-- [ ] adjacent 合同 trigger 监视：每日 outcome append 后常数时间重算干净 conditioned settled 计数；达 bar 前不得碰该候选，不得读干净切片结果值
+- [ ] adjacent 合同 trigger 监视：每日 outcome append 后常数时间重算干净 conditioned settled 计数；达 bar 前不得碰该候选，不得读干净切片结果值（09-01 recount：h5 24/30、h10 0/30，未触发）
 - [ ] 禁止：quiet-tape 包络阈值/窗口调参重试（重开条件见 d-0013）；在 daily-batch 时钟上重定义 breadth 阈值；动其余五项数值 bar
+
+### 前台等待事件 trigger（d-0015，2026-09-01）
+
+- [x] moomoo capital-flow DAY long-only preflight（d-0015, 零 ID）：全轴机器关闭，no_candidate close 落 `data/alpha_search/moomoo_capital_flow_day_longonly_preflight_20260901.json`；fallback prediction_market_postfix 同样 not_ready（指纹停滞）
+- [ ] 展示污染围栏（第 3 例）：top1 main-inflow accumulation 机制只在 exit_date>2026-08-31 的 position 上评估；重开 trigger = 干净 closed ≥20 跨 ≥10 entry dates（sleeve state 身份字段常数时间计数，ETA ~11 月中）；期间禁读 sleeve PnL 字段
+- [ ] 事件 trigger 队列（触发即 reserve→claim→run ≤24h）：d-0014 bar（~09-08..09-11）→ 冻结反证合同；negative-side 1508 re-read（1222/1508，~09-08）→ 冻结再读合同；pair 首结算（~09-10）→ 日常 observer 结算；prediction-market 计数（停滞）
+- [ ] trigger 全 pending 期间：小时单元只做常数时间 recount，no-op suppressed 退出；不开新 surface / 修复 lane
+- [ ] （管理单元候选，非插队）`daily_news_structured_event_observations_*.jsonl` 无结算消费者，退役/合并评估
 
 ## 注意事项
 
