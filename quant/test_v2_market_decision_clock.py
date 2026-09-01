@@ -18,6 +18,7 @@ from quant.v2_market_decision_clock import (
     observe_sec_8k_daily_market_decision_clock,
     observe_sec_8k_market_decision_clock,
     observe_sec_8k_replay_market_decision_clock,
+    validate_market_decision_clock_snapshot,
 )
 from quant.v2_sec_8k_runtime_adapter import (
     LEDGER_BACKEND_LEGACY_JSONL_V1,
@@ -67,6 +68,28 @@ def _reseal_observation(observation):
     payload.pop("observation_snapshot_hash")
     observation["observation_snapshot_hash"] = canonical_hash(payload)
     return observation
+
+
+def _reseal_market_clock(snapshot):
+    payload = deepcopy(snapshot)
+    payload.pop("market_decision_clock_snapshot_hash", None)
+    snapshot["market_decision_clock_snapshot_hash"] = canonical_hash(payload)
+    return snapshot
+
+
+def _validate_snapshot(snapshot, inputs, *, expected_snapshot_hash=None):
+    return validate_market_decision_clock_snapshot(
+        snapshot,
+        inputs["session_clock"],
+        inputs["calendar_sessions"],
+        inputs["calendar_evidence"],
+        inputs["calendar_source_contract"],
+        expected_snapshot_hash=(
+            snapshot["market_decision_clock_snapshot_hash"]
+            if expected_snapshot_hash is None
+            else expected_snapshot_hash
+        ),
+    )
 
 
 def test_market_clock_uses_one_adapter_call_and_true_daily_replay_aliases(
@@ -199,6 +222,78 @@ def test_market_clock_accepts_offset_equivalent_cutoff_and_normalizes_output(
     )
     assert snapshot["input_identity"]["assignment_cutoff"] == (
         "2026-08-21T12:30:00Z"
+    )
+
+
+def test_market_clock_consumer_validator_rejects_resealed_boundary_escalation(
+    tmp_path,
+):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    snapshot["trade_enabled"] = True
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_boundary_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
+    )
+
+
+def test_market_clock_consumer_validator_rejects_inner_identity_tamper(tmp_path):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    snapshot["input_identity"]["universe_id"] = "crosswired-universe"
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_identity_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
+    )
+
+
+def test_market_clock_consumer_validator_rejects_fully_resealed_identity_substitution(
+    tmp_path,
+):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    expected_snapshot_hash = snapshot["market_decision_clock_snapshot_hash"]
+    snapshot["input_identity"]["universe_id"] = "crosswired-universe"
+    snapshot["input_identity_sha256"] = canonical_hash(snapshot["input_identity"])
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_expected_hash_mismatch",
+        lambda: _validate_snapshot(
+            snapshot,
+            inputs,
+            expected_snapshot_hash=expected_snapshot_hash,
+        ),
+    )
+
+
+def test_market_clock_consumer_validator_rejects_boolean_schema_version(tmp_path):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    snapshot["schema_version"] = True
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_contract_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
+    )
+
+
+def test_market_clock_consumer_validator_rejects_clock_record_substitution(tmp_path):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    substituted_clock = deepcopy(inputs["session_clock"])
+    substituted_clock["recorded_at"] = "2026-08-21T12:51:00Z"
+    substituted_clock = _seal_clock(substituted_clock)
+    inputs["session_clock"] = substituted_clock
+
+    _assert_code(
+        "market_clock_snapshot_clock_identity_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
     )
 
 

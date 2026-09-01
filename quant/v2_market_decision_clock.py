@@ -115,6 +115,87 @@ _UNIVERSE_STATES = {
     "quarantine",
     "retired",
 }
+_MARKET_CLOCK_FIELDS = {
+    "schema_version",
+    "record_type",
+    "market_decision_clock_contract",
+    "source_frame",
+    "consumer_stage",
+    "input_identity",
+    "input_identity_sha256",
+    "external_universe_coverage_status",
+    "observation_scope",
+    "pit_tier",
+    "authority",
+    "process_wall_clock_fallback_used",
+    "engine0_policy_invoked",
+    "engine0_baseline_established",
+    "market_decision_clock_status",
+    "result_ceiling",
+    "paper_live_eligible",
+    "parity_status",
+    "outcome_blind",
+    "results_accessed",
+    "trade_enabled",
+    "market_decision_clock_snapshot_hash",
+}
+_MARKET_CLOCK_INPUT_IDENTITY_FIELDS = {
+    "observation_snapshot_hash",
+    "observation_input_identity_sha256",
+    "runtime_adapter_snapshot_hash",
+    "runtime_input_identity_sha256",
+    "ledger_backend",
+    "segmented_hot_state_identity_sha256",
+    "manifest_id",
+    "manifest_hash",
+    "universe_id",
+    "universe_definition_id",
+    "universe_definition_version",
+    "universe_definition_sha256",
+    "membership_count",
+    "membership_snapshot_sha256",
+    "shared_reader_snapshot_hash",
+    "observation_as_of",
+    "session_clock_id",
+    "session_clock_semantic_hash",
+    "session_clock_record_hash",
+    "run_id",
+    "run_date",
+    "calendar_id",
+    "calendar_version",
+    "calendar_timezone",
+    "calendar_snapshot_sha256",
+    "calendar_evidence_id",
+    "calendar_evidence_record_hash",
+    "calendar_session_id",
+    "session_open_at",
+    "session_close_at",
+    "assignment_cutoff",
+    "clock_frozen_at",
+    "clock_recorded_at",
+}
+_MARKET_CLOCK_IDENTITY_HASH_FIELDS = {
+    "observation_snapshot_hash",
+    "observation_input_identity_sha256",
+    "runtime_adapter_snapshot_hash",
+    "runtime_input_identity_sha256",
+    "manifest_hash",
+    "universe_definition_sha256",
+    "membership_snapshot_sha256",
+    "shared_reader_snapshot_hash",
+    "session_clock_semantic_hash",
+    "session_clock_record_hash",
+    "calendar_snapshot_sha256",
+    "calendar_evidence_record_hash",
+}
+_MARKET_CLOCK_IDENTITY_INSTANT_FIELDS = {
+    "observation_as_of",
+    "session_open_at",
+    "session_close_at",
+    "assignment_cutoff",
+    "clock_frozen_at",
+    "clock_recorded_at",
+}
 
 
 class V2MarketDecisionClockError(RuntimeError):
@@ -362,6 +443,222 @@ def _validate_observation(
     return observation, identity, observed_as_of_dt
 
 
+def validate_market_decision_clock_snapshot(
+    value: Mapping[str, Any],
+    session_clock: Mapping[str, Any] | SessionClock,
+    calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    calendar_source_contract: Mapping[str, Any] | SourceContract,
+    *,
+    expected_snapshot_hash: str,
+) -> dict[str, Any]:
+    """Validate a market-clock envelope against a separately frozen hash."""
+
+    if not isinstance(value, Mapping) or set(value) != _MARKET_CLOCK_FIELDS:
+        _fail(
+            "market_clock_snapshot_shape_invalid",
+            "market-clock snapshot has an unexpected field surface",
+        )
+    snapshot = deepcopy(dict(value))
+    payload = deepcopy(snapshot)
+    supplied_snapshot_hash = payload.pop(
+        "market_decision_clock_snapshot_hash", None
+    )
+    if (
+        not isinstance(expected_snapshot_hash, str)
+        or re.fullmatch(r"[0-9a-f]{64}", expected_snapshot_hash) is None
+        or supplied_snapshot_hash != expected_snapshot_hash
+    ):
+        _fail(
+            "market_clock_snapshot_expected_hash_mismatch",
+            "market-clock snapshot does not match the separately frozen identity",
+        )
+    if supplied_snapshot_hash != canonical_hash(payload):
+        _fail(
+            "market_clock_snapshot_hash_mismatch",
+            "market-clock snapshot hash is invalid",
+        )
+    if (
+        type(snapshot.get("schema_version")) is not int
+        or snapshot.get("schema_version") != SCHEMA_VERSION
+        or snapshot.get("record_type") != MARKET_DECISION_CLOCK_RECORD_TYPE
+        or snapshot.get("market_decision_clock_contract")
+        != MARKET_DECISION_CLOCK_CONTRACT
+        or snapshot.get("source_frame") != "sec_edgar_8k"
+        or snapshot.get("consumer_stage")
+        != "pre_engine0_market_decision_clock"
+        or snapshot.get("market_decision_clock_status")
+        != "bound_research_only"
+        or snapshot.get("observation_scope")
+        != "source_bound_universe_membership_only"
+    ):
+        _fail(
+            "market_clock_snapshot_contract_mismatch",
+            "unexpected market-clock snapshot contract",
+        )
+    if (
+        snapshot.get("external_universe_coverage_status") != "unverified"
+        or snapshot.get("pit_tier") != "research_pit"
+        or snapshot.get("authority") != "research_only"
+        or snapshot.get("process_wall_clock_fallback_used") is not False
+        or snapshot.get("engine0_policy_invoked") is not False
+        or snapshot.get("engine0_baseline_established") is not False
+        or snapshot.get("result_ceiling") != "observed_only"
+        or snapshot.get("paper_live_eligible") is not False
+        or snapshot.get("parity_status") != "contract_only_unwired"
+        or snapshot.get("outcome_blind") is not True
+        or snapshot.get("results_accessed") is not False
+        or snapshot.get("trade_enabled") is not False
+    ):
+        _fail(
+            "market_clock_snapshot_boundary_mismatch",
+            "market-clock snapshot is not research-only and default-off",
+        )
+
+    identity = snapshot.get("input_identity")
+    if (
+        not isinstance(identity, Mapping)
+        or set(identity) != _MARKET_CLOCK_INPUT_IDENTITY_FIELDS
+        or snapshot.get("input_identity_sha256") != canonical_hash(identity)
+    ):
+        _fail(
+            "market_clock_snapshot_identity_mismatch",
+            "market-clock input identity is invalid",
+        )
+    for field in _MARKET_CLOCK_IDENTITY_HASH_FIELDS:
+        item = identity.get(field)
+        if not isinstance(item, str) or re.fullmatch(r"[0-9a-f]{64}", item) is None:
+            _fail(
+                "market_clock_snapshot_identity_mismatch",
+                f"market-clock identity {field} is not a lowercase SHA-256",
+            )
+    hot_state_hash = identity.get("segmented_hot_state_identity_sha256")
+    if hot_state_hash is not None and (
+        not isinstance(hot_state_hash, str)
+        or re.fullmatch(r"[0-9a-f]{64}", hot_state_hash) is None
+    ):
+        _fail(
+            "market_clock_snapshot_identity_mismatch",
+            "segmented hot-state identity is invalid",
+        )
+    membership_count = identity.get("membership_count")
+    if (
+        not isinstance(membership_count, int)
+        or isinstance(membership_count, bool)
+        or membership_count < 0
+    ):
+        _fail(
+            "market_clock_snapshot_identity_mismatch",
+            "membership_count must be a non-negative integer",
+        )
+    text_fields = _MARKET_CLOCK_INPUT_IDENTITY_FIELDS - (
+        _MARKET_CLOCK_IDENTITY_HASH_FIELDS
+        | _MARKET_CLOCK_IDENTITY_INSTANT_FIELDS
+        | {"membership_count", "segmented_hot_state_identity_sha256"}
+    )
+    for field in text_fields:
+        item = identity.get(field)
+        if not isinstance(item, str) or not item.strip() or item != item.strip():
+            _fail(
+                "market_clock_snapshot_identity_mismatch",
+                f"market-clock identity {field} must be non-empty text",
+            )
+
+    instants: dict[str, datetime] = {}
+    for field in _MARKET_CLOCK_IDENTITY_INSTANT_FIELDS:
+        normalized, parsed = _instant(identity.get(field), field=f"input_identity.{field}")
+        if identity.get(field) != normalized:
+            _fail(
+                "market_clock_snapshot_identity_mismatch",
+                f"market-clock identity {field} must be UTC-normalized",
+            )
+        instants[field] = parsed
+    if (
+        instants["observation_as_of"] != instants["assignment_cutoff"]
+        or not (
+            instants["assignment_cutoff"]
+            <= instants["clock_frozen_at"]
+            <= instants["clock_recorded_at"]
+            < instants["session_open_at"]
+            < instants["session_close_at"]
+        )
+    ):
+        _fail(
+            "market_clock_snapshot_chronology_invalid",
+            "market-clock identity chronology is invalid",
+        )
+    backend = identity.get("ledger_backend")
+    if (
+        backend not in {
+            LEDGER_BACKEND_LEGACY_JSONL_V1,
+            LEDGER_BACKEND_SEGMENTED_HOT_V1,
+        }
+        or (
+            backend == LEDGER_BACKEND_LEGACY_JSONL_V1
+            and hot_state_hash is not None
+        )
+        or (
+            backend == LEDGER_BACKEND_SEGMENTED_HOT_V1
+            and hot_state_hash is None
+        )
+    ):
+        _fail(
+            "market_clock_snapshot_identity_mismatch",
+            "ledger backend contradicts its hot-state identity",
+        )
+
+    try:
+        clock = validate_session_clock_against_calendar(
+            session_clock,
+            calendar_sessions,
+            calendar_evidence,
+            calendar_source_contract,
+        )
+    except V2ContractValidationError as exc:
+        raise V2MarketDecisionClockError(
+            "market_clock_session_clock_dependency_error",
+            f"{exc.code}: {exc.detail}",
+        ) from exc
+    expected_clock_identity = {
+        "session_clock_id": clock.session_clock_id,
+        "session_clock_semantic_hash": clock.semantic_hash,
+        "session_clock_record_hash": clock.record_hash,
+        "run_id": clock.run_id,
+        "run_date": clock.run_date,
+        "calendar_id": clock.calendar_id,
+        "calendar_version": clock.calendar_version,
+        "calendar_timezone": clock.calendar_timezone,
+        "calendar_snapshot_sha256": clock.calendar_snapshot_sha256,
+        "calendar_evidence_id": clock.calendar_evidence_id,
+        "calendar_evidence_record_hash": clock.calendar_evidence_record_hash,
+        "calendar_session_id": clock.calendar_session_id,
+        "session_open_at": clock.session_open_at,
+        "session_close_at": clock.session_close_at,
+        "assignment_cutoff": clock.assignment_cutoff,
+        "clock_frozen_at": clock.frozen_at,
+        "clock_recorded_at": clock.recorded_at,
+    }
+    if any(
+        identity.get(field) != expected
+        for field, expected in expected_clock_identity.items()
+    ):
+        _fail(
+            "market_clock_snapshot_clock_identity_mismatch",
+            "market-clock envelope does not bind the supplied session clock",
+        )
+    if (
+        clock.pit_tier != "research_pit"
+        or clock.authority != "research_only"
+        or clock.trade_enabled is not False
+        or clock.process_wall_clock_fallback_used is not False
+    ):
+        _fail(
+            "market_clock_snapshot_boundary_mismatch",
+            "supplied session clock exceeds the research-only boundary",
+        )
+    return snapshot
+
+
 def observe_sec_8k_market_decision_clock(
     source_dir: str | Path,
     envelope_path: str | Path,
@@ -515,7 +812,14 @@ def observe_sec_8k_market_decision_clock(
         "trade_enabled": False,
     }
     snapshot["market_decision_clock_snapshot_hash"] = canonical_hash(snapshot)
-    return snapshot
+    return validate_market_decision_clock_snapshot(
+        snapshot,
+        session_clock,
+        calendar_sessions,
+        calendar_evidence,
+        calendar_source_contract,
+        expected_snapshot_hash=snapshot["market_decision_clock_snapshot_hash"],
+    )
 
 
 # Daily and replay cannot fork clock assignment or observation logic.
@@ -528,6 +832,7 @@ __all__ = [
     "MARKET_DECISION_CLOCK_RECORD_TYPE",
     "SCHEMA_VERSION",
     "V2MarketDecisionClockError",
+    "validate_market_decision_clock_snapshot",
     "observe_sec_8k_market_decision_clock",
     "observe_sec_8k_daily_market_decision_clock",
     "observe_sec_8k_replay_market_decision_clock",

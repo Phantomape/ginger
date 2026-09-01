@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-09-01T22:38Z（M3 research-only market decision clock 合同）
+> 最后更新：2026-09-01T23:33Z（M3 research-only Engine-0 cash/no-signal baseline 合同）
 > Outcome hygiene：本导航只记录 terminal 状态、证据位置和重开条件；settled 指标只保留在 canonical
 > ticket / log / artifact 中，outcome-blind 启动阶段不得读取。
 
@@ -17,7 +17,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
 | Research scout lane | 已运行 2 个：`exp-20260822-001` SEC exact-8-K H1 与 `exp-20260901-001` PCAOB audit-amendment stress H5 均以 `rejected` 关闭；完整结果只见 canonical log/artifact |
-| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock 合同已绑定；动态 PIT 市场 universe、共享 feature/policy/decision chain 与 Engine-0 baseline 仍未建立 |
+| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock 与 Engine-0 cash/no-signal baseline 合同已绑定；membership-to-clock 逐行 lineage、动态 PIT 市场 universe、共享 predictive feature/policy、scheduler 与 runtime/production parity 仍未建立 |
 | M4-M9 | 未开始 |
 
 ## T0（已确认）
@@ -106,6 +106,20 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 该合同仅关闭了 M3 的 research-only clock-binding 结构缺口；`engine0_policy_invoked=false`、
   `engine0_baseline_established=false`、`parity_status=contract_only_unwired`、`paper_live_eligible=false` 且
   `trade_enabled=false`。不声称 scheduler、production/backtest、execution、canonical 或 paper/live parity。
+
+### Research-only Engine-0 cash/no-signal baseline
+
+- `quant/v2_engine0_baseline.py` 只消费独立冻结的 market-clock snapshot hash 与 CandidatePool/Hypothesis
+  identity，并对 `SourceContract -> EvidenceRecord -> ResearchClaim -> HypothesisCandidate -> CandidatePool ->
+  UniverseEvent` 完整依赖图再次交叉验证。Hypothesis 必须在 assignment cutoff 前 recorded，pool 必须绑定同一
+  session clock、market-universe hash 与 cutoff；自洽重封、残缺依赖图或迟到输入均 fail closed。
+- 固定 cash/no-signal policy 无可调参数。identity-only feature rows 保留候选输入与 admission 身份；完整
+  DecisionRecord 仅把 admitted rank 当审计顺序，所有 admitted 行均为 `not_selected`，inactive 行不产生 decision，
+  side/risk/size/currency 全空且 `order_intent_count=0`。daily/replay 是同一 callable。
+- 输出仅在上述冻结身份和完整依赖图通过后声明 `engine0_baseline_established=true`，scope 为
+  `validated_candidate_pool`；membership-to-clock 逐行 lineage 仍为 `unverified_hash_only`，外部覆盖仍未验证。
+  因此 ceiling 保持 `research_pit / observed_only`，runtime/production parity 为 unwired，canonical/promotion、
+  paper/live 均不合格，`trade_enabled=false`。
 
 ### 外部 coverage 逐行因果时钟
 
@@ -382,7 +396,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
   初始 schema、M2 研究 ledger 与首个 SEC source-bounded coverage 实例不等于市场级 universe 完备、canonical provenance、
   runtime 或 execution parity 已完成。
-- M3 Engine-0 建立前，bounded scout 最高只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
+- 当前 Engine-0 仅是 research-only cash/no-signal 合同；bounded scout 最高仍只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
 - 若主动使用 V1 baseline，它只做兼容性回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
 
@@ -395,5 +409,6 @@ PCAOB count/H5/window/cost 上做近邻参数搜索。下一实验只接受
 并行的仓库外 append anchor 仍为 absent；其 connector、
 A1-A14 和 shadow outage/rollback 演练继续等待用户选择并授权 provider/product、account/namespace、retention、principal、secret
 reference、deployment owner、threat model、网络/成本与 cutover。真实 population/churn/retention/SLO 仍是自动 cadence 前提；
-M3 下一个可运行单元是让 research-only Engine-0 baseline 合同消费新 clock envelope，但完整 M3 仍需
-动态 PIT 市场 universe 与共享 feature/policy/decision chain。
+连续两个非阻断 M3 construction 单元已完成；下一轮先做一次 bounded、zero-ID、outcome-blind scout readiness preflight。
+若无新 source/mechanism 形成 admission-ready candidate，则回到 M3，将 market-clock membership hash 与 CandidatePool
+UniverseEvent snapshot 建立逐行 lineage，再接动态 PIT 市场 universe 与共享 predictive feature/policy chain。

@@ -8,9 +8,10 @@ The core production/backtest contract remains in `docs/production_backtest_parit
 ## V2 SEC 8-K Research Universe Runtime
 
 The V2 SEC 8-K adapter is a source-bounded, research-only membership consumer.
-It feeds a read-only pre-Engine-0 observation boundary and a downstream
-research-only market-decision-clock binder; it does not feed the legacy
-production runner, an Engine-0 policy/baseline, scheduler, orders, or paper/live policy. The immutable source manifest keeps
+It feeds a read-only pre-Engine-0 observation boundary, a downstream
+research-only market-decision-clock binder, and an identity-only Engine-0
+cash/no-signal baseline; it does not feed the legacy production runner,
+scheduler, orders, or paper/live policy. The immutable source manifest keeps
 `parity_status=contract_only_unwired`; adapter and observation alias parity are
 recorded separately and cannot upgrade PIT or authority.
 
@@ -22,14 +23,16 @@ compact HEADs carry a distinct self-hash-bound capability marker that an older
 reader rejects before checkpoint access. Backend and hot-tip identities are bound
 into adapter/observation identity while the membership semantic snapshot remains
 equal across explicit backends. Deployment is reader-first and one-way within a
-root; rotation remains explicit and unscheduled. No Engine-0, scheduler,
-production/backtest, canonical, paper/live, execution, or trading parity is claimed.
+root; rotation remains explicit and unscheduled. The Engine-0 consumer remains
+research-only; no scheduler, production/backtest, canonical, paper/live,
+execution, or trading parity is claimed.
 
 | Decision point | Shared source | Replay use | Daily use | Allowed difference |
 | --- | --- | --- | --- | --- |
 | Exact SEC 8-K materialization membership | `v2_sec_8k_runtime_adapter.py`, `v2_sec_8k_universe.py`, `v2_universe_ledger.py` | caller must supply the exact committed `manifest_id` and timezone-aware `as_of`; the full source/envelope/ledger/coverage graph is validated before the sole shared membership reader runs | same callable, same mandatory identity tuple, same normalized snapshot and canonical hashes; there is no implicit latest manifest or process-clock fallback | none in membership, ordering, clocks, identity, hashes, or default-off boundary; Engine-0, production/backtest, canonical, and execution parity remain unclaimed |
 | Pre-Engine-0 universe membership observation | `v2_universe_observation.py` consumes the exact runtime adapter snapshot in memory | `observe_sec_8k_replay_universe` is a true alias that forwards the explicit identity tuple once, revalidates adapter/input/reader/membership identities and full research-only ceilings, and emits only exact membership rows | `observe_sec_8k_daily_universe` is the same callable and produces the same normalized observation hash across equivalent offsets and copied paths | none in membership, state, ordering, identity, hashes, or default-off boundary; status is `daily_replay_alias_verified_research_only`. Engine-0 policy/baseline, market clock, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed |
 | Research-only market decision clock | `v2_market_decision_clock.py` consumes one explicit observation plus a complete evidence-bound `SessionClock` chain | replay and daily are true aliases; observation `as_of` must equal `assignment_cutoff` as a UTC instant, and clock freeze/record must be strictly pre-open | the identical callable binds adapter/backend/manifest/universe/membership and clock/calendar/session/cutoff identities without process-wall-clock fallback | `market_decision_clock_status=bound_research_only` and `parity_status=contract_only_unwired`; no Engine-0 policy/baseline, scheduler, production/backtest, execution, canonical, or paper/live parity is claimed |
+| Research-only Engine-0 cash/no-signal baseline | `v2_engine0_baseline.py` consumes a separately frozen market-clock hash, separately frozen CandidatePool/Hypothesis identities, and the complete cross-validated research dependency graph | replay and daily are true aliases; the immutable policy emits identity-only feature rows and one complete DecisionRecord in which admitted ranks are audit-only and every admitted candidate is `not_selected` | the identical callable and policy hold cash, emit no side/risk/size/currency or OrderIntent, and preserve `trade_enabled=false` | `engine0_baseline_scope=validated_candidate_pool`, but membership-to-clock row lineage is `unverified_hash_only`; `pit_tier=research_pit`, `result_ceiling=observed_only`, and runtime/production parity remain unwired, so no canonical, promotion, paper/live, execution, or trading parity is claimed |
 
 ## ORTEX Cost-to-Borrow-New Observer
 
