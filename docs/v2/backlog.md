@@ -25,7 +25,9 @@
 - [x] 协议解除 M0-M5 串行闸门：bounded `research_pit / private_replay_scout` 在 M1 kernel 后可运行，结论硬封顶 `observed_only`（2026-08-21）
 - [x] 首个 V2 scout zero-ID preflight：2026-08-20 SEC exact-8-K complete frame 的 219 行 disposition、111 个 mapped-only CandidatePool、DecisionRecord、selection panel 与 promotion 已在 outcome-blind 状态冻结并通过 D0-D3（2026-08-21 本地）
 - [x] 首个 V2 scout reserve/run/close：`exp-20260822-001` 按冻结 recipe 完整运行并关闭为 `rejected`；settled 指标只见 canonical log/artifact，不进入 outcome-blind 启动导航（2026-08-21 本地）
-- [ ] 下一 scout：不得在 `exp-20260822-001` 的同一 frame 上做成本、持有分钟、item code、子集或 event-sign 阈值近邻搜索；只接受独立冻结的更晚 complete frame，或结果前可用的独立事件符号源，仍须 preflight/freeze/reserve 后才能读 outcome
+- [x] 第二个 V2 scout：`exp-20260901-001` 冻结完整 942 行 PCAOB audit-report amendment frame、48 个 stress 与 29 个 count-one control 决策后 reserve/claim/run，两个 primary comparison 均失败并关闭为 `rejected`；无 policy/parity/交易改动（2026-09-01）
+- [x] Private-replay reflection audit repair：`exp-20260901-002` 只在 result artifact path/hash/terminal/scope/authority 全部绑定且结构化 boolean checks 可确定归因时解析 compact-log reflection；lean-strict 恢复通过，原终态记录不变（2026-09-01）
+- [ ] 下一 scout：不得在已消费的 SEC frame 或 PCAOB count/H5/window/cost 上做近邻搜索；只接受独立 outcome-blind 冻结的新 surface/机制，仍须 preflight/freeze/reserve 后才能读 outcome；无合格候选时回 M2/M3 promotion construction
 
 ## M2（并行 Promotion Construction）
 

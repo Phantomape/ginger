@@ -3217,6 +3217,8 @@ def test_lean_audit_reports_legacy_debt_without_blocking(tmp_path):
 
     assert audit["passed"] is True
     assert audit["lean_quality_passed"] is True
+    assert audit["post_enforcement_weak_prediction_quality_count"] == 0
+    assert audit["closed_post_enforcement_weak_reflection_count"] == 0
     assert audit["weak_prediction_quality_count"] == 1
     assert audit["post_enforcement_weak_prediction_quality_count"] == 0
     assert audit["closed_weak_reflection_count"] == 1
@@ -3282,8 +3284,407 @@ def test_lean_audit_passes_substantive_reasoning_and_reflection(tmp_path):
 
     assert audit["passed"] is True
     assert audit["lean_quality_passed"] is True
-    assert audit["post_enforcement_weak_prediction_quality_count"] == 0
-    assert audit["closed_post_enforcement_weak_reflection_count"] == 0
+
+
+_STRUCTURED_REFLECTION_CHECK_IDS = (
+    "sample_reachable",
+    "stress_beats_control",
+    "stress_mean_positive",
+)
+
+
+def _write_hash_bound_private_replay_reflection(tmp_path):
+    experiment_id = "exp-20990101-041"
+    relative = f"data/experiments/{experiment_id}/result.json"
+    artifact_path = tmp_path / relative
+    artifact_path.parent.mkdir(parents=True)
+    acceptance_rule = (
+        "Reject unless the frozen sample is reachable, the stress mean is positive, "
+        "and the stress cohort beats the frozen control cohort."
+    )
+    failure_modes = [
+        "stress_mean_is_not_positive",
+        "control_matches_or_beats_stress",
+    ]
+    evaluation = {
+        "diagnostic_disposition": "rejected",
+        "acceptance_checks": {
+            "sample_reachable": True,
+            "stress_mean_positive": False,
+            "stress_beats_control": False,
+        },
+        "decision_outcomes": [],
+    }
+    summary = {
+        key: value for key, value in evaluation.items() if key != "decision_outcomes"
+    }
+    artifact = {
+        "experiment_id": experiment_id,
+        "record_type": "v2_private_replay_scout_result",
+        "status": "rejected",
+        "decision": "rejected",
+        "disposition": "rejected",
+        "evidence_invalid": False,
+        "acceptance_rule": acceptance_rule,
+        "evaluation": evaluation,
+        "post_run_reflection": {
+            "why_result_happened": (
+                "The frozen stress cohort failed because its mean replacement edge "
+                "was negative and did not exceed the predeclared control cohort."
+            ),
+            "failure_mode_audit": failure_modes,
+            "forbidden_near_neighbor_retry": (
+                "Do not retune the threshold or horizon on the consumed outcomes."
+            ),
+            "new_evidence_required": (
+                "Require a prospectively frozen source vintage under the unchanged rule."
+            ),
+        },
+    }
+    artifact_path.write_text(json.dumps(artifact), encoding="utf-8")
+    artifact_sha = hashlib.sha256(artifact_path.read_bytes()).hexdigest()
+    result = {
+        "artifact": relative,
+        "artifact_sha256": artifact_sha,
+        "decision": "rejected",
+        "disposition": "rejected",
+        "artifact_disposition": "rejected",
+        "evidence_invalid": False,
+        "summary": summary,
+    }
+    ticket = {
+        "experiment_id": experiment_id,
+        "lane": "alpha_search",
+        "status": "rejected",
+        "change_type": "private_replay_scout",
+        "acceptance_rule": acceptance_rule,
+        "prediction": {"main_failure_modes": failure_modes},
+        "alpha_promotion": {"admission_class": "research_replay"},
+        "allowed_write_scope": [f"data/experiments/{experiment_id}/"],
+        "must_not_touch": [],
+        "result": result,
+    }
+    log_row = json.loads(json.dumps(result))
+    log_row["status"] = "rejected"
+    return ticket, log_row
+
+
+def _rewrite_bound_private_replay_artifact(tmp_path, ticket, log_row, artifact):
+    artifact_path = tmp_path / ticket["result"]["artifact"]
+    artifact_path.write_text(json.dumps(artifact), encoding="utf-8")
+    digest = hashlib.sha256(artifact_path.read_bytes()).hexdigest()
+    ticket["result"]["artifact_sha256"] = digest
+    log_row["artifact_sha256"] = digest
+    return digest
+
+
+def _allow_structured_reflection_migration(monkeypatch, ticket, digest):
+    monkeypatch.setitem(
+        experiment_registry_module._PRIVATE_REPLAY_STRUCTURED_REFLECTION_MIGRATIONS,
+        digest,
+        {
+            "experiment_id": ticket["experiment_id"],
+            "acceptance_check_ids": _STRUCTURED_REFLECTION_CHECK_IDS,
+        },
+    )
+
+
+def _sync_private_replay_summary(ticket, log_row, artifact):
+    summary = {
+        key: value
+        for key, value in artifact["evaluation"].items()
+        if key != "decision_outcomes"
+    }
+    ticket["result"]["summary"] = json.loads(json.dumps(summary))
+    log_row["summary"] = json.loads(json.dumps(summary))
+
+
+def test_lean_reflection_accepts_exact_hash_bound_private_replay_artifact(tmp_path):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reasons == []
+
+
+def test_lean_reflection_accepts_bound_structured_check_attribution(
+    tmp_path, monkeypatch
+):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    artifact_path = tmp_path / ticket["result"]["artifact"]
+    artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+    artifact["post_run_reflection"].pop("why_result_happened")
+    digest = _rewrite_bound_private_replay_artifact(
+        tmp_path, ticket, log_row, artifact
+    )
+    _allow_structured_reflection_migration(monkeypatch, ticket, digest)
+
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reasons == []
+
+
+def test_lean_reflection_rejects_structured_checks_without_frozen_id_binding(
+    tmp_path
+):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    artifact_path = tmp_path / ticket["result"]["artifact"]
+    artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+    artifact["post_run_reflection"].pop("why_result_happened")
+    _rewrite_bound_private_replay_artifact(
+        tmp_path, ticket, log_row, artifact
+    )
+
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reasons == ["weak_result_reflection"]
+
+
+def test_hash_bound_reflection_uses_the_single_validated_artifact_read(
+    tmp_path, monkeypatch
+):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    artifact_path = (tmp_path / ticket["result"]["artifact"]).resolve()
+    original = artifact_path.read_bytes()
+    replacement = json.loads(original.decode("utf-8"))
+    replacement["post_run_reflection"]["why_result_happened"] = (
+        "This replacement reflection came from bytes that were never hash validated."
+    )
+    original_read_bytes = Path.read_bytes
+    raced = False
+
+    def racing_read_bytes(path):
+        nonlocal raced
+        raw = original_read_bytes(path)
+        if path.resolve() == artifact_path and not raced:
+            raced = True
+            artifact_path.write_text(json.dumps(replacement), encoding="utf-8")
+        return raw
+
+    monkeypatch.setattr(Path, "read_bytes", racing_read_bytes)
+
+    reflection = experiment_registry_module._hash_bound_private_replay_reflection(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert raced is True
+    assert reflection["why_result_happened"].startswith(
+        "The frozen stress cohort failed"
+    )
+
+
+def test_hash_bound_reflection_does_not_reopen_the_validated_path(
+    tmp_path, monkeypatch
+):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+
+    def reject_second_read(_path):
+        raise AssertionError("validated artifact path was reopened")
+
+    monkeypatch.setattr(
+        experiment_registry_module, "_load_json_file", reject_second_read
+    )
+
+    reflection = experiment_registry_module._hash_bound_private_replay_reflection(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reflection["why_result_happened"].startswith(
+        "The frozen stress cohort failed"
+    )
+
+
+def test_lean_reflection_rejects_malformed_terminal_status_without_crashing(tmp_path):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    artifact_path = tmp_path / ticket["result"]["artifact"]
+    artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+    ticket["status"] = "rejected_suffix"
+    ticket["result"]["decision"] = "rejected_suffix"
+    log_row["status"] = "rejected_suffix"
+    log_row["decision"] = "rejected_suffix"
+    artifact["status"] = "rejected_suffix"
+    artifact["decision"] = "rejected_suffix"
+    _rewrite_bound_private_replay_artifact(
+        tmp_path, ticket, log_row, artifact
+    )
+
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reasons == ["missing_post_run_reflection"]
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "log_summary_mismatch",
+        "artifact_summary_mismatch",
+        "log_status_mismatch",
+        "diagnostic_mismatch",
+        "rejected_all_true",
+        "non_boolean_check",
+        "empty_checks",
+        "unrelated_check_ids",
+        "bool_int_summary_mismatch",
+        "int_float_summary_mismatch",
+        "failure_mode_mismatch",
+        "missing_prediction",
+        "invalid_contaminated",
+        "positive_with_failed_check",
+    ],
+)
+def test_lean_reflection_rejects_noncanonical_structured_attribution(
+    tmp_path, monkeypatch, mutation
+):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    artifact_path = tmp_path / ticket["result"]["artifact"]
+    artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+    artifact["post_run_reflection"].pop("why_result_happened")
+
+    if mutation == "log_summary_mismatch":
+        log_row["summary"]["diagnostic_disposition"] = "drifted"
+    elif mutation == "artifact_summary_mismatch":
+        artifact["evaluation"]["unexpected_metric"] = 1
+    elif mutation == "log_status_mismatch":
+        log_row["status"] = "observed_only"
+    elif mutation == "diagnostic_mismatch":
+        artifact["evaluation"]["diagnostic_disposition"] = (
+            "inconclusive_insufficient_sample"
+        )
+        _sync_private_replay_summary(ticket, log_row, artifact)
+    elif mutation == "rejected_all_true":
+        artifact["evaluation"]["acceptance_checks"] = {
+            key: True
+            for key in artifact["evaluation"]["acceptance_checks"]
+        }
+        _sync_private_replay_summary(ticket, log_row, artifact)
+    elif mutation == "non_boolean_check":
+        artifact["evaluation"]["acceptance_checks"]["sample_reachable"] = 1
+        _sync_private_replay_summary(ticket, log_row, artifact)
+    elif mutation == "empty_checks":
+        artifact["evaluation"]["acceptance_checks"] = {}
+        _sync_private_replay_summary(ticket, log_row, artifact)
+    elif mutation == "unrelated_check_ids":
+        artifact["evaluation"]["acceptance_checks"] = {
+            "unrelated_flag_a": False,
+            "unrelated_flag_b": True,
+        }
+        _sync_private_replay_summary(ticket, log_row, artifact)
+    elif mutation == "bool_int_summary_mismatch":
+        numeric_checks = {
+            key: int(value)
+            for key, value in artifact["evaluation"]["acceptance_checks"].items()
+        }
+        ticket["result"]["summary"]["acceptance_checks"] = dict(numeric_checks)
+        log_row["summary"]["acceptance_checks"] = dict(numeric_checks)
+    elif mutation == "int_float_summary_mismatch":
+        artifact["evaluation"]["sample_count"] = 1
+        _sync_private_replay_summary(ticket, log_row, artifact)
+        ticket["result"]["summary"]["sample_count"] = 1.0
+        log_row["summary"]["sample_count"] = 1.0
+    elif mutation == "failure_mode_mismatch":
+        artifact["post_run_reflection"]["failure_mode_audit"].append(
+            "unplanned_failure_mode"
+        )
+    elif mutation == "missing_prediction":
+        ticket.pop("prediction")
+    elif mutation == "invalid_contaminated":
+        artifact["disposition"] = "invalid_contaminated"
+        artifact["evidence_invalid"] = True
+        artifact["evaluation"]["diagnostic_disposition"] = "invalid_contaminated"
+        for row in (ticket["result"], log_row):
+            row["disposition"] = "invalid_contaminated"
+            row["artifact_disposition"] = "invalid_contaminated"
+            row["evidence_invalid"] = True
+        _sync_private_replay_summary(ticket, log_row, artifact)
+    elif mutation == "positive_with_failed_check":
+        ticket["status"] = "observed_only"
+        ticket["result"]["decision"] = "observed_only"
+        log_row["status"] = "observed_only"
+        log_row["decision"] = "observed_only"
+        artifact["status"] = "observed_only"
+        artifact["decision"] = "observed_only"
+        artifact["disposition"] = "positive_replay_lead_not_promoted"
+        artifact["evaluation"]["diagnostic_disposition"] = (
+            "positive_replay_lead_not_promoted"
+        )
+        for row in (ticket["result"], log_row):
+            row["disposition"] = "positive_replay_lead_not_promoted"
+            row["artifact_disposition"] = "positive_replay_lead_not_promoted"
+        _sync_private_replay_summary(ticket, log_row, artifact)
+
+    digest = _rewrite_bound_private_replay_artifact(
+        tmp_path, ticket, log_row, artifact
+    )
+    _allow_structured_reflection_migration(monkeypatch, ticket, digest)
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reasons == ["weak_result_reflection"]
+
+
+@pytest.mark.parametrize(
+    ("status", "disposition", "check_value"),
+    [
+        ("observed_only", "positive_replay_lead_not_promoted", True),
+        ("rejected", "rejected", False),
+    ],
+)
+def test_lean_reflection_accepts_structured_attribution_with_empty_check_side(
+    tmp_path, monkeypatch, status, disposition, check_value
+):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    artifact_path = tmp_path / ticket["result"]["artifact"]
+    artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+    artifact["post_run_reflection"].pop("why_result_happened")
+    artifact["status"] = status
+    artifact["decision"] = status
+    artifact["disposition"] = disposition
+    artifact["evaluation"]["diagnostic_disposition"] = disposition
+    artifact["evaluation"]["acceptance_checks"] = {
+        key: check_value for key in _STRUCTURED_REFLECTION_CHECK_IDS
+    }
+    ticket["status"] = status
+    ticket["result"]["decision"] = status
+    log_row["status"] = status
+    log_row["decision"] = status
+    for row in (ticket["result"], log_row):
+        row["disposition"] = disposition
+        row["artifact_disposition"] = disposition
+    _sync_private_replay_summary(ticket, log_row, artifact)
+    digest = _rewrite_bound_private_replay_artifact(
+        tmp_path, ticket, log_row, artifact
+    )
+    _allow_structured_reflection_migration(monkeypatch, ticket, digest)
+
+    reflection = experiment_registry_module._hash_bound_private_replay_reflection(
+        ticket, log_row, repo_root=tmp_path
+    )
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert "none" not in reflection["why_result_happened"].lower()
+    assert reasons == []
+
+
+def test_lean_reflection_rejects_unbound_private_replay_artifact(tmp_path):
+    ticket, log_row = _write_hash_bound_private_replay_reflection(tmp_path)
+    log_row["artifact_sha256"] = "0" * 64
+
+    reasons = experiment_registry_module.lean_reflection_quality_reasons(
+        ticket, log_row, repo_root=tmp_path
+    )
+
+    assert reasons == ["missing_post_run_reflection"]
 
 
 def test_per_experiment_log_entry_is_written_to_own_file(tmp_path):

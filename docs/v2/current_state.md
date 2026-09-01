@@ -16,7 +16,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
-| Research scout lane | 已运行：`exp-20260822-001` 完成首个 SEC exact-8-K complete-frame H1 scout；terminal 状态为 `rejected`，完整结果只见 canonical log/artifact |
+| Research scout lane | 已运行 2 个：`exp-20260822-001` SEC exact-8-K H1 与 `exp-20260901-001` PCAOB audit-amendment stress H5 均以 `rejected` 关闭；完整结果只见 canonical log/artifact |
 | M3 共享 SDK 与 Engine-0 干净基线 | 未开始 |
 | M4-M9 | 未开始 |
 
@@ -148,6 +148,19 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   不晋级、不改共享 policy/order/paper/live；完整 settled 指标只保留在 canonical log/artifact 中。
 - 该 frame 已消费。禁止在同一 frame 上事后扫成本、持有分钟、item code、子集或 event-sign 阈值；
   下一次同类尝试需要独立冻结的更晚 complete frame，或结果前可用的独立事件符号源。
+
+### PCAOB amendment-stress scout 运行结果
+
+- `exp-20260901-001` 在任何价格 outcome 读取前冻结完整 942 行 PCAOB audit-report amendment frame、周度
+  `count>=3` stress gate、count-one negative control、next-Tuesday-or-later entry、SPY H5 comparator、10 bps cost、
+  2023-09-01 至 2026-06-01 窗口及 `research_pit / observed_only` ceiling，并经 promotion reserve/claim 快照绑定。
+- 48 个 stress 与 29 个 negative-control 决策均可评估，但两个预注册 primary comparison 均失败；ticket、log 与
+  artifact 原子关闭为 `rejected`，evidence 未污染。该 source/gate/window 已消费，不得基于已见结果改 count/H5/window/cost。
+- 该 scout 不建立 Engine-0、runtime 或 execution parity，不改变 policy/ranking/sizing/exit/order/paper/live，
+  `trade_enabled=false`。重开只接受 as-published PCAOB vintage 或前瞻冻结的新 filing rows，并保持原规则。
+- 首次 lean audit 因 canonical log 有意只保留 compact result、完整 reflection 位于 SHA-256 绑定 artifact 而误报
+  `weak_reflection`。`exp-20260901-002` 增加严格 artifact path/hash/terminal/scope/authority 复验及结构化 boolean-check
+  归因后关闭为 `accepted`；未绑定或 hash 不符仍 fail closed，且 `exp-20260901-001` 终态 ticket/log/artifact 未改写。
 
 ### Universe ledger 人口核心
 
@@ -362,8 +375,9 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 
 ## 下一步
 
-首个 scout 已关闭为 rejected；不要在同一 2026-08-20 frame 上做近邻参数搜索。下一个实验优先等待独立冻结的更晚 complete SEC
-frame 或结果前可用的独立 event-sign source，再做 outcome-blind preflight。并行的仓库外 append anchor 仍为 absent；其 connector、
+两个已运行 scout 均已关闭为 rejected；不得在已消费的 SEC frame 或 PCAOB count/H5/window/cost 上做近邻参数搜索。下一实验只接受
+独立、outcome-blind 冻结且满足 fast-scout kernel 的新 surface/机制；若本地 surface 无合格候选，则回到 M2/M3 promotion construction。
+并行的仓库外 append anchor 仍为 absent；其 connector、
 A1-A14 和 shadow outage/rollback 演练继续等待用户选择并授权 provider/product、account/namespace、retention、principal、secret
 reference、deployment owner、threat model、网络/成本与 cutover。真实 population/churn/retention/SLO 仍是自动 cadence 前提；
 M3 Engine-0 仍需动态 PIT 市场 universe、市场决策时钟和共享 feature/policy/decision chain。

@@ -92,6 +92,19 @@ PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITIONS = {
         "invalid_contaminated",
     },
 }
+# This artifact predates a machine-readable pre-run acceptance-check ID field.
+# Permit structured reflection synthesis only for its exact immutable digest;
+# every other artifact without a future frozen check-ID contract fails closed.
+_PRIVATE_REPLAY_STRUCTURED_REFLECTION_MIGRATIONS = {
+    "287b6efc1a037c2c57c3dad6b855636db40a077eb1a58316abef5d2209a650f6": {
+        "experiment_id": "exp-20260901-001",
+        "acceptance_check_ids": (
+            "evaluable_stress_n_gte_30",
+            "stress_mean_edge_gt_count_one_control",
+            "stress_mean_edge_positive",
+        ),
+    },
+}
 PRIVATE_REPLAY_SCOUT_CLAIM_BINDING_FIELD = (
     "private_replay_scout_closeout_claim_binding"
 )
@@ -893,8 +906,17 @@ def _resolve_private_replay_scout_artifact(
     artifact_path=None,
     artifact_sha256=None,
     repo_root=None,
+    _return_validated_artifact=False,
 ):
     root = Path(repo_root or REPO_ROOT).resolve()
+    if (
+        not isinstance(decision, str)
+        or decision not in PRIVATE_REPLAY_SCOUT_ARTIFACT_DISPOSITIONS
+    ):
+        raise ValueError(
+            f"{experiment.get('experiment_id')} private replay artifact has "
+            f"unsupported terminal status {decision!r}"
+        )
     binding_from_result = artifact_path is None
     locator = artifact_path
     expected_sha256 = artifact_sha256
@@ -989,12 +1011,15 @@ def _resolve_private_replay_scout_artifact(
     _reject_nested_research_replay_authority(
         experiment.get("experiment_id"), artifact, "artifact"
     )
-    return {
+    metadata = {
         "artifact": relative,
         "artifact_sha256": actual_sha256,
         "artifact_disposition": disposition,
         "evidence_invalid": evidence_invalid,
     }
+    if _return_validated_artifact:
+        return metadata, artifact
+    return metadata
 
 
 def _enforce_research_replay_result_ceiling(
@@ -1761,6 +1786,16 @@ def _compact_canonical_json_hash(value):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _strict_canonical_json_bytes(value):
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+
+
 def _reservation_intent_payload(ticket_kwargs):
     """Return the stable reservation identity for retry/concurrency de-duping.
 
@@ -2493,10 +2528,179 @@ def lean_prediction_quality_reasons(ticket):
     return reasons
 
 
-def lean_reflection_quality_reasons(ticket, log_row):
+def _hash_bound_private_replay_reflection(ticket, log_row, *, repo_root=None):
+    """Read reflection prose only from the exact artifact bound at closeout.
+
+    Private-replay canonical logs intentionally keep compact result summaries,
+    while the immutable result artifact carries the full reflection.  Accept
+    that reflection only after the existing artifact contract validates its
+    path, digest, experiment identity, terminal disposition, scope, and
+    research-only authority.
+    """
+
+    if not isinstance(ticket, dict) or not isinstance(log_row, dict):
+        return None
+    if ticket.get("change_type") != PRIVATE_REPLAY_SCOUT_CHANGE_TYPE:
+        return None
+    anchor = ticket.get("alpha_promotion")
+    if not isinstance(anchor, dict) or anchor.get(
+        "admission_class"
+    ) != RESEARCH_REPLAY_ADMISSION_CLASS:
+        return None
+    result = ticket.get("result")
+    if not isinstance(result, dict):
+        return None
+    if any(
+        log_row.get(field) != result.get(field)
+        for field in ("artifact", "artifact_sha256")
+    ):
+        return None
+    root = Path(repo_root or REPO_ROOT).resolve()
+    try:
+        binding, artifact = _resolve_private_replay_scout_artifact(
+            ticket,
+            ticket.get("status"),
+            result=result,
+            repo_root=root,
+            _return_validated_artifact=True,
+        )
+    except (OSError, TypeError, ValueError):
+        return None
+    reflection = (
+        artifact.get("post_run_reflection")
+        if isinstance(artifact, dict)
+        else None
+    )
+    if not isinstance(reflection, dict):
+        return None
+    if not reflection.get("why_result_happened"):
+        evaluation = artifact.get("evaluation")
+        checks = (
+            evaluation.get("acceptance_checks")
+            if isinstance(evaluation, dict)
+            else None
+        )
+        diagnostic = (
+            evaluation.get("diagnostic_disposition")
+            if isinstance(evaluation, dict)
+            else None
+        )
+        status = ticket.get("status")
+        disposition = binding.get("artifact_disposition")
+        evidence_invalid = binding.get("evidence_invalid")
+        evaluation_summary = (
+            {
+                key: value
+                for key, value in evaluation.items()
+                if key != "decision_outcomes"
+            }
+            if isinstance(evaluation, dict)
+            else None
+        )
+        prediction = ticket.get("prediction")
+        predicted_failure_modes = (
+            prediction.get("main_failure_modes")
+            if isinstance(prediction, dict)
+            else None
+        )
+        migration = _PRIVATE_REPLAY_STRUCTURED_REFLECTION_MIGRATIONS.get(
+            binding.get("artifact_sha256")
+        )
+        expected_check_ids = (
+            migration.get("acceptance_check_ids")
+            if isinstance(migration, dict)
+            and migration.get("experiment_id") == ticket.get("experiment_id")
+            else None
+        )
+        canonical_terminal_fields_match = (
+            status in RESEARCH_REPLAY_FINAL_STATUSES
+            and result.get("decision") == status
+            and log_row.get("status") == status
+            and log_row.get("decision") == status
+            and result.get("disposition") == disposition
+            and result.get("artifact_disposition") == disposition
+            and log_row.get("disposition") == disposition
+            and log_row.get("artifact_disposition") == disposition
+            and type(evidence_invalid) is bool
+            and result.get("evidence_invalid") is evidence_invalid
+            and log_row.get("evidence_invalid") is evidence_invalid
+        )
+        try:
+            canonical_summary_matches = (
+                isinstance(evaluation_summary, dict)
+                and isinstance(result.get("summary"), dict)
+                and isinstance(log_row.get("summary"), dict)
+                and _strict_canonical_json_bytes(evaluation_summary)
+                == _strict_canonical_json_bytes(result.get("summary"))
+                == _strict_canonical_json_bytes(log_row.get("summary"))
+            )
+        except (TypeError, ValueError):
+            canonical_summary_matches = False
+        acceptance_rule = ticket.get("acceptance_rule")
+        acceptance_rule_matches = (
+            isinstance(acceptance_rule, str)
+            and not _looks_placeholder(acceptance_rule)
+            and _word_count(acceptance_rule) >= 5
+            and artifact.get("acceptance_rule") == acceptance_rule
+        )
+        failure_modes_match = (
+            isinstance(predicted_failure_modes, list)
+            and bool(predicted_failure_modes)
+            and all(
+                isinstance(value, str) and value.strip()
+                for value in predicted_failure_modes
+            )
+            and reflection.get("failure_mode_audit") == predicted_failure_modes
+        )
+        check_pattern_matches = False
+        if (
+            isinstance(checks, dict)
+            and checks
+            and all(type(value) is bool for value in checks.values())
+            and isinstance(expected_check_ids, tuple)
+            and tuple(sorted(checks)) == tuple(sorted(expected_check_ids))
+            and diagnostic == disposition
+        ):
+            if disposition == "positive_replay_lead_not_promoted":
+                check_pattern_matches = status == "observed_only" and all(
+                    checks.values()
+                )
+            elif disposition in {
+                "rejected",
+                "inconclusive_insufficient_sample",
+            }:
+                check_pattern_matches = status == "rejected" and any(
+                    not value for value in checks.values()
+                )
+        if (
+            canonical_terminal_fields_match
+            and canonical_summary_matches
+            and acceptance_rule_matches
+            and failure_modes_match
+            and check_pattern_matches
+        ):
+            failed = sorted(key for key, passed in checks.items() if not passed)
+            passed = sorted(key for key, passed in checks.items() if passed)
+            failed_text = ", ".join(failed) if failed else "no failed checks"
+            passed_text = ", ".join(passed) if passed else "no passed checks"
+            reflection = dict(reflection)
+            reflection["why_result_happened"] = (
+                f"The canonical closeout recorded diagnostic {diagnostic}; "
+                f"canonical failed set: {failed_text}, and passed set: "
+                f"{passed_text}. The audited pre-run "
+                f"failure modes were: {', '.join(predicted_failure_modes)}."
+            )
+    return reflection
+
+
+def lean_reflection_quality_reasons(ticket, log_row, *, repo_root=None):
     if not prediction_required_for_lane(ticket.get("lane")):
         return []
     reflection = log_row.get("post_run_reflection") if isinstance(log_row, dict) else None
+    if not isinstance(reflection, dict):
+        reflection = _hash_bound_private_replay_reflection(
+            ticket, log_row, repo_root=repo_root
+        )
     reasons = []
     if isinstance(reflection, dict):
         why = reflection.get("why_result_happened")
@@ -6376,7 +6580,9 @@ def audit_experiment_process(
                 if quality_bucket == "post_enforcement":
                     post_weak_prediction_quality.append(item)
             if is_closed:
-                reflection_reasons = lean_reflection_quality_reasons(ticket, log_row)
+                reflection_reasons = lean_reflection_quality_reasons(
+                    ticket, log_row, repo_root=audit_repo_root
+                )
                 if reflection_reasons:
                     item = {
                         "experiment_id": experiment_id,

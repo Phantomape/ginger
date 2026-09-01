@@ -1,0 +1,344 @@
+{
+  "batch_policy_bundle_id": null,
+  "candidate_ids": [
+    "cand-160071d9e981b256f009"
+  ],
+  "candidate_pool_complete": true,
+  "candidate_snapshot_hashes": {
+    "cand-160071d9e981b256f009": "1f46369e375ad1b0277e1d6b8bd30b46efd9dd18839c10f8303ed1cc5494ca98"
+  },
+  "candidate_snapshots": [
+    {
+      "baseline": {
+        "policy": "hold SPY over the frozen H5 window"
+      },
+      "candidate_id": "cand-160071d9e981b256f009",
+      "candidate_kind": "expectation_gap",
+      "created_at": "2026-09-01T20:35:00Z",
+      "created_by": "codex-edge-v2-fast-falsification-scout",
+      "evidence_grade": "lead",
+      "execution_envelope": {
+        "borrow_dependency": "none",
+        "capacity_constraint": "diagnostic only; no deployable-capacity claim",
+        "costs_and_carry": "10 bps switch cost; no cash yield credit",
+        "intended_instrument": "SPY/cash measurement only",
+        "liquidity_dependency": "SPY regular-session daily bars",
+        "timing_constraint": "first SPY session on/after next-week Tuesday",
+        "trade_enabled": false
+      },
+      "expectation_gap": {
+        "gap_definition": "positive cash-minus-SPY H5 edge in stress weeks",
+        "independent_evidence": [
+          {
+            "fact": "complete audit-report amendment filing frame",
+            "known_at": "2026-07-16T09:05:05Z",
+            "source": "pcaob_form_ap"
+          }
+        ],
+        "market_prior": {
+          "known_at": "2026-09-01T20:35:00Z",
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "local_ohlcv_warehouse",
+          "value": 0.0
+        },
+        "our_posterior": {
+          "calibration_reference": "outcome-blind fast falsification",
+          "known_at": "2026-09-01T20:35:00Z",
+          "method": "predeclared_weekly_amendment_count_stress_prior_v1",
+          "value": 0.0001
+        },
+        "schema_version": 1,
+        "transmission": {
+          "affected_tickers": [
+            "SPY"
+          ],
+          "catalyst": "clustered audit-report amendment filings",
+          "expected_direction": "cash outperforms SPY after switching cost",
+          "half_life": "five regular sessions"
+        }
+      },
+      "expected_horizon": "next_week_tuesday_open_to_fifth_session_close",
+      "falsifier": "stress N<30 is inconclusive_insufficient_sample; otherwise reject if either primary comparison is non-positive",
+      "fingerprint": {
+        "component_sources": [
+          "local_ohlcv_warehouse",
+          "pcaob_form_ap"
+        ],
+        "data_source": "pcaob_form_ap",
+        "decision_surface": "regime_filter",
+        "economic_mechanism": "aggregate_audit_amendment_market_stress",
+        "execution_dependency": "spy_rth_open_close_fixed_cost",
+        "expectation_proxy": "price_revealed",
+        "horizon": "next_week_tuesday_open_to_fifth_session_close",
+        "payoff_shape": "cash_replacement_during_stress_h5",
+        "portfolio_role": "aggregate_market_risk_off_scout"
+      },
+      "hypothesis": "Weeks with at least three PCAOB Form AP audit-report amendments identify transient aggregate market stress, so replacing SPY with cash from the first eligible next-week Tuesday open through the fifth session close yields positive mean after-cost edge and exceeds otherwise identical count-one filing weeks.",
+      "next_machine_action": "Reserve, claim, evaluate frozen SPY windows once, and close.",
+      "prediction": {
+        "confidence_reason": "Clustered audit amendments plausibly proxy stress, but the aggregate link to SPY is indirect and the conservative clock likely removes most signal.",
+        "main_failure_modes": [
+          "amendment_timing_not_systemic",
+          "count_one_control_matches_or_beats_stress",
+          "spy_already_prices_stress",
+          "warehouse_identity_drift"
+        ],
+        "success_probability": 0.25
+      },
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "reopen_condition": "Do not retune threshold, H5, window, or cost after outcome access. Reopen only with an as-published PCAOB vintage or prospectively frozen new rows.",
+      "replacement_value_comparator": "SPY over identical entry/exit sessions",
+      "schema_version": 1,
+      "search_queue": "exploration",
+      "source_readiness_snapshot": [
+        {
+          "snapshot_hash": "be7663ee0a955316f7976e6e493554cee4ef5f089e2e87f8144664fc358fa25e",
+          "surface_id": "pcaob_form_ap_audit_amendment_frame_20260716"
+        },
+        {
+          "snapshot_hash": "a938a800bf1b0e3c0a58ec5be10592c4330bafe7cba62487911b150a531fbb8d",
+          "surface_id": "spy_date_only_calendar_and_h5_recipe_20260901"
+        }
+      ],
+      "surface_ids": [
+        "pcaob_form_ap_audit_amendment_frame_20260716",
+        "spy_date_only_calendar_and_h5_recipe_20260901"
+      ],
+      "title": "PCAOB audit-report amendment stress cash switch",
+      "treatment": {
+        "candidate_pool": "data/v2/scouts/pcaob_audit_amendment_stress_h5_20260901/candidate_pool.json",
+        "decision_record": "data/v2/scouts/pcaob_audit_amendment_stress_h5_20260901/decision_record.json",
+        "policy": "hold cash during count>=3 amendment-stress weeks"
+      },
+      "why_not_arbitraged": "The audit amendment aggregate is obscure, slow-moving, and may be too weak or too stale to survive a conservative weekly clock and switching cost."
+    }
+  ],
+  "created_at": "2026-09-01T20:35:00Z",
+  "data_cutoff": "2026-09-01T20:35:00Z",
+  "expected_candidate_count": 1,
+  "experiment_id_reserved": false,
+  "outcome_blind": true,
+  "panel_hash": "b04d7cec73475bd52ee7a7b07216ad1b0b7d4eedf45619523e98131bd20e05f2",
+  "preflight_decision_hashes": {
+    "cand-160071d9e981b256f009": "9e352631d5a18ff2f030d9cce81e15f47f103c1492e6127c21ce0d1b2872c340"
+  },
+  "preflight_decisions": {
+    "cand-160071d9e981b256f009": {
+      "candidate_id": "cand-160071d9e981b256f009",
+      "data_cutoff": "2026-09-01T20:35:00Z",
+      "decision": "pass",
+      "declared_evidence_grade": "lead",
+      "evaluated_at": "2026-09-01T20:35:00Z",
+      "failure_reasons": [],
+      "fingerprint_hash": "3970a1137fc69800b336555442b154cff494fe994b2d25d0739296be0823ceb9",
+      "gates": {
+        "D0": {
+          "reasons": [],
+          "status": "pass"
+        },
+        "D1": {
+          "reasons": [],
+          "status": "pass"
+        },
+        "D2": {
+          "reasons": [],
+          "status": "pass"
+        },
+        "D3": {
+          "reasons": [],
+          "status": "pass"
+        }
+      },
+      "maximum_supported_evidence_grade": "lead",
+      "outcome_blind": true,
+      "outcome_fields_excluded": [
+        "actual_return",
+        "alpha_result",
+        "backtest_result",
+        "best_horizon",
+        "candidate_return",
+        "expected_value_score",
+        "forward_return",
+        "gate_metric",
+        "gate_result",
+        "label_positive_cash",
+        "label_positive_qqq",
+        "label_positive_spy",
+        "max_drawdown",
+        "outcome_label",
+        "profit_and_loss",
+        "realised_outcome",
+        "realised_pnl",
+        "realised_return",
+        "realized_outcome",
+        "realized_pnl",
+        "realized_return",
+        "settlement_return",
+        "sharpe",
+        "sharpe_daily",
+        "sortino",
+        "strategy_total_return_pct",
+        "total_pnl",
+        "total_return",
+        "trade_result",
+        "winning_horizon"
+      ],
+      "preflight_hash": "9e352631d5a18ff2f030d9cce81e15f47f103c1492e6127c21ce0d1b2872c340",
+      "preflight_version": "alpha_search_preflight_v1",
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "record_type": "preflight_decision",
+      "reopen_condition": "Do not retune threshold, H5, window, or cost after outcome access. Reopen only with an as-published PCAOB vintage or prospectively frozen new rows.",
+      "schema_version": 1,
+      "selection_scope_id": "scope-fee4638416f1a6ca7a2e43f2",
+      "source_snapshot_hashes": {
+        "pcaob_form_ap_audit_amendment_frame_20260716": "be7663ee0a955316f7976e6e493554cee4ef5f089e2e87f8144664fc358fa25e",
+        "spy_date_only_calendar_and_h5_recipe_20260901": "a938a800bf1b0e3c0a58ec5be10592c4330bafe7cba62487911b150a531fbb8d"
+      },
+      "trade_enabled": false
+    }
+  },
+  "prior_fingerprint_count": 1471,
+  "prior_fingerprint_snapshot_hash": "7bb5af85f5b1a1ed2ffb00e8ea8fc957380229f209b91a4c0fc0dcebb3306cf0",
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "queue_actual_counts": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "queue_budgets": {
+    "adjacent": 0,
+    "exploitation": 0,
+    "exploration": 1
+  },
+  "record_type": "panel_selection",
+  "rejection_reasons": {},
+  "schema_version": 1,
+  "scope_manifest": {
+    "allowed_surface_ids": [
+      "pcaob_form_ap_audit_amendment_frame_20260716",
+      "spy_date_only_calendar_and_h5_recipe_20260901"
+    ],
+    "batch_policy_bundle_id": null,
+    "candidate_generation_config": {
+      "candidate_specific_results_access": false,
+      "fast_falsification_scout": true,
+      "non_relaxed_dimensions": [
+        "outcome_blind_freeze",
+        "complete_source_frame_disposition",
+        "hash_bound_inputs",
+        "trade_enabled_false"
+      ],
+      "outcome_fields_allowed": false,
+      "selection_limit": 1,
+      "selection_policy": "select the sole frozen candidate if D0-D3 pass"
+    },
+    "data_cutoff": "2026-09-01T20:35:00Z",
+    "expected_candidate_count": 1,
+    "freeze_at": "2026-09-01T20:35:00Z",
+    "generator_version": "v2-pcaob-audit-amendment-stress-h5-v1",
+    "manifest_hash": "fee4638416f1a6ca7a2e43f20620b6e761d58233c75d94e5cb064258e3a8ae8a",
+    "manifest_version": "alpha_search_scope_manifest_v1",
+    "outcome_blind": true,
+    "preregistered_at": "2026-09-01T20:35:00Z",
+    "prior_fingerprint_count": 1471,
+    "prior_fingerprint_snapshot_hash": "7bb5af85f5b1a1ed2ffb00e8ea8fc957380229f209b91a4c0fc0dcebb3306cf0",
+    "queue_budgets": {
+      "adjacent": 0,
+      "exploitation": 0,
+      "exploration": 1
+    },
+    "schema_version": 1,
+    "scope_name": "v2-pcaob-audit-amendment-stress-h5-20260901",
+    "score_version": "alpha_search_outcome_blind_score_v1",
+    "selection_limit": 1,
+    "selector_version": "alpha_search_diversity_selector_v1",
+    "surface_registry_hash": "de32426a35ee99e9f4e0e827ff011b3591c2cb191c24e450e1477424718f4c63",
+    "trade_enabled": false
+  },
+  "scope_manifest_hash": "fee4638416f1a6ca7a2e43f20620b6e761d58233c75d94e5cb064258e3a8ae8a",
+  "score_version": "alpha_search_outcome_blind_score_v1",
+  "scores": {
+    "cand-160071d9e981b256f009": {
+      "components": {
+        "evidence_maturity": 0.0,
+        "execution_feasibility": 1.0,
+        "expectation_identifiability": 1.0,
+        "falsifiability": 1.0,
+        "information_gain": 1.0,
+        "mechanism_independence": 1.0,
+        "portfolio_orthogonality_proxy": 0.4,
+        "unresolved_source_or_contract_risk": 0.0
+      },
+      "outcome_blind": true,
+      "score_version": "alpha_search_outcome_blind_score_v1",
+      "total": 0.812,
+      "weights": {
+        "evidence_maturity": 0.14,
+        "execution_feasibility": 0.1,
+        "expectation_identifiability": 0.2,
+        "falsifiability": 0.14,
+        "information_gain": 0.18,
+        "mechanism_independence": 0.16,
+        "portfolio_orthogonality_proxy": 0.08,
+        "unresolved_source_or_contract_risk": -0.2
+      }
+    }
+  },
+  "selected_candidate_id": "cand-160071d9e981b256f009",
+  "selected_candidate_ids": [
+    "cand-160071d9e981b256f009"
+  ],
+  "selection_limit": 1,
+  "selection_pool_complete": true,
+  "selection_reason": "highest fixed outcome-blind score after queue coverage and fingerprint diversity",
+  "selection_scope_id": "scope-fee4638416f1a6ca7a2e43f2",
+  "selector_version": "alpha_search_diversity_selector_v1",
+  "surface_registry_hash": "de32426a35ee99e9f4e0e827ff011b3591c2cb191c24e450e1477424718f4c63",
+  "trade_enabled": false
+}
