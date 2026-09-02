@@ -14,6 +14,7 @@ unwired.
 
 from __future__ import annotations
 
+import re
 from copy import deepcopy
 from datetime import datetime, timezone
 from types import MappingProxyType
@@ -181,6 +182,71 @@ def get_predictive_ranking_rule_snapshot() -> dict[str, Any]:
     return deepcopy(_PREDICTIVE_RULE["ranking_rule"])
 
 
+def _referenced_claim_record_snapshot_hash(
+    claims: Sequence[ResearchClaim],
+) -> str:
+    return canonical_hash(
+        [
+            {
+                "claim_id": claim.claim_id,
+                "semantic_hash": claim.semantic_hash,
+                "record_hash": claim.record_hash,
+            }
+            for claim in sorted(claims, key=lambda item: item.claim_id)
+        ]
+    )
+
+
+def predictive_referenced_claim_record_snapshot_hash(
+    claims: Sequence[Mapping[str, Any] | ResearchClaim],
+    hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
+) -> str:
+    """Hash the exact referenced ResearchClaim records a consumer must freeze."""
+
+    try:
+        validated = tuple(validate_research_claim(item) for item in claims)
+        hypothesis = validate_hypothesis_candidate(hypothesis_candidate)
+    except V2ContractValidationError as exc:
+        raise V2PredictivePolicyError(
+            "predictive_policy_claim_record_snapshot_invalid",
+            f"{exc.code}: {exc.detail}",
+        ) from exc
+    if not validated:
+        _fail(
+            "predictive_policy_claim_record_snapshot_invalid",
+            "referenced claim record snapshot must not be empty",
+        )
+    claim_ids = [claim.claim_id for claim in validated]
+    if len(claim_ids) != len(set(claim_ids)):
+        _fail(
+            "predictive_policy_duplicate_claim_id",
+            "referenced claim record snapshot contains duplicate claim ids",
+        )
+    claims_by_id = {claim.claim_id: claim for claim in validated}
+    missing_claim_ids = [
+        claim_id
+        for claim_id in hypothesis.research_claim_ids
+        if claim_id not in claims_by_id
+    ]
+    if missing_claim_ids:
+        _fail(
+            "predictive_policy_unresolved_claim_id",
+            f"unresolved claim ids: {', '.join(missing_claim_ids)}",
+        )
+    referenced_claims = tuple(
+        claims_by_id[claim_id] for claim_id in hypothesis.research_claim_ids
+    )
+    if (
+        research_claim_snapshot_hash(referenced_claims)
+        != hypothesis.claim_snapshot_sha256
+    ):
+        _fail(
+            "predictive_policy_claim_snapshot_mismatch",
+            "referenced claims differ from the hypothesis claim snapshot",
+        )
+    return _referenced_claim_record_snapshot_hash(referenced_claims)
+
+
 def _validated_dependencies(
     market_clock_snapshot: Mapping[str, Any],
     dynamic_market_universe_snapshot: Mapping[str, Any],
@@ -202,6 +268,7 @@ def _validated_dependencies(
     predictive_policy_snapshot: Mapping[str, Any],
     ranking_rule_snapshot: Mapping[str, Any],
     ranking_rule_sha256: str,
+    expected_referenced_claim_record_snapshot_hash: str | None,
 ) -> tuple[
     dict[str, Any],
     CandidatePool,
@@ -305,6 +372,23 @@ def _validated_dependencies(
             "predictive_policy_claim_snapshot_mismatch",
             "reconstructed claims differ from the hypothesis claim snapshot",
         )
+    if expected_referenced_claim_record_snapshot_hash is not None:
+        observed_claim_record_snapshot_hash = (
+            _referenced_claim_record_snapshot_hash(referenced_claims)
+        )
+        if (
+            type(expected_referenced_claim_record_snapshot_hash) is not str
+            or re.fullmatch(
+                r"[0-9a-f]{64}", expected_referenced_claim_record_snapshot_hash
+            )
+            is None
+            or observed_claim_record_snapshot_hash
+            != expected_referenced_claim_record_snapshot_hash
+        ):
+            _fail(
+                "predictive_policy_claim_record_snapshot_mismatch",
+                "referenced ResearchClaim records differ from the separately frozen identity",
+            )
     return (
         dynamic_market_universe,
         candidate_pool,
@@ -494,6 +578,7 @@ def build_research_only_predictive_policy(
     decision_id: str,
     decided_at: str,
     recorded_at: str,
+    _expected_referenced_claim_record_snapshot_hash: str | None = None,
 ) -> dict[str, Any]:
     """Build one complete claim-support feature/rank treatment decision."""
 
@@ -584,6 +669,9 @@ def build_research_only_predictive_policy(
             predictive_policy_snapshot=policy,
             ranking_rule_snapshot=ranking_rule,
             ranking_rule_sha256=ranking_rule_sha256,
+            expected_referenced_claim_record_snapshot_hash=(
+                _expected_referenced_claim_record_snapshot_hash
+            ),
         )
     )
 
@@ -866,6 +954,130 @@ def build_research_only_predictive_policy(
     return envelope
 
 
+def validate_predictive_policy_snapshot(
+    value: Mapping[str, Any],
+    market_clock_snapshot: Mapping[str, Any],
+    dynamic_market_universe_snapshot: Mapping[str, Any],
+    candidate_pool: Mapping[str, Any] | CandidatePool,
+    hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
+    research_claims: Sequence[Mapping[str, Any] | ResearchClaim],
+    decision_evidence_records: Sequence[Mapping[str, Any] | EvidenceRecord],
+    decision_source_contracts: Sequence[Mapping[str, Any] | SourceContract],
+    universe_events: Sequence[Mapping[str, Any] | UniverseEvent],
+    session_clock: Mapping[str, Any] | SessionClock,
+    calendar_sessions: Sequence[Mapping[str, Any] | CalendarSession],
+    calendar_evidence: Mapping[str, Any] | EvidenceRecord,
+    calendar_source_contract: Mapping[str, Any] | SourceContract,
+    *,
+    expected_snapshot_hash: str,
+    expected_market_clock_snapshot_hash: str,
+    expected_dynamic_market_universe_snapshot_hash: str,
+    expected_research_input_identity: Mapping[str, Any],
+    expected_referenced_claim_record_snapshot_hash: str,
+    decision_id: str,
+    decided_at: str,
+    recorded_at: str,
+) -> dict[str, Any]:
+    """Reconstruct and validate a rank-only envelope for a downstream consumer."""
+
+    if (
+        type(expected_snapshot_hash) is not str
+        or re.fullmatch(r"[0-9a-f]{64}", expected_snapshot_hash) is None
+    ):
+        _fail(
+            "predictive_policy_expected_snapshot_hash_mismatch",
+            "a separately frozen predictive policy snapshot identity is required",
+        )
+    if (
+        type(expected_referenced_claim_record_snapshot_hash) is not str
+        or re.fullmatch(
+            r"[0-9a-f]{64}", expected_referenced_claim_record_snapshot_hash
+        )
+        is None
+    ):
+        _fail(
+            "predictive_policy_claim_record_snapshot_mismatch",
+            "a separately frozen referenced ResearchClaim record identity is required",
+        )
+
+    # Reconstruct from independently supplied dependencies before touching the
+    # caller envelope.  A hostile envelope callback therefore cannot change an
+    # input or identity that is later consumed by the validator.
+    reconstructed = build_research_only_predictive_policy(
+        market_clock_snapshot,
+        dynamic_market_universe_snapshot,
+        candidate_pool,
+        hypothesis_candidate,
+        research_claims,
+        decision_evidence_records,
+        decision_source_contracts,
+        universe_events,
+        session_clock,
+        calendar_sessions,
+        calendar_evidence,
+        calendar_source_contract,
+        expected_market_clock_snapshot_hash=expected_market_clock_snapshot_hash,
+        expected_dynamic_market_universe_snapshot_hash=(
+            expected_dynamic_market_universe_snapshot_hash
+        ),
+        expected_research_input_identity=expected_research_input_identity,
+        decision_id=decision_id,
+        decided_at=decided_at,
+        recorded_at=recorded_at,
+        _expected_referenced_claim_record_snapshot_hash=(
+            expected_referenced_claim_record_snapshot_hash
+        ),
+    )
+    reconstructed_hash = reconstructed["predictive_policy_snapshot_hash"]
+    if reconstructed_hash != expected_snapshot_hash:
+        _fail(
+            "predictive_policy_expected_snapshot_hash_mismatch",
+            "predictive policy snapshot differs from the separately frozen identity",
+        )
+
+    if not isinstance(value, Mapping):
+        _fail(
+            "predictive_policy_snapshot_shape_invalid",
+            "predictive policy snapshot must be an object",
+        )
+    snapshot = _freeze_record(value)
+    if set(snapshot) != set(reconstructed):
+        _fail(
+            "predictive_policy_snapshot_shape_invalid",
+            "predictive policy snapshot has an unexpected field surface",
+        )
+    supplied_hash = snapshot.get("predictive_policy_snapshot_hash")
+    if (
+        type(supplied_hash) is not str
+        or re.fullmatch(r"[0-9a-f]{64}", supplied_hash) is None
+        or supplied_hash != expected_snapshot_hash
+    ):
+        _fail(
+            "predictive_policy_expected_snapshot_hash_mismatch",
+            "predictive policy snapshot does not match the separately frozen identity",
+        )
+    payload = deepcopy(snapshot)
+    payload.pop("predictive_policy_snapshot_hash", None)
+    try:
+        observed_hash = canonical_hash(payload)
+    except V2ContractValidationError as exc:
+        raise V2PredictivePolicyError(
+            "predictive_policy_snapshot_hash_invalid",
+            f"{exc.code}: {exc.detail}",
+        ) from exc
+    if observed_hash != supplied_hash:
+        _fail(
+            "predictive_policy_snapshot_hash_mismatch",
+            "predictive policy snapshot hash is invalid",
+        )
+    if canonical_hash(snapshot) != canonical_hash(reconstructed):
+        _fail(
+            "predictive_policy_snapshot_dependency_mismatch",
+            "predictive policy snapshot differs from its validated dependencies",
+        )
+    return reconstructed
+
+
 # Daily and replay cannot fork feature, ranking, or treatment-decision logic.
 build_daily_research_only_predictive_policy = build_research_only_predictive_policy
 build_replay_research_only_predictive_policy = build_research_only_predictive_policy
@@ -882,6 +1094,8 @@ __all__ = [
     "V2PredictivePolicyError",
     "get_predictive_policy_snapshot",
     "get_predictive_ranking_rule_snapshot",
+    "predictive_referenced_claim_record_snapshot_hash",
+    "validate_predictive_policy_snapshot",
     "build_research_only_predictive_policy",
     "build_daily_research_only_predictive_policy",
     "build_replay_research_only_predictive_policy",

@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from copy import deepcopy
 
 import pytest
@@ -22,6 +23,8 @@ from quant.v2_predictive_policy import (
     build_research_only_predictive_policy,
     get_predictive_policy_snapshot,
     get_predictive_ranking_rule_snapshot,
+    predictive_referenced_claim_record_snapshot_hash,
+    validate_predictive_policy_snapshot,
 )
 
 
@@ -41,6 +44,31 @@ def _build(inputs, **overrides):
     }
     timestamps.update(overrides)
     return build_research_only_predictive_policy(**inputs, **timestamps)
+
+
+def _validate(inputs, snapshot, **overrides):
+    timestamps = {
+        "decision_id": "decision-claim-support-20260821-v1",
+        "decided_at": "2026-08-21T13:21:00Z",
+        "recorded_at": "2026-08-21T13:25:00Z",
+    }
+    timestamps.update(overrides)
+    return validate_predictive_policy_snapshot(
+        snapshot,
+        **inputs,
+        expected_snapshot_hash=overrides.get(
+            "expected_snapshot_hash", snapshot["predictive_policy_snapshot_hash"]
+        ),
+        expected_referenced_claim_record_snapshot_hash=overrides.get(
+            "expected_referenced_claim_record_snapshot_hash",
+            predictive_referenced_claim_record_snapshot_hash(
+                inputs["research_claims"], inputs["hypothesis_candidate"]
+            ),
+        ),
+        decision_id=timestamps["decision_id"],
+        decided_at=timestamps["decided_at"],
+        recorded_at=timestamps["recorded_at"],
+    )
 
 
 def _assert_code(code, func):
@@ -127,6 +155,234 @@ def test_daily_and_replay_are_true_aliases_and_deterministic():
     )
     inputs = _predictive_inputs()
     assert _build(deepcopy(inputs)) == _build(deepcopy(inputs))
+
+
+def test_validator_reconstructs_exact_plain_snapshot():
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+    original_context = deepcopy(snapshot["decision_context"])
+
+    class CallerContext(Mapping):
+        def __len__(self):
+            return len(original_context)
+
+        def __getitem__(self, key):
+            return original_context[key]
+
+        def __iter__(self):
+            return iter(original_context)
+
+        def __deepcopy__(self, memo):
+            return self
+
+    caller_snapshot = deepcopy(snapshot)
+    caller_snapshot["decision_context"] = CallerContext()
+
+    validated = _validate(inputs, caller_snapshot)
+
+    assert validated == snapshot
+    assert type(validated) is dict
+    assert type(validated["decision_context"]) is dict
+    assert validated["decision_context"] == original_context
+
+
+def test_referenced_claim_record_hash_ignores_valid_unreferenced_superset():
+    inputs = _predictive_inputs()
+    unreferenced_claim = deepcopy(inputs["research_claims"][0])
+    unreferenced_claim["claim_id"] = "claim-unreferenced-superset-v1"
+    unreferenced_claim = _seal_claim(unreferenced_claim)
+
+    expected = predictive_referenced_claim_record_snapshot_hash(
+        inputs["research_claims"], inputs["hypothesis_candidate"]
+    )
+    observed = predictive_referenced_claim_record_snapshot_hash(
+        [*inputs["research_claims"], unreferenced_claim],
+        inputs["hypothesis_candidate"],
+    )
+
+    assert observed == expected
+
+
+def test_validator_rejects_wrong_separately_frozen_snapshot_hash():
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+
+    _assert_code(
+        "predictive_policy_expected_snapshot_hash_mismatch",
+        lambda: _validate(inputs, snapshot, expected_snapshot_hash="0" * 64),
+    )
+
+
+def test_validator_rejects_comparison_overriding_hash_subclasses():
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+
+    class EqualHash(str):
+        def __eq__(self, other):
+            return True
+
+        def __ne__(self, other):
+            return False
+
+    _assert_code(
+        "predictive_policy_claim_record_snapshot_mismatch",
+        lambda: _validate(
+            inputs,
+            snapshot,
+            expected_referenced_claim_record_snapshot_hash=EqualHash("f" * 64),
+        ),
+    )
+    _assert_code(
+        "predictive_policy_expected_snapshot_hash_mismatch",
+        lambda: _validate(
+            inputs,
+            snapshot,
+            expected_snapshot_hash=EqualHash("0" * 64),
+        ),
+    )
+    subclass_snapshot = deepcopy(snapshot)
+    subclass_snapshot["predictive_policy_snapshot_hash"] = EqualHash(
+        snapshot["predictive_policy_snapshot_hash"]
+    )
+    _assert_code(
+        "predictive_policy_expected_snapshot_hash_mismatch",
+        lambda: _validate(
+            inputs,
+            subclass_snapshot,
+            expected_snapshot_hash=snapshot["predictive_policy_snapshot_hash"],
+        ),
+    )
+
+
+def test_validator_rejects_invalid_self_hash():
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+    snapshot["trade_enabled"] = True
+
+    _assert_code(
+        "predictive_policy_snapshot_hash_mismatch",
+        lambda: _validate(inputs, snapshot),
+    )
+
+
+def test_validator_rejects_extra_outcome_surface():
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+    snapshot["settled_outcomes"] = []
+
+    _assert_code(
+        "predictive_policy_snapshot_shape_invalid",
+        lambda: _validate(inputs, snapshot),
+    )
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda row: row["feature_rows"][0].update(
+            claim_support_score_bps=9999
+        ),
+        lambda row: row["ranked_candidates"][0].update(rank=2),
+        lambda row: row["signal_decisions"][0].update(
+            signal_action="selected"
+        ),
+        lambda row: row["decision_context"].update(trade_enabled=True),
+        lambda row: row["decision_record"]["items"][0].update(
+            side="long"
+        ),
+    ],
+)
+def test_validator_rejects_fully_resealed_nested_substitution(mutate):
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+    mutate(snapshot)
+    snapshot.pop("predictive_policy_snapshot_hash")
+    snapshot["predictive_policy_snapshot_hash"] = canonical_hash(snapshot)
+
+    _assert_code(
+        "predictive_policy_expected_snapshot_hash_mismatch",
+        lambda: _validate(
+            inputs,
+            snapshot,
+            expected_snapshot_hash=_build(inputs)[
+                "predictive_policy_snapshot_hash"
+            ],
+        ),
+    )
+
+
+def test_validator_rejects_record_only_variant_of_irrelevant_referenced_claim():
+    inputs = _predictive_inputs()
+    irrelevant_claim = deepcopy(inputs["research_claims"][0])
+    irrelevant_claim.update(
+        claim_id="claim-outside-candidate-surface-v1",
+        affected_object_ids=["sec-outside-candidate-surface"],
+    )
+    irrelevant_claim = _seal_claim(irrelevant_claim)
+    inputs["research_claims"] = [inputs["research_claims"][0], irrelevant_claim]
+    hypothesis = deepcopy(inputs["hypothesis_candidate"])
+    hypothesis["research_claim_ids"] = [
+        claim["claim_id"] for claim in inputs["research_claims"]
+    ]
+    hypothesis["claim_snapshot_sha256"] = research_claim_snapshot_hash(
+        inputs["research_claims"]
+    )
+    inputs["hypothesis_candidate"] = _seal_hypothesis(hypothesis)
+    inputs["candidate_pool"]["hypothesis_candidate_hash"] = inputs[
+        "hypothesis_candidate"
+    ]["semantic_hash"]
+    _refresh_pool_graph(inputs, inputs["universe_events"])
+    _refresh_dynamic_market_universe(inputs)
+    snapshot = _build(inputs)
+    expected_claim_records = predictive_referenced_claim_record_snapshot_hash(
+        inputs["research_claims"], inputs["hypothesis_candidate"]
+    )
+
+    changed_inputs = deepcopy(inputs)
+    changed_claim = deepcopy(changed_inputs["research_claims"][1])
+    changed_claim["recorded_at"] = "2026-08-20T14:05:30Z"
+    changed_inputs["research_claims"][1] = _seal_claim(changed_claim)
+    assert _build(changed_inputs) == snapshot
+
+    _assert_code(
+        "predictive_policy_claim_record_snapshot_mismatch",
+        lambda: _validate(
+            changed_inputs,
+            snapshot,
+            expected_referenced_claim_record_snapshot_hash=(
+                expected_claim_records
+            ),
+        ),
+    )
+    _assert_code(
+        "predictive_policy_claim_record_snapshot_mismatch",
+        lambda: _validate(
+            changed_inputs,
+            snapshot,
+            expected_referenced_claim_record_snapshot_hash=None,
+        ),
+    )
+
+
+def test_validator_reconstructs_before_hostile_snapshot_callback():
+    inputs = _predictive_inputs()
+    snapshot = _build(inputs)
+
+    class MutatingSnapshot(Mapping):
+        def __len__(self):
+            return len(snapshot)
+
+        def __getitem__(self, key):
+            return snapshot[key]
+
+        def __iter__(self):
+            inputs["research_claims"].clear()
+            return iter(snapshot)
+
+    validated = _validate(inputs, MutatingSnapshot())
+
+    assert validated == snapshot
+    assert inputs["research_claims"] == []
 
 
 def test_policy_snapshot_returns_fresh_copy():
