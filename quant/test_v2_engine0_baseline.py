@@ -21,6 +21,9 @@ from quant.v2_contracts import (
     universe_event_snapshot_hash,
     validate_decision_record_against_candidate_pool,
 )
+from quant.v2_dynamic_market_universe import (
+    build_research_only_dynamic_market_universe_snapshot,
+)
 from quant.v2_engine0_baseline import (
     ENGINE0_BASELINE_POLICY,
     V2Engine0BaselineError,
@@ -208,7 +211,7 @@ def _inputs(*, two_candidates=True, admission_statuses=None):
         "hypothesis_candidate_semantic_hash": hypothesis["semantic_hash"],
         "hypothesis_candidate_record_hash": hypothesis["record_hash"],
     }
-    return {
+    inputs = {
         "market_clock_snapshot": market_clock_snapshot,
         "expected_market_clock_snapshot_hash": market_clock_snapshot[
             "market_decision_clock_snapshot_hash"
@@ -225,6 +228,30 @@ def _inputs(*, two_candidates=True, admission_statuses=None):
         "calendar_evidence": calendar["evidence"],
         "calendar_source_contract": calendar["source"],
     }
+    dynamic_market_universe = build_research_only_dynamic_market_universe_snapshot(
+        inputs["market_clock_snapshot"],
+        inputs["candidate_pool"],
+        inputs["hypothesis_candidate"],
+        inputs["research_claims"],
+        inputs["decision_evidence_records"],
+        inputs["decision_source_contracts"],
+        inputs["universe_events"],
+        inputs["session_clock"],
+        inputs["calendar_sessions"],
+        inputs["calendar_evidence"],
+        inputs["calendar_source_contract"],
+        expected_market_clock_snapshot_hash=inputs[
+            "expected_market_clock_snapshot_hash"
+        ],
+        expected_research_input_identity=inputs[
+            "expected_research_input_identity"
+        ],
+    )
+    inputs["dynamic_market_universe_snapshot"] = dynamic_market_universe
+    inputs["expected_dynamic_market_universe_snapshot_hash"] = (
+        dynamic_market_universe["dynamic_market_universe_snapshot_hash"]
+    )
+    return inputs
 
 
 def _build(inputs, **overrides):
@@ -316,6 +343,32 @@ def _refresh_market_clock(inputs):
     ]
 
 
+def _refresh_dynamic_market_universe(inputs):
+    snapshot = build_research_only_dynamic_market_universe_snapshot(
+        inputs["market_clock_snapshot"],
+        inputs["candidate_pool"],
+        inputs["hypothesis_candidate"],
+        inputs["research_claims"],
+        inputs["decision_evidence_records"],
+        inputs["decision_source_contracts"],
+        inputs["universe_events"],
+        inputs["session_clock"],
+        inputs["calendar_sessions"],
+        inputs["calendar_evidence"],
+        inputs["calendar_source_contract"],
+        expected_market_clock_snapshot_hash=inputs[
+            "expected_market_clock_snapshot_hash"
+        ],
+        expected_research_input_identity=inputs[
+            "expected_research_input_identity"
+        ],
+    )
+    inputs["dynamic_market_universe_snapshot"] = snapshot
+    inputs["expected_dynamic_market_universe_snapshot_hash"] = snapshot[
+        "dynamic_market_universe_snapshot_hash"
+    ]
+
+
 def _inputs_with_quarantine_membership():
     inputs = _inputs()
     latest_b = next(
@@ -343,6 +396,7 @@ def _inputs_with_quarantine_membership():
     ]
     _refresh_pool_graph(inputs, universe_events, entries=active_entries)
     _refresh_market_clock(inputs)
+    _refresh_dynamic_market_universe(inputs)
     return inputs
 
 
@@ -357,10 +411,22 @@ def test_golden_engine0_builds_complete_cash_only_decision():
     assert result["engine0_policy_invoked"] is True
     assert result["engine0_baseline_established"] is True
     assert result["engine0_baseline_scope"] == "validated_candidate_pool"
-    assert result["schema_version"] == 2
+    assert result["schema_version"] == 3
     assert result["engine0_baseline_contract"] == (
-        "v2_research_only_engine0_cash_no_signal_v2"
+        "v2_research_only_engine0_cash_no_signal_v3"
     )
+    assert result["dynamic_market_universe_status"] == (
+        "verified_exact_rows_research_only"
+    )
+    assert result["dynamic_market_universe_snapshot_hash"] == inputs[
+        "expected_dynamic_market_universe_snapshot_hash"
+    ]
+    assert result["decision_context"][
+        "dynamic_market_universe_snapshot_hash"
+    ] == inputs["expected_dynamic_market_universe_snapshot_hash"]
+    assert result["decision_context"][
+        "expected_dynamic_market_universe_snapshot_hash"
+    ] == inputs["expected_dynamic_market_universe_snapshot_hash"]
     assert result["membership_lineage_status"] == "verified_exact_rows"
     assert result["external_universe_coverage_status"] == "unverified"
     assert result["runtime_parity_status"] == "unwired"
@@ -484,6 +550,92 @@ def test_market_clock_hash_boundary_and_record_substitution_fail_closed():
     _assert_code("engine0_market_clock_dependency_error", lambda: _build(substituted))
 
 
+def test_dynamic_market_universe_hash_boundary_and_escalation_fail_closed():
+    damaged = _inputs()
+    damaged["dynamic_market_universe_snapshot"][
+        "dynamic_market_universe_snapshot_hash"
+    ] = "0" * 64
+    _assert_code(
+        "engine0_dynamic_market_universe_dependency_error",
+        lambda: _build(damaged),
+    )
+
+    escalated = _inputs()
+    snapshot = deepcopy(escalated["dynamic_market_universe_snapshot"])
+    snapshot["trade_enabled"] = True
+    snapshot.pop("dynamic_market_universe_snapshot_hash")
+    snapshot["dynamic_market_universe_snapshot_hash"] = canonical_hash(snapshot)
+    escalated["dynamic_market_universe_snapshot"] = snapshot
+    escalated["expected_dynamic_market_universe_snapshot_hash"] = snapshot[
+        "dynamic_market_universe_snapshot_hash"
+    ]
+    _assert_code(
+        "engine0_dynamic_market_universe_dependency_error",
+        lambda: _build(escalated),
+    )
+
+
+def test_engine0_freezes_caller_mappings_before_dependency_callbacks():
+    inputs = _inputs()
+    original_clock_hash = inputs["expected_market_clock_snapshot_hash"]
+    original_pool_id = inputs["expected_research_input_identity"][
+        "candidate_pool_id"
+    ]
+
+    class MutatingClaim(dict):
+        def __iter__(self):
+            inputs["market_clock_snapshot"]["source_frame"] = (
+                "mutated-after-clock-validation"
+            )
+            inputs["market_clock_snapshot"][
+                "market_decision_clock_snapshot_hash"
+            ] = "f" * 64
+            inputs["expected_research_input_identity"]["candidate_pool_id"] = (
+                "mutated-after-identity-validation"
+            )
+            return super().__iter__()
+
+    inputs["research_claims"] = [MutatingClaim(inputs["research_claims"][0])]
+    result = _build(inputs)
+
+    assert inputs["market_clock_snapshot"]["source_frame"] == (
+        "mutated-after-clock-validation"
+    )
+    assert inputs["expected_research_input_identity"]["candidate_pool_id"] == (
+        "mutated-after-identity-validation"
+    )
+    assert result["source_frame"] == "sec_edgar_8k"
+    assert result["market_decision_clock_snapshot_hash"] == original_clock_hash
+    assert result["decision_context"]["market_decision_clock_snapshot_hash"] == (
+        original_clock_hash
+    )
+    assert result["decision_context"]["expected_research_input_identity"][
+        "candidate_pool_id"
+    ] == original_pool_id
+
+
+def test_engine0_cannot_crosswire_pool_views_from_dynamic_snapshot_callback():
+    inputs = _inputs_with_quarantine_membership()
+    pool_b = deepcopy(inputs["candidate_pool"])
+    shared_pool_a = deepcopy(_inputs()["candidate_pool"])
+    inputs["candidate_pool"] = shared_pool_a
+
+    class MutatingDynamicSnapshot(dict):
+        def __iter__(self):
+            shared_pool_a.clear()
+            shared_pool_a.update(deepcopy(pool_b))
+            return super().__iter__()
+
+    inputs["dynamic_market_universe_snapshot"] = MutatingDynamicSnapshot(
+        inputs["dynamic_market_universe_snapshot"]
+    )
+
+    _assert_code(
+        "engine0_frozen_research_identity_mismatch",
+        lambda: _build(inputs),
+    )
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [
@@ -508,6 +660,7 @@ def test_pool_decision_chronology_policy_and_cash_fail_closed():
     pool["recorded_at"] = "2026-08-21T13:15:00Z"
     late_pool["candidate_pool"] = _seal_pool(pool)
     _refresh_expected_research_identity(late_pool)
+    _refresh_dynamic_market_universe(late_pool)
     _assert_code(
         "engine0_decision_chronology_invalid", lambda: _build(late_pool)
     )

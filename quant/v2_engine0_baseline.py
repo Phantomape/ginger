@@ -1,9 +1,10 @@
 """Research-only Engine-0 cash/no-signal baseline for Ginger V2.
 
-The builder consumes an already-bound market decision clock and a complete
-CandidatePool.  Engine-0 has no caller-configurable strategy knobs: admitted
-rows receive only deterministic administrative ranks, every signal remains
-``not_selected``, and no order intent can be produced.
+The builder consumes an already-bound market decision clock, a separately
+frozen dynamic market-universe snapshot, and a complete CandidatePool.
+Engine-0 has no caller-configurable strategy knobs: admitted rows receive only
+deterministic administrative ranks, every signal remains ``not_selected``, and
+no order intent can be produced.
 """
 
 from __future__ import annotations
@@ -27,24 +28,20 @@ from .v2_contracts import (
     canonical_hash,
     decision_input_snapshot_hash,
     validate_candidate_pool,
-    validate_candidate_pool_against_inputs,
     validate_decision_record_against_candidate_pool,
     validate_hypothesis_candidate,
     validate_record_against_session_clock,
 )
-from .v2_market_decision_clock import (
-    V2MarketDecisionClockError,
-    validate_market_decision_clock_snapshot,
-)
-from .v2_universe_ledger import (
-    V2UniverseLedgerError,
-    validate_universe_event_population,
+from .v2_dynamic_market_universe import (
+    FROZEN_RESEARCH_INPUT_IDENTITY_FIELDS,
+    V2DynamicMarketUniverseError,
+    validate_dynamic_market_universe_snapshot,
 )
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 ENGINE0_BASELINE_RECORD_TYPE = "v2_engine0_cash_baseline_snapshot"
-ENGINE0_BASELINE_CONTRACT = "v2_research_only_engine0_cash_no_signal_v2"
+ENGINE0_BASELINE_CONTRACT = "v2_research_only_engine0_cash_no_signal_v3"
 
 _ENGINE0_RULE = {
     "rule_id": "v2-engine0-cash-no-signal-rule",
@@ -80,16 +77,6 @@ _ENGINE0_RULE = {
     "order_intent_count": 0,
 }
 ENGINE0_BASELINE_RULE_SHA256 = canonical_hash(_ENGINE0_RULE)
-
-_FROZEN_RESEARCH_INPUT_IDENTITY_FIELDS = {
-    "candidate_pool_id",
-    "candidate_pool_semantic_hash",
-    "candidate_pool_record_hash",
-    "candidate_pool_input_snapshot_sha256",
-    "hypothesis_candidate_id",
-    "hypothesis_candidate_semantic_hash",
-    "hypothesis_candidate_record_hash",
-}
 
 ENGINE0_BASELINE_POLICY = MappingProxyType(
     {
@@ -136,32 +123,29 @@ def _instant(value: Any, *, field: str) -> tuple[str, datetime]:
     return utc.isoformat().replace("+00:00", "Z"), utc
 
 
+def _freeze_record(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return deepcopy(dict(value))
+    return deepcopy(value)
+
+
+def _freeze_sequence(value: Any) -> Any:
+    if isinstance(value, Sequence) and not isinstance(
+        value, (str, bytes, bytearray, Mapping)
+    ):
+        return tuple(deepcopy(item) for item in value)
+    return deepcopy(value)
+
+
 def get_engine0_baseline_policy_snapshot() -> dict[str, Any]:
     """Return a fresh mutable copy of the immutable Engine-0 policy."""
 
     return dict(ENGINE0_BASELINE_POLICY)
 
 
-def _validate_research_boundary(
-    record: CandidatePool | HypothesisCandidate, *, label: str
-) -> None:
-    if (
-        record.pit_tier != "research_pit"
-        or record.result_ceiling != "observed_only"
-        or record.known_future_leakage is not False
-        or record.outcome_blind is not True
-        or record.results_accessed is not False
-        or record.authority != "research_only"
-        or record.trade_enabled is not False
-    ):
-        _fail(
-            "engine0_research_boundary_mismatch",
-            f"{label} must be research_pit, observed-only, outcome-blind, and default-off",
-        )
-
-
 def _validate_dependencies(
     market_clock_snapshot: Mapping[str, Any],
+    dynamic_market_universe_snapshot: Mapping[str, Any],
     candidate_pool: Mapping[str, Any] | CandidatePool,
     hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
     research_claims: Sequence[Mapping[str, Any] | ResearchClaim],
@@ -174,27 +158,14 @@ def _validate_dependencies(
     calendar_source_contract: Mapping[str, Any] | SourceContract,
     *,
     expected_market_clock_snapshot_hash: str,
+    expected_dynamic_market_universe_snapshot_hash: str,
     expected_research_input_identity: Mapping[str, Any],
 ) -> tuple[
     dict[str, Any],
     CandidatePool,
     HypothesisCandidate,
-    list[dict[str, Any]],
+    dict[str, Any],
 ]:
-    try:
-        market_clock = validate_market_decision_clock_snapshot(
-            market_clock_snapshot,
-            session_clock,
-            calendar_sessions,
-            calendar_evidence,
-            calendar_source_contract,
-            expected_snapshot_hash=expected_market_clock_snapshot_hash,
-        )
-    except V2MarketDecisionClockError as exc:
-        raise V2Engine0BaselineError(
-            "engine0_market_clock_dependency_error",
-            f"{exc.code}: {exc.detail}",
-        ) from exc
     try:
         pool = validate_candidate_pool(candidate_pool)
         hypothesis = validate_hypothesis_candidate(hypothesis_candidate)
@@ -204,41 +175,6 @@ def _validate_dependencies(
             f"{exc.code}: {exc.detail}",
         ) from exc
 
-    if (
-        not isinstance(expected_research_input_identity, Mapping)
-        or set(expected_research_input_identity)
-        != _FROZEN_RESEARCH_INPUT_IDENTITY_FIELDS
-    ):
-        _fail(
-            "engine0_frozen_research_identity_invalid",
-            "expected research input identity has an unexpected field surface",
-        )
-    expected_identity = dict(expected_research_input_identity)
-    observed_identity = {
-        "candidate_pool_id": pool.candidate_pool_id,
-        "candidate_pool_semantic_hash": pool.semantic_hash,
-        "candidate_pool_record_hash": pool.record_hash,
-        "candidate_pool_input_snapshot_sha256": pool.input_snapshot_sha256,
-        "hypothesis_candidate_id": hypothesis.candidate_id,
-        "hypothesis_candidate_semantic_hash": hypothesis.semantic_hash,
-        "hypothesis_candidate_record_hash": hypothesis.record_hash,
-    }
-    if expected_identity != observed_identity:
-        _fail(
-            "engine0_frozen_research_identity_mismatch",
-            "candidate-pool or hypothesis identity differs from the separately frozen input",
-        )
-
-    _validate_research_boundary(pool, label="candidate pool")
-    _validate_research_boundary(hypothesis, label="hypothesis candidate")
-    if (
-        pool.hypothesis_candidate_id != hypothesis.candidate_id
-        or pool.hypothesis_candidate_hash != hypothesis.semantic_hash
-    ):
-        _fail(
-            "engine0_pool_hypothesis_binding_mismatch",
-            "candidate pool must bind the supplied hypothesis id and semantic hash",
-        )
     if canonical_hash(hypothesis.baseline_policy) != canonical_hash(
         ENGINE0_BASELINE_POLICY
     ):
@@ -252,83 +188,75 @@ def _validate_dependencies(
             "engine0_cash_comparator_unavailable",
             "Engine-0 requires the available cash comparator with reference_id cash",
         )
-
-    identity = market_clock["input_identity"]
-    if (
-        pool.universe_id != identity["universe_id"]
-        or pool.run_id != identity["run_id"]
-        or pool.session_clock_id != identity["session_clock_id"]
-        or pool.session_clock_hash != identity["session_clock_semantic_hash"]
-        or pool.session_clock_record_hash != identity["session_clock_record_hash"]
-        or pool.run_date != identity["run_date"]
-        or pool.calendar_session_id != identity["calendar_session_id"]
-        or pool.data_cutoff != identity["assignment_cutoff"]
-    ):
-        _fail(
-            "engine0_market_pool_identity_mismatch",
-            "pool universe, run, clock, session, date, and cutoff must match the market clock",
-        )
-    _, hypothesis_recorded_dt = _instant(
-        hypothesis.recorded_at, field="hypothesis_candidate.recorded_at"
-    )
-    _, assignment_cutoff_dt = _instant(
-        identity["assignment_cutoff"], field="market_clock.assignment_cutoff"
-    )
-    if hypothesis_recorded_dt > assignment_cutoff_dt:
-        _fail(
-            "engine0_hypothesis_after_cutoff",
-            "hypothesis must be recorded no later than the market-clock assignment cutoff",
-        )
     try:
-        validate_record_against_session_clock(
-            pool,
-            session_clock,
-            calendar_sessions,
-            calendar_evidence,
-            calendar_source_contract,
-        )
-    except V2ContractValidationError as exc:
-        raise V2Engine0BaselineError(
-            "engine0_pool_clock_dependency_error",
-            f"{exc.code}: {exc.detail}",
-        ) from exc
-    try:
-        pool = validate_candidate_pool_against_inputs(
-            pool,
-            hypothesis,
+        dynamic_market_universe = validate_dynamic_market_universe_snapshot(
+            dynamic_market_universe_snapshot,
+            market_clock_snapshot,
+            candidate_pool,
+            hypothesis_candidate,
             research_claims,
             decision_evidence_records,
             decision_source_contracts,
             universe_events,
+            session_clock,
+            calendar_sessions,
+            calendar_evidence,
+            calendar_source_contract,
+            expected_snapshot_hash=(
+                expected_dynamic_market_universe_snapshot_hash
+            ),
+            expected_market_clock_snapshot_hash=(
+                expected_market_clock_snapshot_hash
+            ),
+            expected_research_input_identity=expected_research_input_identity,
         )
-    except V2ContractValidationError as exc:
+    except V2DynamicMarketUniverseError as exc:
+        code = {
+            "dynamic_market_universe_market_clock_dependency_error": (
+                "engine0_market_clock_dependency_error"
+            ),
+            "dynamic_market_universe_research_input_dependency_error": (
+                "engine0_research_input_dependency_error"
+            ),
+            "dynamic_market_universe_frozen_research_identity_invalid": (
+                "engine0_frozen_research_identity_invalid"
+            ),
+            "dynamic_market_universe_frozen_research_identity_mismatch": (
+                "engine0_frozen_research_identity_mismatch"
+            ),
+            "dynamic_market_universe_research_boundary_mismatch": (
+                "engine0_research_boundary_mismatch"
+            ),
+            "dynamic_market_universe_pool_hypothesis_binding_mismatch": (
+                "engine0_pool_hypothesis_binding_mismatch"
+            ),
+            "dynamic_market_universe_market_pool_identity_mismatch": (
+                "engine0_market_pool_identity_mismatch"
+            ),
+            "dynamic_market_universe_hypothesis_after_cutoff": (
+                "engine0_hypothesis_after_cutoff"
+            ),
+            "dynamic_market_universe_research_graph_dependency_error": (
+                "engine0_research_graph_dependency_error"
+            ),
+            "dynamic_market_universe_population_dependency_error": (
+                "engine0_membership_lineage_dependency_error"
+            ),
+            "dynamic_market_universe_membership_lineage_mismatch": (
+                "engine0_membership_lineage_mismatch"
+            ),
+        }.get(exc.code, "engine0_dynamic_market_universe_dependency_error")
         raise V2Engine0BaselineError(
-            "engine0_research_graph_dependency_error",
+            code,
             f"{exc.code}: {exc.detail}",
         ) from exc
-    try:
-        _, projected_memberships = validate_universe_event_population(
-            universe_events,
-            universe_id=pool.universe_id,
-            data_cutoff=pool.data_cutoff,
-            frozen_at=pool.frozen_at,
-            membership_as_of=identity["assignment_cutoff"],
-        )
-    except V2UniverseLedgerError as exc:
-        raise V2Engine0BaselineError(
-            "engine0_membership_lineage_dependency_error",
-            f"{exc.code}: {exc.detail}",
-        ) from exc
-    if projected_memberships != market_clock["memberships"]:
-        _fail(
-            "engine0_membership_lineage_mismatch",
-            "market-clock memberships must exactly equal the supplied UniverseEvent projection",
-        )
-    return market_clock, pool, hypothesis, projected_memberships
+    market_clock = deepcopy(dict(market_clock_snapshot))
+    return market_clock, pool, hypothesis, dynamic_market_universe
 
 
 def build_research_only_engine0_cash_baseline(
     market_clock_snapshot: Mapping[str, Any],
+    dynamic_market_universe_snapshot: Mapping[str, Any],
     candidate_pool: Mapping[str, Any] | CandidatePool,
     hypothesis_candidate: Mapping[str, Any] | HypothesisCandidate,
     research_claims: Sequence[Mapping[str, Any] | ResearchClaim],
@@ -341,6 +269,7 @@ def build_research_only_engine0_cash_baseline(
     calendar_source_contract: Mapping[str, Any] | SourceContract,
     *,
     expected_market_clock_snapshot_hash: str,
+    expected_dynamic_market_universe_snapshot_hash: str,
     expected_research_input_identity: Mapping[str, Any],
     decision_id: str,
     decided_at: str,
@@ -348,8 +277,26 @@ def build_research_only_engine0_cash_baseline(
 ) -> dict[str, Any]:
     """Build one complete research-only cash/no-signal Engine-0 decision."""
 
-    market_clock, pool, hypothesis, projected_memberships = _validate_dependencies(
+    expected_research_input_identity = _freeze_record(
+        expected_research_input_identity
+    )
+    market_clock_snapshot = _freeze_record(market_clock_snapshot)
+    candidate_pool = _freeze_record(candidate_pool)
+    hypothesis_candidate = _freeze_record(hypothesis_candidate)
+    dynamic_market_universe_snapshot = _freeze_record(
+        dynamic_market_universe_snapshot
+    )
+    research_claims = _freeze_sequence(research_claims)
+    decision_evidence_records = _freeze_sequence(decision_evidence_records)
+    decision_source_contracts = _freeze_sequence(decision_source_contracts)
+    universe_events = _freeze_sequence(universe_events)
+    session_clock = _freeze_record(session_clock)
+    calendar_sessions = _freeze_sequence(calendar_sessions)
+    calendar_evidence = _freeze_record(calendar_evidence)
+    calendar_source_contract = _freeze_record(calendar_source_contract)
+    market_clock, pool, hypothesis, dynamic_market_universe = _validate_dependencies(
         market_clock_snapshot,
+        dynamic_market_universe_snapshot,
         candidate_pool,
         hypothesis_candidate,
         research_claims,
@@ -361,6 +308,9 @@ def build_research_only_engine0_cash_baseline(
         calendar_evidence,
         calendar_source_contract,
         expected_market_clock_snapshot_hash=expected_market_clock_snapshot_hash,
+        expected_dynamic_market_universe_snapshot_hash=(
+            expected_dynamic_market_universe_snapshot_hash
+        ),
         expected_research_input_identity=expected_research_input_identity,
     )
     decision_id = _text(decision_id, field="decision_id")
@@ -398,49 +348,30 @@ def build_research_only_engine0_cash_baseline(
     policy = get_engine0_baseline_policy_snapshot()
     policy_sha256 = canonical_hash(policy)
 
-    membership_lineage_rows: list[dict[str, Any]] = []
-    for market_row, projected_row in zip(
-        market_clock["memberships"], projected_memberships, strict=True
-    ):
-        lineage_row = {
-            **deepcopy(market_row),
-            "market_clock_membership_row_sha256": canonical_hash(market_row),
-            "universe_event_projection_row_sha256": canonical_hash(projected_row),
-        }
-        lineage_row["lineage_row_sha256"] = canonical_hash(lineage_row)
-        membership_lineage_rows.append(lineage_row)
-    membership_lineage = {
-        "lineage_type": "v2_engine0_membership_lineage",
-        "lineage_version": "1",
-        "universe_id": pool.universe_id,
-        "membership_as_of": market_clock["input_identity"]["assignment_cutoff"],
-        "market_decision_clock_snapshot_hash": market_clock[
-            "market_decision_clock_snapshot_hash"
-        ],
-        "market_clock_membership_snapshot_sha256": market_clock[
-            "input_identity"
-        ]["membership_snapshot_sha256"],
-        "candidate_pool_id": pool.candidate_pool_id,
-        "candidate_pool_universe_event_snapshot_sha256": (
-            pool.universe_event_snapshot_sha256
-        ),
-        "membership_count": len(membership_lineage_rows),
-        "row_snapshot_sha256": canonical_hash(membership_lineage_rows),
-        "rows": membership_lineage_rows,
+    membership_lineage = deepcopy(dynamic_market_universe["membership_lineage"])
+    validated_research_input_identity = {
+        field: dynamic_market_universe["input_identity"][field]
+        for field in sorted(FROZEN_RESEARCH_INPUT_IDENTITY_FIELDS)
     }
-    membership_lineage["membership_lineage_sha256"] = canonical_hash(
-        membership_lineage
-    )
 
-    decision_context_id = f"{decision_id}:engine0-research-context-v2"
+    decision_context_id = f"{decision_id}:engine0-research-context-v3"
     decision_context = {
         "context_type": "v2_engine0_decision_context",
-        "context_version": "2",
+        "context_version": "3",
         "decision_context_id": decision_context_id,
         "market_decision_clock_snapshot_hash": market_clock[
             "market_decision_clock_snapshot_hash"
         ],
         "expected_market_clock_snapshot_hash": expected_market_clock_snapshot_hash,
+        "dynamic_market_universe_snapshot_hash": dynamic_market_universe[
+            "dynamic_market_universe_snapshot_hash"
+        ],
+        "expected_dynamic_market_universe_snapshot_hash": (
+            expected_dynamic_market_universe_snapshot_hash
+        ),
+        "dynamic_market_universe_status": dynamic_market_universe[
+            "dynamic_market_universe_status"
+        ],
         "candidate_pool_id": pool.candidate_pool_id,
         "candidate_pool_semantic_hash": pool.semantic_hash,
         "candidate_pool_record_hash": pool.record_hash,
@@ -448,7 +379,7 @@ def build_research_only_engine0_cash_baseline(
         "hypothesis_candidate_semantic_hash": hypothesis.semantic_hash,
         "hypothesis_candidate_record_hash": hypothesis.record_hash,
         "expected_research_input_identity": deepcopy(
-            dict(expected_research_input_identity)
+            validated_research_input_identity
         ),
         "membership_lineage_sha256": membership_lineage[
             "membership_lineage_sha256"
@@ -608,6 +539,15 @@ def build_research_only_engine0_cash_baseline(
         "consumer_stage": "research_only_engine0_cash_baseline",
         "market_decision_clock_snapshot_hash": market_clock[
             "market_decision_clock_snapshot_hash"
+        ],
+        "dynamic_market_universe_snapshot_hash": dynamic_market_universe[
+            "dynamic_market_universe_snapshot_hash"
+        ],
+        "dynamic_market_universe_status": dynamic_market_universe[
+            "dynamic_market_universe_status"
+        ],
+        "market_universe_scope": dynamic_market_universe[
+            "market_universe_scope"
         ],
         "candidate_pool_identity": {
             "candidate_pool_id": pool.candidate_pool_id,

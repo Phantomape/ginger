@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-09-02T00:34Z（M3 market-clock / CandidatePool 逐行 lineage 合同）
+> 最后更新：2026-09-02T01:49Z（M3 research-only dynamic PIT market-universe snapshot）
 > Outcome hygiene：本导航只记录 terminal 状态、证据位置和重开条件；settled 指标只保留在 canonical
 > ticket / log / artifact 中，outcome-blind 启动阶段不得读取。
 
@@ -17,7 +17,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
 | Research scout lane | 已运行 2 个：`exp-20260822-001` SEC exact-8-K H1 与 `exp-20260901-001` PCAOB audit-amendment stress H5 均以 `rejected` 关闭；完整结果只见 canonical log/artifact |
-| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock、Engine-0 cash/no-signal baseline 与 membership-to-CandidatePool 逐行 lineage 已绑定；动态 PIT 市场 universe、共享 predictive feature/policy、scheduler 与 runtime/production parity 仍未建立 |
+| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock、source-bounded dynamic PIT market-universe snapshot、Engine-0 cash/no-signal baseline 与完整逐行 lineage 已绑定；共享 predictive feature/policy、scheduler 与 runtime/production parity 仍未建立 |
 | M4-M9 | 未开始 |
 
 ## T0（已确认）
@@ -108,19 +108,33 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   `engine0_baseline_established=false`、`parity_status=contract_only_unwired`、`paper_live_eligible=false` 且
   `trade_enabled=false`。不声称 scheduler、production/backtest、execution、canonical 或 paper/live parity。
 
+### Research-only dynamic PIT market-universe snapshot
+
+- `quant/v2_dynamic_market_universe.py` 是 post-CandidatePool、pre-predictive-policy 的 reconciliation boundary：在同一 separately frozen market-clock hash 与 CandidatePool/Hypothesis
+  identity 上重验关联研究图的因果、身份与时钟约束，并以 assignment cutoff 投影 CandidatePool 冻结的全部 UniverseEvent。投影必须与
+  market-clock 的 exact membership rows 逐行相等，保留 non-candidate state、mapping、latest event semantic/record hash
+  与 effective time；删行、换行、重排或自洽重封不同人口均 fail closed。
+- 它不生成 CandidatePool；v1 snapshot 同时冻结完整 event semantic/record population、membership semantic/exact snapshots、每行 lineage hash、
+  state counts 和 CandidatePool 完整 candidate-eligible surface。daily/replay 是同一 callable；Engine-0 v3 必须重验该
+  snapshot 的独立冻结 hash，并把 identity 写入 DecisionContext，不能跳过该边界直接接受替换人口。
+- `dynamic_market_universe_status=verified_exact_rows_research_only` 只表示这一个 source-bounded、调用者已冻结的完整人口在
+  该 cutoff 的 PIT 投影，不表示 market-wide coverage。输出仍为 `external_universe_coverage_status=unverified`、
+  `research_pit / observed_only`、runtime/production unwired、paper/promotion ineligible，且没有 predictive feature、score、
+  rank、signal、size、outcome 或 order；`trade_enabled=false`。
+
 ### Research-only Engine-0 cash/no-signal baseline
 
-- `quant/v2_engine0_baseline.py` 只消费独立冻结的 market-clock snapshot hash 与 CandidatePool/Hypothesis
+- `quant/v2_engine0_baseline.py` v3 只消费独立冻结的 market-clock、dynamic market-universe snapshot 与 CandidatePool/Hypothesis
   identity，并对 `SourceContract -> EvidenceRecord -> ResearchClaim -> HypothesisCandidate -> CandidatePool ->
-  UniverseEvent` 完整依赖图再次交叉验证。Hypothesis 必须在 assignment cutoff 前 recorded，pool 必须绑定同一
-  session clock、market-universe hash 与 cutoff；自洽重封、残缺依赖图或迟到输入均 fail closed。
+  UniverseEvent` 已引用依赖的因果、身份与时钟约束再次交叉验证。Hypothesis 必须在 assignment cutoff 前 recorded，pool 必须绑定同一
+  session clock、market-universe hash 与 cutoff；改变已绑定语义/身份的自洽重封、残缺依赖图或迟到输入均 fail closed。
 - 固定 cash/no-signal policy 无可调参数。identity-only feature rows 保留候选输入与 admission 身份；完整
   DecisionRecord 仅把 admitted rank 当审计顺序，所有 admitted 行均为 `not_selected`，inactive 行不产生 decision，
   side/risk/size/currency 全空且 `order_intent_count=0`。daily/replay 是同一 callable。
-- Engine-0 用共享 universe-population validator 在 assignment cutoff 投影 CandidatePool 消费的完整 UniverseEvent 链，
-  并要求该列表与 market-clock memberships 逐行精确相等；比较覆盖非候选状态、mapping、state、event id、semantic/record
-  hash 与 effective clock。hash-sealed lineage 进入 DecisionContext，`membership_lineage_status=verified_exact_rows`。
-- 输出仅在上述冻结身份、完整依赖图与逐行 lineage 全部通过后声明 `engine0_baseline_established=true`，scope 仍只为
+- dynamic snapshot validator 是关联研究图约束、universe population 与 exact-row reconciliation 的单一通用路径；Engine-0 v3
+  只在其上增加 immutable cash-baseline 专属检查，再把 separately frozen snapshot hash 与 hash-sealed lineage 写入
+  DecisionContext，`membership_lineage_status=verified_exact_rows`。
+- 输出仅在上述冻结身份、关联依赖图约束与逐行 lineage 全部通过后声明 `engine0_baseline_established=true`，scope 仍只为
   `validated_candidate_pool`。外部市场覆盖继续是 unverified；ceiling 保持 `research_pit / observed_only`，runtime/production
   parity 为 unwired，canonical/promotion、paper/live 均不合格，`trade_enabled=false`。
 
@@ -399,7 +413,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - M1 的 opaque decision-context 与 fill/position snapshot 仍把下游结果封顶在 `research_pit / observed_only`；
   初始 schema、M2 研究 ledger 与首个 SEC source-bounded coverage 实例不等于市场级 universe 完备、canonical provenance、
   runtime 或 execution parity 已完成。
-- 当前 Engine-0 仅是 research-only cash/no-signal 合同；bounded scout 最高仍只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
+- 当前 dynamic market-universe 与 Engine-0 都仅是 source-bounded research-only 合同；bounded scout 最高仍只能是 `research / observed_only lead`，不能获得 shadow/paper/promotion 结论。
 - 若主动使用 V1 baseline，它只做兼容性回归与机会成本对照，不是 V2 Gate-1 锚。
 - 原 V1 脏 checkout 的未提交 ticket 与产物没有迁入 V2 基线。
 
@@ -415,5 +429,7 @@ reference、deployment owner、threat model、网络/成本与 cutover。真实 
 连续两个非阻断 M3 construction 单元后的 bounded、zero-ID、outcome-blind scout readiness preflight 已完成；已登记的
 SEC/PCAOB/Moomoo/FINRA surface 均因 frozen input、PIT/授权/映射、重复/污染或新证据轴条件未满足而 fail closed，没有占用
 experiment ID。输入身份与 reopen trigger 不变时复用本次结论，不重复完整 preflight。
-market-clock membership 与 CandidatePool UniverseEvent snapshot 的逐行 lineage 已完成；下一 promotion-construction 单元接
-动态 PIT 市场 universe，再建立共享 predictive feature/policy chain。仓库外 append anchor 仍由用户选择与授权。
+source-bounded dynamic PIT market-universe snapshot 与 Engine-0 v3 的独立 hash/逐行 lineage 接线已完成。本轮成为最近一次
+zero-ID preflight 后第二个非阻断 construction 单元；下一轮先常数时间比较冻结 blocker fingerprint，输入不变则复用
+no-candidate 结论并建立共享 predictive feature/policy chain，不得借此升级 coverage、runtime/production 或 paper/live 权限。
+仓库外 append anchor 仍由用户选择与授权。
