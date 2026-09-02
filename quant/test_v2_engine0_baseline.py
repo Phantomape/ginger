@@ -136,12 +136,20 @@ def _reseal_market_clock_memberships(snapshot):
     return _reseal_market_clock(snapshot)
 
 
-def _inputs(*, two_candidates=True, admission_statuses=None):
+def _inputs(
+    *,
+    two_candidates=True,
+    admission_statuses=None,
+    treatment_policy=None,
+    ranking_rule=None,
+):
     calendar = _calendar_bundle()
     clock = _clock(calendar, calendar_session_id="XNYS-2026-08-21")
     graph = _graph(two_candidates=two_candidates)
     hypothesis = deepcopy(graph["hypothesis"])
     hypothesis["baseline_policy"] = get_engine0_baseline_policy_snapshot()
+    if treatment_policy is not None:
+        hypothesis["treatment_policy"] = deepcopy(treatment_policy)
     hypothesis = _seal_hypothesis(hypothesis)
 
     evidence_by_id = {item["evidence_id"]: item for item in graph["evidence"]}
@@ -165,6 +173,12 @@ def _inputs(*, two_candidates=True, admission_statuses=None):
     universe_events = graph["events"]
 
     pool = deepcopy(graph["pool"])
+    if ranking_rule is not None:
+        pool.update(
+            ranking_rule_id=ranking_rule["rule_id"],
+            ranking_rule_version=ranking_rule["rule_version"],
+            ranking_rule_sha256=canonical_hash(ranking_rule),
+        )
     pool.update(
         hypothesis_candidate_id=hypothesis["candidate_id"],
         hypothesis_candidate_hash=hypothesis["semantic_hash"],

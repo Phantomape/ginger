@@ -52,7 +52,8 @@
 - [x] 建立 research-only Engine-0 cash/no-signal baseline 合同：消费独立冻结的 clock/pool/hypothesis 身份与完整研究依赖图，生成 identity-only feature、不可变 cash policy 和完整 DecisionRecord；不生成 OrderIntent，保持 `research_pit / observed_only`、default-off 与 runtime/production unwired（2026-09-01）
 - [x] 将 market-clock exact membership rows 与 CandidatePool 完整 UniverseEvent snapshot 建立逐行 lineage：共享 population validator 在 cutoff 投影全状态 latest rows，完整列表与 mapping/state/event semantic+record hash/effective clock 精确相等，hash-sealed lineage 进入 DecisionContext；保持 research-only、default-off 与 runtime/production unwired（2026-09-01）
 - [x] 建立 post-CandidatePool、pre-predictive-policy 的 source-bounded research-only dynamic PIT market-universe reconciliation snapshot：独立冻结 market-clock/pool/hypothesis identity，重验关联研究图约束和全状态 UniverseEvent 投影，以 exact event/membership/row lineage hash 封存完整 candidate/non-candidate surface，并让 Engine-0 v3 消费其独立 snapshot hash；不生成 CandidatePool，不建立 market-wide coverage、predictive policy 或权限提升（2026-09-01）
-- [ ] 建立共享 predictive feature/policy chain；任何 canonical/promotion 声称仍需外部 anchor、完整 coverage 及适用 parity
+- [x] 建立 source-bounded research-only shared claim-support feature/ranking contract：从已验证 ResearchClaim/evidence 身份重建完整 feature surface，以固定 claim-support score/tie-break 生成连续 rank，并将 feature/rank/no-entry signal hashes 绑定进 treatment DecisionRecord；daily/replay 为同一纯 callable，entry disabled、predictive efficacy 未验证、零 OrderIntent（2026-09-01）
+- [ ] 用冻结 experiment 建立并验证会改变 selection/entry 的 predictive signal policy，再接 scheduler/runtime/production parity；任何 canonical/promotion 声称仍需外部 anchor、完整 coverage 及适用 Gate/parity
 
 ## 注意事项
 
@@ -60,7 +61,7 @@
 - 资产分类与偏差登记不会授予任何 V2 决策或交易资格。
 - 原 V1 脏 checkout 的未提交证据不得静默进入 V2。
 - V2 不管理或等待 V1 自动化；V1 仅是可选只读历史参考，不阻塞 scout、forward 或晋级。
-- source-bounded dynamic market-universe snapshot、research-only Engine-0 cash/no-signal 与逐行 lineage 合同不等于 M3 完成：共享 predictive feature/policy、scheduler 与 production parity 仍未建立，market-wide coverage 仍未验证。
+- source-bounded dynamic market-universe、research-only Engine-0、逐行 lineage 与 claim-support feature/ranking 合同不等于 M3 完成：predictive efficacy、directional signal/entry、scheduler 与 production parity 仍未建立，market-wide coverage 仍未验证。
 - M1 kernel 就绪后最多连续两个非阻断纯建设单元；存在 admission-ready scout 时，promotion-only P2 不得继续抢占。
 - 没有合格 novelty/PIT/映射/触达时不硬开实验；失败 preflight 不烧 ID。只优先解除安全、有价值、可完成且预计能直接形成 admission-ready scout 的 blocker，否则继续 promotion backlog 或 no-op。
 - Receipt 每轮必写；state/backlog/decision log 只在各自事实真正改变时更新，不复制实验 ticket/log/artifact 已记录的内容。
