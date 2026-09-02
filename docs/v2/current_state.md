@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-09-02T04:27Z（M3 research-only claim-support envelope reconstruction validator）
+> 最后更新：2026-09-02T17:42Z（SEC CORRESP H5 fast-falsification scout）
 > Outcome hygiene：本导航只记录 terminal 状态、证据位置和重开条件；settled 指标只保留在 canonical
 > ticket / log / artifact 中，outcome-blind 启动阶段不得读取。
 
@@ -16,7 +16,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M0 规则 / T0 / 状态文件 | 完成：状态文件、25 项 V1 资产清单、6 项偏差登记表与 T0 声明均已落地 |
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
-| Research scout lane | 已运行 2 个：`exp-20260822-001` SEC exact-8-K H1 与 `exp-20260901-001` PCAOB audit-amendment stress H5 均以 `rejected` 关闭；完整结果只见 canonical log/artifact |
+| Research scout lane | 已运行 3 个：`exp-20260822-001` SEC exact-8-K H1、`exp-20260901-001` PCAOB audit-amendment stress H5 与 `exp-20260902-001` SEC CORRESP H5 均以 `rejected` 关闭；最新一项为方向通过但样本不足的 `inconclusive_insufficient_sample`，完整结果只见 canonical log/artifact |
 | M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock、source-bounded dynamic PIT market-universe snapshot、Engine-0 cash/no-signal baseline、完整逐行 lineage、shared claim-support feature/ranking contract 及其 reconstruction validator 已绑定；predictive efficacy、directional signal/entry、scheduler 与 runtime/production parity 仍未建立 |
 | M4-M9 | 未开始 |
 
@@ -37,6 +37,10 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 首次 cadence 已执行：官方 SEC 2026-08-20 exact-8-K complete frame 通过 zero-ID preflight，冻结 experiment-local disposition、
   CandidatePool、DecisionRecord 和 promotion 后 reserve/run/close `exp-20260822-001`。以后只在输入变化、出现可信新轴或再次连续完成两个
   非阻断建设单元时重跑完整 preflight；失败且无安全有价值的直接修复时回 promotion backlog/no-op。
+- 新 discovery cadence 已执行：`exp-20260902-001` 在 outcome-blind 状态冻结完整 4,183 行 SEC daily-index disposition、
+  67 行 CORRESP、20 行映射与 17 个去重 issuer，D0-D3 后 reserve/claim/run。16 个 issuer 具备精确 H5 数据且方向检查全部通过，
+  但未达到预注册的 30-security positive-lead floor，因此按 `rejected / inconclusive_insufficient_sample` 关闭；该窗口和 recipe 已消费，
+  不得在同一 source date、mapping、H5 或成本上调参重试，`trade_enabled=false`。
 
 ## M2 进行中单元
 

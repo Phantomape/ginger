@@ -28,7 +28,8 @@
 - [x] 第二个 V2 scout：`exp-20260901-001` 冻结完整 942 行 PCAOB audit-report amendment frame、48 个 stress 与 29 个 count-one control 决策后 reserve/claim/run，两个 primary comparison 均失败并关闭为 `rejected`；无 policy/parity/交易改动（2026-09-01）
 - [x] Private-replay reflection audit repair：`exp-20260901-002` 只在 result artifact path/hash/terminal/scope/authority 全部绑定且结构化 boolean checks 可确定归因时解析 compact-log reflection；lean-strict 恢复通过，原终态记录不变（2026-09-01）
 - [x] Private-replay runner lifecycle repair：`exp-20260901-003` 在任何 outcome 前用 `RAW_INPUT` O_EXCL marker 取得单次执行权，并在 marker 后重读 ticket、重验 strict 111 与输出状态；terminal、并发 loser 和 crash marker 均 fail closed（2026-09-01）
-- [ ] 下一 scout：不得在已消费的 SEC frame 或 PCAOB count/H5/window/cost 上做近邻搜索；只接受独立 outcome-blind 冻结的新 surface/机制，仍须 preflight/freeze/reserve 后才能读 outcome；无合格候选时回 M2/M3 promotion construction
+- [x] 第三个 V2 scout：`exp-20260902-001` 冻结完整 4,183 行 SEC daily-index disposition、67 行 CORRESP、20 行映射与 17 个去重 issuer；16 个 exact-H5 issuer 的四项方向检查全部通过，但低于预注册的 30-security lead floor，按 `rejected / inconclusive_insufficient_sample` 关闭，无 policy/parity/交易改动（2026-09-02）
+- [ ] 下一 scout：最迟 `2026-09-02T19:42:18Z` 前转向独立 outcome-blind source/mechanism；不得重调已消费的 SEC CORRESP source-date/subset/mapping/H5/cost，也不得重调 PCAOB count/H5/window/cost。下一次 reserve 前须确认 promotion-derived novelty identity，避免通用 CLI 的无关 baseline 默认值把 ticket novelty source 误标为 `companyfacts_ratio`
 
 ## M2（并行 Promotion Construction）
 
