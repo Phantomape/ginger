@@ -37,9 +37,9 @@ from .v2_universe_observation import (
 )
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 MARKET_DECISION_CLOCK_RECORD_TYPE = "v2_market_decision_clock_snapshot"
-MARKET_DECISION_CLOCK_CONTRACT = "v2_research_only_market_decision_clock_v1"
+MARKET_DECISION_CLOCK_CONTRACT = "v2_research_only_market_decision_clock_v2"
 
 _RESEARCH_ONLY_OBSERVATION_BOUNDARY = {
     "external_universe_coverage_status": "unverified",
@@ -123,6 +123,7 @@ _MARKET_CLOCK_FIELDS = {
     "consumer_stage",
     "input_identity",
     "input_identity_sha256",
+    "memberships",
     "external_universe_coverage_status",
     "observation_scope",
     "pit_tier",
@@ -573,6 +574,87 @@ def validate_market_decision_clock_snapshot(
                 f"market-clock identity {field} must be UTC-normalized",
             )
         instants[field] = parsed
+
+    memberships = snapshot.get("memberships")
+    if not isinstance(memberships, list):
+        _fail(
+            "market_clock_snapshot_membership_shape_invalid",
+            "market-clock memberships must be a JSON array",
+        )
+    normalized_memberships: list[dict[str, str]] = []
+    for index, raw_row in enumerate(memberships):
+        if not isinstance(raw_row, Mapping) or set(raw_row) != _MEMBERSHIP_FIELDS:
+            _fail(
+                "market_clock_snapshot_membership_shape_invalid",
+                f"market-clock memberships[{index}] has an unexpected field surface",
+            )
+        normalized: dict[str, str] = {}
+        for field in _MEMBERSHIP_FIELDS:
+            item = raw_row.get(field)
+            if not isinstance(item, str) or not item.strip() or item != item.strip():
+                _fail(
+                    "market_clock_snapshot_membership_shape_invalid",
+                    f"market-clock memberships[{index}].{field} must be non-empty text",
+                )
+            if field in _MEMBERSHIP_HASH_FIELDS and re.fullmatch(
+                r"[0-9a-f]{64}", item
+            ) is None:
+                _fail(
+                    "market_clock_snapshot_membership_shape_invalid",
+                    f"market-clock memberships[{index}].{field} must be a lowercase SHA-256",
+                )
+            if field == "state" and item not in _UNIVERSE_STATES:
+                _fail(
+                    "market_clock_snapshot_membership_shape_invalid",
+                    f"market-clock memberships[{index}].state is unsupported",
+                )
+            if field == "effective_at":
+                normalized_item, effective_at_dt = _instant(
+                    item, field=f"memberships[{index}].effective_at"
+                )
+                if item != normalized_item:
+                    _fail(
+                        "market_clock_snapshot_membership_shape_invalid",
+                        f"market-clock memberships[{index}].effective_at must be UTC-normalized",
+                    )
+                if effective_at_dt > instants["assignment_cutoff"]:
+                    _fail(
+                        "market_clock_snapshot_membership_after_cutoff",
+                        f"market-clock memberships[{index}].effective_at exceeds assignment_cutoff",
+                    )
+            normalized[field] = item
+        normalized_memberships.append(normalized)
+    if normalized_memberships != sorted(
+        normalized_memberships,
+        key=lambda row: (row["security_id"], row["listing_id"]),
+    ):
+        _fail(
+            "market_clock_snapshot_membership_order_invalid",
+            "market-clock memberships must be identity-sorted",
+        )
+    if (
+        len({row["security_id"] for row in normalized_memberships})
+        != len(normalized_memberships)
+        or len({row["listing_id"] for row in normalized_memberships})
+        != len(normalized_memberships)
+    ):
+        _fail(
+            "market_clock_snapshot_membership_identity_duplicate",
+            "market-clock memberships repeat a security or listing identity",
+        )
+    semantic_memberships = [
+        {key: item for key, item in row.items() if key != "latest_event_hash"}
+        for row in normalized_memberships
+    ]
+    if (
+        identity["membership_count"] != len(normalized_memberships)
+        or identity["membership_snapshot_sha256"]
+        != canonical_hash(semantic_memberships)
+    ):
+        _fail(
+            "market_clock_snapshot_membership_identity_mismatch",
+            "market-clock membership rows contradict the input identity count or hash",
+        )
     if (
         instants["observation_as_of"] != instants["assignment_cutoff"]
         or not (
@@ -796,6 +878,7 @@ def observe_sec_8k_market_decision_clock(
         "consumer_stage": "pre_engine0_market_decision_clock",
         "input_identity": input_identity,
         "input_identity_sha256": canonical_hash(input_identity),
+        "memberships": deepcopy(observation["memberships"]),
         "external_universe_coverage_status": "unverified",
         "observation_scope": "source_bound_universe_membership_only",
         "pit_tier": "research_pit",

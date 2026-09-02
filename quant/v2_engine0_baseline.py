@@ -36,11 +36,15 @@ from .v2_market_decision_clock import (
     V2MarketDecisionClockError,
     validate_market_decision_clock_snapshot,
 )
+from .v2_universe_ledger import (
+    V2UniverseLedgerError,
+    validate_universe_event_population,
+)
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 ENGINE0_BASELINE_RECORD_TYPE = "v2_engine0_cash_baseline_snapshot"
-ENGINE0_BASELINE_CONTRACT = "v2_research_only_engine0_cash_no_signal_v1"
+ENGINE0_BASELINE_CONTRACT = "v2_research_only_engine0_cash_no_signal_v2"
 
 _ENGINE0_RULE = {
     "rule_id": "v2-engine0-cash-no-signal-rule",
@@ -171,7 +175,12 @@ def _validate_dependencies(
     *,
     expected_market_clock_snapshot_hash: str,
     expected_research_input_identity: Mapping[str, Any],
-) -> tuple[dict[str, Any], CandidatePool, HypothesisCandidate]:
+) -> tuple[
+    dict[str, Any],
+    CandidatePool,
+    HypothesisCandidate,
+    list[dict[str, Any]],
+]:
     try:
         market_clock = validate_market_decision_clock_snapshot(
             market_clock_snapshot,
@@ -297,7 +306,25 @@ def _validate_dependencies(
             "engine0_research_graph_dependency_error",
             f"{exc.code}: {exc.detail}",
         ) from exc
-    return market_clock, pool, hypothesis
+    try:
+        _, projected_memberships = validate_universe_event_population(
+            universe_events,
+            universe_id=pool.universe_id,
+            data_cutoff=pool.data_cutoff,
+            frozen_at=pool.frozen_at,
+            membership_as_of=identity["assignment_cutoff"],
+        )
+    except V2UniverseLedgerError as exc:
+        raise V2Engine0BaselineError(
+            "engine0_membership_lineage_dependency_error",
+            f"{exc.code}: {exc.detail}",
+        ) from exc
+    if projected_memberships != market_clock["memberships"]:
+        _fail(
+            "engine0_membership_lineage_mismatch",
+            "market-clock memberships must exactly equal the supplied UniverseEvent projection",
+        )
+    return market_clock, pool, hypothesis, projected_memberships
 
 
 def build_research_only_engine0_cash_baseline(
@@ -321,7 +348,7 @@ def build_research_only_engine0_cash_baseline(
 ) -> dict[str, Any]:
     """Build one complete research-only cash/no-signal Engine-0 decision."""
 
-    market_clock, pool, hypothesis = _validate_dependencies(
+    market_clock, pool, hypothesis, projected_memberships = _validate_dependencies(
         market_clock_snapshot,
         candidate_pool,
         hypothesis_candidate,
@@ -371,10 +398,44 @@ def build_research_only_engine0_cash_baseline(
     policy = get_engine0_baseline_policy_snapshot()
     policy_sha256 = canonical_hash(policy)
 
-    decision_context_id = f"{decision_id}:engine0-research-context-v1"
+    membership_lineage_rows: list[dict[str, Any]] = []
+    for market_row, projected_row in zip(
+        market_clock["memberships"], projected_memberships, strict=True
+    ):
+        lineage_row = {
+            **deepcopy(market_row),
+            "market_clock_membership_row_sha256": canonical_hash(market_row),
+            "universe_event_projection_row_sha256": canonical_hash(projected_row),
+        }
+        lineage_row["lineage_row_sha256"] = canonical_hash(lineage_row)
+        membership_lineage_rows.append(lineage_row)
+    membership_lineage = {
+        "lineage_type": "v2_engine0_membership_lineage",
+        "lineage_version": "1",
+        "universe_id": pool.universe_id,
+        "membership_as_of": market_clock["input_identity"]["assignment_cutoff"],
+        "market_decision_clock_snapshot_hash": market_clock[
+            "market_decision_clock_snapshot_hash"
+        ],
+        "market_clock_membership_snapshot_sha256": market_clock[
+            "input_identity"
+        ]["membership_snapshot_sha256"],
+        "candidate_pool_id": pool.candidate_pool_id,
+        "candidate_pool_universe_event_snapshot_sha256": (
+            pool.universe_event_snapshot_sha256
+        ),
+        "membership_count": len(membership_lineage_rows),
+        "row_snapshot_sha256": canonical_hash(membership_lineage_rows),
+        "rows": membership_lineage_rows,
+    }
+    membership_lineage["membership_lineage_sha256"] = canonical_hash(
+        membership_lineage
+    )
+
+    decision_context_id = f"{decision_id}:engine0-research-context-v2"
     decision_context = {
         "context_type": "v2_engine0_decision_context",
-        "context_version": "1",
+        "context_version": "2",
         "decision_context_id": decision_context_id,
         "market_decision_clock_snapshot_hash": market_clock[
             "market_decision_clock_snapshot_hash"
@@ -389,6 +450,13 @@ def build_research_only_engine0_cash_baseline(
         "expected_research_input_identity": deepcopy(
             dict(expected_research_input_identity)
         ),
+        "membership_lineage_sha256": membership_lineage[
+            "membership_lineage_sha256"
+        ],
+        "membership_lineage_row_snapshot_sha256": membership_lineage[
+            "row_snapshot_sha256"
+        ],
+        "membership_lineage_row_count": membership_lineage["membership_count"],
         "feature_snapshot_sha256": feature_snapshot_sha256,
         "feature_row_count": len(feature_rows),
         "cash_comparator": cash.to_dict(),
@@ -559,6 +627,10 @@ def build_research_only_engine0_cash_baseline(
         "feature_snapshot_sha256": feature_snapshot_sha256,
         "decision_context": decision_context,
         "decision_context_sha256": decision_context_sha256,
+        "membership_lineage": membership_lineage,
+        "membership_lineage_sha256": membership_lineage[
+            "membership_lineage_sha256"
+        ],
         "decision_record": decision,
         "decision_identity": {
             "decision_id": decision["decision_id"],
@@ -569,7 +641,7 @@ def build_research_only_engine0_cash_baseline(
         "engine0_policy_invoked": True,
         "engine0_baseline_established": True,
         "engine0_baseline_scope": "validated_candidate_pool",
-        "membership_lineage_status": "unverified_hash_only",
+        "membership_lineage_status": "verified_exact_rows",
         "external_universe_coverage_status": "unverified",
         "pit_tier": "research_pit",
         "result_ceiling": "observed_only",

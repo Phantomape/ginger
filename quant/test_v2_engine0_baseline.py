@@ -6,7 +6,9 @@ from quant.test_v2_research_contracts import (
     _graph,
     _seal_hypothesis,
     _seal_pool,
+    _transition,
 )
+from quant.test_v2_contracts import _seal_event
 from quant.test_v2_session_clock_contracts import (
     _calendar_bundle,
     _clock,
@@ -28,13 +30,25 @@ from quant.v2_engine0_baseline import (
     get_engine0_baseline_policy_snapshot,
 )
 from quant.v2_sec_8k_runtime_adapter import LEDGER_BACKEND_LEGACY_JSONL_V1
+from quant.v2_universe_ledger import validate_universe_event_population
 
 
 def _hash(label):
     return canonical_hash({"identity": label})
 
 
-def _market_clock_snapshot(clock, pool):
+def _market_clock_snapshot(clock, pool, universe_events):
+    _, memberships = validate_universe_event_population(
+        universe_events,
+        universe_id=pool["universe_id"],
+        data_cutoff=pool["data_cutoff"],
+        frozen_at=pool["frozen_at"],
+        membership_as_of=clock["assignment_cutoff"],
+    )
+    semantic_memberships = [
+        {key: value for key, value in row.items() if key != "latest_event_hash"}
+        for row in memberships
+    ]
     identity = {
         "observation_snapshot_hash": _hash("observation"),
         "observation_input_identity_sha256": _hash("observation-input"),
@@ -48,8 +62,8 @@ def _market_clock_snapshot(clock, pool):
         "universe_definition_id": "universe-definition-engine0",
         "universe_definition_version": "1",
         "universe_definition_sha256": _hash("universe-definition"),
-        "membership_count": len(pool["entries"]),
-        "membership_snapshot_sha256": _hash("memberships"),
+        "membership_count": len(memberships),
+        "membership_snapshot_sha256": canonical_hash(semantic_memberships),
         "shared_reader_snapshot_hash": _hash("shared-reader"),
         "observation_as_of": clock["assignment_cutoff"],
         "session_clock_id": clock["session_clock_id"],
@@ -71,13 +85,14 @@ def _market_clock_snapshot(clock, pool):
         "clock_recorded_at": clock["recorded_at"],
     }
     snapshot = {
-        "schema_version": 1,
+        "schema_version": 2,
         "record_type": "v2_market_decision_clock_snapshot",
-        "market_decision_clock_contract": "v2_research_only_market_decision_clock_v1",
+        "market_decision_clock_contract": "v2_research_only_market_decision_clock_v2",
         "source_frame": "sec_edgar_8k",
         "consumer_stage": "pre_engine0_market_decision_clock",
         "input_identity": identity,
         "input_identity_sha256": canonical_hash(identity),
+        "memberships": memberships,
         "external_universe_coverage_status": "unverified",
         "observation_scope": "source_bound_universe_membership_only",
         "pit_tier": "research_pit",
@@ -103,6 +118,19 @@ def _reseal_market_clock(snapshot):
     snapshot.pop("market_decision_clock_snapshot_hash", None)
     snapshot["market_decision_clock_snapshot_hash"] = canonical_hash(snapshot)
     return snapshot
+
+
+def _reseal_market_clock_memberships(snapshot):
+    snapshot = deepcopy(snapshot)
+    semantic_memberships = [
+        {key: value for key, value in row.items() if key != "latest_event_hash"}
+        for row in snapshot["memberships"]
+    ]
+    snapshot["input_identity"]["membership_count"] = len(snapshot["memberships"])
+    snapshot["input_identity"]["membership_snapshot_sha256"] = canonical_hash(
+        semantic_memberships
+    )
+    return _reseal_market_clock(snapshot)
 
 
 def _inputs(*, two_candidates=True, admission_statuses=None):
@@ -170,7 +198,7 @@ def _inputs(*, two_candidates=True, admission_statuses=None):
         data_cutoff=pool["data_cutoff"],
     )
     pool = _seal_pool(pool)
-    market_clock_snapshot = _market_clock_snapshot(clock, pool)
+    market_clock_snapshot = _market_clock_snapshot(clock, pool, universe_events)
     expected_research_input_identity = {
         "candidate_pool_id": pool["candidate_pool_id"],
         "candidate_pool_semantic_hash": pool["semantic_hash"],
@@ -213,6 +241,7 @@ def _assert_code(code, func):
     with pytest.raises(V2Engine0BaselineError) as caught:
         func()
     assert caught.value.code == code
+    return caught.value
 
 
 def _refresh_expected_research_identity(inputs):
@@ -229,6 +258,94 @@ def _refresh_expected_research_identity(inputs):
     }
 
 
+def _refresh_pool_graph(inputs, universe_events, *, entries=None):
+    pool = deepcopy(inputs["candidate_pool"])
+    entries = deepcopy(pool["entries"] if entries is None else entries)
+    event_by_id = {item["event_id"]: item for item in universe_events}
+    evidence_by_id = {
+        item["evidence_id"]: item for item in inputs["decision_evidence_records"]
+    }
+    for entry in entries:
+        entry["decision_input_sha256"] = candidate_entry_input_snapshot_hash(
+            hypothesis_candidate=inputs["hypothesis_candidate"],
+            universe_event=event_by_id[entry["universe_event_id"]],
+            evidence_records=[
+                evidence_by_id[evidence_id]
+                for evidence_id in entry["evidence_record_ids"]
+            ],
+            generator_rule_sha256=pool["generator_rule_sha256"],
+        )
+    pool.update(
+        entries=entries,
+        expected_candidate_count=len(entries),
+        universe_event_ids=[item["event_id"] for item in universe_events],
+        universe_event_snapshot_sha256=universe_event_snapshot_hash(
+            universe_events
+        ),
+    )
+    pool["input_snapshot_sha256"] = candidate_pool_input_snapshot_hash(
+        hypothesis_candidate=inputs["hypothesis_candidate"],
+        evidence_records=inputs["decision_evidence_records"],
+        universe_events=universe_events,
+        entries=pool["entries"],
+        comparators=pool["comparators"],
+        generator_rule_sha256=pool["generator_rule_sha256"],
+        ranking_rule_sha256=pool["ranking_rule_sha256"],
+        universe_id=pool["universe_id"],
+        session_clock_id=pool["session_clock_id"],
+        session_clock_hash=pool["session_clock_hash"],
+        session_clock_record_hash=pool["session_clock_record_hash"],
+        run_date=pool["run_date"],
+        calendar_session_id=pool["calendar_session_id"],
+        data_cutoff=pool["data_cutoff"],
+    )
+    inputs["candidate_pool"] = _seal_pool(pool)
+    inputs["universe_events"] = universe_events
+    _refresh_expected_research_identity(inputs)
+
+
+def _refresh_market_clock(inputs):
+    snapshot = _market_clock_snapshot(
+        inputs["session_clock"],
+        inputs["candidate_pool"],
+        inputs["universe_events"],
+    )
+    inputs["market_clock_snapshot"] = snapshot
+    inputs["expected_market_clock_snapshot_hash"] = snapshot[
+        "market_decision_clock_snapshot_hash"
+    ]
+
+
+def _inputs_with_quarantine_membership():
+    inputs = _inputs()
+    latest_b = next(
+        event
+        for event in inputs["universe_events"]
+        if event["event_id"] == "sec-bbb-candidate-eligible"
+    )
+    evidence_b = next(
+        evidence
+        for evidence in inputs["decision_evidence_records"]
+        if evidence["security_mapping"]["security_id"] == "sec-bbb"
+    )
+    quarantine = _transition(
+        latest_b,
+        evidence=evidence_b,
+        to_state="quarantine",
+        suffix="quarantine",
+        minute=13,
+    )
+    universe_events = deepcopy(inputs["universe_events"]) + [quarantine]
+    active_entries = [
+        entry
+        for entry in inputs["candidate_pool"]["entries"]
+        if entry["security_id"] != "sec-bbb"
+    ]
+    _refresh_pool_graph(inputs, universe_events, entries=active_entries)
+    _refresh_market_clock(inputs)
+    return inputs
+
+
 def test_golden_engine0_builds_complete_cash_only_decision():
     inputs = _inputs()
     result = _build(inputs)
@@ -240,7 +357,11 @@ def test_golden_engine0_builds_complete_cash_only_decision():
     assert result["engine0_policy_invoked"] is True
     assert result["engine0_baseline_established"] is True
     assert result["engine0_baseline_scope"] == "validated_candidate_pool"
-    assert result["membership_lineage_status"] == "unverified_hash_only"
+    assert result["schema_version"] == 2
+    assert result["engine0_baseline_contract"] == (
+        "v2_research_only_engine0_cash_no_signal_v2"
+    )
+    assert result["membership_lineage_status"] == "verified_exact_rows"
     assert result["external_universe_coverage_status"] == "unverified"
     assert result["runtime_parity_status"] == "unwired"
     assert result["production_parity_status"] == "unwired"
@@ -267,6 +388,29 @@ def test_golden_engine0_builds_complete_cash_only_decision():
     assert result["decision_context_sha256"] == canonical_hash(
         result["decision_context"]
     )
+    assert decision["decision_context_id"] == result["decision_context"][
+        "decision_context_id"
+    ]
+    assert decision["decision_context_sha256"] == result[
+        "decision_context_sha256"
+    ]
+    lineage = result["membership_lineage"]
+    assert result["membership_lineage_sha256"] == lineage[
+        "membership_lineage_sha256"
+    ]
+    lineage_payload = deepcopy(lineage)
+    lineage_hash = lineage_payload.pop("membership_lineage_sha256")
+    assert lineage_hash == canonical_hash(lineage_payload)
+    assert lineage["membership_count"] == len(inputs["market_clock_snapshot"]["memberships"])
+    assert lineage["row_snapshot_sha256"] == canonical_hash(lineage["rows"])
+    assert result["decision_context"]["membership_lineage_sha256"] == lineage_hash
+    for row in lineage["rows"]:
+        row_payload = deepcopy(row)
+        row_hash = row_payload.pop("lineage_row_sha256")
+        assert row_hash == canonical_hash(row_payload)
+        assert row["market_clock_membership_row_sha256"] == (
+            row["universe_event_projection_row_sha256"]
+        )
     payload = deepcopy(result)
     supplied_hash = payload.pop("engine0_baseline_snapshot_hash")
     assert supplied_hash == canonical_hash(payload)
@@ -438,4 +582,113 @@ def test_resealed_truncated_pool_still_requires_the_complete_research_graph():
     _assert_code(
         "engine0_research_graph_dependency_error",
         lambda: _build(truncated),
+    )
+
+
+def test_lineage_preserves_non_candidate_memberships_and_rejects_truncation():
+    inputs = _inputs_with_quarantine_membership()
+    result = _build(inputs)
+
+    assert [row["state"] for row in result["membership_lineage"]["rows"]] == [
+        "candidate_eligible",
+        "quarantine",
+    ]
+    assert len(result["decision_record"]["items"]) == 1
+
+    truncated = deepcopy(inputs)
+    truncated["market_clock_snapshot"]["memberships"] = truncated[
+        "market_clock_snapshot"
+    ]["memberships"][:1]
+    truncated["market_clock_snapshot"] = _reseal_market_clock_memberships(
+        truncated["market_clock_snapshot"]
+    )
+    truncated["expected_market_clock_snapshot_hash"] = truncated[
+        "market_clock_snapshot"
+    ]["market_decision_clock_snapshot_hash"]
+
+    _assert_code(
+        "engine0_membership_lineage_mismatch",
+        lambda: _build(truncated),
+    )
+
+
+def test_fully_resealed_truncated_universe_graph_fails_full_list_lineage():
+    inputs = _inputs_with_quarantine_membership()
+    universe_events = [
+        event
+        for event in deepcopy(inputs["universe_events"])
+        if event["security_mapping"]["security_id"] != "sec-bbb"
+    ]
+    _refresh_pool_graph(inputs, universe_events)
+
+    _assert_code(
+        "engine0_membership_lineage_mismatch",
+        lambda: _build(inputs),
+    )
+
+
+def test_fully_resealed_universe_event_record_mismatch_fails_exact_lineage():
+    inputs = _inputs()
+    universe_events = deepcopy(inputs["universe_events"])
+    latest = next(
+        event
+        for event in universe_events
+        if event["event_id"] == "sec-aaa-candidate-eligible"
+    )
+    latest["recorded_at"] = "2026-08-20T14:11:30Z"
+    universe_events[universe_events.index(latest)] = _seal_event(latest)
+    inputs["universe_events"] = universe_events
+
+    _assert_code(
+        "engine0_membership_lineage_mismatch",
+        lambda: _build(inputs),
+    )
+
+
+def test_fully_resealed_universe_event_semantic_mismatch_fails_exact_lineage():
+    inputs = _inputs()
+    universe_events = deepcopy(inputs["universe_events"])
+    latest_index = next(
+        index
+        for index, event in enumerate(universe_events)
+        if event["event_id"] == "sec-aaa-candidate-eligible"
+    )
+    latest = universe_events[latest_index]
+    latest["reason"] = "A fully re-sealed but different semantic event reason."
+    universe_events[latest_index] = _seal_event(latest)
+    _refresh_pool_graph(inputs, universe_events)
+
+    _assert_code(
+        "engine0_membership_lineage_mismatch",
+        lambda: _build(inputs),
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("mapping_id", "map-fully-resealed-crosswire"),
+        ("state", "quarantine"),
+        ("latest_event_id", "fully-resealed-event-crosswire"),
+        ("latest_event_semantic_hash", "f" * 64),
+        ("latest_event_hash", "f" * 64),
+        ("effective_at", "2026-08-20T14:11:59Z"),
+    ],
+)
+def test_fully_resealed_clock_mapping_state_and_event_mismatch_fail_lineage(
+    field,
+    value,
+):
+    inputs = _inputs()
+    snapshot = deepcopy(inputs["market_clock_snapshot"])
+    snapshot["memberships"][0][field] = value
+    snapshot = _reseal_market_clock_memberships(snapshot)
+    inputs["market_clock_snapshot"] = snapshot
+    inputs["expected_market_clock_snapshot_hash"] = snapshot[
+        "market_decision_clock_snapshot_hash"
+    ]
+
+    _assert_code(
+        "engine0_membership_lineage_mismatch",
+        lambda: _build(inputs),
     )

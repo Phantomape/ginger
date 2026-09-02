@@ -121,6 +121,23 @@ def test_market_clock_uses_one_adapter_call_and_true_daily_replay_aliases(
     assert snapshot["input_identity"]["observation_as_of"] == inputs["as_of"]
     assert snapshot["input_identity"]["assignment_cutoff"] == inputs["as_of"]
     assert snapshot["input_identity"]["membership_count"] == 1
+    assert snapshot["schema_version"] == 2
+    assert snapshot["market_decision_clock_contract"] == (
+        "v2_research_only_market_decision_clock_v2"
+    )
+    assert len(snapshot["memberships"]) == 1
+    assert snapshot["input_identity"]["membership_snapshot_sha256"] == (
+        canonical_hash(
+            [
+                {
+                    key: value
+                    for key, value in row.items()
+                    if key != "latest_event_hash"
+                }
+                for row in snapshot["memberships"]
+            ]
+        )
+    )
     assert snapshot["input_identity_sha256"] == canonical_hash(
         snapshot["input_identity"]
     )
@@ -153,6 +170,7 @@ def test_market_clock_uses_one_adapter_call_and_true_daily_replay_aliases(
         "consumer_stage",
         "input_identity",
         "input_identity_sha256",
+        "memberships",
         "external_universe_coverage_status",
         "observation_scope",
         "pit_tier",
@@ -293,6 +311,70 @@ def test_market_clock_consumer_validator_rejects_clock_record_substitution(tmp_p
 
     _assert_code(
         "market_clock_snapshot_clock_identity_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
+    )
+
+
+def test_market_clock_consumer_rejects_fully_resealed_exact_row_tamper(tmp_path):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    expected_snapshot_hash = snapshot["market_decision_clock_snapshot_hash"]
+    snapshot["memberships"][0]["latest_event_hash"] = "f" * 64
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_expected_hash_mismatch",
+        lambda: _validate_snapshot(
+            snapshot,
+            inputs,
+            expected_snapshot_hash=expected_snapshot_hash,
+        ),
+    )
+
+
+def test_market_clock_consumer_rejects_resealed_membership_count_drift(tmp_path):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    snapshot["memberships"] = []
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_membership_identity_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
+    )
+
+
+def test_market_clock_consumer_rejects_fully_resealed_membership_hash_drift(
+    tmp_path,
+):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    snapshot["input_identity"]["membership_snapshot_sha256"] = "f" * 64
+    snapshot["input_identity_sha256"] = canonical_hash(snapshot["input_identity"])
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_membership_identity_mismatch",
+        lambda: _validate_snapshot(snapshot, inputs),
+    )
+
+
+def test_market_clock_consumer_rejects_fully_resealed_future_membership(tmp_path):
+    inputs = _inputs(tmp_path)
+    snapshot = observe_sec_8k_market_decision_clock(**inputs)
+    snapshot["memberships"][0]["effective_at"] = "2026-08-21T12:30:01Z"
+    semantic_rows = [
+        {key: value for key, value in row.items() if key != "latest_event_hash"}
+        for row in snapshot["memberships"]
+    ]
+    snapshot["input_identity"]["membership_snapshot_sha256"] = canonical_hash(
+        semantic_rows
+    )
+    snapshot["input_identity_sha256"] = canonical_hash(snapshot["input_identity"])
+    snapshot = _reseal_market_clock(snapshot)
+
+    _assert_code(
+        "market_clock_snapshot_membership_after_cutoff",
         lambda: _validate_snapshot(snapshot, inputs),
     )
 

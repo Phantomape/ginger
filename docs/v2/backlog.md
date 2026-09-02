@@ -50,7 +50,8 @@
 
 - [x] 建立 research-only market decision clock boundary：一次消费显式 pre-Engine-0 observation，与完整、证据绑定的 `SessionClock` 链交叉验证，强制 observation `as_of == assignment_cutoff`、freeze/record 严格早于 session open，daily/replay 同 callable；保持 research-only、default-off 与 `contract_only_unwired`（2026-09-01）
 - [x] 建立 research-only Engine-0 cash/no-signal baseline 合同：消费独立冻结的 clock/pool/hypothesis 身份与完整研究依赖图，生成 identity-only feature、不可变 cash policy 和完整 DecisionRecord；不生成 OrderIntent，保持 `research_pit / observed_only`、default-off 与 runtime/production unwired（2026-09-01）
-- [ ] 将 market-clock membership hash 与 CandidatePool UniverseEvent snapshot 建立逐行 lineage，并接入动态 PIT 市场 universe 与共享 predictive feature/policy chain；任何 canonical/promotion 声称仍需外部 anchor 及适用 parity
+- [x] 将 market-clock exact membership rows 与 CandidatePool 完整 UniverseEvent snapshot 建立逐行 lineage：共享 population validator 在 cutoff 投影全状态 latest rows，完整列表与 mapping/state/event semantic+record hash/effective clock 精确相等，hash-sealed lineage 进入 DecisionContext；保持 research-only、default-off 与 runtime/production unwired（2026-09-01）
+- [ ] 接入动态 PIT 市场 universe 与共享 predictive feature/policy chain；任何 canonical/promotion 声称仍需外部 anchor、完整 coverage 及适用 parity
 
 ## 注意事项
 
@@ -58,7 +59,7 @@
 - 资产分类与偏差登记不会授予任何 V2 决策或交易资格。
 - 原 V1 脏 checkout 的未提交证据不得静默进入 V2。
 - V2 不管理或等待 V1 自动化；V1 仅是可选只读历史参考，不阻塞 scout、forward 或晋级。
-- research-only Engine-0 cash/no-signal 合同不等于 M3 完成：membership-to-clock 逐行 lineage、动态 PIT 市场 universe、共享 predictive feature/policy、scheduler 与 production parity 仍未建立。
+- research-only Engine-0 cash/no-signal 与逐行 lineage 合同不等于 M3 完成：动态 PIT 市场 universe、共享 predictive feature/policy、scheduler 与 production parity 仍未建立。
 - M1 kernel 就绪后最多连续两个非阻断纯建设单元；存在 admission-ready scout 时，promotion-only P2 不得继续抢占。
 - 没有合格 novelty/PIT/映射/触达时不硬开实验；失败 preflight 不烧 ID。只优先解除安全、有价值、可完成且预计能直接形成 admission-ready scout 的 blocker，否则继续 promotion backlog 或 no-op。
 - Receipt 每轮必写；state/backlog/decision log 只在各自事实真正改变时更新，不复制实验 ticket/log/artifact 已记录的内容。

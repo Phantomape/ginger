@@ -1,7 +1,7 @@
 # V2 Current State
 
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
-> 最后更新：2026-09-01T23:33Z（M3 research-only Engine-0 cash/no-signal baseline 合同）
+> 最后更新：2026-09-02T00:34Z（M3 market-clock / CandidatePool 逐行 lineage 合同）
 > Outcome hygiene：本导航只记录 terminal 状态、证据位置和重开条件；settled 指标只保留在 canonical
 > ticket / log / artifact 中，outcome-blind 启动阶段不得读取。
 
@@ -17,7 +17,7 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 | M1 身份、时钟、数据合同 schema | 完成：三组初始合同、append-only / 幂等人口校验与证据绑定时钟合同均已落地 |
 | M2 动态 PIT 股票池 | 进行中：研究 ledger、外部 coverage/SEC 8-K 实例、显式 legacy/segmented-hot runtime/observation handoff、event-prefix 索引、checkpoint/segment sidecar publisher/writer、compact rotation、storage capability/rollback、cold-lineage 结构回归及外部 anchor 的 target-independent 决策合同完成；市场级扩展与获批外部 target 实现待完成 |
 | Research scout lane | 已运行 2 个：`exp-20260822-001` SEC exact-8-K H1 与 `exp-20260901-001` PCAOB audit-amendment stress H5 均以 `rejected` 关闭；完整结果只见 canonical log/artifact |
-| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock 与 Engine-0 cash/no-signal baseline 合同已绑定；membership-to-clock 逐行 lineage、动态 PIT 市场 universe、共享 predictive feature/policy、scheduler 与 runtime/production parity 仍未建立 |
+| M3 共享 SDK 与 Engine-0 干净基线 | 进行中：research-only market decision clock、Engine-0 cash/no-signal baseline 与 membership-to-CandidatePool 逐行 lineage 已绑定；动态 PIT 市场 universe、共享 predictive feature/policy、scheduler 与 runtime/production parity 仍未建立 |
 | M4-M9 | 未开始 |
 
 ## T0（已确认）
@@ -100,9 +100,10 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
   `SessionClock -> complete calendar sessions -> EvidenceRecord -> SourceContract` 链验证市场决策时钟。observation
   `as_of` 必须与 `assignment_cutoff` 为同一 UTC instant，clock 的 freeze 与 record 必须严格早于 session open；
   process wall clock、未来/迟到时钟、PIT/authority/default-off 或身份重封漂移均 fail closed。
-- 输出同时绑定 observation/adapter/backend/hot-tip/manifest/universe/membership 与 clock/calendar/session/cutoff 身份，
-  daily/replay 是同一 callable，`market_decision_clock_status=bound_research_only`。它不生成 candidate、signal、decision、
-  outcome 或 order。
+- v2 输出同时绑定 observation/adapter/backend/hot-tip/manifest/universe/membership 与 clock/calendar/session/cutoff 身份，
+  并保留该次 observation 已验证的完整 membership rows；consumer 复验逐行 schema、顺序、唯一性、cutoff、count 与
+  semantic hash。daily/replay 是同一 callable，`market_decision_clock_status=bound_research_only`。它不生成 candidate、
+  signal、decision、outcome 或 order。
 - 该合同仅关闭了 M3 的 research-only clock-binding 结构缺口；`engine0_policy_invoked=false`、
   `engine0_baseline_established=false`、`parity_status=contract_only_unwired`、`paper_live_eligible=false` 且
   `trade_enabled=false`。不声称 scheduler、production/backtest、execution、canonical 或 paper/live parity。
@@ -116,10 +117,12 @@ promotion-readiness 路线，不再是阻止研究测量的串行队列。M2 外
 - 固定 cash/no-signal policy 无可调参数。identity-only feature rows 保留候选输入与 admission 身份；完整
   DecisionRecord 仅把 admitted rank 当审计顺序，所有 admitted 行均为 `not_selected`，inactive 行不产生 decision，
   side/risk/size/currency 全空且 `order_intent_count=0`。daily/replay 是同一 callable。
-- 输出仅在上述冻结身份和完整依赖图通过后声明 `engine0_baseline_established=true`，scope 为
-  `validated_candidate_pool`；membership-to-clock 逐行 lineage 仍为 `unverified_hash_only`，外部覆盖仍未验证。
-  因此 ceiling 保持 `research_pit / observed_only`，runtime/production parity 为 unwired，canonical/promotion、
-  paper/live 均不合格，`trade_enabled=false`。
+- Engine-0 用共享 universe-population validator 在 assignment cutoff 投影 CandidatePool 消费的完整 UniverseEvent 链，
+  并要求该列表与 market-clock memberships 逐行精确相等；比较覆盖非候选状态、mapping、state、event id、semantic/record
+  hash 与 effective clock。hash-sealed lineage 进入 DecisionContext，`membership_lineage_status=verified_exact_rows`。
+- 输出仅在上述冻结身份、完整依赖图与逐行 lineage 全部通过后声明 `engine0_baseline_established=true`，scope 仍只为
+  `validated_candidate_pool`。外部市场覆盖继续是 unverified；ceiling 保持 `research_pit / observed_only`，runtime/production
+  parity 为 unwired，canonical/promotion、paper/live 均不合格，`trade_enabled=false`。
 
 ### 外部 coverage 逐行因果时钟
 
@@ -409,6 +412,8 @@ PCAOB count/H5/window/cost 上做近邻参数搜索。下一实验只接受
 并行的仓库外 append anchor 仍为 absent；其 connector、
 A1-A14 和 shadow outage/rollback 演练继续等待用户选择并授权 provider/product、account/namespace、retention、principal、secret
 reference、deployment owner、threat model、网络/成本与 cutover。真实 population/churn/retention/SLO 仍是自动 cadence 前提；
-连续两个非阻断 M3 construction 单元已完成；下一轮先做一次 bounded、zero-ID、outcome-blind scout readiness preflight。
-若无新 source/mechanism 形成 admission-ready candidate，则回到 M3，将 market-clock membership hash 与 CandidatePool
-UniverseEvent snapshot 建立逐行 lineage，再接动态 PIT 市场 universe 与共享 predictive feature/policy chain。
+连续两个非阻断 M3 construction 单元后的 bounded、zero-ID、outcome-blind scout readiness preflight 已完成；已登记的
+SEC/PCAOB/Moomoo/FINRA surface 均因 frozen input、PIT/授权/映射、重复/污染或新证据轴条件未满足而 fail closed，没有占用
+experiment ID。输入身份与 reopen trigger 不变时复用本次结论，不重复完整 preflight。
+market-clock membership 与 CandidatePool UniverseEvent snapshot 的逐行 lineage 已完成；下一 promotion-construction 单元接
+动态 PIT 市场 universe，再建立共享 predictive feature/policy chain。仓库外 append anchor 仍由用户选择与授权。
