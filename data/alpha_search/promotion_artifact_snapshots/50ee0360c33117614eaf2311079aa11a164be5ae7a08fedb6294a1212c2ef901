@@ -1,0 +1,102 @@
+{
+ "schema_version": 1,
+ "artifact_kind": "clean_forward_falsification_contract",
+ "candidate_id": "cand-68d2f5dad2f903488307",
+ "candidate_title": "Pre-event price overshoot beyond the recorded forecast update",
+ "frozen_at": "2026-08-31T16:15:53Z",
+ "generated_by": "quant/experiments/adjacent_overshoot_clean_forward_contract_freeze_20260831.py",
+ "outcome_blind": true,
+ "registration_binding": {
+  "source": "data/alpha_search/phase2_estimate_revision_candidate_pool_20260829.json",
+  "candidate_sha256": "cfd622c6c3a965f11aef922e4c233071d32b015ca0fee2cd5364720a0688dc62",
+  "registered_at": "2026-08-29T16:23:00Z",
+  "note": "All bar wording derives from this 2026-08-29 registration; the 2026-08-31 observed non-quiet contrast is contamination and shaped nothing here."
+ },
+ "contamination_fence": {
+  "reason": "exp-20260831-001's pre-registered secondary report exposed non-quiet cohort directional spreads on all decisions settled as of the 2026-08-31 fileset",
+  "rule": "eligible decisions are exactly those whose h5_status != 'closed' in the frozen fileset below, plus every future qualified decision; equivalently, first settlement after 2026-08-31",
+  "outcome_fileset_files": 82,
+  "outcome_fileset_sha256": "6c5a5f6c66528fe7e4317e68d422626e6d30e1fcc6a43314373ac361409aa540",
+  "contaminated_decision_count": 1352,
+  "contaminated_decision_ids_sha256": "312dabe4e50c6078a74e5ffa992b53bc629afd07ff92a2abd5ce139151d9fd29"
+ },
+ "frozen_conditioning_rule": {
+  "wording_source": "registration gap_definition: 'Excess of the pre-event five-session price move over the repricing implied by the frozen consensus EPS update, in the update's direction.'",
+  "market_prior_path": "R5 = ln(close_A / close_{A-5}), A = last warehouse session <= as_of_date (registration market_prior units)",
+  "implied_repricing": "constant-multiple mapping: implied = |eps_estimate_delta_prev / (eps_estimate - eps_estimate_delta_prev)|; the only parameter-free reading of the registration wording",
+  "overshoot_iff": "dir_sign * R5 > implied, dir_sign = +1 (up) / -1 (down)",
+  "guards": {
+   "min_abs_prior_eps": 0.1,
+   "delta_sign_must_match_direction": true,
+   "min_pre_event_bars": 6,
+   "fail_mode": "exclude fail-closed"
+  },
+  "forbidden": "no sigma/volatility envelope (that is the rejected quiet-tape family conditioning), no threshold moves after this freeze"
+ },
+ "treatment": {
+  "wording_source": "registration treatment.policy, frozen 2026-08-29",
+  "down_overshoot": "long cash-equity from the following tradable session (ledger entry clock), tradable leg",
+  "up_overshoot": "foregone-long avoidance evidence, no borrow, evidence-only leg",
+  "horizons_gated": [
+   "h5",
+   "h10"
+  ],
+  "h20": "reported only (registration half-life is H5-H10)",
+  "costs": "frozen outcome-ledger pipeline values (h*_return_pct / h*_replacement_value_* as persisted); no re-costing"
+ },
+ "falsifier_bars": {
+  "wording_source": "registration falsifier: 'Exact-clock placebo on shuffled event dates, ticker shuffle within the mapped set, absence of decay in the unjustified residual, or failure to beat cash, SPY, QQQ and the displaced core sleeve under identical capital constraints.'",
+  "B1_residual_decay": "mean(h_ret | down_overshoot) - mean(h_ret | up_overshoot) > 0 at BOTH h5 and h10 on the clean conditioned slice",
+  "B2_vs_cash": "sum(h_replacement_value_vs_cash_usd | down_overshoot tradable leg) > 0 at h10; h5 reported",
+  "B3_vs_spy_qqq": "sum(h10_rv_vs_spy | down_overshoot) > 0 AND sum(h10_rv_vs_qqq | down_overshoot) > 0",
+  "B4_date_placebo": "real h10 reversion spread (simple next-open->10th-close methodology) > p90 of 200 shuffled-event-date draws",
+  "B5_ticker_shuffle": "real h10 reversion spread > p90 of 200 within-session ticker-shuffle draws",
+  "seed": 20260901,
+  "n_draws": 200,
+  "all_bars_must_pass": true,
+  "displaced_core_comparator": "reported only: no per-decision displaced-core series exists in the outcome ledger; gating on it is structurally impossible (documented limitation, not a waived bar)",
+  "result_ceiling": "observed_only (research_pit price context; research_replay admission class)"
+ },
+ "sample_gates": {
+  "per_gated_horizon_min_settled_conditioned_clean": 30,
+  "per_direction_leg_min": 10,
+  "fail_mode": "do not run the falsification until every gate holds; no partial evaluation"
+ },
+ "reachability_evidence": {
+  "clean_pool_h5_not_closed": 170,
+  "frozen_rule_conditioned_stock": {
+   "overshoot": 57,
+   "not_overshoot": 109,
+   "excluded_prior_eps_guard": 4,
+   "excluded_insufficient_bars": 0,
+   "excluded_delta_sign_mismatch": 0
+  },
+  "direction_split": {
+   "up": 20,
+   "down": 37
+  },
+  "entry_dates": {
+   "2026-08-24": 24,
+   "2026-08-26": 9,
+   "2026-08-27": 23,
+   "2026-08-30": 1
+  },
+  "zero_arrival_conservative_eta": {
+   "h5_ge_30": "2026-09-08 (33 decisions entered by 2026-08-26 close h5 by ~09-02; full 57 by ~09-08)",
+   "h10_ge_30": "2026-09-11 (24 entered 08-24 close h10 ~09-08; cumulative 33 by ~09-10, 56 by ~09-11)"
+  },
+  "observed_arrival_rate": "last-10-session qualified arrivals mean ~45/session (lumpy daily-batch feed); frozen-rule overshoot share of clean flow 57/166 evaluated"
+ },
+ "evaluation_trigger": {
+  "event": "daily outcome append brings clean conditioned settled counts to >=30 at h5 AND >=30 at h10 with both direction legs >=10 at each gated horizon, counted under the frozen conditioning rule and contamination fence",
+  "then": "reserve -> claim -> run the frozen falsification within the next alpha execution slot, <=24h wall clock",
+  "recheck": "constant-time count recomputation per hourly unit; no other work on this candidate before trigger"
+ },
+ "forbidden_after_freeze": [
+  "any bar, threshold, seed, horizon, or conditioning change",
+  "any evaluation touching contaminated decision ids",
+  "any peek at clean-slice outcome values before the trigger fires and an experiment ID is reserved",
+  "quiet-tape envelope reuse as conditioning (d-0013 family closure)"
+ ],
+ "trade_enabled": false
+}

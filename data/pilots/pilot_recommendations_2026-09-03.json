@@ -1,0 +1,505 @@
+{
+  "as_of": "2026-09-03T04:17:14+00:00",
+  "execution_provenance": {
+    "scorecard_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
+    "paper_verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
+    "broker_snapshot_status": "available",
+    "broker_snapshot_observed_at_utc": "2026-09-03T03:04:05.678263Z",
+    "broker_current_position_count": 16,
+    "paper_actionable_ticker_count": 4,
+    "broker_current_ticker_overlap_count": 1,
+    "broker_current_ticker_overlap": [
+      "PLTR"
+    ],
+    "historical_closed_trade_link_status": "unavailable_without_pilot_execution_id_or_broker_order_strategy_tag",
+    "live_promotion_eligible": false,
+    "note": "Paper sleeve outcomes remain valid shadow evidence and retain their precommitted stop rule. Current-ticker overlap is not lot or strategy attribution, so no scorecard verdict is broker-confirmed live evidence."
+  },
+  "cross_pilot_overlap": [],
+  "cross_pilot_concentration": {
+    "total_actionable_exposure_usd": 40000.0,
+    "position_count": 4,
+    "alert_rule": {
+      "min_positions": 3,
+      "min_positions_for_exposure_share": 2,
+      "min_exposure_share": 0.5,
+      "operator": "or",
+      "description": "Alert when a known sector/industry has at least min_positions positions, or at least min_positions_for_exposure_share positions and exposure_share >= min_exposure_share."
+    },
+    "by_sector": [
+      {
+        "sector": "Technology",
+        "positions": 3,
+        "tickers": [
+          "CRDO",
+          "NOW",
+          "PLTR"
+        ],
+        "pilots": [
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 30000.0,
+        "exposure_share": 0.75,
+        "alert": true
+      },
+      {
+        "sector": "Energy",
+        "positions": 1,
+        "tickers": [
+          "MPC"
+        ],
+        "pilots": [
+          "allocator_top1"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.25,
+        "alert": false
+      }
+    ],
+    "by_industry": [
+      {
+        "industry": "Oil & Gas Refining & Marketing",
+        "positions": 1,
+        "tickers": [
+          "MPC"
+        ],
+        "pilots": [
+          "allocator_top1"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.25,
+        "alert": false
+      },
+      {
+        "industry": "Software - Infrastructure",
+        "positions": 1,
+        "tickers": [
+          "PLTR"
+        ],
+        "pilots": [
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.25,
+        "alert": false
+      },
+      {
+        "industry": "Software - Application",
+        "positions": 1,
+        "tickers": [
+          "NOW"
+        ],
+        "pilots": [
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.25,
+        "alert": false
+      },
+      {
+        "industry": "Semiconductors",
+        "positions": 1,
+        "tickers": [
+          "CRDO"
+        ],
+        "pilots": [
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 10000.0,
+        "exposure_share": 0.25,
+        "alert": false
+      }
+    ],
+    "alerts": [
+      {
+        "sector": "Technology",
+        "positions": 3,
+        "tickers": [
+          "CRDO",
+          "NOW",
+          "PLTR"
+        ],
+        "pilots": [
+          "fundamental_growth_rs"
+        ],
+        "exposure_usd": 30000.0,
+        "exposure_share": 0.75,
+        "alert": true
+      }
+    ]
+  },
+  "stop_alerts": [
+    {
+      "pilot": "Fundamental growth + RS",
+      "ticker": "CRDO",
+      "entry_price": 239.7798,
+      "last_price": 165.22,
+      "unrealized_pct": -0.311,
+      "stop_loss_pct": 0.15,
+      "days_held": 3,
+      "hold_days": 10
+    }
+  ],
+  "recommendations": [
+    {
+      "pilot": "allocator_top1",
+      "label": "Source-priority allocator (TOP-1 only)",
+      "sleeve": "accepted_helper_source_priority_allocator",
+      "as_of": "2026-09-03T04:17:14+00:00",
+      "max_concurrent": 1,
+      "pilot_verdict": "KILL",
+      "pilot_verdict_note": "book drawdown 133.7% breaches 15% ceiling -> stop pilot",
+      "new_entries_blocked": true,
+      "actionable": [
+        {
+          "status": "HOLD",
+          "ticker": "MPC",
+          "signal_date": "2026-09-01",
+          "entry_date": "2026-09-02",
+          "exit_date": null,
+          "entry_price": 380.5602,
+          "exit_price": null,
+          "last_price": 387.0,
+          "unrealized_pct": 0.0169,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 1,
+          "days_remaining": 9,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 4,
+          "candidate_score": 251.125423,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        }
+      ],
+      "exits_executed_today": [],
+      "skipped": [
+        {
+          "status": "SKIP_concurrency_cap",
+          "ticker": "RNG",
+          "signal_date": "2026-08-31",
+          "entry_date": "2026-09-01",
+          "exit_date": null,
+          "entry_price": 70.045,
+          "exit_price": null,
+          "last_price": 72.58,
+          "unrealized_pct": 0.0362,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 2,
+          "days_remaining": 8,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 4,
+          "candidate_score": 251.106565,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "SKIP_concurrency_cap",
+          "ticker": "FNV",
+          "signal_date": "2026-08-19",
+          "entry_date": "2026-08-20",
+          "exit_date": null,
+          "entry_price": 249.1245,
+          "exit_price": null,
+          "last_price": 259.71,
+          "unrealized_pct": 0.0425,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 8,
+          "days_remaining": 2,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 5,
+          "candidate_score": 201.020181,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "SKIP_concurrency_cap",
+          "ticker": "AGI",
+          "signal_date": "2026-08-25",
+          "entry_date": "2026-08-26",
+          "exit_date": null,
+          "entry_price": 38.099,
+          "exit_price": null,
+          "last_price": 36.13,
+          "unrealized_pct": -0.0517,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 5,
+          "days_remaining": 5,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 5,
+          "candidate_score": 201.020068,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "SKIP_concurrency_cap",
+          "ticker": "DINO",
+          "signal_date": "2026-08-18",
+          "entry_date": "2026-08-19",
+          "exit_date": null,
+          "entry_price": 96.2981,
+          "exit_price": null,
+          "last_price": 106.06,
+          "unrealized_pct": 0.1014,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 9,
+          "days_remaining": 1,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 5,
+          "candidate_score": 200.839754,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "SKIP_concurrency_cap",
+          "ticker": "HPQ",
+          "signal_date": "2026-08-26",
+          "entry_date": "2026-08-27",
+          "exit_date": null,
+          "entry_price": 27.8739,
+          "exit_price": null,
+          "last_price": 31.99,
+          "unrealized_pct": 0.1477,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 4,
+          "days_remaining": 6,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 5,
+          "candidate_score": 200.82332,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "SKIP_concurrency_cap",
+          "ticker": "CDW",
+          "signal_date": "2026-08-27",
+          "entry_date": "2026-08-31",
+          "exit_date": null,
+          "entry_price": 148.4342,
+          "exit_price": null,
+          "last_price": 148.67,
+          "unrealized_pct": 0.0016,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 3,
+          "days_remaining": 7,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 5,
+          "candidate_score": 200.779205,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "SKIP_pilot_kill_verdict",
+          "ticker": "CDE",
+          "signal_date": "2026-09-02",
+          "entry_date": null,
+          "exit_date": null,
+          "entry_price": null,
+          "exit_price": null,
+          "last_price": null,
+          "unrealized_pct": null,
+          "stop_loss_pct": 0.15,
+          "stop_status": "no_price",
+          "hold_days": 10,
+          "days_held": null,
+          "days_remaining": null,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "ACCEPTED_HELPER_SOURCE_PRIORITY_TOP1_PAPER",
+          "source_priority_rank": 4,
+          "candidate_score": 251.155768,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        }
+      ],
+      "measurement_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
+      "verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
+      "live_verdict_eligible": false,
+      "broker_current_ticker_overlap": [],
+      "broker_current_ticker_overlap_count": 0
+    },
+    {
+      "pilot": "distribution_absorption",
+      "label": "Distribution-day absorption leadership",
+      "sleeve": "distribution_day_absorption_leadership",
+      "as_of": "2026-09-03T04:11:59+00:00",
+      "max_concurrent": null,
+      "pilot_verdict": "KILL",
+      "pilot_verdict_note": "book drawdown 22.0% breaches 15% ceiling -> stop pilot",
+      "new_entries_blocked": true,
+      "actionable": [],
+      "exits_executed_today": [],
+      "skipped": [
+        {
+          "status": "SKIP_pilot_kill_verdict",
+          "ticker": "DELL",
+          "signal_date": "2026-09-02",
+          "entry_date": null,
+          "exit_date": null,
+          "entry_price": null,
+          "exit_price": null,
+          "last_price": null,
+          "unrealized_pct": null,
+          "stop_loss_pct": 0.15,
+          "stop_status": "no_price",
+          "hold_days": 10,
+          "days_held": null,
+          "days_remaining": null,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "DISTRIBUTION_DAY_ABSORPTION_LEADERSHIP_PAPER",
+          "source_priority_rank": null,
+          "candidate_score": 2.176143,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        }
+      ],
+      "measurement_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
+      "verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
+      "live_verdict_eligible": false,
+      "broker_current_ticker_overlap": [],
+      "broker_current_ticker_overlap_count": 0
+    },
+    {
+      "pilot": "fundamental_growth_rs",
+      "label": "Fundamental growth + RS",
+      "sleeve": "fundamental_growth_rs",
+      "as_of": "2026-09-03T04:07:22+00:00",
+      "max_concurrent": null,
+      "pilot_verdict": "KILL",
+      "pilot_verdict_note": "book drawdown 53.1% breaches 15% ceiling -> stop pilot",
+      "new_entries_blocked": true,
+      "actionable": [
+        {
+          "status": "HOLD",
+          "ticker": "PLTR",
+          "signal_date": null,
+          "entry_date": "2026-08-21",
+          "exit_date": null,
+          "entry_price": 174.067,
+          "exit_price": null,
+          "last_price": 169.46,
+          "unrealized_pct": -0.0265,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 8,
+          "days_remaining": 2,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "fundamental_growth_rs_candidate_pool",
+          "source_priority_rank": null,
+          "candidate_score": null,
+          "broker_current_ticker_present": true,
+          "execution_provenance_status": "ticker_present_but_pilot_unattributed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "HOLD",
+          "ticker": "NOW",
+          "signal_date": null,
+          "entry_date": "2026-08-24",
+          "exit_date": null,
+          "entry_price": 128.119,
+          "exit_price": null,
+          "last_price": 136.72,
+          "unrealized_pct": 0.0671,
+          "stop_loss_pct": 0.15,
+          "stop_status": "OK",
+          "hold_days": 10,
+          "days_held": 7,
+          "days_remaining": 3,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "fundamental_growth_rs_candidate_pool",
+          "source_priority_rank": null,
+          "candidate_score": null,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        },
+        {
+          "status": "EXIT_NOW",
+          "ticker": "CRDO",
+          "signal_date": null,
+          "entry_date": "2026-08-28",
+          "exit_date": null,
+          "entry_price": 239.7798,
+          "exit_price": null,
+          "last_price": 165.22,
+          "unrealized_pct": -0.311,
+          "stop_loss_pct": 0.15,
+          "stop_status": "STOP_HIT",
+          "hold_days": 10,
+          "days_held": 3,
+          "days_remaining": 7,
+          "pilot_pnl_usd": null,
+          "pilot_notional_usd": 10000.0,
+          "exit_rule": "time exit after 10 trading days held",
+          "source": "fundamental_growth_rs_candidate_pool",
+          "source_priority_rank": null,
+          "candidate_score": null,
+          "broker_current_ticker_present": false,
+          "execution_provenance_status": "not_broker_confirmed",
+          "operator_must_verify_execution": true
+        }
+      ],
+      "exits_executed_today": [],
+      "skipped": [],
+      "measurement_basis": "paper_sleeve_shadow_scaled_to_fixed_pilot_notional",
+      "verdict_scope": "paper_shadow_risk_stop_and_graduation_only",
+      "live_verdict_eligible": false,
+      "broker_current_ticker_overlap": [
+        "PLTR"
+      ],
+      "broker_current_ticker_overlap_count": 1
+    }
+  ]
+}

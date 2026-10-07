@@ -1,0 +1,79 @@
+{
+  "experiment_id": "exp-20260906-002",
+  "measurement_gate": "cross_lane_experiment_id_allocation",
+  "gate_passed": true,
+  "phase": "after",
+  "economic_progress": false,
+  "trade_enabled": false,
+  "alpha_trials": 0,
+  "status": "accepted_measurement_repair",
+  "blocked_downstream_check": "fresh scout reserve must choose an ID unused in every visible worktree/ref",
+  "implementation": {
+    "cross_lane_read_mode": "path and tree names only; no result payloads",
+    "allocation_lock": "common Git directory OS lock held through ticket durability and intent recovery; released on process exit",
+    "shared_lock_minimum_wait_seconds": 120,
+    "registry_cache": "existing short local lock after releasing shared allocation lock",
+    "authority": "existing tickets only; no new reservation database"
+  },
+  "tests": {
+    "root": {
+      "passed": 23,
+      "deselected": 49,
+      "elapsed_seconds": 15.46
+    },
+    "edge": {
+      "passed": 27,
+      "deselected": 183,
+      "elapsed_seconds": 15.64
+    }
+  },
+  "installation_sha256": {
+    "root": {
+      "scripts/experiment_registry.py": "6df40a297b3ffeb7cb54022c844482b55e29e85190cfe0750f98f2a8c70b499a",
+      "scripts/experiment_lane_identity.py": "a69d6740b9caa4bc1e3351de08b70df91abc028ce43cca3af74617455f118cc0",
+      "scripts/test_experiment_lane_identity.py": "ba3c6827a5646fb6741acdb41b9e495b6877bde5324370af049344095bae2501"
+    },
+    "edge": {
+      "scripts/experiment_registry.py": "161a7fe80da1f5af97b1a7c74fb66e8fc20a0e71ddbdc685f5c9c10bb806bd5a",
+      "scripts/experiment_lane_identity.py": "a69d6740b9caa4bc1e3351de08b70df91abc028ce43cca3af74617455f118cc0",
+      "scripts/test_experiment_lane_identity.py": "ba3c6827a5646fb6741acdb41b9e495b6877bde5324370af049344095bae2501"
+    }
+  },
+  "historical_identities": {
+    "root": {
+      "path": "D:\\Github\\ginger\\experiments\\tickets\\exp-20260826-001.json",
+      "experiment_uid": "expuid-26e1182fcaf74209",
+      "sha256": "55381cd696851950ca4eed11825e0fb7f0aa6098a2333e1d34828119dbdda82d",
+      "pre_close_reference_sha256": "55381cd696851950ca4eed11825e0fb7f0aa6098a2333e1d34828119dbdda82d",
+      "unchanged": true
+    },
+    "edge": {
+      "path": "D:\\Github\\ginger\\.codex\\worktrees\\edge-v2\\experiments\\tickets\\exp-20260826-001.json",
+      "experiment_uid": "expuid-83c12a36877a414e",
+      "sha256": "a0f149aaa4874a56b01d29f30dd8fe6c7892ddfcb9bc29dcb08f66f58a4d89c4",
+      "pre_close_reference_sha256": "a0f149aaa4874a56b01d29f30dd8fe6c7892ddfcb9bc29dcb08f66f58a4d89c4",
+      "unchanged": true
+    }
+  },
+  "operational_readback": {
+    "root_occupied_ids": 2737,
+    "edge_occupied_ids": 2737,
+    "both_lanes_saw_ids": [
+      "exp-20260906-001",
+      "exp-20260906-002"
+    ],
+    "root_cold_scan_seconds": 31.062,
+    "edge_cold_scan_seconds": 45.422,
+    "read_mode": "only ID counts and source paths printed"
+  },
+  "reproduce": [
+    ".\\.venv\\Scripts\\python.exe -B data/experiments/exp-20260906-002/verify_repair.py",
+    "python -B -m pytest scripts/test_experiment_lane_identity.py quant/test_experiment_registry.py -q -k \"lane_identity or reserve or concurrent or next_experiment or available_experiment or collect_experiment or create_ticket\" (run once in each lane)"
+  ],
+  "limitations": [
+    "Only callers using the updated reserve_experiment API cooperate with the shared OS lock; old code/manual evidence writers cannot be synchronized.",
+    "Existing local full scan behavior is preserved and remains relatively slow.",
+    "This is identity repair, not alpha or profit evidence."
+  ],
+  "claim_override_reason": "force claim bypassed only a shared immutable trade permissions label; file write scopes had no intersection and permissions were not changed."
+}

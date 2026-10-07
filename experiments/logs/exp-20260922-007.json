@@ -1,0 +1,119 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "as_of_ticker_key_collides_with_a_legitimately_distinct_same_day_entry",
+      "consumer_depends_on_raw_row_count",
+      "existing_test_rows_without_entry_date_collapse",
+      "persisted_row_rewrite"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The mid-session run.py pass that produced the duplicate (2026-09-21 18:13Z; also ~16:07Z on 09-16..09-18 per platform_rs20 snapshots) has no hook or scheduled-task source visible in .claude settings; trigger unidentified, recorded for the user."
+  },
+  "causal_components": [],
+  "change_summary": "Repaired candidate_decision_training_ledger.append_candidate_decision_training_snapshot to skip a candidate_decision_snapshot whose (as_of, ticker) already exists in the ledger or earlier in the same batch (first observation of a decision day wins; observation_id duplicates are still skipped first) and to record rows_skipped_same_day_economic_duplicate in state and the return payload; repaired form4_sale_overhang_context.summarize_forward_reopen_progress to collapse closed aggregate rows to one economic decision per (ticker, entry_date) before every gate count and the single-ticker share (rows without entry_date never collapse), reporting closed_forward_row_records_current, duplicate_economic_closed_rows_excluded and economic_decision_key for monitoring. Forward-only: no persisted row rewritten or re-keyed; observation_id/decision_id derivations, the 25/8/0.40 gate, 10d/20d horizons and the 2026-07-28 effective date unchanged. 2 new synthetic tests + existing slices: 10/10 ledger+form4, 22/22 core_drawdown+sleeve_health consumers, 1/1 daily wiring.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "same-day economic decision identity for candidate_decision_training_ledger append idempotency and form4_sale_overhang_forward reopen-progress counting",
+  "component": "quant/candidate_decision_training_ledger.py, quant/test_candidate_decision_training_ledger.py, quant/form4_sale_overhang_context.py, quant/test_form4_sale_overhang_context.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260922-007",
+  "hypothesis": "The candidate_decision_training_ledger append path keys idempotency on observation_id, whose identity includes intraday-varying price fields (entry/stop/target), so a second run.py pass on the same decision day (the 2026-09-21 18:13Z mid-session pass followed by the 03:06Z nightly pass) appended a second candidate_decision_snapshot for the same (as_of, ticker) planned entry (META as_of 2026-09-21 -> entry 2026-09-22 persisted twice under different observation_ids); the Form4 sale-overhang forward consumer then mints one decision per observation_id and counts every closed aggregate row toward the frozen 25-closed-decision reopen bar, so duplicate rows of one economic decision (same ticker, same entry session; also the weekend re-selections DE 2026-08-24 and RTX 2026-07-27) inflate the count: 7 persisted decision rows are 5 economic decisions. Repair, forward-only: (a) append skips a snapshot row whose (as_of, ticker) already exists in the ledger or earlier in the same batch and records rows_skipped_same_day_economic_duplicate in state; (b) summarize_forward_reopen_progress collapses closed rows to one per (ticker, entry_date) before every gate count and share, reporting the raw record count and the excluded duplicates for monitoring. Acceptance is correct implementation of the frozen decision identity verified by synthetic unit tests plus an outcome-blind identity projection over the persisted ledgers; no persisted row is rewritten or re-keyed; no outcome field is read; it is not judged by any count moving toward or away from the bar.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260728-007",
+    "exp-20260921-001",
+    "exp-20260913-006"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "daily_state_records_rows_skipped_same_day_economic_duplicate_and_form4_duplicate_economic_closed_rows_excluded",
+    "mid_session_run_py_trigger_identified_by_operator",
+    "exp-20260728-007_form4_forward_bar_counted_on_economic_decisions"
+  ],
+  "notes": "Measurement repair only; no alpha, paper or live eligibility change; trade_enabled=false. Outcome-blind identity projection (data/experiments/exp-20260922-007/same_day_economic_identity_projection.json, sha256 ebddc87fceb12ebb6b06d6e4bfe523495d37778dee8d37de7442cb0b87236155) read only record_type/as_of/ticker/entry_date/observation_id/generated_at/strategy/closed_forward_row: exactly one same-day pair (META as_of 2026-09-21, both entry_date 2026-09-22, generated 2026-09-21T18:13:22Z and 2026-09-22T03:06:13Z) and 7 Form4 decision rows -> 5 economic decisions (DE 2026-08-24 x2, META 2026-09-22 x2); Form4 gate counters byte-identical before/after today (closed 1/1) because no closed row is duplicated yet. Frozen plan sha256 4bc33877f19285330a81eacfe4d4be67bda332dae4571da5199353b8fe98e576 copied into the card before reservation. Budget declared: 1 ID, <=75 wall minutes, 0 HTTP, 0 spend, 0 outcome fields; consumed 1 ID, ~30 wall minutes from reservation to close, 0 HTTP, 0 spend, 0 outcome fields. Concurrency: codex-automation-commit holds exp-20260922-006 with a disjoint write scope; data/reopen_readiness.json deliberately not regenerated this unit.",
+  "parameters": {
+    "locked_variables": [
+      "FORWARD_REOPEN_GATE 25 closed / 8 high-sale-overhang / 0.40 single-ticker share / cash+SPY+QQQ completeness;FORWARD_HORIZONS 10d and 20d;observation_id derivation;decision_id derivation;effective_date 2026-07-28;append-only ledgers;entry_candidate_review candidate set"
+    ],
+    "single_causal_variable": "same-day economic decision identity (as_of+ticker at append; ticker+entry_date at the Form4 forward gate count) for candidate_decision_training_ledger and form4_sale_overhang_forward progress"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rewrite, re-key or delete the persisted duplicate snapshot/decision rows; do not widen the ledger key to (entry_date, ticker) across decision days (weekend re-selections stay distinct observations); do not change observation_id or decision_id derivations; do not tune the 25/8/0.40 gate, the 10d/20d horizons or the 2026-07-28 effective date; do not reserve routine IDs for daily ledger deltas; do not read Form4 forward outcome values to choose which duplicate row represents a decision (first chronological row wins by construction).",
+    "new_evidence_required": "(1) Fault-recovery check without an ID: the next daily run.py pass writes rows_skipped_same_day_economic_duplicate on data/paper_sleeves/candidate_decision_training_ledger/state.json and closed_forward_row_records_current / duplicate_economic_closed_rows_excluded on data/non_ohlcv/form4_sale_overhang_forward/state.json; when the DE 2026-08-24 pair settles its 20d horizon the Form4 counters must read 2 records -> 1 economic closed decision. (2) Identify the source of the mid-session run.py passes (~16:07Z 09-16..09-18, 18:13Z 09-21) - a user/operator decision, not an experiment. (3) The Form4 alpha itself stays parked under exp-20260728-007 (>=25 economic closed decisions, >=8 high-sale-overhang, share <=40%, cash/SPY/QQQ complete); at ~0.6 economic decisions per week the bar is ~2027-Q2, reachable but slow, no contract change proposed.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "append_candidate_decision_training_snapshot deduplicated only on observation_id, whose identity hashes intraday-varying entry/stop/target prices, so the 2026-09-21 18:13Z mid-session run.py pass and the 03:06Z nightly pass each appended a META snapshot for the same planned 2026-09-22 entry; form4_sale_overhang_context minted one forward decision per observation_id and summarize_forward_reopen_progress counted every closed aggregate row, so one economic decision could advance the frozen 25-closed bar more than once (7 persisted decision rows = 5 economic decisions, incl. the weekend re-selections DE 2026-08-24 and RTX 2026-07-27 which the ledger legitimately keeps as distinct observation days). The trigger of the mid-session pass is not identified (no hook or scheduled task in .claude settings); recorded for the user."
+  },
+  "prediction": {
+    "confidence_reason": "The duplicate is visible in identity fields alone: two candidate_decision_snapshot rows with as_of 2026-09-21, ticker META, entry_date 2026-09-22 and different observation_ids generated 18:13Z and 03:06Z, and two form4 decision rows per (DE,2026-08-24) and (META,2026-09-22). A synthetic same-day fixture distinguishes the identity defect from horizon immaturity without reading outcomes; the (as_of, ticker) key is checked against the persisted projection before acceptance.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "as_of_ticker_key_collides_with_a_legitimately_distinct_same_day_entry",
+      "consumer_depends_on_raw_row_count",
+      "existing_test_rows_without_entry_date_collapse",
+      "persisted_row_rewrite"
+    ],
+    "recorded_at": "2026-09-22T16:22:29+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "quant/candidate_decision_training_ledger.py",
+    "quant/test_candidate_decision_training_ledger.py",
+    "quant/form4_sale_overhang_context.py",
+    "quant/test_form4_sale_overhang_context.py",
+    "data/experiments/exp-20260922-007/same_day_economic_identity_projection.json",
+    "experiments/cards/exp-20260922-007.md"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-22T16:25:53+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260922-007"
+}

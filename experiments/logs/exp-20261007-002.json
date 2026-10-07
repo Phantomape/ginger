@@ -1,0 +1,112 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "[\"massive_db_absent_in_some_caller_so_legacy_anchor_clock_persists\"",
+      "\"grouped_catchup_403_on_latest_session_delays_terminalization_by_one_day\"",
+      "\"hot_tier_only_ticker_with_lagging_frame_not_covered_by_massive_clock\"",
+      "\"run_py_step_order_still_settles_massive_legs_one_day_late\"]"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none_observed",
+    "surprise_level": "very_low",
+    "surprise_note": "No surprise: the two read-only replays flipped exactly as predicted (settlement-time source state -> blocker instead of unsettleable; full bars -> settled); the only new fact is that the concurrent codex ticket exp-20261007-001 had already landed the admission-side latest-session defer guard in the same module minutes earlier, so both halves of the source-lag family are now closed."
+  },
+  "causal_components": [],
+  "change_summary": "Pair sleeve grace-period clock repair: load_pair_bars now records __source_last_sessions__ (session-anchor last session, massive_history MAX trade_date); settle_pair_basket terminalizes a missing leg as unsettleable only when the anchor calendar AND massive have both reached calendar[exit_index+5], otherwise the ordinary missing_leg_bars blocker stands (bars without the key keep the anchor-only rule). New test test_unsettleable_grace_waits_for_lagging_massive_source; 115/115 sleeve + forward-observer + daily-wiring tests pass. Replay of frozen basket news-first-seen-39644ff3bf36cb2bdb66 at the settlement-time source state (massive <= 2026-09-24): before = unsettleable (bug reproduced), after = missing_leg_bars:AIOT,INSG; with current bars both return settled (status only read). ledger.jsonl / state.json sha256 unchanged.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "settle_pair_basket unsettleable terminalization clock: anchor calendar only -> anchor calendar AND massive source last session; load_pair_bars exposes __source_last_sessions__",
+  "component": "[\"quant/news_propagation_pair_paper_sleeve.py\", \"quant/test_news_propagation_pair_paper_sleeve.py\"]",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20261007-002",
+  "hypothesis": "Measurement repair of the news-propagation pair paper sleeve settlement (exp-20260827-001 contract, exp-20260913-007 grace rule): settle_pair_basket measures the 5-session unsettleable grace period on the SPY session-anchor calendar, which the 56-ticker core primary_batch refreshes first in every run.py pass, instead of on the authorized price sources own coverage. After the 2026-09-26..10-06 machine outage the catch-up pass settled the sleeve at 2026-10-07T00:56:01Z while massive_history daily_bars still ended 2026-09-24 (grouped:2026-09-25 checkpoint completed 00:56:40Z, 39 seconds later) and the anchor already reached 2026-10-06, so the first acceptance-countable basket news-first-seen-39644ff3bf36cb2bdb66 (entry 09-14, exit 09-25, short legs AIOT and INSG priced only by massive, admission priceability passed on 09-04..09-11) was terminalized unsettleable although its exit bars exist. Read-only replay: with massive pruned to 09-24 the current code returns unsettleable (bug reproduced); with today full bars the same frozen decision returns outcome_status settled (status only read). Fix: load_pair_bars records __source_last_sessions__ (anchor last session and massive MAX trade_date); settle_pair_basket terminalizes a missing leg as unsettleable only when the anchor calendar AND the massive source have both reached the grace session calendar[exit_index+5], otherwise it keeps the ordinary missing_leg_bars blocker; bars mappings without the key keep the legacy anchor-only behaviour. Forward-only: the false unsettleable row for basket 39644ff3 is NOT rewritten or re-settled under this ID (append-only ledger, user decision). Frozen plan sha256 298acf4e88f8321e4fdb436162110913834f762a21ab7423907b2b861f2dd2fc (hashed 2026-10-07T01:24:36Z before reservation); before evidence sha256 b3e2e254a479154dfd05fd6ef1a41ffa49c5e46b906e10f846b5e0817120ad04.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "[\"exp-20260913-007\"",
+    "\"exp-20260913-006\"",
+    "\"exp-20260925-007\"",
+    "\"exp-20260827-001\"",
+    "\"exp-20260924-004\"]"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Root cause: the 2026-09-26..10-06 machine outage made the 10-07T00:39Z catch-up pass advance the SPY anchor (core primary_batch, 17:50 local) 7 sessions at once while the pair sleeve settled at 00:56:01Z, 39 seconds before massive grouped:2026-09-25 landed (00:56:40Z); run.py runs the sleeve (run.py:550) before _run_massive_ohlcv_grouped_catchup (run.py:4561). Consequence: the FIRST acceptance-countable basket (39644ff3, entry 09-14 exit 09-25, short legs AIOT/INSG massive-only) carries a false unsettleable terminal row; it is NOT rewritten or re-settled under this ID (append-only ledger; user decision; the acceptance count therefore restarts with basket f5b68e87 entry 09-24 exit ~10-07). The 09-07 basket (ABIT/BMHL/GTIJF) is correctly unsettleable. Forward-only; massive-only legs now settle one run later than the anchor when massive lags (fail-safe direction). Step order in run.py left unchanged (locked).",
+  "parameters": {
+    "locked_variables": [
+      "[\"hold 10 sessions;45bp per leg;1000 USD per leg;admission priceability v1;grace length 5 sessions;acceptance contract 20 baskets 10 dates halves 40pct\"",
+      "\"run.py step order;ledger.jsonl and state.json bytes;readiness records;massive_history and hot warehouse rows\"]"
+    ],
+    "single_causal_variable": "grace-period terminalization in settle_pair_basket gated on the massive price source having reached calendar[exit_index+5] in addition to the session-anchor calendar"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rewrite, delete or re-settle the false unsettleable outcome row of basket news-first-seen-39644ff3bf36cb2bdb66 (or any ledger row) under this ID - that needs its own registered append-only correction decision binding the before/after evidence hashes; do not shorten or lengthen the 5-session grace, change the hold/cost/notional, or move the pair sleeve step in run.py here (step order is locked and was not the single variable); do not extend the source clock to per-ticker hot-tier frames without a registered failure case (hot-tier-only lagging frames stay a pre-registered failure mode); do not treat the one-run settlement delay of massive-only legs as a defect to patch by polling the vendor.",
+    "new_evidence_required": "Reopen only if a future basket is terminalized unsettleable while a leg bar exists in massive_history or the hot tier on the exit session at the time of the next run (identity check: outcome row vs bar presence), or if a hot-tier-only leg (ticker absent from massive) is terminalized while its own hot frame has not reached the grace session, or if the user decides to correct the 39644ff3 row (separate ID, must bind sha256 b3e2e254... before / 719c6b72... after evidence).",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "Pure clock mismatch: settle_pair_basket measured the exp-20260913-007 grace period on the SPY session-anchor calendar (refreshed first by the 56-ticker core primary_batch, hot max 2026-10-06 at 17:50 local) while the only source carrying AIOT/INSG (massive_history) still ended 2026-09-24 when the sleeve ran at 00:56:01Z; grouped:2026-09-25 landed at 00:56:40Z. On a normal day massive lags one session and 5 grace sessions absorb it; the 7-session outage catch-up advanced the anchor past the grace window in a single pass. The replays flipped exactly as predicted once the massive clock gates the terminalization."
+  },
+  "prediction": {
+    "confidence_reason": "Visible in identity fields alone: the exit bar checkpoint timestamp is 39 seconds after the sleeve state timestamp, AIOT and INSG have zero hot-tier rows and full massive coverage, and the two read-only replays flip from unsettleable to settled purely on source coverage; the fix is a pure additional predicate on a code path with injectable bars.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "[\"massive_db_absent_in_some_caller_so_legacy_anchor_clock_persists\"",
+      "\"grouped_catchup_403_on_latest_session_delays_terminalization_by_one_day\"",
+      "\"hot_tier_only_ticker_with_lagging_frame_not_covered_by_massive_clock\"",
+      "\"run_py_step_order_still_settles_massive_legs_one_day_late\"]"
+    ],
+    "recorded_at": "2026-10-07T01:25:58+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20261007-002/pair_grace_clock_before.json",
+    "data/experiments/exp-20261007-002/pair_grace_clock_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-10-07T01:29:47+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20261007-002"
+}

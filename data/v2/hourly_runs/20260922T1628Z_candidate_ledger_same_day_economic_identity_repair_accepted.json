@@ -1,0 +1,81 @@
+{
+  "record_type": "v2_hourly_run_receipt",
+  "run_id": "20260922T1628Z_candidate_ledger_same_day_economic_identity_repair_accepted",
+  "agent": "claude-fable-5.1 scheduled alpha unit",
+  "started_at": "2026-09-22T16:09:33Z",
+  "finished_at": "2026-09-22T16:31:36+00:00",
+  "execution_lane": {
+    "worktree": "D:/Github/ginger",
+    "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+    "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+    "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority; this unit is root production_maintenance of root-owned ledgers per data/v2/execution_lane_authority.json; no qualification or conclusion migrated across refs)",
+    "protocol_path": "docs/quant_agent_protocol_v2.md",
+    "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c",
+    "edge_v2_state": "automation/edge-v2 HEAD 11ef9c483 (nothing committed since 09-11); codex closed exp-20260921-002/003 and exp-20260922-001..005 as observed_only fixed-result diagnoses (old-window trade attribution chain). Not read beyond hypothesis lines; not this unit's scope."
+  },
+  "concurrency": {
+    "observed": "codex-automation-commit reserved+claimed exp-20260922-006 / expuid-56ee2ad42336442a at 16:07:46-16:07:56Z (2 minutes before this unit started), executing the contract review pre-registered by exp-20260921-001 (dividend-restart reopen-counter population realignment; write scope quant/massive_dividend_restart_forward_settlement.py, its test, scripts/build_reopen_readiness.py, its test); closed accepted 16:15:23Z while this unit was still read-only.",
+    "rule_applied": "later-arriving session stays out of the other owner's write scope: this unit did not touch those four files and did not regenerate data/reopen_readiness.json (last regenerated 2026-09-21T18:13:11+00:00; dividend lane counters as persisted: {\"unique_settlement_events\": 0, \"duplicate_settlement_events_excluded\": 0, \"settled_restart_decisions\": 0, \"summary_settled_restart_decisions\": 0, \"summary_reopen_progress_required\": 30, \"summary_reopen_progress_settled_restart_decisions\": 0})."
+  },
+  "work_unit": "startup recount -> exp-20260921-001 fault-recovery check (1) PASSED (09-21 post-repair coverage row carries ticker_canonicalization_kind=instrument_master_variant_v1, instrument_master_ticker_count=41368, new_candidate_count=0) -> the pre-registered item (2) found already claimed by codex (exp-20260922-006) -> stalled-lane funnel by identity fields found a second root production defect: candidate_decision_training_ledger appended the same planned entry twice on 2026-09-21 (mid-session 18:13Z pass + nightly 03:06Z pass; observation_id hashes intraday prices) and the Form4 sale-overhang forward consumer counts every decision row toward its frozen 25-closed bar (7 rows = 5 economic decisions) -> exp-20260922-007 measurement_repair accepted.",
+  "experiments": [
+    {
+      "experiment_id": "exp-20260922-007",
+      "experiment_uid": "expuid-d09b1ba2d1b94778",
+      "lane": "measurement_repair",
+      "status": "accepted",
+      "root_cause": "append idempotency keyed only on observation_id (identity includes entry/stop/target prices that move intraday) + Form4 progress counted closed aggregate rows, not economic decisions",
+      "fix": "append skips (as_of, ticker) already persisted or earlier in the batch and records rows_skipped_same_day_economic_duplicate; summarize_forward_reopen_progress collapses closed rows to one per (ticker, entry_date) before every gate count/share and reports closed_forward_row_records_current + duplicate_economic_closed_rows_excluded; forward-only, no persisted row rewritten, gate/horizons/effective date/id derivations unchanged",
+      "identity_projection": "data/experiments/exp-20260922-007/same_day_economic_identity_projection.json (sha256 ebddc87fceb12ebb6b06d6e4bfe523495d37778dee8d37de7442cb0b87236155): exactly one same-day pair (META as_of 2026-09-21 -> entry 2026-09-22, generated 18:13:22Z and 03:06:13Z); Form4 7 decision rows -> 5 economic (DE 2026-08-24 x2, META 2026-09-22 x2); closed counters 1/1 byte-identical before/after today",
+      "frozen_plan_sha256": "4bc33877f19285330a81eacfe4d4be67bda332dae4571da5199353b8fe98e576 (written 16:21Z, reserved 16:23:22Z, claimed 16:24:08Z, closed 16:26Z)"
+    }
+  ],
+  "startup_recount": {
+    "reopen_readiness_snapshot_used": "2026-09-21T18:13:11+00:00",
+    "lanes": "news_propagation_negative_side ready (1508 negative re-read reasoned park, unchanged: pair build alive); phase2_estimate_revision ready (breadth candidate parked on feed batch clock, unchanged); entity_theme_axis_c 223169/312738 per readiness, observer summary settled_count 226700 as of 09-21 (bar ~late Oct); exit_lifecycle_advisory 973/44/31 vs 422/60/33; short_volume_q5 8/20; core_drawdown_flow_put 0/20; prediction_market not_ready; move_relief 0/30 stalled 62d (trigger drought, not breakage); intraday_triage 37/48 stalled 48d (producer run_intraday.py last wrote 2026-08-04; no scheduled task/hook runs it -> whether to resume is a user decision, not an experiment); form4 1/25 stalled 7d -> diagnosed this unit (slow but reachable: ~0.6 economic decisions/week -> 25 closed ~2027-Q2; 8 high-sale-overhang at ~3/7 context rate ~2027-Q1); massive_dividend_restart_forward -> codex exp-20260922-006 (accepted 16:15Z)",
+    "pair_sleeve": "6 basket_decision / 3 basket_outcome rows (counts only): 3 legacy baskets terminal unsettleable (08-27/08-28/08-31), 2 legacy pending with missing_leg_bars (09-03: BAO,DBIM,EVON,FMHS; 09-08: 20 OTC/unlisted legs) will terminalize unsettleable after grace, 1 post-repair countable basket (first_seen 2026-09-14T03:04Z) holding_window_not_complete -> first countable settlement ~09-29; acceptance closed_baskets 0 / decision_dates 0; trade_enabled=false",
+    "dividend_restart_fault_recovery": "exp-20260921-001 next_retry_requires item 1 satisfied by the 09-21 nightly coverage row (identity fields only)"
+  },
+  "budget": {
+    "declared_before_outcome_access": "<=1 measurement_repair ID, <=75 wall minutes, 0 external spend, 0 HTTP, 0 outcome/PnL fields read",
+    "consumed": "1 ID, ~30 wall minutes reservation->close (~75 incl. startup recount and diagnosis), 0 spend, 0 HTTP, 0 outcome fields read",
+    "remaining": "0 IDs this unit; Form4 alpha stays parked under exp-20260728-007"
+  },
+  "alpha_trials": 0,
+  "economic_progress": false,
+  "verification": [
+    "python -m pytest -q quant/test_candidate_decision_training_ledger.py quant/test_form4_sale_overhang_context.py: 10 passed (8 existing + 2 new)",
+    "python -m pytest -q quant/test_core_drawdown_flow_put_stabilization_paper_sleeve.py quant/test_sleeve_health.py: 22 passed (ledger consumers)",
+    "python -m pytest -q quant/test_run_daily_wiring.py -k candidate_decision/form4: 1 passed",
+    "scripts/experiment.py audit --lean-strict: lean_quality_passed=true, lean_strict_passed=true after close",
+    "no production smoke run: ledgers/state are daily-owned and untouched; repair applies on the next run.py pass"
+  ],
+  "not_done": [
+    "source of the mid-session run.py passes (platform_rs20 snapshots at 16:07-16:09Z on 09-16/17/18 and 18:13Z on 09-21 alongside LLM responses and iBorrowDesk fetches) not identified: no hooks in .claude settings, no matching scheduled task; user/operator to confirm whether a second daily pass is intended",
+    "intraday triage producer stopped 2026-08-04 (lane stalled 48d): resume/retire is a user decision",
+    "no commit (multi-owner dirty tree; protocol section 5)",
+    "edge-v2 uncommitted tickets left as-is (other owner)"
+  ],
+  "zero_id_decisions": [
+    {
+      "kind": "skip",
+      "what": "no readiness regeneration and no touch of exp-20260922-006 write scope",
+      "why": "concurrent owner active in that scope at unit start"
+    },
+    {
+      "kind": "assessment",
+      "what": "form4_sale_overhang_forward stalled flag = slow accrual, not a producer defect (health ok, candidate producer content-identity verified, 10d/20d outcomes appending on schedule)",
+      "why": "identity-field funnel: 8 eligible decisions since the 07-28 effective date, closed requires both horizons"
+    }
+  ],
+  "decision_log": "d-0024",
+  "traps_recorded": [
+    "a forward ledger keyed on a hash that includes intraday-varying prices is not same-day idempotent: any second run.py pass on the same decision day duplicates the planned entry (candidate_decision_training_ledger, 09-21 META); check every append-only ledger idempotency key against the fields that move intraday",
+    "forward gate counters must count economic decisions (ticker+entry session), not decision rows: weekend re-selections and same-day re-runs settle to identical outcomes",
+    "wall-clock trap again (5th case): the first draft of the frozen plan said ~16:45Z while date -u read 16:21Z; always stamp plans from date -u",
+    "a readiness stalled flag has three different causes seen so far: producer defect (dividend restart, 09-21), producer stopped (intraday, 08-04), slow accrual (form4) - funnel by identity fields before reserving anything"
+  ],
+  "next_unit": "(1) constant-time check that the 09-22 nightly state.json files carry rows_skipped_same_day_economic_duplicate (ledger) and closed_forward_row_records_current / duplicate_economic_closed_rows_excluded (form4); (2) codex exp-20260922-006 accepted -> verify the dividend-restart readiness lane reports the realigned population (read counters only) once the readiness file is regenerated by its owner; (3) otherwise recounts: pair first countable settlement ~09-29, DE 2026-08-24 20d collapse visible after the 09-22 nightly pass, entity_theme 312738 ~late Oct",
+  "trade_enabled": false,
+  "status": "completed"
+}

@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_id": "20260915T1625Z_entity_theme_cohort_split_dilution_diagnostic_identity_mismatch",
+  "started_at": "2026-09-15T16:09:45Z",
+  "finished_at": "2026-09-15T16:27:00Z",
+  "agent": "claude-fable-5.1 scheduled alpha unit",
+  "status": "completed",
+  "work_unit": "startup recount (root daily run healthy; edge-v2 codex ran exp-20260915-001..004 concurrently, no write-scope overlap) -> data/reopen_readiness.json regenerated (no lane newly crossed a bar: entity_theme_axis_c 211425/312738, phase2_estimate_revision and news_propagation_negative_side 'ready' are consumed/parked) -> the 09-14 receipt's locked front-lane item executed as exp-20260915-005 (loss_attribution / analysis_only): old-versus-new settled-row split of the consumed exp-20260914-001 cohort -> closed observed_only with disposition identity_mismatch because the frozen C0 reproduction check missed on exactly one of seven sub-checks (QQQ median delta -1.57 USD vs the 1.00 USD tolerance); no dilution classification is reported under the contract",
+  "execution_lane": {
+    "worktree": "D:/Github/ginger",
+    "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+    "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+    "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority; this unit is a fixed-result attribution of a root-frozen observation-lane result whose ledger, runner lineage and consumed artifacts live on root, same precedent as 2026-09-12/09-14; no qualification or conclusion migrated across refs)",
+    "protocol_path": "docs/quant_agent_protocol_v2.md",
+    "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c",
+    "edge_v2_state": "automation/edge-v2 HEAD 11ef9c483; today codex closed exp-20260915-001 (rebound attribution, observed_only), -002/-003 (APP guidance transfer, rejected), -004 (companyfacts availability guard, observed_only); cross-lane ID allocation gave this unit exp-20260915-005 without collision"
+  },
+  "budget": {
+    "declared_before_outcome_access": "exactly 1 analysis_only ID, 1 runner execution, <=60 wall minutes, 0 external spend, 0 HTTP; question, cheapest check, both branches, synthetic hand-check and C0 tolerance frozen in experiments/cards/exp-20260915-005.md at 2026-09-15T16:18Z before claim",
+    "consumed": "1 ID (exp-20260915-005), ~14 wall minutes from reservation (16:18:10Z) to self-registered close (16:22:56Z), 0 spend, 0 HTTP, 0 OrderIntent",
+    "remaining_this_unit": "0 IDs by declaration; the tolerance miss is NOT repaired under this ID or a fresh ID this unit (post-outcome threshold change forbidden)"
+  },
+  "startup_recount": {
+    "daily_run_20260914": "completed (trend_signals_20260915 present; portfolio-latest 2026-09-14 23:14 PDT; OpenD returned real balances)",
+    "readiness_regeneration": "scripts/build_reopen_readiness.py regenerated 2026-09-15T16:10:25Z (invoked while probing its CLI; derived artifact, same action the 09-14 unit prescribes at unit start); entity_theme_axis_c not_ready 211425/312738 (+2933 since 09-14); news_propagation_negative_side 'ready' = 1508 re-read already reasoned-parked 09-14; phase2_estimate_revision 'ready' = consumed 08-29 scope; every other lane not_ready or manual_check_required",
+    "pair_sleeve": "data/paper_sleeves/news_propagation_pair/latest_summary.json not read this unit (outcome-bearing; no trigger due before ~09-18/19 legacy terminalization and ~09-28 first countable settlement)",
+    "audits": "root experiment.py audit --lean-strict green at startup and after close"
+  },
+  "experiments": [
+    {
+      "experiment_id": "exp-20260915-005",
+      "experiment_uid": "expuid-792d6de6037d4663",
+      "lane": "loss_attribution",
+      "change_type": "analysis_only",
+      "family": "entity_theme_consumed_cohort_split_attribution (new attribution family, 1 trial; parent alpha family entity_theme_news_source_bundle_forward_value untouched: trials 7 / accept 0 / streak 4 / reopen 312738)",
+      "status": "observed_only",
+      "disposition": "identity_mismatch",
+      "classification": null,
+      "question": "Did the 08-10 -> 09-14 deterioration of the unchanged entity/theme axis-C read (cash median 16.83 -> 8.01, QQQ median 13.30 -> -1.50) come from benchmark-relative negative NEW rows (source decaying) or from near-zero NEW rows (dilution)?",
+      "cheapest_check": "identity split of the exact exp-20260914-001 cohort (ledger 20260913 sha 1593fa03..., 208492 settled, 0 duplicate keys) into OLD = keys settled in the current 20260810 ledger file with exit_date <= 2026-08-07 (114566) and NEW = rest (93926); unchanged exp-20260706-012 current_summary + acceptance arithmetic per half; synthetic 4-row hand-check passed before the real read",
+      "frozen_c0": "OLD half count within 0.1% of 114541 AND cash/SPY/QQQ means and medians within 1.00 USD of the consumed exp-20260810-001 values; any miss -> identity_mismatch, no classification",
+      "c0_result": "count 114566 (+25, pass); mean deltas cash -0.3138 / SPY -0.2526 / QQQ -0.2698 (pass); median deltas cash -0.26 / SPY 0.00 / QQQ -1.57 -> QQQ median FAILED (11.73 vs 13.30); 6 of 7 sub-checks pass",
+      "pooled_reproduction": "the pooled 208492 rows reproduce exp-20260914-001 byte-exact (all six deltas 0.0) -> the recipe and the ledger identity are intact; only the OLD-half approximation of the overwritten 08-10 byte image misses",
+      "why_c0_missed": "the exact ledger bytes read on 08-10 (manifest sha 190dd092...) were overwritten by the 2026-08-10 evening daily run; the outcome ledgers are not git-tracked (git log empty), so the 08-10 cohort can only be approximated; a 25-row identity gap shifted the discrete QQQ row median by 1.57 USD while the SPY median did not move at all - the frozen 1.00 USD median tolerance was too tight for a rank statistic on a 114k-row heavy-tailed series (cash and SPY medians happened to pass)",
+      "non_authoritative_descriptives_recorded_in_artifact": "halves and monthly mean-of-date-means are stored in the artifact as descriptives with zero verdict weight; the would-have-been branch under the frozen rule is recorded there so a future re-ask cannot be steered by it",
+      "artifacts": [
+        "quant/experiments/exp_20260915_005_entity_theme_axis_c_cohort_split_dilution_attribution_20260915.py",
+        "data/experiments/exp-20260915-005/exp_20260915_005_entity_theme_axis_c_cohort_split_dilution_attribution_20260915.json (sha256 f707ce09e040fc598362ed689559a458cad205ffc0a1cb719967390833e49330)",
+        "experiments/logs/exp-20260915-005.json",
+        "experiments/cards/exp-20260915-005.md",
+        "experiments/manifests/exp-20260915-005.json",
+        "experiments/tickets/exp-20260915-005.json"
+      ],
+      "economic_progress": false,
+      "valid_alpha_trial": false,
+      "new_alpha_evidence": false
+    }
+  ],
+  "zero_id_decisions": [
+    {
+      "item": "repair of the C0 miss",
+      "decision": "not attempted under this ID nor under a fresh ID this unit",
+      "reason": "loosening the median tolerance or switching to a rank-based tolerance after seeing that the miss was 0.57 USD over the bar is a post-outcome threshold change (protocol section 3: no threshold edits after the window is used); the exact 08-10 bytes are unrecoverable (ledger not git-tracked), so no identity-level repair exists that would make an exact reproduction possible",
+      "legitimate_re_ask": "the question stays open but the split must be re-anchored on an identity that IS exact: the 20260913 ledger (sha 1593fa03..., date-stamped file that no later daily run rewrites, byte-exact reproduction demonstrated today) versus the increment settled after it. Pre-register that split (rule verbatim from exp-20260915-005's frozen plan: source_decaying if NEW-half means vs SPY and QQQ both negative; new_half_passes if the NEW half alone passes; else dilution_only; C0 = exact reproduction of exp-20260914-001, no tolerance) as a separately budgeted analysis_only ID once the post-09-13 increment is large enough to be informative (>= 30000 settled rows, ~mid-Oct at ~2.7k/day), or fold it into the pre-registration of the fifth same-face read at 312738 so the incremental slice is read alongside the pooled read",
+      "contamination_note": "this agent has seen the NEW-half descriptives of the 08-10 split; the re-ask's rule is inherited verbatim from the pre-outcome plan and its cohort differs (post-09-13 increment), so it is not steerable by today's numbers"
+    }
+  ],
+  "verification": [
+    "python -B -m py_compile quant/experiments/exp_20260915_005_...py: ok",
+    "synthetic_self_test passed (OLD {+10,+20} median 15; NEW {-5,+1} median -2, mean -2 -> source_decaying; NEW {-1,+2} -> dilution_only; pooled median 5.5)",
+    "verify_pins: 5/5 input hashes matched (ledgers 20260913/20260810, base recipe, consumed 0810/0914 artifacts)",
+    "runner executed once after claim; ticket observed_only, completed_at 2026-09-15T16:22:56Z; registry observed_only",
+    "experiment.py rebuild-log: 2701 shards",
+    "experiment.py audit --lean-strict: lean_quality_passed=true, lean_strict_passed=true, failure domains []"
+  ],
+  "traps_recorded": [
+    "same-date outcome ledger files are rewritten by that date's evening daily run: a read made during the day binds bytes that no longer exist by evening; the ledgers are not git-tracked, so a manifest sha alone cannot recover the cohort - split diagnostics must anchor on a date-stamped file whose date has passed",
+    "median (rank) tolerances on 100k-row heavy-tailed series must be frozen as rank shifts (<= identity count gap) or with a wider USD band; a 25-row gap moved one median by 1.57 USD and another by 0.00",
+    "scripts/build_reopen_readiness.py has no --help: any invocation regenerates data/reopen_readiness.json",
+    "experiment.py new with a non-prediction-required lane (loss_attribution) still records the prediction block; persist_self_registered_result propagates it and the frozen per-branch reflection texts, so lean-strict stays green without a separate close call"
+  ],
+  "not_done": [
+    "no commit (multi-owner dirty root tree, protocol section 5)",
+    "sic_peer_index symbol hygiene (OTC/unlisted/delisted symbols) - separate management item",
+    "daily_news_structured_event_observations_* retirement candidate (no consumer) - future management unit"
+  ],
+  "next_unit": "front lane: nothing machine-ready; event triggers unchanged - legacy pair baskets terminalize unsettleable ~09-18/19, pair first countable settlement ~09-28, entity_theme axis-C bar 312738 ~late Oct (pre-register the exact post-09-13 incremental split alongside it), moomoo clean forward ~mid-Nov, H.8 not before 2027-02; until a trigger fires, hourly units are constant-time recounts exiting no-op suppressed",
+  "economic_progress": false,
+  "alpha_trials": 0,
+  "trade_enabled": false,
+  "decision_log": "d-0021"
+}

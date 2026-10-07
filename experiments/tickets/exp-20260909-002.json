@@ -1,0 +1,282 @@
+{
+  "acceptance_rule": "Exact prospective immutable decision remarks bind only matching account code side and quantity orders first observed after decision; complete same-strategy lifecycles alone receive fee-covered PnL; missing ambiguous historical or corrupt lineage remains explicitly unattributed; reports and daily JSON share the same output; no orders or strategy changes.",
+  "allowed_write_scope": [
+    "quant/execution_attribution.py",
+    "quant/test_execution_attribution.py",
+    "quant/broker_performance.py",
+    "quant/test_broker_performance.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/test_broker_performance_reporting.py",
+    "docs/broker_execution_ledger.md",
+    "data/live_pilot/execution_attribution/",
+    "data/maintenance/",
+    "data/experiments/exp-20260909-002/",
+    "quant/experiments/exp_20260909_002_broker_decision_order_attribution.py",
+    "experiments/artifacts/exp-20260909-002_broker_decision_order_attribution.md",
+    "experiments/tickets/exp-20260909-002.json",
+    "experiments/logs/exp-20260909-002.json",
+    "experiments/manifests/exp-20260909-002.json",
+    "experiments/cards/exp-20260909-002.md",
+    "docs/experiment_registry.json",
+    "quant/broker_execution_ledger.py",
+    "quant/test_broker_execution_ledger.py",
+    ".gitignore",
+    "data/runtime/broker_decision_order_attribution/exp-20260909-002/",
+    "data/live_pilot/broker_execution/"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260909-002/before.json",
+  "card_file": "experiments/cards/exp-20260909-002.md",
+  "causal_components": [
+    "immutable machine advice snapshot",
+    "exact broker remark binding",
+    "complete lifecycle attribution",
+    "committed broker surface head verification",
+    "daily output integration"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "broker_decision_order_attribution",
+  "claimed_at": "2026-09-09T07:27:39+00:00",
+  "completed_at": "2026-09-09T07:50:30+00:00",
+  "created_at": "2026-09-09T07:27:20+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260909-002",
+  "experiment_uid": "expuid-1818c9a28a3342b6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260909-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-09-09T07:27:20+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broker_decision_order_attribution"
+  },
+  "hypothesis": "Establish prospective immutable machine decision-to-broker-order attribution using exact remark identity and complete lifecycle fee accounting without inferring historical strategy ownership.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "signals",
+    "ranking",
+    "sizing",
+    "exits",
+    "trade_permissions",
+    "old_broker_raw_bytes"
+  ],
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "operator_inputs/",
+    "quant/constants.py",
+    "quant/backtester.py"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "accounting",
+        "attribution",
+        "broker",
+        "complete",
+        "decision",
+        "establish",
+        "exact",
+        "fee",
+        "historical",
+        "identity",
+        "immutable",
+        "inferring",
+        "lifecycle",
+        "machine",
+        "order",
+        "ownership",
+        "prospective",
+        "remark",
+        "strategy",
+        "to",
+        "using",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "live_drift_reconciliation",
+        "family_key": "live_drift_measurement_integrity",
+        "reopen_condition": "A broker lifecycle or schema change, a verified RTH or ALL prior-policy fill incorrectly suppressed by v4, or a natural completed-session run that still duplicates or misattributes the position.",
+        "score": 0.0414,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_execution_history",
+        "family_key": "moomoo_execution_history_order_fee_notional_cost_calibration",
+        "reopen_condition": "A strategy cost-model change requires broker-confirmed event timezone, strategy-tagged orders, and a reproducible arrival-price or decision-price benchmark covering both entry and exit legs.",
+        "score": 0.04,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "duplicate_reservation_accounting",
+        "family_key": "duplicate_reservation_accounting",
+        "reopen_condition": "Follow exp-20260712-002's closeout boundary; this ticket added no evidence.",
+        "score": 0.0364,
+        "status": "frozen",
+        "trials": 8
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "candidate_meta_label",
+        "family_key": "candidate_meta_label_entry_decision_cohort_attribution",
+        "reopen_condition": "A valid retry needs at least 300 complete candidate rows with 75 positive and 75 negative labels, new settled candidate rows from pipeline wiring, or a genuinely new non-oracle decision-time field.",
+        "score": 0.0308,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_above_cost_forward_loss_attribution",
+        "reopen_condition": "More closed production exit-lifecycle rows with next-open settlement, explicit slot-reuse/winner-collateral accounting, and a shared default-off advisory lifecycle helper before any Gate 1-4 exit-policy promotion.",
+        "score": 0.0276,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-broker-attribution",
+  "prediction": {
+    "confidence_reason": "Existing broker facts retain remarks but all historical orders lack explicit decision linkage; exact prospective identity can close measurement without inventing historical ownership.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "missing_explicit_order_identity",
+      "ambiguous_order_binding",
+      "incomplete_lifecycle"
+    ],
+    "recorded_at": "2026-09-09T07:26:28+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "1075a592a6623d20af94364939e472e78b71d33c440a2eb8eb4b47dcbf10e1af",
+    "payload_hash": "1075a592a6623d20af94364939e472e78b71d33c440a2eb8eb4b47dcbf10e1af",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260909-002/before.json",
+    "after_result_file": "data/experiments/exp-20260909-002/after.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": null,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": null,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "missing_explicit_order_identity",
+        "ambiguous_order_binding",
+        "incomplete_lifecycle"
+      ],
+      "realized_failure_mode": "missing_explicit_order_identity",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Exact prospective identity and complete lifecycle accounting make attribution auditable; committed surface heads detect valid-chain tail truncation. Historical remarks remain empty, so historical strategy PnL stays unknown."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260909-002.json",
+  "single_causal_variable": "broker_decision_order_attribution",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260909-002.json",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260909-002",
+  "blocked_downstream_check": "strategy_attribution_explicit_decision_order_lineage",
+  "before_gate": "unavailable_no_decision_order_lineage"
+}

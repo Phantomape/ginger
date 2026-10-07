@@ -1,0 +1,148 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_changed": false,
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [
+    "read-only committed ledger projection",
+    "closed lifecycle cash PnL",
+    "order fee coverage",
+    "daily JSON and report wiring",
+    "diary metrics isolation",
+    "regression tests"
+  ],
+  "change_summary": "Expose validated committed broker closed-lifecycle PnL and once-per-order fees in daily JSON and report while isolating diary and paper metrics.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "broker_closed_lifecycle_performance_reporting_v1",
+  "component": "quant/broker_performance.py, quant/test_broker_performance.py, quant/run.py, quant/report_generator.py, quant/test_broker_performance_reporting.py, docs/broker_execution_ledger.md, quant/experiments/exp_20260906_001_broker_performance_reporting.py, data/experiments/exp-20260906-001/, experiments/artifacts/exp-20260906-001_broker_performance_reporting.md, experiments/logs/exp-20260906-001.json, experiments/tickets/exp-20260906-001.json, experiments/cards/exp-20260906-001.md, experiments/manifests/exp-20260906-001.json, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "economic_progress": false,
+  "engineering_acceptance_reason": "Frozen downstream absence becomes same-summary visibility in daily outputs; signed cash less order fees reconciles for same cohort; repeated computation identical and all source hashes unchanged.",
+  "experiment_id": "exp-20260906-001",
+  "hypothesis": "Make committed broker closed-lifecycle trading PnL and latest reported order fees visible in daily outputs without changing trading behavior or historical evidence.",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "measurement_revisions": [
+    {
+      "acceptance_basis": "Five synthetic regressions reproduced review defects; 60 combined tests pass after reverse-reference and query freshness corrections. Two real projections identical and 10 source file hashes unchanged.",
+      "after_result_file": "data/experiments/exp-20260906-001/revision_2/after.json",
+      "alpha_changed": false,
+      "completed_at": "2026-09-06T06:52:03.162490+00:00",
+      "economic_progress": false,
+      "engineering_accepted": true,
+      "latest_collection_attempt_at": "2026-09-06T03:02:15.736022Z",
+      "original_terminal_result_preserved": true,
+      "prior_artifact_sha256": {
+        "data/experiments/exp-20260906-001/after.json": "0581ba648708ef2ed66c98f667300c80cfdce426a90528bfca89bb1f7c91a030",
+        "data/experiments/exp-20260906-001/before.json": "cdd6e41b046c39d416e871db07d268ce19423173110e020b4be4a73bf66ffa90",
+        "data/experiments/exp-20260906-001/source_contract.json": "0e93ba130109cb7468cd594c8cbcd27c93f39a9d73437d70396556a04d804eaf",
+        "docs/broker_execution_ledger.md": "196142552f9b4b319d43ecd7ff96905c4433c6b8163def8d863592bcb8a9825d",
+        "experiments/artifacts/exp-20260906-001_broker_performance_reporting.md": "3b23d7c5f0cedde9e6b69ca350bf5772e7aa906d356436af250081fa575805e7",
+        "experiments/cards/exp-20260906-001.md": "3b7c436950e1cbeaa1b769a1dc7ba4104c3d3f755c957fb32d62b10668bc7f1a",
+        "experiments/logs/exp-20260906-001.json": "555c42934917493fa852cda66bdb93b279afa08170f8fd7de9718f85db125511",
+        "experiments/manifests/exp-20260906-001.json": "ffabca1f58aab32718efa8fb5b30da650196d7e988ccd94dd0808c2102137fab",
+        "experiments/tickets/exp-20260906-001.json": "ee549af96464c52a62715eb8867b24fd283cd21779ac2052b74efa75c0db4e9c",
+        "quant/broker_performance.py": "9262a9ee913908e5e5f456920f42b2aa70068f09308caf7bb13727dd3695b39f",
+        "quant/experiments/exp_20260906_001_broker_performance_reporting.py": "68e6500e49e4bbf27df9d5dab5eae96fd1cc49d652695eab31ebb65f9f722782",
+        "quant/test_broker_performance.py": "5dc9207b79269516ebcaf8e923cbd590d80056cf980e87bdb97f528450642727"
+      },
+      "projection_status": "partial",
+      "query_coverage": {
+        "history_deals": {
+          "last_successful_at": "2026-08-10T03:02:46.240323Z",
+          "latest_status": "error"
+        },
+        "history_orders": {
+          "last_successful_at": "2026-08-10T03:02:48.975612Z",
+          "latest_status": "error"
+        },
+        "order_fees": {
+          "last_successful_at": "2026-09-05T03:03:25.507053Z",
+          "latest_status": "skipped"
+        }
+      },
+      "reason": [
+        "Independent review found complete valid fill-chain tail truncation can drop a losing lifecycle while committed links retain proof of missing facts.",
+        "Independent review found error/partial/skipped economic-source queries could advance source_as_of despite no successful economic refresh."
+      ],
+      "revision": 2,
+      "source_as_of": "2026-08-10T03:02:46.240323Z",
+      "source_contract_file": "data/experiments/exp-20260906-001/revision_2/source_contract.json",
+      "trade_enabled": false
+    }
+  ],
+  "mechanism_family": "broker_performance_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "A demonstrated accounting defect with a reproducer, or independently frozen decision-order-fill lineage for a new strategy-attribution consumer."
+  ],
+  "notes": "Accepted engineering measurement repair only. Frozen source hashes and 2 identical read-only calls verify no raw mutations; production output statements share the same summary with signals unchanged. 103 fully fee-covered closed lifecycles: USD gross -14172.0262 minus order fees 540.84 equals net -14712.8662. 13 open lifecycles, 182 unknown-baseline fills and 2376 uncommitted rows excluded. No strategy attribution, total account return, alpha claim or trading change. economic_progress=false; trade_enabled=false; next normal daily run publishes measurement.",
+  "parameters": {
+    "locked_variables": [
+      "signals",
+      "ranking",
+      "sizing",
+      "exits",
+      "cost assumptions",
+      "trade permissions",
+      "raw broker ledgers"
+    ],
+    "single_causal_variable": "broker_closed_lifecycle_performance_reporting_v1"
+  },
+  "parity_boundary": "Actual run.py output assignment statements executed offline using the real frozen summary and synthetic signals; original daily outputs untouched.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not select profitable ticker, sector or time buckets from this account history and call them alpha; do not substitute missing fees or unknown starting positions with zero.",
+    "new_evidence_required": "A demonstrated accounting defect with a reproducer, or independently frozen decision-order-fill lineage for a new strategy-attribution consumer.",
+    "realized_failure_mode": "missing_broker_performance_reporting",
+    "why_result_happened": "The broker already held useful execution facts but daily reports used a separate missing trade diary. A strict committed-ledger consumer makes a covered negative trading sample visible without changing the source or selecting rules from its outcomes."
+  },
+  "prior_trial_count": 0,
+  "production_impact": "Read-only broker aggregation and daily report/JSON visibility only; signals, ranking, sizing, exits, fees assumptions and trading permissions unchanged.",
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260906-001/before.json",
+    "data/experiments/exp-20260906-001/after.json",
+    "data/experiments/exp-20260906-001/source_contract.json",
+    "data/experiments/exp-20260906-001/quant_signals_preview.json",
+    "data/experiments/exp-20260906-001/report_preview.txt",
+    "experiments/artifacts/exp-20260906-001_broker_performance_reporting.md",
+    "data/experiments/exp-20260906-001/revision_2/source_contract.json",
+    "data/experiments/exp-20260906-001/revision_2/after.json",
+    "data/experiments/exp-20260906-001/revision_2/revision_request.json"
+  ],
+  "reproduction_command": ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260906_001_broker_performance_reporting.py",
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-06T06:35:58+00:00",
+  "trade_enabled": false,
+  "trial_family": "broker_closed_lifecycle_reporting",
+  "trial_variant_id": "exp-20260906-001"
+}

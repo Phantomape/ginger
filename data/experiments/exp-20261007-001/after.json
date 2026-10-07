@@ -1,0 +1,46 @@
+{
+  "experiment_id": "exp-20261007-001",
+  "record_type": "measurement_repair_after",
+  "decision": "accepted",
+  "fix": {
+    "warehouse_vs_massive_fallback": "When a warehouse frame is stale versus SPY, keep it if massive_history is absent or not fresher; use massive only when it extends past the warehouse frame.",
+    "latest_session_lag_guard": "For the first_seen local date's latest lookback session, defer admission only when more than half of a side's prior-complete tickers are missing that latest session."
+  },
+  "current_batch_rebuild_after_hot_refresh": {
+    "batch_id": "news-first-seen-198532d25ed7eef54418",
+    "decision_exists": true,
+    "long_weight_count": 14,
+    "short_weight_count": 30,
+    "long_excluded_unpriceable_count": 21,
+    "short_excluded_unpriceable_count": 8
+  },
+  "lagged_surface_simulation": {
+    "removed_latest_session": "2026-09-25",
+    "removed_short_tickers": [
+      "AAOI",
+      "ADI",
+      "ALAB",
+      "ALGM",
+      "AMAT",
+      "AMBA",
+      "AMKR",
+      "ARM",
+      "ARRY",
+      "ASML",
+      "ASX",
+      "KLAC",
+      "LRCX",
+      "QCOM",
+      "SMCI"
+    ],
+    "decision_exists": false
+  },
+  "hot_tier_intraday_census": {
+    "dates_checked": "2026-09-15..2026-09-25",
+    "rows_with_updated_at_before_20_15z": 0
+  },
+  "tests": [
+    ".venv/Scripts/python.exe -B -m pytest quant/test_news_propagation_pair_paper_sleeve.py quant/test_ohlcv_warehouse_refresh.py -q",
+    "24 passed"
+  ]
+}

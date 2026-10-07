@@ -1,0 +1,103 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "anchor_frame_missing_makes_all_tickers_fall_through",
+      "massive_absent_for_some_shadowed_ticker_so_basket_stays_fail_closed",
+      "split_double_adjustment_if_mixed_sources"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [],
+  "change_summary": "Repaired news_propagation_pair_paper_sleeve.load_pair_bars so a warehouse frame whose last bar precedes the session anchor's (SPY) last warehouse bar is treated as absent and the whole ticker falls through to massive_history (raw bars + split normalization unchanged). Root cause reproduced read-only: ohlcv_overlay frames for non-core exposure tickers stop at 2026-04-24 (100 rows) while massive_history holds bars through 2026-09-11, so every pending basket reported missing_leg_bars for tickers that were actually priceable. Outcome-blind identity projection of the 5 pending baskets: missing tickers 45 -> 15; warehouse-shadowed legs (massive covers exit session) 31 -> 1, and that residual (BMHL) is a genuine missing 2026-08-28 entry-session bar in massive, not shadowing; 7 legs absent from every source (BAO, DBIM, EVON, HWEP + OTC ABIT/FMHS with no bars) and 7 delisted/stale legs remain fail-closed by the frozen missing-leg rule. 10/10 sleeve tests (1 new) + 2 run.py wiring tests pass. No basket PnL read; trade_enabled=false.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "stale-warehouse-frame fallthrough to massive_history inside news_propagation_pair_paper_sleeve.load_pair_bars",
+  "component": "quant/news_propagation_pair_paper_sleeve.py, quant/test_news_propagation_pair_paper_sleeve.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260913-006",
+  "hypothesis": "The news-propagation pair paper sleeve cannot settle any basket because load_pair_bars treats a stale warehouse frame (ohlcv_overlay rows for non-core tickers stop at 2026-04-24 with 100 rows) as present and therefore never consults the massive_history fallback that holds current bars for those tickers; the frozen rule is warehouse first then massive_history for tickers the warehouse cannot price. Repair: a warehouse frame whose last bar precedes the session anchor's last warehouse bar is treated as absent for that ticker so the whole ticker falls through to massive_history (raw bars plus split normalization, unchanged). Acceptance is correct implementation of the frozen rule verified by a unit test with an injected stale frame and a temporary massive db plus an outcome-blind identity projection of the five pending baskets (blocker kinds and missing-ticker counts only; no PnL read); it is not judged by any settled value.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Implementation-error repair of the frozen warehouse-first/massive-fallback pricing rule; no contract parameter (H10, 45bp/leg, USD 1000/leg, 40% cap, fail-closed missing leg, acceptance >=20 baskets / >=10 dates) changed. HONEST RESIDUAL: after the repair 0/5 pending baskets are settleable because every basket (incl. the 3 still inside H10) contains at least one leg ticker with no price source anywhere (sic_peer_index-derived symbols BAO/DBIM/EVON/HWEP/GTIJF absent from massive instrument_master; ABIT/FMHS are OTC Link with zero bars; AIEV/BINI/ECDA were delisted before their decision dates). Under the frozen fail-closed missing-leg rule the sleeve therefore cannot produce forward evidence until admission gains an outcome-blind priceability condition; that is a contract amendment requiring its own registered contract-review ticket (next unit), not part of this single-variable repair. Frozen decisions are never rewritten. Applies automatically in the next daily run.py pass; no production smoke run performed to avoid mutating the daily-owned ledger/summary outside run.py.",
+  "parameters": {
+    "locked_variables": [
+      "stale-warehouse-frame fallthrough to massive_history inside news_propagation_pair_paper_sleeve.load_pair_bars"
+    ],
+    "single_causal_variable": "stale-warehouse-frame fallthrough to massive_history inside news_propagation_pair_paper_sleeve.load_pair_bars"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not mix warehouse and massive bars within one ticker (split double-adjustment risk), do not relax the fail-closed missing-leg rule at settlement, do not backfill or rewrite the five frozen basket decisions, do not hand-price OTC/absent legs, and do not read basket PnL to decide which legs to drop.",
+    "new_evidence_required": "A separately registered contract review adding an outcome-blind leg priceability condition to admission (bar existence on the sessions strictly before entry, warehouse-or-massive) plus a grace-bounded terminal 'unsettleable' disposition for window-complete baskets with permanently unpriceable legs; forward evidence counting for the frozen acceptance contract (>=20 settled baskets / >=10 dates) starts only from baskets admitted under that condition.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The frozen pricing rule (warehouse first, massive_history for tickers the warehouse cannot price) was implemented as 'warehouse frame non-empty => use it', but ohlcv_overlay only holds a stale 100-row window (2025-12-01..2026-04-24) for non-core exposure tickers, so 31 of 45 missing legs across the two H10-complete baskets were priceable in massive yet never looked up. Treating a frame that ends before the anchor's last warehouse bar as absent removes all shadowing (31 -> 0 shadowed; the one residual BMHL lacks a massive entry-session print). The repair cannot make any basket settle because every pending basket also holds legs with no price source anywhere; that is a contract gap, not this bug."
+  },
+  "prediction": {
+    "confidence_reason": "Root cause reproduced read-only: GLXY/BMNR/AGPU/BLSH etc. have massive bars through 2026-09-11 but warehouse frames end 2026-04-24; fix is a three-line predicate on the existing fallback path.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "anchor_frame_missing_makes_all_tickers_fall_through",
+      "massive_absent_for_some_shadowed_ticker_so_basket_stays_fail_closed",
+      "split_double_adjustment_if_mixed_sources"
+    ],
+    "recorded_at": "2026-09-13T16:24:16+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260913-006/news_pair_bar_source_fallback_before.json",
+    "data/experiments/exp-20260913-006/news_pair_bar_source_fallback_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-13T16:28:13+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260913-006"
+}

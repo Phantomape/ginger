@@ -1,0 +1,111 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "residual_side_concentration_breach_blocks_anyway",
+      "overlap_exclusion_changes_population_relative_to_qualification_rows",
+      "pre_effective_bytes_not_reproducible",
+      "mid_session_double_batches_inflate_basket_count_without_new_dates"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [],
+  "change_summary": "Contract review of the exp-20260824-002 / exp-20260826-001 news-propagation pair readiness cross-side-overlap blocker consumed by the exp-20260827-001 sleeve (pre-registered by the frozen plan sha256 e1f6fd8035b179086b0b2063df21e69739e75af6ca249aca084985607c4ba836 bound in the ticket hypothesis before reservation; copied to data/experiments/exp-20260924-004/frozen_plan.md). Amendment wired into news_propagation_pair_forward_observer.build_readiness_records and news_propagation_pair_paper_sleeve.build_pair_basket_decision (the daily run.py pass and replay share the code): for batches first seen at or after 2026-09-24T17:00:00Z the tickers present on both sides are excluded from both sides for readiness evaluation and recorded in overlap_exclusion (rule_version news_propagation_pair_cross_side_overlap_exclusion_v2, excluded_tickers, long/short residual ticker_count / row_count / max_ticker_row_weight) instead of blocking the batch; the 40% concentration blockers and the exp-20260923-004 v2 borrow coverage are evaluated on the residual sides; new blockers long_side_emptied_by_overlap / short_side_emptied_by_overlap; the sleeve removes the excluded tickers from both legs (excluded_cross_side_overlap on each leg, independent of the priceability and no-borrow labels), renormalises the equal row weights over the kept tickers and never admits an emptied side; a decision-level overlap_exclusion {rule_version, excluded_tickers count} is recorded. Pre-effective batches keep the frozen semantics byte-for-byte: the amended observer rebuilt all 33 persisted readiness records byte-identically from live exposure rows + the iBorrowDesk archive (0 mismatches, 0 post-effective records yet). Outcome-blind identity projection: frozen 7 ready / 26 blocked of 33 (2 of 14 since 2026-09-14); hypothetical v2 alone 18 / 8 of 14; v2 + overlap exclusion 25 ready lifetime, 14 of 14 since 09-14, 20 ready decision dates; the 10 overlap records are whole sic_peer groups (semis 23-33, autos 17, China internet / AI software 14-20 tickers) and the 6 post-09-14 ones keep both residual sides non-empty with max row weight <= 0.087. No persisted record or basket decision rewritten, no retroactive admission, no outcome or PnL field read; H10 / 45bp / USD 1000 / 40% cap (on the residual side) / >=20 baskets / >=10 dates / both halves / <=40% ticker share unchanged; iBorrowDesk indicative not a locate; trade_enabled=false. Tests: observer 12/12 (3 new), sleeve 16/16 (1 new), exposure observer 16/16, run.py wiring -k pair/news/exposure 10/10.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "forward-only cross-side-overlap exclusion in the news-propagation pair readiness gate and sleeve admission (tickers on both sides of a batch excluded from both legs and recorded instead of blocking the batch; batch blocked only when a side empties or the residual side breaches the 40% cap)",
+  "component": "quant/news_propagation_pair_forward_observer.py, quant/test_news_propagation_pair_forward_observer.py, quant/news_propagation_pair_paper_sleeve.py, quant/test_news_propagation_pair_paper_sleeve.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260924-004",
+  "hypothesis": "Contract review of the exp-20260824-002 / exp-20260826-001 news-propagation pair forward readiness gate consumed by the exp-20260827-001 pair sleeve, triggered by identity-only evidence one day after exp-20260923-004 (which pre-registered cross_side_overlap_remains_dominant_batch_blocker as a main failure mode): the first v2 record (2026-09-24 nightly) is measurement_ready and admitted a basket, but under the v2 borrow rule every remaining post-2026-09-14 block (6 of 14 records: 09-15T16, 09-16T03, 09-16T16, 09-17T03, 09-17T16, 09-21T18) carries cross_side_ticker_overlap as its only non-borrow blocker (10 of 33 lifetime), and the overlap content is whole sic_peer groups (semiconductors 23-33 tickers, autos 17, China internet / AI software 14-20) placed on both sides because one negative and one positive event of the same peer group land in the same batch - not noise symbols. Removing the overlap tickers from BOTH sides leaves both sides non-empty in 6/6 post-09-14 cases (long 19-35 / short 25-81 tickers) with residual max ticker row weight <= 0.087 versus the 0.40 cap, so the gate fail-closes whole batches whose unambiguous-polarity residual is admissible and the >=20-settled-basket acceptance contract accrues at roughly half the reachable cadence (hypothetical 18/33 ready lifetime and 8/14 since 09-14 under v2 alone; 25/33 and 14/14 with overlap exclusion). Amendment, forward-only for batches first seen at or after 2026-09-24T17:00:00+00:00: (a) the observer excludes overlap tickers from both sides for readiness evaluation, keeps cross_side_ticker_overlap as a list, adds overlap_exclusion {rule_version news_propagation_pair_cross_side_overlap_exclusion_v2, excluded_tickers, long_side_residual, short_side_residual}, evaluates the 40% concentration blockers and the v2 borrow coverage on the residual sides, and blocks only on long_side_emptied_by_overlap / short_side_emptied_by_overlap or the other batch-level blockers; (b) the sleeve removes the excluded tickers from both legs, records excluded_cross_side_overlap on each leg, renormalises the equal row weights over the kept tickers exactly as exp-20260913-007 and exp-20260923-004 do, and never admits an emptied side. Both are wired into the existing run.py daily pass (the same code replay uses). Batches first seen before the effective timestamp keep the current semantics byte-for-byte (no persisted record or basket rewritten, no retroactive admission), acceptance counting restarted 2026-09-14 continues unchanged for overlap-free batches, H10 / 45bp / USD 1000 / 40% / >=20 / >=10 unchanged, iBorrowDesk stays indicative, no outcome or PnL field is read. Frozen plan sha256 e1f6fd8035b179086b0b2063df21e69739e75af6ca249aca084985607c4ba836.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260824-002",
+    "exp-20260826-001",
+    "exp-20260827-001",
+    "exp-20260913-007",
+    "exp-20260923-004"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Measurement/contract repair only; no alpha, paper or live eligibility change; trade_enabled=false. Budget declared before reservation: 1 measurement_repair ID, <=90 wall minutes, 0 HTTP, 0 external spend, 0 outcome/PnL fields read; consumed 1 ID, ~7 wall minutes reservation->close (~17 including diagnosis), 0 HTTP, 0 spend, 0 outcome fields. Disclosure: exp-20260923-004 pre-registered cross_side_overlap_remains_dominant_batch_blocker as a main failure mode and this review is inspired by that identity-only observation (6 of 14 post-09-14 records blocked only by overlap under v2), not by any result. Concurrency: codex.exe active on the edge-v2 worktree (exp-20260923-005, exp-20260924-001..003 fixed-result attribution diagnoses), disjoint write scope. Population caveat recorded as a failure mode: overlap-residual baskets trade only unambiguous-polarity tickers of mixed-polarity peer-group days, which is closer to (not identical with) the exp-20260824-001 row-level qualification population than blocking those days entirely; the per-leg excluded_cross_side_overlap label lets the acceptance read split the two basket classes if ever needed, but the frozen acceptance contract itself is unchanged. Mid-session run.py pass still produces two batches per day (user decision d-0024); the acceptance bar of >=10 decision dates guards against basket-count inflation. First post-effective batch = the 2026-09-25 nightly pass (~03:07Z); acceptance counting restarted 2026-09-14 continues.",
+  "parameters": {
+    "locked_variables": [
+      "readiness PIT borrow rule and exp-20260923-004 v2 uncovered-ticker exclusion;polarity and mixed_first_seen_at blockers;H10;45bp per leg;USD 1000 per leg;40% row-weight cap applied to the residual side;acceptance >=20 baskets / >=10 dates / both halves positive / <=40% ticker share;persisted readiness records and basket decisions;record_id derivations;iBorrowDesk indicative not a locate"
+    ],
+    "single_causal_variable": "forward-only cross-side-overlap exclusion in the news-propagation pair readiness gate and sleeve admission (tickers on both sides of a batch excluded from both legs and recorded instead of blocking the batch; batch blocked only when a side empties or the residual side breaches the 40% cap)"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not re-evaluate, rewrite or retroactively admit any batch first seen before 2026-09-24T17:00:00Z; do not net long and short weights of an overlapping ticker instead of excluding it; do not relax the 40% residual concentration cap, the polarity blockers, the PIT borrow rule or the v2 uncovered exclusion under this ID; do not convert the *_emptied_by_overlap blockers into partial one-sided admission; do not read basket PnL or outcome fields to decide whether overlap-residual baskets should count; do not open a separate acceptance contract for overlap-residual baskets without pre-registration.",
+    "new_evidence_required": "Fault-recovery check next unit (constant time, identity fields only): the 2026-09-25 nightly readiness record carries overlap_exclusion.rule_version news_propagation_pair_cross_side_overlap_exclusion_v2 and, when its batch has overlap, status measurement_ready with a basket_decision whose legs list excluded_cross_side_overlap. A further review of this gate needs a new blocker class visible in identity fields (e.g. missing_long_polarity / missing_short_polarity becoming the dominant post-effective blocker) or the frozen acceptance read (>=20 closed baskets across >=10 dates) itself.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The exp-20260824-002 / exp-20260826-001 readiness gate blocked a whole batch whenever any ticker appeared on both the negative (long) and positive (short) side. The exposure rows come from sic_peer_index peer expansion, so one negative and one positive event of the same peer group in the same batch place the entire group (semiconductors 23-33 tickers, autos 17, China internet / AI software 14-20) on both sides; 10 of 33 lifetime batches and 6 of the 14 batches since 2026-09-14 were blocked that way, and under the exp-20260923-004 v2 borrow rule overlap was the ONLY remaining blocker on those 6 (exactly the failure mode exp-20260923-004 pre-registered). Removing the overlap tickers from both sides leaves both residual sides non-empty (long 19-35 / short 25-81 tickers) with max row weight <= 0.087 against the 0.40 cap, so excluding and recording them (same renormalisation pattern as the priceability and no-borrow exclusions) keeps the gate outcome-blind, keeps all 33 persisted records byte-identical (33/33 rebuilt) and lifts the hypothetical ready count from 18/33 to 25/33 lifetime and from 8/14 to 14/14 since 09-14 (20 ready decision dates)."
+  },
+  "prediction": {
+    "confidence_reason": "Visible in identity fields alone: 6 of 14 post-09-14 records carry cross_side_ticker_overlap as the only non-borrow blocker, residual sides after removing the overlap are non-empty with max row weight <= 0.087, and the hypothetical statuses are recomputed from persisted blockers, ticker_row_counts and overlap lists only; no outcome field read. Frozen plan sha256 e1f6fd8035b179086b0b2063df21e69739e75af6ca249aca084985607c4ba836 written before reservation.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "residual_side_concentration_breach_blocks_anyway",
+      "overlap_exclusion_changes_population_relative_to_qualification_rows",
+      "pre_effective_bytes_not_reproducible",
+      "mid_session_double_batches_inflate_basket_count_without_new_dates"
+    ],
+    "recorded_at": "2026-09-24T16:18:08+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260924-004/news_pair_overlap_exclusion_before.json",
+    "data/experiments/exp-20260924-004/news_pair_overlap_exclusion_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-24T16:26:05+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260924-004"
+}

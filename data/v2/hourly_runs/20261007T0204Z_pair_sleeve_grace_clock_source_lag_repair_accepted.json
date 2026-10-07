@@ -1,0 +1,413 @@
+{
+  "record_type": "v2_hourly_run_receipt",
+  "run_id": "20261007T0204Z_pair_sleeve_grace_clock_source_lag_repair_accepted",
+  "agent": "claude-fable-5.1 scheduled alpha unit",
+  "started_at": "2026-10-07T00:38:32+00:00",
+  "finished_at": "2026-10-07T02:04:07+00:00",
+  "status": "completed",
+  "execution_lane": {
+    "worktree": "D:/Github/ginger",
+    "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+    "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+    "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority); this unit is root production_maintenance of the root-owned pair paper sleeve settlement path; no qualification or conclusion migrated across refs",
+    "protocol_path": "docs/quant_agent_protocol_v2.md",
+    "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c"
+  },
+  "work_unit": "startup: machine LastBootUpTime 2026-10-06 17:35 local -> no run.py pass 09-26..10-05 (signals/reports stopped at 09-25); codex-launched catch-up run.py started 00:39Z (parent/child .venv -> Python311, not a duplicate writer) -> waited on it rather than touching root ledgers -> identity projection of the pair ledger showed the FIRST acceptance-countable basket (39644ff3, entry 09-14 exit 09-25) terminalized unsettleable with short legs AIOT/INSG although both have full massive bars -> timeline pinned: sleeve settled 00:56:01Z, massive grouped:2026-09-25 landed 00:56:40Z, SPY anchor (core primary_batch) already at 10-06 -> root cause: settle_pair_basket measured the exp-20260913-007 grace period on the anchor calendar instead of the authorized sources -> frozen plan hashed (298acf4e...) -> before evidence (replay at settlement-time source state = unsettleable, full bars = settled; statuses only) -> exp-20261007-002 reserved/claimed -> fix + test -> after evidence (settlement-time state now returns missing_leg_bars:AIOT,INSG) -> 115/115 tests -> close accepted -> reflection filled -> lean-strict green. Parallel: concurrent codex ticket exp-20261007-001 (accepted 00:57Z) landed the admission-side latest-session defer guard in the same module minutes earlier; both halves of the source-lag family are now closed. Also built the outcome-blind recount for exp-20260912-001 reopen condition (a) and rebuilt data/reopen_readiness.json after the catch-up.",
+  "startup_recount": {
+    "outage": "LastBootUpTime 2026-10-06T17:35:10 local; last pre-outage run.py pass 2026-09-25 evening (massive grouped:2026-09-24 checkpoint 2026-09-26T03:08Z); catch-up pass 2026-10-07T00:39:22Z started by codex pwsh (PID chain 12972 -> 20472 -> 14540 -> 20568)",
+    "catch_up_result": {
+      "reports_latest": [
+        "report_20260924.txt",
+        "report_20260925.txt",
+        "report_20261006.txt"
+      ],
+      "estimate_revision_outcomes_latest": "estimate_revision_outcomes_20261006.jsonl",
+      "hot_tier_sessions_since_0925": [
+        [
+          "2026-09-25",
+          1320
+        ],
+        [
+          "2026-09-28",
+          1317
+        ],
+        [
+          "2026-09-29",
+          1317
+        ],
+        [
+          "2026-09-30",
+          1317
+        ],
+        [
+          "2026-10-01",
+          1317
+        ],
+        [
+          "2026-10-02",
+          1318
+        ],
+        [
+          "2026-10-05",
+          1319
+        ],
+        [
+          "2026-10-06",
+          1319
+        ]
+      ],
+      "massive_max_trade_date": "2026-10-05",
+      "massive_grouped_catchup": "09-25..10-05 complete; 10-06 HTTP 403 (same-day not served; expected next pass)"
+    },
+    "pair_sleeve_identity": {
+      "decisions": 9,
+      "outcomes": {
+        "unsettleable": 6
+      },
+      "countable_since_0913_007": 4,
+      "countable_status": {
+        "unsettleable": 1,
+        "pending": 3
+      },
+      "false_unsettleable_row": "news-first-seen-39644ff3bf36cb2bdb66 (entry 09-14 exit 09-25; exit bars existed in massive 39s after settlement; NOT rewritten - user decision)",
+      "acceptance_count_restart_anchor": "news-first-seen-f5b68e8786f49e625e96 (entry 09-24, exit ~2026-10-07)"
+    },
+    "d0014_reopen_condition_a": {
+      "artifact": "data/alpha_search/phase2_adjacent_overshoot_reopen_recount_20261006.json",
+      "script": "quant/experiments/adjacent_overshoot_reopen_window_recount_20261006.py (read-only, ALLOWED whitelist + h5/h10_exit_date identity fields)",
+      "window": "clean decisions whose h5 settlement session is strictly after 2026-09-11",
+      "bars": {
+        "h5": {
+          "settled": 218,
+          "up": 74,
+          "down": 144,
+          "entry_dates": 11,
+          "conditioned_unsettled": 77,
+          "holds": true
+        },
+        "h10": {
+          "settled": 168,
+          "up": 61,
+          "down": 107,
+          "entry_dates": 7,
+          "conditioned_unsettled": 127,
+          "holds": false
+        }
+      },
+      "trigger_fires": false,
+      "live_fileset_last": "estimate_revision_outcomes_20261006.jsonl",
+      "reading": "settled counts already exceed 60 per gated horizon; the binding constraint is >=10 distinct entry dates (decisions arrive in feed-day bursts: 09-08/10/11/14/16/18/22/23/24/25/26); h10 needs entries through ~09-30 to settle -> ETA ~2026-10-09 nightly"
+    },
+    "reopen_readiness_lanes": {
+      "news_propagation_negative_side": {
+        "status": "ready",
+        "counters": {
+          "negative_side_closed": 1857,
+          "negative_side_closed_baseline_at_park": 1005,
+          "negative_side_closed_unique_events": 203,
+          "negative_side_closed_unique_event_dates": 66
+        },
+        "thresholds": {
+          "negative_side_closed": 1508
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "phase2_estimate_revision": {
+        "status": "ready",
+        "counters": {
+          "qualified_nonflat_decisions": 2786,
+          "mapped_tickers": 963,
+          "actual_cash_conflicts": 0,
+          "cash_admission_trace_ok_sessions": 56,
+          "structured_cash_conflicts_lifetime": 2,
+          "settled_h5": 1907,
+          "settled_h10": 1784,
+          "settled_h20": 1492
+        },
+        "thresholds": {
+          "qualified_nonflat_decisions": 30,
+          "mapped_tickers": 10,
+          "cash_admission_trace_ok_sessions": 30,
+          "structured_cash_conflicts_lifetime": 1,
+          "settled_h5": 30,
+          "settled_h10": 30,
+          "settled_h20": 30
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "core_drawdown_flow_put_stabilization": {
+        "status": "not_ready",
+        "counters": {
+          "independent_selected_decisions": 1,
+          "independent_closed_decisions": 0,
+          "daily_price_stabilized_signals": 66,
+          "daily_options_complete_signals": 12,
+          "survival_rate": 0.181818,
+          "first_half_net_replacement_value_usd": null,
+          "second_half_net_replacement_value_usd": null,
+          "max_single_ticker_positive_pnl_share": null,
+          "minimum_selected_decisions_per_evaluation_window": null,
+          "minimum_settled_decisions_per_evaluation_window": null,
+          "explicit_evaluation_window_count": 0
+        },
+        "thresholds": {
+          "independent_closed_decisions": 20,
+          "survival_rate": 0.05,
+          "first_half_net_replacement_value_usd": 0.0,
+          "second_half_net_replacement_value_usd": 0.0,
+          "max_single_ticker_positive_pnl_share_max": 0.4,
+          "minimum_selected_decisions_per_evaluation_window": 5,
+          "minimum_settled_decisions_per_evaluation_window": 5
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "entity_theme_axis_c": {
+        "status": "not_ready",
+        "counters": {
+          "settled_count": 241688,
+          "baseline_at_last_probe": 208492,
+          "growth_pct": 15.92
+        },
+        "thresholds": {
+          "settled_count": 312738
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "exit_lifecycle_advisory": {
+        "status": "not_ready",
+        "counters": {
+          "settled": 1103,
+          "hard_stop": 31,
+          "high_urgency": 47,
+          "advisory_total": 78,
+          "pending_advisory_in_pipeline": 6
+        },
+        "thresholds": {
+          "settled": 422,
+          "hard_stop": 33,
+          "advisory_total": 60
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "flow_options_lead": {
+        "status": "not_ready",
+        "counters": {
+          "forward_pit_flow_dates_post_20260720": 47,
+          "settled_paired_disagreement_decisions": null
+        },
+        "thresholds": {
+          "forward_pit_flow_dates_post_20260720": 10,
+          "settled_paired_disagreement_decisions": 20
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "form4_sale_overhang_forward": {
+        "status": "not_ready",
+        "counters": {
+          "closed_forward_rows": 4,
+          "high_sale_overhang_closed_forward_rows": 1,
+          "replacement_value_complete_closed_rows": 4,
+          "unique_tickers_closed_forward_rows": 3,
+          "max_single_ticker_closed_forward_row_share": 0.5,
+          "observer_health_fail_closed": false
+        },
+        "thresholds": {
+          "closed_forward_rows": 25,
+          "high_sale_overhang_closed_forward_rows": 8,
+          "replacement_value_complete_closed_rows": 25,
+          "max_single_ticker_closed_forward_row_share_max": 0.4
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "intraday_triage_completed_close_settlement": {
+        "status": "not_ready",
+        "counters": {
+          "raw_primary_next_close_rows": 277,
+          "effective_next_close_rows": 246,
+          "raw_closed_next_close_rows": 224,
+          "effective_closed_next_close_rows": 193,
+          "raw_strict_completed_next_close_settlements": 224,
+          "strict_effective_next_close_settlements": 193,
+          "duplicate_economic_rows_excluded": 31,
+          "incomplete_closed_effective_rows_excluded": 0,
+          "strict_effective_next_close_reduce_risk_settlements": 37,
+          "first_half_strict_effective_next_close_reduce_risk_settlements": 10,
+          "second_half_strict_effective_next_close_reduce_risk_settlements": 27
+        },
+        "thresholds": {
+          "strict_effective_next_close_settlements": 100,
+          "strict_effective_next_close_reduce_risk_settlements": 48,
+          "first_half_strict_effective_next_close_reduce_risk_settlements": 12,
+          "second_half_strict_effective_next_close_reduce_risk_settlements": 12
+        },
+        "stalled": true,
+        "days_since_progress": 64
+      },
+      "massive_dividend_restart_forward": {
+        "status": "not_ready",
+        "counters": {
+          "unique_settlement_events": 0,
+          "duplicate_settlement_events_excluded": 0,
+          "settled_reopen_population_decisions": 0,
+          "settled_restart_decisions": 0,
+          "summary_settled_reopen_population_decisions": 0,
+          "summary_settled_restart_decisions": 0,
+          "summary_reopen_progress_required": 30,
+          "summary_reopen_progress_settled_decisions": 0,
+          "summary_reopen_progress_settled_restart_decisions": 0
+        },
+        "thresholds": {
+          "settled_reopen_population_decisions": 30
+        },
+        "stalled": true,
+        "days_since_progress": 14
+      },
+      "move_relief_forward": {
+        "status": "not_ready",
+        "counters": {
+          "closed_position_count": 0,
+          "pending_count": 0,
+          "snapshot_asof": "2026-10-06"
+        },
+        "thresholds": {
+          "closed_position_count": 30
+        },
+        "stalled": true,
+        "days_since_progress": 78
+      },
+      "prediction_market_postfix": {
+        "status": "not_ready",
+        "counters": {
+          "postfix_observation_rows": 933,
+          "postfix_unique_markets": 35,
+          "raw_settled_candidate_rows": 5101,
+          "unique_settled_candidates": 5101,
+          "duplicate_candidate_rows_excluded": 0,
+          "decision_date_count": 57,
+          "query_group_count": 4,
+          "top_ticker_share": 0.147814,
+          "top_query_share": 0.886885,
+          "markets_with_any_probability_change": 18,
+          "markets_with_any_5pp_move": 13
+        },
+        "thresholds": {
+          "unique_settled_candidates": 60,
+          "decision_date_count": 10,
+          "query_group_count": 3,
+          "top_ticker_share_max": 0.15,
+          "top_query_share_max": 0.5,
+          "markets_with_any_probability_change": 20,
+          "markets_with_any_5pp_move": 10
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "short_volume_q5_soft_tilt": {
+        "status": "not_ready",
+        "counters": {
+          "tagged_settled": 158,
+          "stale_tagged_settled": 0,
+          "q5_settled": 10,
+          "q5_settled_any_vintage": 38,
+          "q5_settled_baseline_at_park": 9,
+          "max_q5_ticker_share": 0.2,
+          "max_q5_ticker": "DDOG"
+        },
+        "thresholds": {
+          "q5_settled": 20,
+          "max_q5_ticker_share_max": 0.4
+        },
+        "stalled": false,
+        "days_since_progress": 0
+      },
+      "allocator_cross_source_conflict": {
+        "status": "manual_check_required",
+        "counters": {
+          "settled_conflict_rows_last_manual": 9
+        },
+        "thresholds": {
+          "settled_conflict_rows": 20
+        },
+        "stalled": true,
+        "days_since_progress": 78
+      },
+      "hawkes_news_cross_excitation_candidate_pool": {
+        "status": "manual_check_required",
+        "counters": {
+          "settled_independent_group_date_decisions_last_frozen": 25,
+          "unique_decision_dates_last_frozen": 12,
+          "max_group_decision_share_last_frozen": 0.36
+        },
+        "thresholds": {
+          "settled_independent_group_date_decisions": 38,
+          "unique_decision_dates": 18,
+          "max_group_decision_share": 0.4
+        },
+        "stalled": true,
+        "days_since_progress": 52
+      }
+    }
+  },
+  "experiments": [
+    {
+      "experiment_id": "exp-20261007-002",
+      "experiment_uid": "expuid-9794c0252b834e45",
+      "lane": "measurement_repair",
+      "status": "accepted",
+      "root_cause": "settle_pair_basket measured the 5-session unsettleable grace period on the SPY session-anchor calendar (refreshed first by the 56-ticker core primary_batch) instead of on the authorized price sources; after the 7-session outage the catch-up pass advanced the anchor to 10-06 while massive_history still ended 09-24 (exit bar 09-25 landed 39 s after the sleeve ran), so a priceable basket was terminalized unsettleable",
+      "fix": "load_pair_bars records __source_last_sessions__ {warehouse_anchor, massive MAX(trade_date)}; settle_pair_basket terminalizes a missing leg only when the anchor calendar AND massive have both reached calendar[exit_index+5]; otherwise the ordinary missing_leg_bars blocker stands; bars without the key keep the legacy anchor-only rule; test_unsettleable_grace_waits_for_lagging_massive_source added",
+      "identity_projection": "before sha256 b3e2e254a479154dfd05fd6ef1a41ffa49c5e46b906e10f846b5e0817120ad04 (replay at massive<=09-24: unsettleable; full bars: settled) / after sha256 719c6b72d0f4266d18cd34ce62d90b31aff44f8b996b144fc04f220d20b3ff90 (replay at massive<=09-24: missing_leg_bars:AIOT,INSG; full bars: settled); ledger.jsonl 1c85e59d... and state.json 1df0b624... unchanged; only outcome_status / blocker strings read",
+      "frozen_plan_sha256": "298acf4e88f8321e4fdb436162110913834f762a21ab7423907b2b861f2dd2fc (hashed 01:24:36Z before reservation; reserved 01:26:49Z, claimed 01:29Z, fix 01:3xZ, closed ~01:38Z)",
+      "tests": "quant/test_news_propagation_pair_paper_sleeve.py + quant/test_news_propagation_pair_forward_observer.py + quant/test_run_daily_wiring.py: 115/115 (.venv python); lean-strict audit green after reflection fill",
+      "concurrent": "exp-20261007-001 (codex-automation-commit, accepted 00:57:17Z) changed the same two files on the admission side; claim showed conflicts=[]; edits were made on the post-001 file state"
+    }
+  ],
+  "zero_id_decisions": [
+    {
+      "kind": "build",
+      "what": "quant/experiments/adjacent_overshoot_reopen_window_recount_20261006.py + its artifact",
+      "why": "exp-20260912-001 reopen (a) must be counted outcome-blind before any ID; no ID until >=60/horizon AND >=10 entry dates hold"
+    },
+    {
+      "kind": "regenerate",
+      "what": "data/reopen_readiness.json rebuilt after the catch-up",
+      "why": "daily counters were 11 days stale"
+    },
+    {
+      "kind": "defer",
+      "what": "append-only correction of the false unsettleable row for basket 39644ff3",
+      "why": "ledger is append-only and the sleeve has no correction record type; user decision; acceptance count restarts at basket f5b68e87"
+    },
+    {
+      "kind": "skip",
+      "what": "negative-side 1508 re-read, phase2 breadth candidate, H.8 family, entity_theme 312738",
+      "why": "reasoned parks / bars unchanged"
+    }
+  ],
+  "economic_progress": false,
+  "alpha_trials": 0,
+  "budget": {
+    "declared_before_outcome_access": "<=1 measurement_repair ID, <=60 wall minutes from reservation, 0 external spend, 0 outcome/PnL fields read",
+    "consumed": "1 ID, ~12 wall minutes reservation->close (~75 incl. waiting on the catch-up pass and diagnosis), 0 spend, 0 outcome fields read deliberately",
+    "remaining": "0 IDs this unit"
+  },
+  "display_contamination_note": "an unfiltered tail of data/logs/run_20261006.log printed aggregate pnl= values of the default-off volatility-contraction and volume-breadth-breakout paper sleeves (not lanes under evaluation, no open contract); future log tails must filter pnl/return/usd tokens; recorded here so any later evaluation of those two sleeves by this agent is fenced to positions first closed after 2026-10-06",
+  "concurrency": "codex.exe active in ROOT this unit (launched run.py catch-up at 00:39Z and reserved/accepted exp-20261007-001 at 00:49/00:57Z on the same sleeve module); only quant/news_propagation_pair_paper_sleeve.py, its test, data/experiments/exp-20261007-002/*, the recount script/artifact and data/reopen_readiness.json written by this unit; run.py catch-up pass left untouched",
+  "not_done": [
+    "false unsettleable outcome row for basket 39644ff3 not corrected (append-only; user decision)",
+    "run.py step order (pair sleeve before _run_massive_ohlcv_grouped_catchup) unchanged: massive-only legs settle one pass later than the anchor when massive lags (fail-safe direction, pre-registered)",
+    "hot-tier-only lagging frames are not covered by the massive clock (pre-registered failure mode)",
+    "test_run_daily_wiring.py attaches run.py FileHandler to the production dated log (simulated settlement crash WARNING lines are test output) - hygiene item, not fixed",
+    "mid-session run.py launcher question and the contaminated-session re-settlement question (0925 receipt) still open for the user"
+  ],
+  "next_unit": "(1) constant-time: next nightly pass must settle basket f5b68e87 (exit ~10-07) as settled, not unsettleable, and admit the 10-06 readiness record once the latest-session lag clears (exp-20261007-001); (2) rerun quant/experiments/adjacent_overshoot_reopen_window_recount_20261006.py after each nightly estimate-revision catch-up; when h5 AND h10 each show >=60 settled, >=10 entry dates, legs >=10 -> freeze B1-B5 byte-identical from the 0831 contract on the new window and reserve->claim->run within 24h (ETA ~10-09); (3) massive grouped:2026-10-06 should complete on the next pass (403 today)",
+  "trade_enabled": false
+}

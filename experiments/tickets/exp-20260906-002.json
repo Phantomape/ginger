@@ -1,0 +1,268 @@
+{
+  "acceptance_rule": "two concurrent temporary git worktrees reserve different IDs; ref-only IDs are excluded; non-git fixtures retain local behavior; historical ticket bytes unchanged",
+  "allowed_write_scope": [
+    "scripts/experiment_registry.py",
+    "scripts/experiment_lane_identity.py",
+    "scripts/test_experiment_lane_identity.py",
+    ".codex/worktrees/edge-v2/scripts/experiment_registry.py",
+    ".codex/worktrees/edge-v2/scripts/experiment_lane_identity.py",
+    ".codex/worktrees/edge-v2/scripts/test_experiment_lane_identity.py",
+    "data/experiments/exp-20260906-002/",
+    "experiments/artifacts/exp-20260906-002_cross_lane_identity.md",
+    "experiments/tickets/exp-20260906-002.json",
+    "experiments/cards/exp-20260906-002.md",
+    "experiments/manifests/exp-20260906-002.json",
+    "experiments/logs/exp-20260906-002.json",
+    "quant/stale_artifact_sweep.py",
+    ".codex/worktrees/edge-v2/quant/stale_artifact_sweep.py"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260906-002/before.json",
+  "card_file": "experiments/cards/exp-20260906-002.md",
+  "causal_components": [],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "cross_lane_experiment_identity_reservation",
+  "claimed_at": "2026-09-06T06:28:24+00:00",
+  "completed_at": "2026-09-06T06:37:23+00:00",
+  "created_at": "2026-09-06T06:27:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260906-002",
+  "experiment_uid": "expuid-d6e41b1cb7534159",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260906-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-09-06T06:27:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "cross_lane_identity"
+  },
+  "hypothesis": "Prevent concurrent worktrees and ref-only experiment evidence from receiving the same new experiment ID while preserving every historical identity.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "historical experiment IDs",
+    "UIDs and results",
+    "alpha acceptance gates",
+    "trade permissions"
+  ],
+  "mechanism_family": "experiment_identity",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "operator_inputs/",
+    "data/paper_sleeves/",
+    "quant/constants.py",
+    "quant/backtester.py"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "atomic",
+        "concurrent",
+        "cross",
+        "every",
+        "evidence",
+        "experiment",
+        "from",
+        "historical",
+        "id",
+        "identity",
+        "lane",
+        "new",
+        "only",
+        "preserving",
+        "prevent",
+        "receiving",
+        "ref",
+        "reservation",
+        "same",
+        "while",
+        "worktree",
+        "worktrees"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_log_wrapper_identity_repair",
+        "reopen_condition": "No retry is needed unless another manifest hash mismatch or cross-ID wrapper write is detected.",
+        "score": 0.0533,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "experiment_fingerprint_and_reopen_registration",
+        "reopen_condition": "A concrete new fingerprint misroute, a false-ready/false-blocked reopen decision, or enough matured rows to justify automating the exact frozen Hawkes counter instead of the conservative manual lane.",
+        "score": 0.0296,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "revision_expectation",
+        "family_key": "pead_broad_universe_historical_candidate_pool",
+        "reopen_condition": "A retry after rejection needs a materially new PIT earnings data edge: revision trajectory, analyst estimate dispersion, call tone, guidance classification, or closed forward replacement rows.",
+        "score": 0.0296,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "historical_duplicate_exposure_validation",
+        "reopen_condition": "A valid retry needs materially more closed forward duplicate rows, a new accepted-paper artifact source with additional independent settled rows, or a separate shared-policy Gate 1-4 duplicate exposure cap experiment with explicit parity.",
+        "score": 0.0276,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "allocator",
+        "family_key": "accepted_free_data_consensus_new_source_expansion",
+        "reopen_condition": "['do not promote this replay without a separate shared adapter source-set experiment', 'promotion must update quant/free_data_cross_source_consensus_paper_sleeve.py and parity docs/tests', 'forward closed replacement-value rows before activation', 'do not retry nearby source-set or cooldown thresholds unless a new accepted source or forward row changes evidence']",
+        "score": 0.0267,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-profit-repair",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "60c3bb4a26dd2be8ee587824ca9674a3fd9ba0f2145cd3fe9296f553152743d1",
+    "payload_hash": "60c3bb4a26dd2be8ee587824ca9674a3fd9ba0f2145cd3fe9296f553152743d1",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [
+      "Non-alpha measurement gate changed from cross-lane collision present to collision-free allocation; targeted tests and unchanged historical identity bytes verified."
+    ],
+    "before_result_file": "data/experiments/exp-20260906-002/before.json",
+    "after_result_file": "data/experiments/exp-20260906-002/after.json",
+    "delta_metrics": {},
+    "research_refs": []
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260906-002.json",
+  "single_causal_variable": "cross_lane_experiment_identity_reservation",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260906-002.json",
+  "trial_family": "cross_worktree_atomic_reservation",
+  "trial_variant_id": "exp-20260906-002",
+  "installation_scope_note": "Same semantic patch installed separately in root and Edge; preserve all existing lane-specific registry differences.",
+  "claim_override_reason": "Shared immutable locked variable trade permissions caused the force claim; actual file scopes do not overlap and neither ticket changes permissions.",
+  "baseline_binding_note": "The auto-filled V1 backtest was not evaluated; frozen old registry source and isolated Git fixtures provide the applicable measurement baseline.",
+  "implementation_revisions": [
+    {
+      "revision": 2,
+      "recorded_at": "2026-09-06T06:51:44+00:00",
+      "classification": "direct_lock_lifecycle_dependency_repair",
+      "summary": "Permanently exempt only .git/experiment_id_allocation.lock from stale-artifact deletion in root and Edge. No cleanup was run on either real repository.",
+      "proof": "data/experiments/exp-20260906-002/revision_2_after.json",
+      "proof_sha256": "af0093d23028258f66909c5393d9a1e9d1119a50a239006052201a3efd91d91b",
+      "source_and_test_hashes": {
+        "root": {
+          "released_anchor_preserved": true,
+          "removed_count": 0,
+          "kept_count": 1,
+          "pytest_passed": 13,
+          "pytest_seconds": 9.44,
+          "source_sha256": "4af6caede764e5a6001ef44303e4890059c74fc03e8caded06e8ac47a426c5ab",
+          "test_sha256": "a88d7733a1eddab3e9c055184a5a6ba9fa8d8bc391cc79e7c44f5e4846a57a8b"
+        },
+        "edge": {
+          "released_anchor_preserved": true,
+          "removed_count": 0,
+          "kept_count": 1,
+          "pytest_passed": 13,
+          "pytest_seconds": 9.52,
+          "source_sha256": "f1c12a33d3b79c6cc10b0808344111c419542e63fe087d6f9cad21b33a108702",
+          "test_sha256": "a88d7733a1eddab3e9c055184a5a6ba9fa8d8bc391cc79e7c44f5e4846a57a8b"
+        }
+      },
+      "original_scientific_result_unchanged": true,
+      "economic_progress": false
+    }
+  ]
+}

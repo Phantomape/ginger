@@ -1,0 +1,82 @@
+{
+  "record_type": "v2_hourly_run_receipt",
+  "run_id": "20260923T1633Z_pair_readiness_borrow_coverage_exclusion_accepted",
+  "agent": "claude-fable-5.1 scheduled alpha unit",
+  "started_at": "2026-09-23T16:09:19+00:00",
+  "finished_at": "2026-09-23T16:33:12+00:00",
+  "status": "completed",
+  "execution_lane": {
+    "worktree": "D:/Github/ginger",
+    "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+    "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+    "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority; this unit is root production_maintenance of the root-owned pair sleeve readiness gate per data/v2/execution_lane_authority.json; no qualification or conclusion migrated across refs)",
+    "protocol_path": "docs/quant_agent_protocol_v2.md",
+    "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c",
+    "edge_v2_state": "automation/edge-v2 HEAD 11ef9c483; codex.exe active, exp-20260923-001..003 observed_only fixed-result diagnoses closed today (uncommitted); disjoint write scope"
+  },
+  "work_unit": "startup recount -> exp-20260922-007 fault-recovery checks passed (09-22 nightly candidate ledger state carries rows_skipped_same_day_economic_duplicate=0 with 2 rows written; form4 progress carries closed_forward_row_records_current=1 / duplicate_economic_closed_rows_excluded=0 / economic_decision_key=ticker+entry_date) -> data/reopen_readiness.json regenerated (codex exp-20260922-006 closed, builder scope free): no lane crossed its bar (exit_lifecycle hard_stop 31/33; dividend lane now reports the realigned settled_reopen_population_decisions 0/30; both ready lanes remain reasoned-parked) -> execution-parity idea rejected without an ID (live_drift already alerts on fill drift, 0 of 38 positions core-attributable, decision remark codes only since 09-09) -> pair sleeve admission cadence funnel by identity fields found the 10th silent-starvation case: 13/13 readiness records since 09-14 blocked, 7 solely by per-ticker borrow blockers on unlisted sic_peer symbols iBorrowDesk answers not_found (the symbols exp-20260913-007 already excludes as unpriceable), so the exp-20260913-007 amendment never reached a batch -> frozen plan hashed before reservation -> exp-20260923-004 / expuid-3f78a4dd4caa42d0 measurement_repair contract review ACCEPTED: forward-only (batches first seen >= 2026-09-23T17:00:00Z) uncovered short tickers are recorded and excluded at admission instead of blocking the batch; 32/32 persisted records reproduced byte-identically; tests 9+15+16+4 green; lean-strict green",
+  "startup_recount": {
+    "reopen_readiness_regenerated_at": "2026-09-23T16:12:27Z",
+    "lanes": "news_propagation_negative_side ready 1745/1508 (reasoned park: pair build alive); phase2_estimate_revision ready (breadth candidate parked on feed batch clock); entity_theme_axis_c 229370/312738; exit_lifecycle_advisory 1009/31/75 vs 422/33/60 (hard_stop 2 short, 4 advisory pending); form4 1/25 closed; massive_dividend_restart_forward realigned population 0/30; short_volume_q5 8/20; intraday_triage 37/48 (producer stopped 08-04, user decision); move_relief 0/30; prediction_market not_ready; core_drawdown 0/20; pair sleeve 6 decisions / 3 outcomes (legacy), 1 countable basket first seen 09-14, first countable settlement ~09-29",
+    "fault_recovery_checks": "exp-20260922-007 (1) ledger counters present after the 09-23T03:07Z nightly pass; (2) form4 economic-decision counters present; DE 2026-08-24 20d outcome not yet appended (exit session 09-22; bars lag one pass), recount next unit"
+  },
+  "experiments": [
+    {
+      "experiment_id": "exp-20260923-004",
+      "experiment_uid": "expuid-3f78a4dd4caa42d0",
+      "lane": "measurement_repair",
+      "status": "accepted",
+      "root_cause": "exp-20260826-001 readiness gate required PIT borrow evidence for EVERY short-side ticker and blocked the whole batch on any miss; the entity map keeps emitting unlisted/OTC sic_peer symbols (BAO DBIM EVON HWEP LILW SBEV BAGZ BLTG GRAY MOT) that iBorrowDesk has no page for (fetch_state not_found after an attempted same-day prefetch), so every batch since 09-15 carried 2-8 uncovered tickers out of 20-109 and was blocked despite 85-98% coverage; the sleeve therefore never saw a measurement_ready record after 09-14 and the exp-20260913-007 priceability amendment never applied to a new basket",
+      "fix": "forward-only borrow-coverage exclusion (coverage_rule_version news_propagation_pair_borrow_coverage_v2, effective 2026-09-23T17:00:00Z): observer records uncovered short tickers in borrow_coverage.uncovered_tickers with blocker kind instead of blocking; batch blocks only on batch-level blockers or short_side_no_borrow_coverage; sleeve excludes uncovered short tickers at admission (excluded_no_pit_borrow, labelled apart from excluded_unpriceable), renormalizes equal row weights, does not admit an emptied side; pre-effective batches byte-identical v1; no persisted record rewritten; no retroactive admission; H10/45bp/USD1000/40%/>=20/>=10 unchanged",
+      "identity_projection": "data/experiments/exp-20260923-004/news_pair_borrow_coverage_before.json (sha256 1d84fe9d822da118aa5606d02fbd6e830b4fbf3df34807307790fcfccd0ea195) / _after.json (sha256 d992dfa31d5ded9686744e653b790ff0a66e6f642ecad0d074ee0c18c6933d50): frozen 6 ready / 26 blocked of 32 (1/13 since 09-14) vs hypothetical v2 17 ready / 15 blocked (7/13 since 09-14, 15 ready decision dates); per-ticker blockers 83 missing+not_found / 18 missing+ok / 41 stale+ok; 32/32 persisted records rebuilt byte-identically by the amended observer",
+      "frozen_plan_sha256": "e3109c98286e4d14327044001a6382bbfa93835bebf91c9282ac9b1f143c15c8 (written 16:23:16Z before reservation, bound in the ticket hypothesis; reserved 16:24:15Z, claimed 16:24Z, closed 16:28:26Z)",
+      "tests": "observer 9/9 (3 new), sleeve 15/15 (1 new), exposure observer 16/16, run.py wiring -k pair/news/exposure 4/4; lean-strict audit green after reflection fill"
+    }
+  ],
+  "zero_id_decisions": [
+    {
+      "kind": "regenerate",
+      "what": "data/reopen_readiness.json rebuilt at unit start",
+      "why": "codex exp-20260922-006 (builder scope) closed accepted 09-22; file was 2 days stale"
+    },
+    {
+      "kind": "reject_idea",
+      "what": "execution-parity (fill drift) fixed-result diagnostic not opened",
+      "why": "live_drift_reconciliation already computes and alerts on mean fill drift; 0 of 38 positions core-attributable; decision remark codes only exist since 09-09 so decision->fill attribution coverage is structurally zero"
+    },
+    {
+      "kind": "skip",
+      "what": "negative-side 1508 re-read (1745/1508) and phase2 breadth candidate",
+      "why": "reasoned parks unchanged: pair build alive (blocked <20 sessions), breadth control leg unreachable on the feed batch clock"
+    }
+  ],
+  "economic_progress": false,
+  "alpha_trials": 0,
+  "budget": {
+    "declared_before_outcome_access": "<=1 measurement_repair ID, <=90 wall minutes, 0 HTTP, 0 external spend, 0 outcome/PnL fields read",
+    "consumed": "1 ID, ~5 wall minutes reservation->close (~80 incl. startup recount and diagnosis), 0 HTTP, 0 spend, 0 outcome fields read",
+    "remaining": "0 IDs this unit"
+  },
+  "concurrency": {
+    "observed": "codex.exe running against .codex/worktrees/edge-v2 (exp-20260923-001..003 closed observed_only today); no open reserved/claimed ticket in root or edge beyond three legacy 2026-05/06 claims; write scopes disjoint",
+    "rule": "did not touch edge-v2 files or its uncommitted tickets; root ledgers/state files owned by run.py untouched"
+  },
+  "not_done": [
+    "no commit (multi-owner dirty tree; protocol section 5)",
+    "cross_side_ticker_overlap remains a batch-level blocker (9 of the 15 hypothetical v2 blocked records); separate variable, would need its own pre-registered review",
+    "GST: fetch_state ok with archived_rows 0 (page without daily rows) stays uncovered -> excluded under v2; not a producer defect",
+    "mid-session run.py pass source still unidentified (user decision, d-0024); it doubles readiness records per day but record_id is batch-keyed so no double admission",
+    "DE 2026-08-24 form4 20d outcome not yet appended (bars lag); economic-decision collapse check moves to next unit"
+  ],
+  "next_unit": "(1) constant-time check that the 2026-09-24 nightly readiness record (first post-effective batch) carries coverage_rule_version news_propagation_pair_borrow_coverage_v2 and, absent batch-level blockers, status measurement_ready with the sleeve appending one basket_decision whose short_leg lists excluded_no_pit_borrow; (2) recount ready-batch cadence weekly (expected ~3-4/week vs ~1 before); (3) form4 DE 2026-08-24 20d collapse check; (4) recounts: pair first countable settlement ~09-29, exit_lifecycle hard_stop 31/33, entity_theme 312738 ~late Oct",
+  "traps_recorded": [
+    "a downstream contract amendment (exp-20260913-007 admission exclusion) is unreachable when an upstream gate blocks on the same symbols first: after amending an admission rule, check the producer of its input records for the same failure class",
+    "10th silent-starvation pattern: readiness observer status ok, prefetch status ok, sleeve status ok, zero admissions for 9 days; only the per-batch blocker enumeration shows it - funnel by identity fields, not by health flags",
+    "iBorrowDesk not_found is persistent for unlisted/OTC sic_peer symbols (same tickers every day); a gate that requires evidence for every emitted symbol fails closed forever on entity-map noise",
+    "Bash heredocs in this environment choke on apostrophes inside quoted heredoc bodies (bash EOF parse error); write driver scripts to files and run them",
+    "experiment.py close --status-override accepted leaves post_run_reflection TODOs; fill why/forbidden/new_evidence in the log JSON before audit --lean-strict (confirmed again)",
+    "console encoding is gbk: set PYTHONIOENCODING=utf-8 or subprocess output printing fails after a successful command (RC 0 but traceback)"
+  ],
+  "decision_log": "d-0025",
+  "trade_enabled": false
+}

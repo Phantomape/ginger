@@ -1,0 +1,82 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "alpha_trials": 0,
+  "artifact": "experiments/artifacts/exp-20260906-002_cross_lane_identity.md",
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Prevent duplicate experiment numbers across worktrees and refs with identity-only discovery and a common Git-dir OS allocation lock; install in root and Edge while preserving lane differences.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "cross_lane_experiment_identity_reservation",
+  "component": "scripts/experiment_registry.py, scripts/experiment_lane_identity.py, scripts/test_experiment_lane_identity.py, .codex/worktrees/edge-v2/scripts/experiment_registry.py, .codex/worktrees/edge-v2/scripts/experiment_lane_identity.py, .codex/worktrees/edge-v2/scripts/test_experiment_lane_identity.py, data/experiments/exp-20260906-002/, experiments/artifacts/exp-20260906-002_cross_lane_identity.md, experiments/tickets/exp-20260906-002.json, experiments/cards/exp-20260906-002.md, experiments/manifests/exp-20260906-002.json, experiments/logs/exp-20260906-002.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "economic_progress": false,
+  "experiment_id": "exp-20260906-002",
+  "experiment_uid": "expuid-d6e41b1cb7534159",
+  "hypothesis": "Prevent concurrent worktrees and ref-only experiment evidence from receiving the same new experiment ID while preserving every historical identity.",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "measurement_gate_after": true,
+  "measurement_gate_before": false,
+  "mechanism_family": "experiment_identity",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "A concrete newly reproduced cross-lane identity collision or lost durable reservation."
+  ],
+  "notes": "Accepted measurement repair only; economic_progress=false, alpha_trials=0, trade_enabled=false. See after.json for tests, installation hashes, historical identity hashes, and claim-override reason.",
+  "parameters": {
+    "locked_variables": [
+      "historical experiment IDs",
+      "UIDs and results",
+      "alpha acceptance gates",
+      "trade permissions"
+    ],
+    "single_causal_variable": "cross_lane_experiment_identity_reservation"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "No further generic registry hardening without a concrete failing case; do not rewrite old collisions or relax alpha gates.",
+    "new_evidence_required": "A reproducible new ID collision, crash/recovery defect, or unsupported caller bypassing the installed reserve API.",
+    "realized_failure_mode": "cross_worktree_id_collision_repaired",
+    "why_result_happened": "Atomic local ticket creation does not serialize two separate worktrees. Shared Git-directory locking plus identity-only lane discovery protects their common namespace without importing results."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260906-002/before.json",
+    "data/experiments/exp-20260906-002/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-06T06:37:24+00:00",
+  "trade_enabled": false,
+  "trial_family": "cross_worktree_atomic_reservation",
+  "trial_variant_id": "exp-20260906-002"
+}

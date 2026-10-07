@@ -1,0 +1,116 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "vendor_returns_dividend_adjusted_values_shifting_more_than_intraday_rows",
+      "vendor_rate_limit_blocks_the_one_off_refetch",
+      "mid_session_launcher_runs_during_repair_and_races_the_hot_tier",
+      "cached_extra_and_primary_batch_paths_bypass_the_refresh_guard",
+      "session_09_22_still_absent_at_vendor_for_some_tickers"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none_observed",
+    "surprise_level": "very_low",
+    "surprise_note": "Residual close gaps after the rewrite (2-33 per session) are vendor adjustment differences, not intraday snapshots; 09-22 was fully served by the vendor at repair time."
+  },
+  "causal_components": [],
+  "change_summary": "Completed-session write guard in refresh_warehouse_ohlcv (run_clock, fetched frames truncated to latest_completed_us_equity_session before split guard and upsert; summary completed_session + dropped_incomplete_session_rows) and one-off same-vendor rewrite of 6583 frozen intraday bars (2026-09-15/16/17/18/21) plus insertion of 1162 missing 2026-09-22 bars under source ohlcv_warehouse_refresh:yfinance:intraday_bar_repair:exp-20260925-007; after census 0 intraday-written rows, close gap vs massive over 0.3pct fell from 846/1132/848/893/711 to 33/22/18/14/2 of 1309 per session, 0 vendor-missing rows, 0 rows written outside the frozen set",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "completed-session truncation of fetched frames inside refresh_warehouse_ohlcv; one-off rewrite of the frozen intraday rows for five sessions under a distinct source label",
+  "component": "quant/ohlcv_warehouse_refresh.py, quant/test_ohlcv_warehouse_refresh.py, data/warehouse/warehouse_main_hot.sqlite",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260925-007",
+  "hypothesis": "Measurement repair of the broad OHLCV warehouse hot tier consumed by the news-propagation pair sleeve priceability gate (exp-20260913-007), the news_event_exposure_observer, the entity_theme forward observer and every other warehouse reader: mid-session run.py passes on 2026-09-15, 09-16, 09-17, 09-18 and 09-21 (started 09:02-11:07 local) ran refresh_warehouse_ohlcv, which fetches with end=now and upserts with update_existing=False, so 6583 intraday snapshot bars (partial-session close/high/low/volume; close gap vs massive daily_bars over 0.3 percent on 711-1132 of 1309 compared tickers per session vs 0 on 09-23) were frozen for the whole 1304-ticker refresh universe plus the 56-ticker core batch, and the evening pass could never correct them; separately yfinance served no 2026-09-22 bar to the 09-22/09-23 evening passes for 1162 tickers (self-healing now that the vendor serves it). Identity-only consumer effect: the 09-23 and 09-24 pair baskets were admitted with 6/3 and 2/1 tickers after 22 and 57 long-side tickers were labelled unpriceable, and exposure-observer h10 alignment stays pending for every ticker lacking 09-22. Repair: (1) refresh_warehouse_ohlcv truncates every fetched frame to dates at or before latest_completed_us_equity_session(run_clock) before the split guard and upsert (new run_clock argument, summary fields completed_session and dropped_incomplete_session_rows); (2) one-off re-fetch of exactly the frozen before-census (ticker, date) set plus the 1162 hole tickers on 09-22 through the same vendor path (data_layer.get_ohlcv_many) and rewrite under source ohlcv_warehouse_refresh:yfinance:intraday_bar_repair:<id> with update_existing=True; no other row written, no settled outcome rewritten, no basket re-admitted. Frozen plan sha256 982a2cfaa861506356887f686528e90cad846e1bbf44dbcb6b463f2fe69cf6c8 (hashed 2026-09-25T16:22:23Z before reservation); before census sha256 9c126def7ff57c610c5353d777703d331ea5de250c08a2c98a12d4fa5ad10823.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260805-004",
+    "exp-20260913-006",
+    "exp-20260913-007",
+    "exp-20260709-008",
+    "exp-20260628-002"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "hot-tier row with updated_at before its session close (identity census), or a registered consumer re-settlement decision for outcomes closed against 2026-09-15..2026-09-21"
+  ],
+  "notes": "Identity-only projection: the 09-23 pair basket would have admitted 28 long / 27 short instead of 6/3 and the 09-24 basket 30/20 instead of 2/1 (remaining unpriceable tickers are unlisted sic_peer symbols); frozen decisions are not re-admitted. Outcomes already settled against the five contaminated sessions (entity_theme forward observer 415 rows with exit_date in window; exposure observer subset of 359 closed rows) remain append-only and need their own registered decision. Mid-session run.py launcher unidentified (not a Claude scheduled task; no Windows scheduled task visible).",
+  "parameters": {
+    "locked_variables": [
+      "upsert update_existing=False on the daily path;split guard exp-20260709-008;plan_refresh bucket logic;pair sleeve priceability rule exp-20260913-007 and every sleeve contract;persisted readiness records",
+      "basket decisions and settled outcome ledgers;cold tier warehouse_main.sqlite;massive_history.sqlite"
+    ],
+    "single_causal_variable": "refresh_warehouse_ohlcv never writes a bar for a session that has not completed at the run clock (latest_completed_us_equity_session, 16:15 New York), plus a one-off same-vendor rewrite of the 6583 already-frozen intraday rows for 2026-09-15..09-21 and insertion of the missing 2026-09-22 bars for 1162 tickers"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not rewrite any hot-tier row outside the frozen before-census set plus the 2026-09-22 hole list under this ID; do not re-admit, re-evaluate or re-settle the 09-23/09-24 pair baskets or any settled outcome ledger row (entity_theme 415 exit_date rows, exposure observer closed rows) on the strength of the corrected bars - that needs its own registered decision; do not widen the guard into a general history rewrite (update_existing stays False on the daily path); do not treat the 2-33 residual close gaps vs massive as contamination without a per-ticker adjustment check; do not add a hole-backfill scheduler for vendor delays (the daily 30d re-fetch already self-heals once the vendor serves the bar).",
+    "new_evidence_required": "Reopen only if a future census finds rows whose updated_at precedes the session close for their date (guard bypassed: the run.py:primary_batch / run.py:cached_extra write paths were not touched here and remain a pre-registered failure mode), or if a consumer contract decides to re-settle outcomes closed against 2026-09-15..09-21 (separate ID that must bind this before/after census by sha256).",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "Residual close gaps after the rewrite (2-33 per session) are vendor adjustment differences, not intraday snapshots; 09-22 was fully served by the vendor at repair time."
+  },
+  "prediction": {
+    "confidence_reason": "Visible in identity fields alone: updated_at of every row on the five sessions precedes the session close and the mismatch vs massive vanishes on 09-23; the vendor serves final bars now (sampled); the guard is a pure truncation on a code path with an injectable fetcher and clock.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "vendor_returns_dividend_adjusted_values_shifting_more_than_intraday_rows",
+      "vendor_rate_limit_blocks_the_one_off_refetch",
+      "mid_session_launcher_runs_during_repair_and_races_the_hot_tier",
+      "cached_extra_and_primary_batch_paths_bypass_the_refresh_guard",
+      "session_09_22_still_absent_at_vendor_for_some_tickers"
+    ],
+    "recorded_at": "2026-09-25T16:23:03+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260925-007/warehouse_intraday_bar_contamination_before.json",
+    "data/experiments/exp-20260925-007/warehouse_intraday_bar_contamination_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-25T16:27:29+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260925-007"
+}

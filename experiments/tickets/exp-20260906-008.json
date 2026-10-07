@@ -1,0 +1,276 @@
+{
+  "acceptance_rule": "All <=360-inclusive-day segments cover the unchanged full lookback exactly once; failed segments never aggregate to ok; current versions remain final; isolated read-only real capture succeeds or unavailable disclosed; canonical append allowed only after all history segments succeed and old chains validate, preserving every old JSONL byte prefix; no position/order mutations",
+  "allowed_write_scope": [
+    "quant/moomoo_open_positions.py",
+    "quant/test_moomoo_open_positions.py",
+    "quant/test_moomoo_history_paging.py",
+    "quant/experiments/exp_20260906_008_broker_history_date_range_paging.py",
+    "docs/broker_execution_ledger.md",
+    "data/experiments/exp-20260906-008/",
+    "data/runtime/broker_history_date_range_paging/exp-20260906-008/",
+    "data/live_pilot/broker_execution/",
+    "experiments/tickets/exp-20260906-008.json",
+    "experiments/cards/exp-20260906-008.md",
+    "experiments/manifests/exp-20260906-008.json",
+    "experiments/artifacts/exp-20260906-008_broker_history_date_range_paging.md",
+    "experiments/logs/exp-20260906-008.json",
+    "docs/experiment_registry.json",
+    "quant/broker_execution_ledger.py",
+    "quant/test_broker_execution_ledger.py"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260906-008/before.json",
+  "card_file": "experiments/cards/exp-20260906-008.md",
+  "causal_components": [
+    "bounded full-window history collection",
+    "segment coverage manifests",
+    "current source observation ordering",
+    "append-only reobserved versions and committed-capture replay idempotency",
+    "read-only live proof and raw-prefix invariance"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "broker_history_date_range_paging",
+  "claimed_at": "2026-09-06T16:57:49+00:00",
+  "completed_at": "2026-09-06T17:12:25+00:00",
+  "created_at": "2026-09-06T16:57:35+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260906-008",
+  "experiment_uid": "expuid-dfc809c369714992",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260906-008",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-09-06T16:57:35+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broker_history_date_range_paging"
+  },
+  "hypothesis": "Repair broker historical fill/order collection rejected by the local 360-day query-span limit while preserving the full 730-day lookback, current-version priority and fee handling.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "signals",
+    "ranking",
+    "sizing",
+    "exits",
+    "total_history_lookback",
+    "trade_permissions",
+    "old_canonical_ledger_prefixes"
+  ],
+  "mechanism_family": "broker_execution_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "operator_inputs/",
+    "data/open_positions.json",
+    "quant/constants.py",
+    "quant/backtester.py",
+    "quant/run.py"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "demonstrated_collection_span_failure_repaired",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "broker",
+        "by",
+        "collection",
+        "current",
+        "date",
+        "execution",
+        "fee",
+        "fill",
+        "full",
+        "handling",
+        "historical",
+        "history",
+        "limit",
+        "local",
+        "lookback",
+        "measurement",
+        "order",
+        "paging",
+        "preserving",
+        "priority",
+        "query",
+        "range",
+        "rejected",
+        "repair",
+        "span",
+        "version",
+        "while"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_execution_history",
+        "family_key": "moomoo_execution_history_order_fee_notional_cost_calibration",
+        "reopen_condition": "A strategy cost-model change requires broker-confirmed event timezone, strategy-tagged orders, and a reproducible arrival-price or decision-price benchmark covering both entry and exit legs.",
+        "score": 0.0606,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_execution_history",
+        "family_key": "broker_execution_measurement",
+        "reopen_condition": "A separate consumer experiment may evaluate exit-side live drift on the 87 trusted closed lifecycles. A ledger/lifecycle revision requires verified broker timezone or push-event semantics, corporate-action/transfer records, a demonstrated cross-zero allocation contract, per-collection commit/visibility proof, or cursor-based cash-flow backfill evidence.",
+        "score": 0.0387,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "historical_current_contract_reassessment",
+        "reopen_condition": "A prospective pre-frozen ledger outside the reused windows, preferably exp-20260611-010, or a genuinely new candidate family/data source or authorized gate shape.",
+        "score": 0.0324,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "current_registered_paper_surface_portfolio_measurement",
+        "reopen_condition": "TODO",
+        "score": 0.0316,
+        "status": "has_accepted",
+        "trials": 3
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "other",
+        "family_key": "sec_deleveraging_liquidity_repair_evidence_span_candidate_pool",
+        "reopen_condition": "A valid retry needs materially richer PIT semantic provenance, such as extracted balance-sheet deltas versus prior quarter, debt maturity ladder changes, covenant headroom, cash burn/runway, or a shared daily helper that can separate table rows from management repair commentary.",
+        "score": 0.0267,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-broker-history-repair",
+  "prediction": null,
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260906-008/before.json",
+    "after_result_file": "data/experiments/exp-20260906-008/final_after.json",
+    "delta_metrics": {},
+    "research_refs": []
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260906-008.json",
+  "single_causal_variable": "broker_history_date_range_paging",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260906-008.json",
+  "trial_family": "broker_history_date_range_paging",
+  "trial_variant_id": "exp-20260906-008",
+  "version_projection_revision": {
+    "allowed_behavior": "New collection may append reobserved snapshot of exact same real fact when final planned fact differs; already committed capture replay is no-op; no new economic deal identity.",
+    "frozen_at": "2026-09-06T17:04:20.263983+00:00",
+    "initial_actual_capture_mismatch_count": 0,
+    "initial_live_proof_completed_before_review_message": true,
+    "prior_artifact_sha256": {
+      "data/experiments/exp-20260906-008/after.json": "1aec5eef9ac42a6b158fa3c4cecae329cd8b47a83fd7052a005126922702b3c2",
+      "data/experiments/exp-20260906-008/source_contract.json": "9006cffd494ec3940379532cb3c91aad8e29b235264fe95f6d2cf21b2d227b4a",
+      "quant/broker_execution_ledger.py": "9487000b6e608d8256b3af2887d6020e3cd6b0f937d7a84c710f5be73439ac83",
+      "quant/experiments/exp_20260906_008_broker_history_date_range_paging.py": "605d9ed0f369d937373f668cf968c268df9f41fc833d2c94f13a43a9e5c21aa4",
+      "quant/test_broker_execution_ledger.py": "022eab334904c80edafd25ee3a067736ae21a9fa03765e246175fe027424ce94"
+    },
+    "reason": "Independent synthetic review demonstrates prior A->B->A capture facts can be suppressed by content identity deduplication; preserve actual latest observation without changing old rows."
+  },
+  "state_recovery_revision": {
+    "frozen_at": "2026-09-06T17:09:38.996962+00:00",
+    "reason": "Final targeted review found committed manifest with interrupted state write cannot recover. Only latest committed capture may rebuild missing/stale derived state; stale replay refuses reconstruction. Existing fixed snapshot conflicts remain checked.",
+    "prior_sha256": {
+      "quant/broker_execution_ledger.py": "924adc45c0e7e06746e4ee17111622c9c6edddf28949c52618c7e4fda869de4a",
+      "quant/test_broker_execution_ledger.py": "14cbc4fdd59d24558549ea75b5e946f368766c4238e33eb897678c88bf1a2598",
+      "data/experiments/exp-20260906-008/version_projection_revision/source_contract.json": "96328a4085c0f89c1d1084c156b44512e7aa0af0308f4ccdcd3af0dfe7519bba",
+      "data/experiments/exp-20260906-008/version_projection_revision/verification_after.json": "9fa893facde7aa32cb49514af58e1d4d1b699ba0d432414d1447235dfa863da2"
+    },
+    "raw_scope": "unchanged; no real source mutation authorized by this revision"
+  },
+  "blocked_downstream_check": "broker_performance_history_query_freshness",
+  "reproduction_command": ".venv/Scripts/python.exe -B quant/experiments/exp_20260906_008_broker_history_date_range_paging.py --verify-existing-capture",
+  "engineering_acceptance_reason": "All six full-lookback segments succeeded; append preserved old prefixes; latest observations/replay and interrupted derived-state recovery pass synthetic and frozen real-capture verification. No alpha claim.",
+  "alpha_changed": false,
+  "economic_progress": false,
+  "trade_enabled": false,
+  "artifact_file": "experiments/artifacts/exp-20260906-008_broker_history_date_range_paging.md",
+  "final_proof_file": "data/experiments/exp-20260906-008/final_after.json"
+}

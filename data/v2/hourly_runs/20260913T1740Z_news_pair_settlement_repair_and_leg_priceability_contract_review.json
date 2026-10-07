@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_id": "20260913T1740Z_news_pair_settlement_repair_and_leg_priceability_contract_review",
+  "started_at": "2026-09-13T16:09:36Z",
+  "finished_at": "2026-09-13T17:45:00Z",
+  "agent": "claude-fable-5.1 scheduled alpha unit",
+  "status": "completed",
+  "work_unit": "root production defect found during startup recount (pair sleeve 0/5 baskets settleable) -> exp-20260913-006 pricing fallback repair (accepted) -> exp-20260913-007 leg priceability contract review (accepted); constant-time recounts of the remaining root triggers",
+  "execution_lane": {
+    "worktree": "D:/Github/ginger",
+    "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+    "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+    "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority; no qualification or conclusion migrated)",
+    "lane_choice": "root: the pair sleeve is root production code wired into quant/run.py and its ledger/readiness data are root-owned; protocol section 5 permits repairing a current daily-run fault that blocks forward evidence; edge-v2 had no non-terminal ticket and its last activity was 04:07 local (exp-20260913-001..005 fixed-result diagnostics by the concurrent agent), so no write-domain overlap",
+    "protocol_path": "docs/quant_agent_protocol_v2.md",
+    "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c"
+  },
+  "budget": {
+    "declared_before_outcome_access": "<=2 measurement_repair IDs (repair then contract review, sequential close-before-open), <=150 wall minutes, 0 external spend, 0 HTTP; no basket PnL read at any step",
+    "consumed": "2 IDs, ~95 wall minutes, 0 spend, 0 HTTP, 0 PnL fields read",
+    "remaining": "0 IDs for this family this unit"
+  },
+  "startup_recount": {
+    "daily_run_20260913": "completed 09:04-09:08 local; only known warnings (moomoo unavailable fallback, USAspending producer unavailable, yfinance AMD earnings dates)",
+    "pair_sleeve": "5 decisions / 0 settled / 5 pending; two H10-complete baskets (decision 08-26, 08-27) blocked missing_leg_bars -> investigated",
+    "negative_side_1508_reread_trigger": {
+      "closed_negative_rows_since_2026_07_01": 1609,
+      "closed_positive_rows": 1617,
+      "bar": 1508,
+      "fired": true,
+      "distinct_negative_event_dates": 48,
+      "machine_lane_file": "data/reopen_readiness.json still shows 1222 with generated_at 2026-09-01T16:18Z (generator not run since); direct identity-only recount above",
+      "action": "NOT consumed this unit: the re-read is a descriptive attribution read capped observed_only and the forward pipe repair had strictly higher value; next unit must freeze the re-read contract byte-identical to exp-20260824-001 confirmation F1-F5 + viability V1-V2 before any outcome access, or record a reasoned park"
+    },
+    "d0014_adjacent_overshoot": "consumed 09-12 (exp-20260912-001 rejected); nothing to recount",
+    "prediction_market_postfix": "not recounted (lane file stale 09-01; fingerprint stagnant since 08-04; no daily producer change observed)",
+    "moomoo_top1_clean_forward_fence": "ETA mid-Nov unchanged; sleeve PnL fields not read",
+    "edge_v2_lane": "exp-20260913-001..005 (00:55-04:06 local) fixed-result concentration/exposure diagnostics on consumed H8/UUP/EIA/TLT/FOMC results by the concurrent agent: 4 observed_only + 1 rejected, all analysis_only, no alpha claim; lean-strict green there; no open ticket"
+  },
+  "experiments": [
+    {
+      "experiment_id": "exp-20260913-006",
+      "experiment_uid": "expuid-153ec5eef68d4eb4",
+      "lane": "measurement_repair",
+      "status": "accepted",
+      "root_cause": "load_pair_bars used any non-empty warehouse frame; ohlcv_overlay holds only a stale 100-row window (2025-12-01..2026-04-24) for non-core exposure tickers, so 31 of 45 missing legs were priceable in massive_history yet never looked up",
+      "fix": "warehouse frame ending before the SPY anchor's last warehouse bar is treated as absent -> whole ticker falls through to massive_history (raw + splits, unchanged)",
+      "evidence": {
+        "before": "data/experiments/exp-20260913-006/news_pair_bar_source_fallback_before.json",
+        "after": "data/experiments/exp-20260913-006/news_pair_bar_source_fallback_after.json",
+        "identity_projection": "missing tickers 45 -> 15; warehouse-shadowed 31 -> 0 (BMHL residual = genuine missing 08-28 entry print in massive); absent-from-every-source 7 and delisted/stale 7 remain fail-closed",
+        "tests": "10/10 sleeve (1 new) + 2 wiring"
+      }
+    },
+    {
+      "experiment_id": "exp-20260913-007",
+      "experiment_uid": "expuid-1b445be8a9244bc3",
+      "lane": "measurement_repair (contract review)",
+      "status": "accepted",
+      "finding": "every one of the 5 baskets holds >=1 leg with no bar in any authorized source (sic_peer_index symbols BAO/DBIM/EVON/HWEP/GTIJF not in instrument_master; OTC ABIT/FMHS zero bars; AIEV/BINI/ECDA delisted before decision) -> frozen fail-closed rule made the >=20-settled acceptance bar unreachable",
+      "amendment": "admission: bar exists on all 5 anchor sessions at/before first_seen NY date (strictly pre-entry), excluded legs recorded, weights renormalized, emptied side fails closed; settlement: >=5 anchor sessions after exit with a still-missing leg -> outcome_status=unsettleable, no PnL, excluded from acceptance; run.py daily pass and replay share the code",
+      "evidence": {
+        "before": "data/experiments/exp-20260913-007/news_pair_leg_priceability_before.json",
+        "after": "data/experiments/exp-20260913-007/news_pair_leg_priceability_after.json",
+        "identity_projection": "5/5 hypothetical baskets keep both sides non-empty and every kept leg has entry/exit bars where known; long kept/excluded 35/6, 48/10, 29/8, 10/4, 23/2; short 27/2, 26/2, 24/0, 15/0, 31/1; 0 unsettleable today",
+        "tests": "14/14 sleeve (4 new) + 2 wiring"
+      },
+      "forward_evidence_restart": "acceptance counting starts with the first batch admitted under the condition (next measurement_ready batch after 2026-09-13); legacy 5 baskets terminalize unsettleable via daily run ~2026-09-18/19 and later"
+    }
+  ],
+  "routine_materialization_gate_note": "first 007 reservation was misrouted as routine forward-ledger materialization (verbs terminalize/append + settle/ledger); re-registered by describing the run.py pipeline wiring truthfully; no override used",
+  "verification": [
+    "python -m pytest quant/test_news_propagation_pair_paper_sleeve.py: 14 passed",
+    "python -m pytest quant/test_run_daily_wiring.py -k pair: 2 passed",
+    "experiment.py audit --lean-strict: lean_quality_passed=true, lean_strict_passed=true after both closes",
+    "no production smoke run: daily-owned ledger/summary untouched outside run.py; changes apply on the next daily pass"
+  ],
+  "not_done": [
+    "negative-side 1508 re-read contract freeze (trigger fired, deferred with reason above)",
+    "sic_peer_index symbol hygiene (OTC/unlisted/delisted symbols) - separate management item",
+    "no commit: multi-owner dirty root tree, protocol section 5"
+  ],
+  "economic_progress": false,
+  "alpha_trials": 0,
+  "trade_enabled": false,
+  "decision_log": "d-0019"
+}

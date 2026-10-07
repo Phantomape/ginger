@@ -1,0 +1,147 @@
+{
+  "admission_class": "research_replay",
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-68d2f5dad2f903488307",
+    "candidate_snapshot_hash": "ac9e8e2fc12fe04b3ec0a1f63f3a8e39383dc2112f4f3999edeb6d0b86c6b4dc",
+    "panel_hash": "5701ac24f72249d6a27b20f54130c46106ecca0daffc46dd43f8ca88d5b32c9d",
+    "panel_path": "data/alpha_search/phase2_adjacent_overshoot_selection_panel_20260912.json",
+    "panel_sha256": "33697fc3511626a6c74eeb28567af4f62c74134c75cf1a348af289481da7726b",
+    "paper_live_eligible": false,
+    "preflight_hash": "d1fac14b383edb1856baa3aaf226e30a62c56359ed08334683730382310f01a7",
+    "promotion_hash": "40dd0e6ee1b7f9468ea555155fba3c218880a96263679365ac08dbe968aaa389",
+    "promotion_request_path": "data/alpha_search/promotions/phase2_adjacent_overshoot_clean_forward_20260912.json",
+    "promotion_request_sha256": "a557a5fd6f61eab812e8aefbb582b0e0b97b30d39ef1096206aa80de55954cd4",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "lead",
+    "selection_scope_id": "scope-fde6787b422da73b009c51e4",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "canonical_pit",
+        "readiness_hash": "6ee7a48a59ac31a2e4a995c92274f787147241937981ed947f3270612bf7d151",
+        "source_contract_hash": "9ed7cab3ea09eafda7803ff8f22bc7e3d1101b623452a1ae7a8fca04d929288e",
+        "surface_id": "estimate_revision_consensus_observer"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "27e83da651f0a8a0ac2c3f66dcb2ca565769f67585fba2bea0fcf0518300eac5",
+        "source_contract_hash": "8f1fc2e0f42ee9d704eb975510f234bbd1810e20873d39d24511725c9c02d0ff",
+        "surface_id": "ohlcv_price_revealed_context"
+      }
+    ]
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "rejected",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 0,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": true,
+    "predicted_failure_modes": [
+      "already_priced",
+      "placebo_indistinguishable",
+      "insufficient_independent_rows"
+    ],
+    "predicted_success_probability": 0.1,
+    "realized_failure_mode": "already_priced",
+    "surprise_level": "very_low",
+    "surprise_note": "Very low surprise: the registration put 0.10 on this mechanism and the adjacent quiet-tape family had already rejected as already_priced on the same daily-batch consensus clock. Mild surprise that h10 direction was positive while h5 was negative, but B5 shows the h10 spread is not issuer-specific. B4 passed only because the clean slice spans 3 decision sessions."
+  },
+  "causal_components": [
+    "frozen conditioning rule and cohort: clean = qualified non-flat mapped decisions whose decision_id is outside the 1352-id contamination fence (sha256 312dabe4...; h5 closed in the 2026-08-31 fileset); conditioned = constant-multiple update-implied repricing overshoot computed from identity fields plus pre-event OHLCV closes only (2307 rows bound by sha256 aeb1f62e...); membership is frozen before any outcome field is read; no sigma/volatility envelope",
+    "frozen falsification bars; ALL required for an observed_only accept; any failure rejects: B1 residual decay mean(h_return_pct|down_overshoot) - mean(h_return_pct|up_overshoot) > 0 at BOTH h5 and h10; B2 long leg sum(h10_replacement_value_vs_cash_usd|down_overshoot) > 0 (h5 reported); B3 comparators sum(h10_replacement_value_vs_spy_usd|down) > 0 AND sum(h10_replacement_value_vs_qqq_usd|down) > 0; B4 date placebo: real h10 down-minus-up reversion spread under one simple methodology (entry next warehouse session open strictly after as_of_date; exit at the 10th session close; gross) must exceed the 90th percentile of 200 draws reassigning each conditioned decision an as_of session uniformly from the other decision sessions with ticker and direction kept; B5 ticker shuffle: same methodology; real spread must exceed the 90th percentile of 200 draws permuting tickers among decisions within the same session; seed 20260901; displaced-core comparator reported only (no per-decision series)",
+    "sample gates frozen 2026-08-31: >=30 settled conditioned clean decisions per gated horizon (h5 and h10) and >=10 per direction leg; no partial evaluation; h20 reported only; costs = persisted outcome-ledger pipeline values; no re-costing",
+    "no production surface changes: the runner only reads the settled outcome ledgers and the OHLCV warehouse; no signal; entry; exit; sizing; order; or observer behavior changes; trade_enabled stays false; maximum conclusion is an observed_only lead (research_pit price context; research_replay admission)",
+    "up-overshoot decisions are evaluated as foregone-long avoidance evidence only (no borrow assumed anywhere); the tradable economic claim is confined to the down-overshoot long leg per the registrant's frozen execution envelope"
+  ],
+  "change_summary": "exp-20260912-001 adjacent pre-event overshoot clean-forward falsification REJECTED on the frozen d-0014 contract (B1-B5 all required). Clean cohort: 444 qualified decisions outside the 1352-id contamination fence -> 150 frozen-rule overshoot (58 up / 92 down; 283 not overshoot; 11 prior-eps guard); settled h5=76 (29 up / 47 down; 5 entry dates), h10=55 (20 up / 35 down; 3 entry dates), h20=0 - gates >=30/>=10 held at both gated horizons. B1 residual decay FAILED: down-minus-up spread h5 -0.73% (needed >0 at BOTH horizons; h10 +0.76% alone cannot carry). B2 FAILED: down-overshoot long leg h10 replacement value vs cash -$1,744 (h5 -$2,394). B3 FAILED: h10 vs SPY -$698, vs QQQ -$1,682. B4 date placebo passed (real simple h10 spread +0.59% > p90 placebo -0.27%, but only 3 decision sessions so the placebo is weak). B5 ticker shuffle FAILED: real +0.59% < shuffle p90 +2.18% - the h10 spread is session/cohort drift, not issuer-specific. already_priced (predicted #1) hit: the update-implied residual does not decay at h5 and the tradable long leg loses against cash, SPY and QQQ.",
+  "change_type": "private_replay_scout",
+  "changed_variable": "adjacent_overshoot_clean_forward_falsification_v1",
+  "component": "quant/experiments/exp_20260912_001_adjacent_overshoot_clean_forward.py, data/experiments/exp-20260912-001/adjacent_overshoot_clean_forward_result.json, data/experiments/exp-20260912-001/before_metrics.json, data/experiments/exp-20260912-001/after_metrics.json, experiments/cards/exp-20260912-001.md, experiments/manifests/exp-20260912-001.json, experiments/tickets/exp-20260912-001.json, experiments/logs/exp-20260912-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "rejected",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260912-001",
+  "hypothesis": "Registered adjacent registrant cand-68d2f5dad2f903488307: when the pre-event five-session price move of a mapped issuer already exceeds the repricing implied by the recorded qualified consensus EPS forecast update (frozen parameter-free rule: implied = |eps_estimate_delta_prev / (eps_estimate - eps_estimate_delta_prev)|; overshoot iff dir_sign * ln(close_A/close_{A-5}) > implied; anchor A = last warehouse session <= as_of_date; |prior eps| >= 0.10 and delta sign must match direction; exclude fail-closed), the excess move partially reverts over H5-H10 from the following tradable session: down-overshoot is the tradable long leg and up-overshoot is foregone-long avoidance evidence. The falsification runs ONLY on the clean forward slice frozen by the 2026-08-31 d-0014 contract: decisions first settled after 2026-08-31 (1352 contaminated ids fenced by sha256), bars B1-B5 verbatim from the 2026-08-29 registration wording, gated at h5 and h10 with >=30 settled per gated horizon and >=10 per direction leg, h20 reported only. Trigger recount 2026-09-12: h5 76 (29 up / 47 down), h10 55 (20 up / 35 down).",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "anticipatory_overshoot_partial_reversion_after_recorded_update",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260831-001",
+    "exp-20260828-001",
+    "exp-20260811-001"
+  ],
+  "new_evidence_type": "clean_forward_rows_first_settled_after_20260831",
+  "next_retry_requires": [],
+  "notes": "Contract consumed exactly as frozen 2026-08-31 (d-0014): trigger recount 2026-09-12 (outcome-blind, whitelist projection) re-derived the contamination fence byte-identically from freeze commit 5967838ae (1352 ids, sha256 312dabe4...) and bound the 2307 pre-event (ticker,date,close) rows used for conditioning (sha256 aeb1f62e...), resolving the 2026-09-09 identity blocker: the 82-file fileset sha256 is irreproducible by construction (82nd file never committed; ledgers rewritten in place daily) but scientifically redundant because the fence is fully determined by the verified id list. One-candidate byte-identical revalidation scope (scope-fde6787b422da73b009c51e4, panel 5701ac24..., D0-D3 pass, zero legacy hits vs 1484 priors anchored 2026-08-29T16:15Z) -> promotion 40dd0e6e... (research_replay, ceiling observed_only) -> reserve (novelty gate: no blocking or warning matches, no override) -> claim -> single locked run -> close. Budget declared before outcome access: <=1 ID, <=120 wall minutes, 0 spend, 0 HTTP, one run; consumed 1 ID / ~70 minutes / 0 / 0. Reopen only with: (a) a fully disjoint forward window (decisions first settled after 2026-09-11) reaching >=60 settled conditioned clean decisions per gated horizon with >=10 entry dates under the unchanged rule and fence, counted outcome-blind; or (b) a true intra-session per-update publication clock in the estimate-revision source contract; or (c) a conditioning variable that is not a transformation of the pre-event price path against the implied repricing. Forbidden: implied-multiple or guard threshold moves, sigma/volatility envelopes (d-0013), horizon swaps, re-reading this cohort with another response field, pooling with the contaminated pre-08-31 slice. With this close every Phase-2 estimate-revision registrant from the 2026-08-29 pool is terminal except the parked exploration breadth registrant (isolated-control starvation, 8 lifetime decisions). Lane note: executed on root (fix/alpha-score-sleeve-same-day-idempotency) because the contract, registration, ledgers and warehouse are root-frozen artifacts in root's fixed validation queue (2026-09-09 followthrough); edge-v2 remains the V2 build authority and receives no qualification or conclusion migration from this ticket. trade_enabled=false; no orders.",
+  "paper_live_eligible": false,
+  "parameters": {
+    "locked_variables": [
+      "adjacent_overshoot_clean_forward_falsification_v1"
+    ],
+    "single_causal_variable": "adjacent_overshoot_clean_forward_falsification_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Forbidden: implied-multiple or prior-eps guard threshold moves on the same update-implied repricing rule; sigma/volatility envelope conditioning (d-0013 family closure); horizon swaps; re-reading this 150-decision clean cohort with another response field; pooling with the 1352 contaminated pre-2026-08-31 decisions; any rerun before the registered reopen counts under the unchanged rule.",
+    "new_evidence_required": "Reopen only with (a) a fully disjoint forward window of decisions first settled after 2026-09-11 reaching >=60 settled conditioned clean decisions per gated horizon (h5 and h10) with >=10 entry dates under the unchanged rule and fence, counted outcome-blind before any ID; or (b) a true intra-session per-update publication clock in the estimate-revision source contract; or (c) a conditioning variable that is not a transformation of the pre-event price path against the implied repricing.",
+    "realized_failure_mode": "already_priced",
+    "why_result_happened": "Very low surprise: the registration put 0.10 on this mechanism and the adjacent quiet-tape family had already rejected as already_priced on the same daily-batch consensus clock. Mild surprise that h10 direction was positive while h5 was negative, but B5 shows the h10 spread is not issuer-specific. B4 passed only because the clean slice spans 3 decision sessions."
+  },
+  "prediction": {
+    "confidence_reason": "The 2026-08-29 registration put 0.10 on this mechanism before any density was known and that figure is kept: the adjacent quiet-tape family (exp-20260831-001) was rejected as already_priced on the same daily-batch consensus clock, the clean slice spans only 3-5 entry dates so the date placebo is weak, and five bars must all pass. The trigger recount only removed the insufficient-sample failure mode at the gated horizons.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "already_priced",
+      "placebo_indistinguishable",
+      "insufficient_independent_rows"
+    ],
+    "recorded_at": "2026-09-12T20:42:42+00:00",
+    "success_probability": 0.1
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": "No AGENTS.md Gate 4 acceptance condition was met.",
+  "related_files": [
+    "data/experiments/exp-20260912-001/before_metrics.json",
+    "data/experiments/exp-20260912-001/after_metrics.json"
+  ],
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "secondary_windows": [],
+  "selected_evidence_grade": "lead",
+  "status": "rejected",
+  "timestamp": "2026-09-12T20:46:29+00:00",
+  "trial_family": "estimate_revision_pre_event_overshoot_clean_forward_falsification",
+  "trial_variant_id": "exp-20260912-001"
+}

@@ -1,0 +1,109 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "uncovered_exclusion_empties_short_side_and_starves_anyway",
+      "cross_side_overlap_remains_dominant_batch_blocker",
+      "stale_large_cap_borrow_excluded_by_transient_prefetch_throttle",
+      "retroactive_admission_of_pre_effective_batches"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [],
+  "change_summary": "Contract review of the exp-20260826-001 news-propagation pair readiness borrow gate consumed by the exp-20260827-001 sleeve (pre-registered by the frozen plan sha256 e3109c98286e4d14327044001a6382bbfa93835bebf91c9282ac9b1f143c15c8 bound in the ticket hypothesis before reservation; copied to data/experiments/exp-20260923-004/frozen_plan.md). Amendment wired into news_propagation_pair_forward_observer.build_readiness_records and news_propagation_pair_paper_sleeve.build_pair_basket_decision (the daily run.py pass and replay share the code): for batches first seen at or after 2026-09-23T17:00:00Z a short-side ticker without valid PIT borrow evidence is recorded in borrow_coverage.uncovered_tickers with its blocker kind under coverage_rule_version news_propagation_pair_borrow_coverage_v2 instead of blocking the batch; the batch blocks only on batch-level blockers (mixed_first_seen_at, missing polarity, cross_side_ticker_overlap, side concentration) or the new short_side_no_borrow_coverage; the sleeve excludes uncovered short tickers at admission (excluded_no_pit_borrow, labelled apart from excluded_unpriceable), renormalizes the equal row weights over the kept tickers exactly as the exp-20260913-007 priceability exclusion, and does not admit an emptied side. Outcome-blind identity projection over the 32 persisted readiness records (data/experiments/exp-20260923-004/news_pair_borrow_coverage_before.json sha256 1d84fe9d822da118aa5606d02fbd6e830b4fbf3df34807307790fcfccd0ea195, news_pair_borrow_coverage_after.json sha256 d992dfa31d5ded9686744e653b790ff0a66e6f642ecad0d074ee0c18c6933d50; fields read: record_id, first_seen_at, status, blockers, borrow_coverage counts, fetch_state status): frozen 6 ready / 26 blocked (1 of 13 since 2026-09-14, 0 since 09-15) versus hypothetical v2 17 ready / 15 blocked (7 of 13 since 09-14; 15 ready decision dates); the 142 per-ticker blockers split 83 missing_pit_borrow on tickers fetch_state marks not_found after an attempted prefetch, 18 missing on ok, 41 stale on ok; the amended observer rebuilds all 32 persisted pre-effective records byte-identically from the live exposure rows and borrow archive, so nothing persisted changes and no batch is admitted retroactively. Tests: observer 9/9 (3 new: post-effective uncovered ticker excluded not blocking incl. stale kind and overlap still blocking; zero covered short tickers -> short_side_no_borrow_coverage; pre-effective batch keeps v1 keys/blockers), sleeve 15/15 (1 new: exclusion with renormalized weights, both labels coexisting, emptied side not admitted, v1 record shape unchanged), exposure observer 16/16, run.py wiring 4/4. Frozen decisions untouched; H10 / 45bp per leg / USD 1000 per leg / 40% cap / >=20 baskets / >=10 dates unchanged; iBorrowDesk stays indicative; no PnL or outcome field read; trade_enabled=false.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "forward-only per-ticker borrow-coverage exclusion in the news-propagation pair readiness gate and sleeve admission (uncovered short tickers excluded and recorded instead of blocking the batch; batch blocked only when no short ticker is covered)",
+  "component": "quant/news_propagation_pair_forward_observer.py, quant/test_news_propagation_pair_forward_observer.py, quant/news_propagation_pair_paper_sleeve.py, quant/test_news_propagation_pair_paper_sleeve.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260923-004",
+  "hypothesis": "Contract review of the exp-20260826-001 news-propagation pair forward readiness gate consumed by the exp-20260827-001 pair sleeve, triggered by identity-only evidence: since the exp-20260913-007 leg-priceability amendment took effect on 2026-09-14 every one of the 13 subsequent first-seen batches (2026-09-15..2026-09-23) is status=blocked, 7 of them solely by per-ticker borrow blockers on 2-5 short-side tickers out of 20-81 (BAO/DBIM/EVON/GST/BAGZ/BLTG/GRAY/MOT/LILW/SBEV/HWEP) which the exposure observer targeted prefetch did attempt on the batch day and iBorrowDesk answered not_found (unlisted/OTC sic_peer_index symbols, the same symbols exp-20260913-007 already excludes as unpriceable at admission), so the readiness gate fail-closes whole batches on tickers the admission rule would exclude anyway and the >=20-settled-basket acceptance contract is unreachable (6 ready of 32 batches lifetime, 1 of 13 since 09-14, 0 since 09-15). Amendment, forward-only for batches first seen at or after 2026-09-23T17:00:00+00:00: (a) a short-side ticker without valid PIT borrow evidence (missing/stale/invalid/unavailable) no longer blocks the batch; it is recorded in borrow_coverage.uncovered_tickers with its blocker kind under coverage_rule_version news_propagation_pair_borrow_coverage_v2 and the batch stays measurement_ready unless a batch-level blocker (mixed_first_seen_at, missing polarity, cross_side_ticker_overlap, side concentration) applies or no short-side ticker is covered (new blocker short_side_no_borrow_coverage); (b) the sleeve admits only covered short-side tickers, recording excluded_no_pit_borrow on the short leg and renormalizing the equal row weights over the kept tickers exactly as the exp-20260913-007 priceability exclusion does, and a side that empties is not admitted. Both conditions are wired into the existing run.py daily pipeline pass (news_event_exposure_observer -> news_propagation_pair_forward_observer.run and news_propagation_pair_paper_sleeve.run, the same code path replay uses) so the amended gate applies automatically in every daily run with no further IDs. Batches first seen before the effective timestamp keep the frozen v1 semantics byte-for-byte (persisted records are never rewritten or re-evaluated), no basket is admitted retroactively, H10 / 45bp per leg / USD 1000 per leg / 40% row-weight cap / >=20 baskets / >=10 dates / both halves / <=40% ticker share are unchanged, iBorrowDesk stays indicative not a locate, and no basket PnL or outcome field is read. Frozen plan sha256 e3109c98286e4d14327044001a6382bbfa93835bebf91c9282ac9b1f143c15c8.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260826-001",
+    "exp-20260827-001",
+    "exp-20260913-007"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Measurement/contract repair only; no alpha, paper or live eligibility change; trade_enabled=false. Budget declared before reservation: 1 measurement_repair ID, <=90 wall minutes, 0 HTTP, 0 external spend, 0 outcome/PnL fields read; consumed 1 ID, ~5 wall minutes reservation->close (~75 including the startup recount and diagnosis), 0 HTTP, 0 spend, 0 outcome fields. Concurrency: codex.exe active on the edge-v2 worktree (exp-20260923-001..003 observed_only fixed-result diagnoses), disjoint write scope; root data/reopen_readiness.json regenerated at unit start (no lane crossed its bar). Secondary identity observations not acted on: (1) GST shows fetch_state status ok with archived_rows 0 (iBorrowDesk page exists but no daily rows) so it stays missing_pit_borrow -> excluded under v2; (2) cross_side_ticker_overlap remains the dominant batch-level blocker (9 of 15 hypothetical v2 blocked records) and is a separate variable not touched here; (3) two readiness records per day since 09-13 come from the unidentified mid-session run.py pass (user decision, d-0024), harmless here because record_id is batch-keyed. First post-effective batch = the 2026-09-24 nightly pass; acceptance counting continues (fully-covered batches are byte-identical under both rules).",
+  "parameters": {
+    "locked_variables": [
+      "readiness PIT rule archived_at<=first_seen and 3-day max age;batch-level readiness blockers;H10;45bp per leg;USD 1000 per leg;40% row-weight cap;acceptance >=20 baskets / >=10 dates / both halves positive / <=40% ticker share;persisted readiness records and basket decisions;record_id derivations;iBorrowDesk indicative not a locate"
+    ],
+    "single_causal_variable": "forward-only per-ticker borrow-coverage exclusion in the news-propagation pair readiness gate and sleeve admission (uncovered short tickers excluded and recorded instead of blocking the batch; batch blocked only when no short ticker is covered)"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "The exp-20260826-001 readiness gate required PIT borrow evidence for every short-side ticker and blocked the whole batch on any miss, while the entity map (sic_peer_index) keeps emitting unlisted/OTC symbols that iBorrowDesk has no page for (fetch_state not_found after an attempted prefetch on the batch day: BAO, DBIM, EVON, HWEP, LILW, SBEV, BAGZ, BLTG, GRAY, MOT) - the very symbols exp-20260913-007 already excludes at admission as unpriceable. So after 09-14 every batch carried 2-8 such tickers out of 20-109 and 13/13 were blocked although 85-98% of the short side was covered; the sleeve never saw a measurement_ready record and the >=20-basket acceptance contract was starving silently (9th/10th silent-starvation pattern: status ok, zero admissions). Excluding and recording uncovered tickers instead of blocking, with the same renormalization pattern as the priceability exclusion, keeps the gate outcome-blind, keeps every persisted record byte-identical (32/32 reproduced) and lifts the hypothetical ready count from 6/32 to 17/32 (7/13 since 09-14).",
+    "realized_failure_mode": "none",
+    "forbidden_near_neighbor_retry": "Do not relax the PIT rule (archived_at<=first_seen, 3-day max age), do not convert cross_side_ticker_overlap / polarity / concentration blockers into exclusions under this ID, do not re-evaluate or re-admit any batch first seen before 2026-09-23T17:00:00Z, do not rewrite persisted readiness records or basket decisions, do not read basket PnL to choose which tickers stay, and do not change H10 / 45bp / USD 1000 / 40% / >=20 / >=10.",
+    "new_evidence_required": "Only the frozen forward acceptance contract on baskets admitted under this gate: >=20 settled baskets over >=10 decision dates with net PnL after 45bp per leg positive, both chronological halves positive and <=40% single-ticker absolute gross share. Monitoring only (no ID): ready-batch cadence from the 2026-09-24 nightly pass onward (expected ~3-4 ready per week versus ~1 before, from the identity projection) and the uncovered-ticker share per admitted basket; if cross_side_ticker_overlap alone keeps >=50% of post-effective batches blocked over >=20 batches, a separate pre-registered contract review of the overlap rule may be opened (different variable, new ID)."
+  },
+  "prediction": {
+    "confidence_reason": "Visible in identity fields alone: 13/13 post-2026-09-14 readiness records are blocked, 7 carry only per-ticker borrow blockers whose tickers fetch_state marks not_found after an attempted prefetch on the batch day, and the same symbols are named unpriceable by exp-20260913-007; the hypothetical v2 statuses (17/32 ready, 7/13 since 09-14) are recomputed from persisted blockers and coverage counts only, no outcome field read. Frozen plan sha256 e3109c98286e4d14327044001a6382bbfa93835bebf91c9282ac9b1f143c15c8 written before reservation.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "uncovered_exclusion_empties_short_side_and_starves_anyway",
+      "cross_side_overlap_remains_dominant_batch_blocker",
+      "stale_large_cap_borrow_excluded_by_transient_prefetch_throttle",
+      "retroactive_admission_of_pre_effective_batches"
+    ],
+    "recorded_at": "2026-09-23T16:23:17+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260923-004/news_pair_borrow_coverage_before.json",
+    "data/experiments/exp-20260923-004/news_pair_borrow_coverage_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-23T16:28:27+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260923-004"
+}

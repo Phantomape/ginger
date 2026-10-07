@@ -1,0 +1,44 @@
+{
+  "experiment_id": "exp-20260906-002",
+  "revision": 2,
+  "gate": "persistent_allocation_lock_survives_residue_sweep",
+  "reason": "Deleting a released OS-lock pathname can split POSIX waiters across different inodes; preserve the common allocation anchor permanently.",
+  "lanes": {
+    "root": {
+      "released_anchor_preserved": true,
+      "removed_count": 0,
+      "kept_count": 1,
+      "pytest_passed": 13,
+      "pytest_seconds": 9.44,
+      "source_sha256": "4af6caede764e5a6001ef44303e4890059c74fc03e8caded06e8ac47a426c5ab",
+      "test_sha256": "a88d7733a1eddab3e9c055184a5a6ba9fa8d8bc391cc79e7c44f5e4846a57a8b"
+    },
+    "edge": {
+      "released_anchor_preserved": true,
+      "removed_count": 0,
+      "kept_count": 1,
+      "pytest_passed": 13,
+      "pytest_seconds": 9.52,
+      "source_sha256": "f1c12a33d3b79c6cc10b0808344111c419542e63fe087d6f9cad21b33a108702",
+      "test_sha256": "a88d7733a1eddab3e9c055184a5a6ba9fa8d8bc391cc79e7c44f5e4846a57a8b"
+    }
+  },
+  "trade_enabled": false,
+  "economic_progress": false,
+  "real_directories_swept": false,
+  "original_scientific_artifacts_unchanged": {
+    "data/experiments/exp-20260906-002/before.json": "be335b24663cc1a36be79f3f48e28878ada6713d8f0f6d5aa5b1cafcc9a7e41a",
+    "data/experiments/exp-20260906-002/after.json": "901e0a73873e2f999c955ea8de3feb95448c4537df766fa20024fd9628fa071a",
+    "experiments/logs/exp-20260906-002.json": "6e1b64c45309ec7f4c1509e653fa9e0e37d436d3b5d5f6002f9dccb098812d76"
+  },
+  "tests_cover": [
+    "released owner metadata",
+    "dead PID metadata",
+    "age-only stale lock",
+    "dry-run and actual deletion in disposable fixtures",
+    "same basename outside exact .git root still cleaned",
+    "ordinary locks and temporary files still cleaned",
+    "original seven cross-lane allocation tests"
+  ],
+  "reproduce": "python -B -m pytest scripts/test_experiment_lane_identity.py -q (root and Edge separately)"
+}

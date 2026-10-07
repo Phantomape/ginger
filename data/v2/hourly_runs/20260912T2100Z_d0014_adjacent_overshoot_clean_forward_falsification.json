@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_id": "20260912T2100Z_d0014_adjacent_overshoot_clean_forward_falsification",
+  "started_at": "2026-09-12T20:25:00Z",
+  "finished_at": "2026-09-12T21:00:00Z",
+  "agent": "claude-fable-5.1 scheduled alpha unit",
+  "status": "completed",
+  "work_unit": "d-0014 machine trigger fired -> identity check -> one-candidate revalidation scope -> reserve -> claim -> single locked run -> close (rejected)",
+  "experiment_id": "exp-20260912-001",
+  "experiment_uid": "expuid-afb826c754034d9f",
+  "lane": "alpha_search",
+  "change_type": "private_replay_scout",
+  "execution_lane": {
+    "worktree": "D:/Github/ginger",
+    "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+    "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+    "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 build authority; receives no qualification or conclusion migration from this ticket)",
+    "lane_choice": "root: the d-0014 contract, the 2026-08-29 registration, the outcome ledgers and the warehouse are root-frozen artifacts and the 2026-09-09 root followthrough kept this item in root's fixed validation queue with a <=24h trigger obligation; edge-v2 nav explicitly treats it as a root observation contract, not a V2 candidate",
+    "protocol_path": "docs/quant_agent_protocol_v2.md",
+    "protocol_sha256": "61f3c42b37925909dc4c80095c175e5d7fb27e56ae15f1959bfffd3d32df342a"
+  },
+  "budget": {
+    "declared_before_outcome_access": "<=1 experiment ID, <=120 wall minutes, 0 external spend, 0 HTTP, exactly one locked run; stop after this run regardless of result",
+    "consumed": "1 ID, ~35 wall minutes from trigger recount to close, 0 spend, 0 HTTP, 1 run",
+    "remaining": "0 for this family; family waits for its registered reopen counts"
+  },
+  "question": "Does the pre-event overshoot beyond the update-implied repricing partially revert over h5-h10 on the clean forward slice (decisions first settled after 2026-08-31) under the bars frozen verbatim from the 2026-08-29 registration?",
+  "cheapest_check": "The already-frozen d-0014 contract: constant-time outcome-blind recount, then one locked run of B1-B5 on the clean conditioned settled cohort.",
+  "branches": "All five bars pass -> observed_only lead, next step would be a default-off daily admission ticket. Any bar fails -> rejected, family frozen with numeric reopen counts; the whole 2026-08-29 Phase-2 estimate-revision pool is then terminal except the parked breadth registrant.",
+  "identity_check": {
+    "contract": "data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json",
+    "contract_sha256": "50ee0360c33117614eaf2311079aa11a164be5ae7a08fedb6294a1212c2ef901",
+    "fence_recomputed_from_freeze_commit": "5967838ae: 81 committed outcome files -> 1352 contaminated ids, sha256 312dabe4e50c6078a74e5ffa992b53bc629afd07ff92a2abd5ce139151d9fd29 == contract",
+    "fileset_sha256_verdict": "irreproducible by construction (the 82nd freeze-time file was never committed and the outcome ledgers are rewritten in place daily); documentary only, scientifically redundant because the fence is fully determined by the verified id list",
+    "conditioning_price_identity": "2307 pre-event (ticker, date, close) rows, sha256 aeb1f62ee14f2e0fd88339b9ae14418a21f1af9a1354e137ccc2b2ded2953b63, warehouse max date 2026-09-11; identical in recount and runner",
+    "recount_artifact": "data/alpha_search/phase2_adjacent_overshoot_trigger_recount_20260912.json (sha256 a422c90d350c4079793b3355ee2c384292e87d56fc22e9aa237bfb3bfb1446b2)",
+    "recount_script": "quant/experiments/adjacent_overshoot_clean_forward_recount_20260912.py (read-only, ALLOWED whitelist projection)",
+    "trigger": "h5 settled 76 (29 up / 47 down, 5 entry dates), h10 settled 55 (20 up / 35 down, 3 entry dates) vs bars >=30 / >=10 per leg -> fired 2026-09-12T20:37Z; action_due_at 2026-09-13T20:37Z; executed the same unit"
+  },
+  "scope_and_admission": {
+    "prior_fingerprints": "data/alpha_search/phase2_adjacent_overshoot_prior_fingerprints_20260912.json (build-history cutoff 2026-08-29T16:15:00Z, 1484 records, snapshot 144d79b0...; the 2026-08-30 snapshot failed repository_historical_snapshot_mismatch and had to be rebuilt)",
+    "surfaces": "data/alpha_search/phase2_adjacent_overshoot_surfaces_20260912.json (2026-08-30 registry with the OHLCV context surface rebound to the contract + recount artifacts)",
+    "candidate": "data/alpha_search/phase2_adjacent_overshoot_candidate_20260912.json (byte-identical registration blob, sha256 cfd622c6... verified)",
+    "scope": "data/alpha_search/phase2_adjacent_overshoot_scope_manifest_20260912.json -> scope-fde6787b422da73b009c51e4",
+    "preflight": "D0-D3 pass, zero legacy hits",
+    "panel": "data/alpha_search/phase2_adjacent_overshoot_selection_panel_20260912.json panel_hash 5701ac24f72249d6a27b20f54130c46106ecca0daffc46dd43f8ca88d5b32c9d; verify-panel valid=true",
+    "promotion": "data/alpha_search/promotions/phase2_adjacent_overshoot_clean_forward_20260912.json promotion_hash 40dd0e6ee1b7f9468ea555155fba3c218880a96263679365ac08dbe968aaa389 (research_replay, ceiling observed_only)",
+    "reservation": "experiment.py new --promotion-request ...: novelty gate enforced, zero blocking or warning matches, no override; claim receipt bound 3 research artifact snapshots"
+  },
+  "result": {
+    "decision": "rejected",
+    "cohort": "444 clean qualified -> 150 frozen-rule overshoot (58 up / 92 down; 283 not overshoot; 11 prior-eps guard; 0 bar/sign exclusions)",
+    "B1_residual_decay": "FAIL: down-minus-up spread h5 -0.73% (n 47/29), h10 +0.76% (n 35/20); both horizons required",
+    "B2_long_leg_vs_cash": "FAIL: down-overshoot long leg h10 -$1,744 (h5 -$2,394)",
+    "B3_vs_spy_qqq_h10": "FAIL: vs SPY -$698, vs QQQ -$1,682",
+    "B4_date_placebo_h10": "pass: real simple spread +0.59% > p90 placebo -0.27% (only 3 decision sessions; weak by construction)",
+    "B5_ticker_shuffle_h10": "FAIL: real +0.59% < shuffle p90 +2.18% (session drift, not issuer-specific)",
+    "h20": "0 settled, reported only",
+    "displaced_core": "not evaluable (documented contract limitation)",
+    "realized_failure_mode": "already_priced (predicted #1; brier 0.01)",
+    "artifact": "data/experiments/exp-20260912-001/adjacent_overshoot_clean_forward_result.json",
+    "runner": "quant/experiments/exp_20260912_001_adjacent_overshoot_clean_forward.py"
+  },
+  "closeout": {
+    "path": "experiment.py close --write-registry --append-log (rejected); ticket rejected; log rejected",
+    "reflection_amendment": "experiment.py close emits TODO placeholders for post_run_reflection.forbidden_near_neighbor_retry / new_evidence_required (only alpha_workflow finish fills them); both were filled post-close with the reopen text already recorded in the close notes. log sha256 before f681cc796180235e2d7c12f233762ff9d8e6ed9e84b54335633123426662ebaf -> after 8c0647a06e50ac680bbf1f2a40a43b1991f0defb009946c9da9f9f3d17dfb3d3; no decision, numeric or calibration field changed",
+    "derived_log": "docs/experiment_log.jsonl rebuilt (rebuild-log)",
+    "audit": "experiment.py audit --lean-strict: lean_quality_passed=true, lean_strict_passed=true after the amendment (false before it)"
+  },
+  "reopen_conditions": [
+    "(a) fully disjoint forward window of decisions first settled after 2026-09-11 reaching >=60 settled conditioned clean decisions per gated horizon with >=10 entry dates under the unchanged rule and fence, counted outcome-blind before any ID",
+    "(b) true intra-session per-update publication clock in the estimate-revision source contract",
+    "(c) a conditioning variable that is not a transformation of the pre-event price path against the implied repricing"
+  ],
+  "forbidden": "implied-multiple or guard threshold moves; sigma/volatility envelopes (d-0013); horizon swaps; re-reading this cohort with another response field; pooling with the contaminated pre-08-31 slice",
+  "phase2_estimate_revision_status": "2026-08-29 pool: exploitation quiet-tape rejected (exp-20260831-001), adjacent overshoot rejected (exp-20260912-001), exploration breadth parked (isolated control 8 lifetime decisions). No open Phase-2 registrant; lane closed until a registered reopen condition is met.",
+  "alpha_pulse_24h": {
+    "alpha_trials": 1,
+    "valid_alpha_trial": true,
+    "canonical_gate4_passes": 0,
+    "settled_outcomes_added_by_this_unit": 0,
+    "net_replacement_value_usd": 0.0,
+    "active_forward_sleeves": {
+      "news_propagation_pair": "5 pending baskets, 0 settled as of 2026-09-11T20:09-07:00 summary; first settlement was expected ~09-10 and has not yet materialised in the summary; root daily run owns settlement; contract needs >=20 closed over >=10 dates"
+    }
+  },
+  "root_lane_side_notes": [
+    "root exp-20260911-001 (codex, accepted): retired five legacy V1 paper groups; not touched by this unit",
+    "no other agent activity observed on 2026-09-12 in either lane before this unit"
+  ],
+  "scientific_outcome": {
+    "alpha_evidence_added": false,
+    "economic_progress": false,
+    "valid_alpha_trial": true,
+    "market_outcome_evaluations": 1
+  },
+  "next_alpha_action": {
+    "primary": "No open frozen contract with a fired trigger remains on root. Remaining root triggers: pair sleeve settlement (root daily run), negative-side 1508 re-read (frozen contract, check count), prediction-market fingerprint (stagnant). Per the simplified protocol, do not manufacture a topic: next unit checks the news-propagation pair first settlement and the 1508 re-read count outcome-blind, otherwise exits no-op.",
+    "secondary": "edge-v2 lane: H.8 family frozen (reopen >=30 after 2026-07-10, ~2027-02); next private-replay runner must write the post-cutoff artifact bindings itself."
+  },
+  "changes": [
+    "quant/experiments/adjacent_overshoot_clean_forward_recount_20260912.py (new, read-only)",
+    "quant/experiments/exp_20260912_001_adjacent_overshoot_clean_forward.py (new, read-only runner)",
+    "data/alpha_search/phase2_adjacent_overshoot_{trigger_recount,prior_fingerprints,candidate,candidate_pool,surfaces,generation_config,scope_manifest,preflight,selection_panel,panel_verification,proposal}_20260912.json",
+    "data/alpha_search/promotions/phase2_adjacent_overshoot_clean_forward_20260912.json",
+    "data/alpha_search/promotion_artifact_snapshots/{a422c90d..., 50ee0360..., 4e9ef413...} (claim-time snapshots)",
+    "data/alpha_search/events.jsonl (+ append-only discovery records from build-panel)",
+    "data/experiments/exp-20260912-001/{adjacent_overshoot_clean_forward_result,before_metrics,after_metrics}.json",
+    "experiments/{tickets,logs,cards,manifests}/exp-20260912-001.*, docs/experiment_registry.json, docs/experiment_log.jsonl",
+    "docs/v2/current_state.md, docs/v2/backlog.md, docs/v2/decision_log.jsonl d-0018",
+    "data/v2/hourly_runs/20260912T2100Z_d0014_adjacent_overshoot_clean_forward_falsification.json (this receipt)"
+  ],
+  "trade_enabled": false,
+  "orders_submitted": false,
+  "committed": false
+}

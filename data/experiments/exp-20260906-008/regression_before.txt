@@ -1,0 +1,195 @@
+FFFFFFFFF..                                                              [100%]
+================================== FAILURES ===================================
+____________ test_full_inclusive_window_is_covered_exactly_once[0] ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C0191641D0>
+lookback = 0
+
+    @pytest.mark.parametrize("lookback", [0, 359, 360, 730])
+    def test_full_inclusive_window_is_covered_exactly_once(monkeypatch, lookback):
+        broker = Broker()
+        state = fetch(monkeypatch, broker, lookback)
+        capture = state["broker_execution"]
+        start = date(2026, 9, 6) - timedelta(days=lookback)
+        expected = [start + timedelta(days=i) for i in range(lookback + 1)]
+        for kind, name in (("deals", "history_deals"), ("orders", "history_orders")):
+            actual = []
+            for left, right in broker.calls[kind]:
+                left, right = date.fromisoformat(left), date.fromisoformat(right)
+                assert 1 <= (right - left).days + 1 <= 360
+                actual.extend(left + timedelta(days=i) for i in range((right - left).days + 1))
+            assert actual == expected
+            assert capture["queries"][name]["status"] == "ok"
+>       assert FrozenClock.calls == 1
+E       assert 3 == 1
+E        +  where 3 = FrozenClock.calls
+
+quant\test_moomoo_history_paging.py:109: AssertionError
+___________ test_full_inclusive_window_is_covered_exactly_once[359] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C019175310>
+lookback = 359
+
+    @pytest.mark.parametrize("lookback", [0, 359, 360, 730])
+    def test_full_inclusive_window_is_covered_exactly_once(monkeypatch, lookback):
+        broker = Broker()
+        state = fetch(monkeypatch, broker, lookback)
+        capture = state["broker_execution"]
+        start = date(2026, 9, 6) - timedelta(days=lookback)
+        expected = [start + timedelta(days=i) for i in range(lookback + 1)]
+        for kind, name in (("deals", "history_deals"), ("orders", "history_orders")):
+            actual = []
+            for left, right in broker.calls[kind]:
+                left, right = date.fromisoformat(left), date.fromisoformat(right)
+                assert 1 <= (right - left).days + 1 <= 360
+                actual.extend(left + timedelta(days=i) for i in range((right - left).days + 1))
+            assert actual == expected
+            assert capture["queries"][name]["status"] == "ok"
+>       assert FrozenClock.calls == 1
+E       assert 3 == 1
+E        +  where 3 = FrozenClock.calls
+
+quant\test_moomoo_history_paging.py:109: AssertionError
+___________ test_full_inclusive_window_is_covered_exactly_once[360] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C019012710>
+lookback = 360
+
+    @pytest.mark.parametrize("lookback", [0, 359, 360, 730])
+    def test_full_inclusive_window_is_covered_exactly_once(monkeypatch, lookback):
+        broker = Broker()
+        state = fetch(monkeypatch, broker, lookback)
+        capture = state["broker_execution"]
+        start = date(2026, 9, 6) - timedelta(days=lookback)
+        expected = [start + timedelta(days=i) for i in range(lookback + 1)]
+        for kind, name in (("deals", "history_deals"), ("orders", "history_orders")):
+            actual = []
+            for left, right in broker.calls[kind]:
+                left, right = date.fromisoformat(left), date.fromisoformat(right)
+>               assert 1 <= (right - left).days + 1 <= 360
+E               assert (360 + 1) <= 360
+E                +  where 360 = (datetime.date(2026, 9, 6) - datetime.date(2025, 9, 11)).days
+
+quant\test_moomoo_history_paging.py:105: AssertionError
+___________ test_full_inclusive_window_is_covered_exactly_once[730] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C0191676D0>
+lookback = 730
+
+    @pytest.mark.parametrize("lookback", [0, 359, 360, 730])
+    def test_full_inclusive_window_is_covered_exactly_once(monkeypatch, lookback):
+        broker = Broker()
+        state = fetch(monkeypatch, broker, lookback)
+        capture = state["broker_execution"]
+        start = date(2026, 9, 6) - timedelta(days=lookback)
+        expected = [start + timedelta(days=i) for i in range(lookback + 1)]
+        for kind, name in (("deals", "history_deals"), ("orders", "history_orders")):
+            actual = []
+            for left, right in broker.calls[kind]:
+                left, right = date.fromisoformat(left), date.fromisoformat(right)
+>               assert 1 <= (right - left).days + 1 <= 360
+E               assert (730 + 1) <= 360
+E                +  where 730 = (datetime.date(2026, 9, 6) - datetime.date(2024, 9, 6)).days
+
+quant\test_moomoo_history_paging.py:105: AssertionError
+______________ test_both_sides_of_segment_boundary_are_retained _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C019191350>
+
+    def test_both_sides_of_segment_boundary_are_retained(monkeypatch):
+        broker = Broker()
+        first = date(2026, 9, 6) - timedelta(days=730)
+        days = [first, first + timedelta(days=359), first + timedelta(days=360), date(2026, 9, 6)]
+        broker.history_deals = [{"deal_id": str(i), "order_id": str(i), "create_time": day.isoformat(), "status": "OK"}
+                                for i, day in enumerate(days)]
+        result = fetch(monkeypatch, broker)
+>       assert [row["deal_id"] for row in result["broker_execution"]["deals"]] == ["0", "1", "2", "3"]
+E       AssertionError: assert [] == ['0', '1', '2', '3']
+E         
+E         Right contains 4 more items, first extra item: '0'
+E         Use -v to get more diff
+
+quant\test_moomoo_history_paging.py:120: AssertionError
+______ test_failed_segments_cannot_be_hidden_by_last_success[1-partial] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C019153110>
+failed = 1, status = 'partial'
+
+    @pytest.mark.parametrize("failed,status", [(1, "partial"), (2, "partial"), (3, "partial"), ("all", "error")])
+    def test_failed_segments_cannot_be_hidden_by_last_success(monkeypatch, failed, status):
+        broker = Broker(fail_segment=failed)
+        capture = fetch(monkeypatch, broker)["broker_execution"]
+        manifest = L._safe_query_manifest(capture)
+        for name in ("history_deals", "history_orders"):
+>           assert manifest[name]["status"] == status
+E           AssertionError: assert 'error' == 'partial'
+E             
+E             - partial
+E             + error
+
+quant\test_moomoo_history_paging.py:129: AssertionError
+______ test_failed_segments_cannot_be_hidden_by_last_success[2-partial] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C0191D7710>
+failed = 2, status = 'partial'
+
+    @pytest.mark.parametrize("failed,status", [(1, "partial"), (2, "partial"), (3, "partial"), ("all", "error")])
+    def test_failed_segments_cannot_be_hidden_by_last_success(monkeypatch, failed, status):
+        broker = Broker(fail_segment=failed)
+        capture = fetch(monkeypatch, broker)["broker_execution"]
+        manifest = L._safe_query_manifest(capture)
+        for name in ("history_deals", "history_orders"):
+>           assert manifest[name]["status"] == status
+E           AssertionError: assert 'error' == 'partial'
+E             
+E             - partial
+E             + error
+
+quant\test_moomoo_history_paging.py:129: AssertionError
+______ test_failed_segments_cannot_be_hidden_by_last_success[3-partial] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C01915DED0>
+failed = 3, status = 'partial'
+
+    @pytest.mark.parametrize("failed,status", [(1, "partial"), (2, "partial"), (3, "partial"), ("all", "error")])
+    def test_failed_segments_cannot_be_hidden_by_last_success(monkeypatch, failed, status):
+        broker = Broker(fail_segment=failed)
+        capture = fetch(monkeypatch, broker)["broker_execution"]
+        manifest = L._safe_query_manifest(capture)
+        for name in ("history_deals", "history_orders"):
+>           assert manifest[name]["status"] == status
+E           AssertionError: assert 'error' == 'partial'
+E             
+E             - partial
+E             + error
+
+quant\test_moomoo_history_paging.py:129: AssertionError
+______ test_failed_segments_cannot_be_hidden_by_last_success[all-error] _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C01903D7D0>
+failed = 'all', status = 'error'
+
+    @pytest.mark.parametrize("failed,status", [(1, "partial"), (2, "partial"), (3, "partial"), ("all", "error")])
+    def test_failed_segments_cannot_be_hidden_by_last_success(monkeypatch, failed, status):
+        broker = Broker(fail_segment=failed)
+        capture = fetch(monkeypatch, broker)["broker_execution"]
+        manifest = L._safe_query_manifest(capture)
+        for name in ("history_deals", "history_orders"):
+            assert manifest[name]["status"] == status
+            segments = {key: value for key, value in manifest.items() if key.startswith(name + ":")}
+>           assert len(segments) == 3
+E           assert 0 == 3
+E            +  where 0 = len({})
+
+quant\test_moomoo_history_paging.py:131: AssertionError
+=========================== short test summary info ===========================
+FAILED quant/test_moomoo_history_paging.py::test_full_inclusive_window_is_covered_exactly_once[0]
+FAILED quant/test_moomoo_history_paging.py::test_full_inclusive_window_is_covered_exactly_once[359]
+FAILED quant/test_moomoo_history_paging.py::test_full_inclusive_window_is_covered_exactly_once[360]
+FAILED quant/test_moomoo_history_paging.py::test_full_inclusive_window_is_covered_exactly_once[730]
+FAILED quant/test_moomoo_history_paging.py::test_both_sides_of_segment_boundary_are_retained
+FAILED quant/test_moomoo_history_paging.py::test_failed_segments_cannot_be_hidden_by_last_success[1-partial]
+FAILED quant/test_moomoo_history_paging.py::test_failed_segments_cannot_be_hidden_by_last_success[2-partial]
+FAILED quant/test_moomoo_history_paging.py::test_failed_segments_cannot_be_hidden_by_last_success[3-partial]
+FAILED quant/test_moomoo_history_paging.py::test_failed_segments_cannot_be_hidden_by_last_success[all-error]
+9 failed, 2 passed in 0.32s

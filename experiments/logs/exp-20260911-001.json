@@ -1,0 +1,193 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "pending_refills",
+      "settlement_stops",
+      "stale_recommendation_leak",
+      "unrelated_strategy_change"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "Paper flags alone left pending fills and stale recommendations alive. Synthetic tests reproduced those paths; cancellation, settlement guards and active-output exclusion now pass together."
+  },
+  "causal_components": [
+    "disable admissions",
+    "cancel unfilled paper entries",
+    "preserve settlement",
+    "remove active recommendations"
+  ],
+  "change_summary": "Retire five owner-selected V1 paper groups: stop admissions, cancel pending, preserve settlement and remove active recommendations.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "owner_authorized_v1_five_group_paper_retirement",
+  "component": "quant/run.py, quant/paper_sleeve_runner.py, quant/ai_optical_paper_sleeve.py, quant/alpha_score_market_regime_paper_sleeve.py, quant/accepted_source_consensus_paper_sleeve.py, quant/free_data_cross_source_consensus_paper_sleeve.py, quant/accepted_helper_source_priority_allocator_paper_sleeve.py, quant/industry_relative_laggard_repair_paper_sleeve.py, quant/state_surface_sleeve.py, quant/space_catalyst_sleeve.py, quant/event_sleeve_bundle.py, quant/report_generator.py, quant/default_off_alpha_attribution.py, quant/pilot_tracker.py, quant/test_ai_optical_paper_sleeve.py, quant/test_alpha_score_market_regime_paper_sleeve.py, quant/test_accepted_source_consensus_paper_sleeve.py, quant/test_free_data_cross_source_consensus_paper_sleeve.py, quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py, quant/test_industry_relative_laggard_repair_paper_sleeve.py, quant/test_state_surface_sleeve.py, quant/test_space_catalyst_sleeve.py, quant/test_event_sleeve_bundle.py, quant/test_default_off_alpha_attribution.py, quant/test_pilot_tracker.py, quant/test_paper_sleeve_runner.py, quant/test_v1_paper_sleeve_retirement.py, quant/test_v1_paper_retirement_reporting.py, quant/test_space_state_surface_retirement.py, quant/sleeve_health.py, quant/test_sleeve_health.py, quant/test_run_daily_wiring.py, experiments/cards/exp-20260911-001.md, experiments/manifests/exp-20260911-001.json, experiments/logs/exp-20260911-001.json, experiments/artifacts/exp-20260911-001_v1_paper_retirement.md, data/experiments/exp-20260911-001, quant/experiments/exp_20260911_001_v1_five_group_paper_retirement.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "economic_progress": false,
+  "experiment_id": "exp-20260911-001",
+  "experiment_uid": "expuid-5bba748432754604",
+  "gate4": {
+    "applicable": false,
+    "reason": "Owner-authorized paper retirement with synthetic behavior acceptance; no return or alpha qualification claim."
+  },
+  "hypothesis": "Implement the owner-authorized retirement of five legacy V1 paper strategy groups without losing historical evidence or interrupting settlement of existing positions.",
+  "lane": "measurement_repair",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "default_off_paper_sleeve_retirement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260616-028"
+  ],
+  "new_evidence_type": "explicit_owner_retirement_instruction_after_read_only_audit",
+  "next_retry_requires": [
+    "Owner changes retirement decision and separately registered independent PIT/forward evidence meets the existing qualification protocol."
+  ],
+  "notes": "296 relevant tests passed. No return evaluation, production state mutation, full daily run, live order or core alpha-score change; see bound artifact.",
+  "parameters": {
+    "locked_variables": [
+      "owner_authorized_v1_five_group_paper_retirement"
+    ],
+    "single_causal_variable": "owner_authorized_v1_five_group_paper_retirement"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not restore or retune these sleeves on the same consumed V1 windows.",
+    "new_evidence_required": "Owner changes retirement decision and separately registered independent PIT/forward evidence meets the existing qualification protocol.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "Paper flags alone left pending fills and stale recommendations alive. Synthetic tests reproduced those paths; cancellation, settlement guards and active-output exclusion now pass together."
+  },
+  "prediction": {
+    "confidence_reason": "Explicit owner retirement, existing paper flags and settlement paths; synthetic lifecycle and reporting regressions define acceptance, with no profitability claim.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "pending_refills",
+      "settlement_stops",
+      "stale_recommendation_leak",
+      "unrelated_strategy_change"
+    ],
+    "recorded_at": "2026-09-11T06:05:30+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 0,
+  "production_impact": {
+    "activation": "Next daily run cancels pending and refreshes reports; production ledgers were not manually changed.",
+    "backtester_adapter_changed": false,
+    "core_alpha_score_changed": false,
+    "manual_pilot_recommendations_changed": true,
+    "paper_admissions_changed": true,
+    "paper_settlement_rules_changed": false,
+    "production_orders_changed": false,
+    "production_signal_path_changed": false,
+    "run_adapter_changed": true,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260911-001/before.json",
+    "data/experiments/exp-20260911-001/after.json",
+    "experiments/artifacts/exp-20260911-001_v1_paper_retirement.md",
+    "quant/run.py",
+    "quant/ai_optical_paper_sleeve.py",
+    "quant/alpha_score_market_regime_paper_sleeve.py",
+    "quant/accepted_source_consensus_paper_sleeve.py",
+    "quant/free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/state_surface_sleeve.py",
+    "quant/space_catalyst_sleeve.py",
+    "quant/event_sleeve_bundle.py",
+    "quant/report_generator.py",
+    "quant/default_off_alpha_attribution.py",
+    "quant/pilot_tracker.py",
+    "quant/test_ai_optical_paper_sleeve.py",
+    "quant/test_alpha_score_market_regime_paper_sleeve.py",
+    "quant/test_accepted_source_consensus_paper_sleeve.py",
+    "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+    "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+    "quant/test_industry_relative_laggard_repair_paper_sleeve.py",
+    "quant/test_state_surface_sleeve.py",
+    "quant/test_space_catalyst_sleeve.py",
+    "quant/test_event_sleeve_bundle.py",
+    "quant/test_v1_paper_sleeve_retirement.py",
+    "quant/test_v1_paper_retirement_reporting.py",
+    "quant/test_space_state_surface_retirement.py",
+    "quant/sleeve_health.py",
+    "quant/test_run_daily_wiring.py"
+  ],
+  "reproduction_command": "D:\\Github\\ginger\\.venv\\Scripts\\python.exe -B -m pytest quant/test_v1_paper_sleeve_retirement.py quant/test_ai_optical_paper_sleeve.py quant/test_alpha_score_market_regime_paper_sleeve.py quant/test_accepted_source_consensus_paper_sleeve.py quant/test_free_data_cross_source_consensus_paper_sleeve.py quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py quant/test_industry_relative_laggard_repair_paper_sleeve.py quant/test_space_state_surface_retirement.py quant/test_space_catalyst_sleeve.py quant/test_state_surface_sleeve.py quant/test_event_sleeve_bundle.py quant/test_v1_paper_retirement_reporting.py quant/test_default_off_alpha_attribution.py quant/test_pilot_tracker.py quant/test_sleeve_health.py quant/test_run_daily_wiring.py quant/test_paper_sleeve_runner.py -q --tb=short",
+  "research_refs": [],
+  "returns_evaluated": false,
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-11T06:15:29+00:00",
+  "trial_family": "owner_authorized_paper_retirement",
+  "trial_variant_id": "exp-20260911-001",
+  "validation": {
+    "command": [
+      "D:\\Github\\ginger\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-m",
+      "pytest",
+      "quant/test_v1_paper_sleeve_retirement.py",
+      "quant/test_ai_optical_paper_sleeve.py",
+      "quant/test_alpha_score_market_regime_paper_sleeve.py",
+      "quant/test_accepted_source_consensus_paper_sleeve.py",
+      "quant/test_free_data_cross_source_consensus_paper_sleeve.py",
+      "quant/test_accepted_helper_source_priority_allocator_paper_sleeve.py",
+      "quant/test_industry_relative_laggard_repair_paper_sleeve.py",
+      "quant/test_space_state_surface_retirement.py",
+      "quant/test_space_catalyst_sleeve.py",
+      "quant/test_state_surface_sleeve.py",
+      "quant/test_event_sleeve_bundle.py",
+      "quant/test_v1_paper_retirement_reporting.py",
+      "quant/test_default_off_alpha_attribution.py",
+      "quant/test_pilot_tracker.py",
+      "quant/test_sleeve_health.py",
+      "quant/test_run_daily_wiring.py",
+      "quant/test_paper_sleeve_runner.py",
+      "-q",
+      "--tb=short"
+    ],
+    "exit_code": 0,
+    "summary": "296 passed in 6.46s"
+  }
+}

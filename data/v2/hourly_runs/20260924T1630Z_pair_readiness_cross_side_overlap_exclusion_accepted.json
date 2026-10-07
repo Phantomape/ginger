@@ -1,0 +1,76 @@
+{
+ "record_type": "v2_hourly_run_receipt",
+ "run_id": "20260924T1630Z_pair_readiness_cross_side_overlap_exclusion_accepted",
+ "agent": "claude-fable-5.1 scheduled alpha unit",
+ "started_at": "2026-09-24T16:09:36+00:00",
+ "finished_at": "2026-09-24T16:30:33+00:00",
+ "status": "completed",
+ "execution_lane": {
+  "worktree": "D:/Github/ginger",
+  "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+  "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+  "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority); this unit is root production_maintenance of the root-owned pair sleeve readiness gate; no qualification or conclusion migrated across refs",
+  "protocol_path": "docs/quant_agent_protocol_v2.md",
+  "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c",
+  "edge_v2_state": "automation/edge-v2 HEAD 11ef9c483; codex.exe active, exp-20260923-005 + exp-20260924-001..003 fixed-result attribution diagnoses (buyback / treasury) uncommitted; disjoint write scope"
+ },
+ "work_unit": "startup recount -> exp-20260923-004 fault-recovery check PASSED (2026-09-24T03:07Z nightly readiness record pair-ready-9bae9acb9355cb75715f02c0 carries coverage_rule_version news_propagation_pair_borrow_coverage_v2, status measurement_ready, 30/34 covered, uncovered BAO/DBIM/EVON/GST; sleeve appended basket news-first-seen-f5b68e8786f49e625e96 with short_leg.excluded_no_pit_borrow=[BAO,DBIM,EVON,GST], excluded_unpriceable 31, 3 short / 6 long weights summing to 1.0) -> exp-20260922-007 form4 collapse visible (closed_forward_row_records_current=3, duplicate_economic_closed_rows_excluded=1; readiness lane un-stalled 1->2 economic closed rows) -> data/reopen_readiness.json regenerated 16:13:54Z (no lane crossed its bar; entity_theme 232194/312738; negative-side 1748; exit_lifecycle settled 1029; q5 8/20) -> identity-only blocker census over 33 readiness records: under the v2 borrow rule cross_side_ticker_overlap is the ONLY remaining blocker on 6 of the 14 post-09-14 records (10/33 lifetime), overlap content = whole sic_peer groups, residual sides after removing overlap non-empty with max row weight <= 0.087 -> frozen plan hashed 16:18:07Z before reservation -> exp-20260924-004 / expuid-b986642a3afa4fac measurement_repair contract review ACCEPTED: forward-only (batches first seen >= 2026-09-24T17:00:00Z) overlap tickers excluded from both sides / both legs and recorded instead of blocking; 33/33 persisted records rebuilt byte-identically; tests 12+16+16+10 green; lean-strict green",
+ "startup_recount": {
+  "pair_readiness": "33 records lifetime, 7 measurement_ready (frozen); first v2 record 09-24 nightly ready; sleeve 7 decisions (4 pending, 3 unsettleable, 0 settled), acceptance_progress closed_baskets 0 / decision_dates 0 (counting restarted 2026-09-14)",
+  "form4_sale_overhang_forward": "closed_forward_row_records_current 3, duplicate_economic_closed_rows_excluded 1, economic closed rows 2 (DE 08-24 collapse visible), lane stalled false",
+  "reopen_readiness": "regenerated 2026-09-24T16:13:54Z; entity_theme_axis_c settled 232194 (bar 312738); news_propagation_negative_side 1748 (reasoned park unchanged); phase2_estimate_revision ready (breadth park unchanged); exit_lifecycle settled 1029; short_volume_q5 8/20; move_relief 0/30 stalled 65d; intraday_triage stalled 51d (user decision)"
+ },
+ "experiments": [
+  {
+   "experiment_id": "exp-20260924-004",
+   "experiment_uid": "expuid-b986642a3afa4fac",
+   "lane": "measurement_repair",
+   "status": "accepted",
+   "root_cause": "exp-20260824-002 / exp-20260826-001 readiness gate blocked a whole batch whenever any ticker sat on both sides; sic_peer_index peer expansion puts an entire peer group on both sides whenever one negative and one positive event of that group land in the same batch (semis 23-33 tickers, autos 17, China internet / AI software 14-20); 10/33 lifetime and 6/14 post-09-14 batches blocked that way, and under the exp-20260923-004 v2 borrow rule overlap was the only remaining blocker on those 6",
+   "fix": "forward-only overlap exclusion (rule_version news_propagation_pair_cross_side_overlap_exclusion_v2, effective 2026-09-24T17:00:00Z): observer excludes overlap tickers from both sides for readiness evaluation and records overlap_exclusion {excluded_tickers, long/short residual ticker_count/row_count/max_ticker_row_weight}; concentration cap and v2 borrow coverage evaluated on the residual sides; blocks only on long_side_emptied_by_overlap / short_side_emptied_by_overlap or other batch-level blockers; sleeve removes the excluded tickers from both legs (excluded_cross_side_overlap per leg, independent label), renormalises equal weights, never admits an emptied side; pre-effective batches byte-identical; no persisted record rewritten; no retroactive admission; H10/45bp/USD1000/40%/>=20/>=10 unchanged",
+   "identity_projection": "data/experiments/exp-20260924-004/news_pair_overlap_exclusion_before.json (sha256 5a1a34d1e2c0be73b8e33f2e676a6f887849d05ae5c121d384f39cab2e430fd2) / _after.json (sha256 d87b1d92f5f5e50affb51aa925e3fa6b6450baa082ec90192e19745c205f1fc3): frozen 7 ready / 26 blocked of 33 (2/14 since 09-14); hypothetical v2 18/33 (8/14); v2 + overlap exclusion 25/33 (14/14), 20 ready decision dates; 33/33 persisted records rebuilt byte-identically by the amended observer (0 post-effective records yet)",
+   "frozen_plan_sha256": "e1f6fd8035b179086b0b2063df21e69739e75af6ca249aca084985607c4ba836 (hashed 16:18:07Z before reservation, bound in the ticket hypothesis; reserved 16:19:18Z, claimed 16:19Z, closed 16:26:04Z)",
+   "tests": "observer 12/12 (3 new), sleeve 16/16 (1 new), exposure observer 16/16, run.py wiring -k pair/news/exposure 10/10; lean-strict audit green after reflection fill"
+  }
+ ],
+ "zero_id_decisions": [
+  {
+   "kind": "regenerate",
+   "what": "data/reopen_readiness.json rebuilt at unit start",
+   "why": "daily counters; codex builder scope closed 09-22"
+  },
+  {
+   "kind": "skip",
+   "what": "negative-side 1508 re-read (1748/1508) and phase2 breadth candidate",
+   "why": "reasoned parks unchanged: pair build alive and now admitting; breadth control leg unreachable on the feed batch clock"
+  },
+  {
+   "kind": "note",
+   "what": "untracked .portfolio-diagnostics-20260924.py / .portfolio-readonly-20260924.py (09:09 local) read live moomoo positions for a portfolio review",
+   "why": "another writer (concurrent claude sessions); not touched, not this unit's scope"
+  }
+ ],
+ "economic_progress": false,
+ "alpha_trials": 0,
+ "budget": {
+  "declared_before_outcome_access": "<=1 measurement_repair ID, <=90 wall minutes, 0 HTTP, 0 external spend, 0 outcome/PnL fields read",
+  "consumed": "1 ID, ~7 wall minutes reservation->close (~20 incl. startup recount and diagnosis), 0 HTTP, 0 spend, 0 outcome fields read",
+  "remaining": "0 IDs this unit"
+ },
+ "concurrency": "codex.exe active on edge-v2 (exp-20260923-005, exp-20260924-001..003); six claude.exe processes; no write-scope overlap with the four reserved files; other dirty files preserved untouched",
+ "not_done": [
+  "missing_long_polarity / missing_short_polarity blockers (5 lifetime, 0 post-09-14) untouched - data-determined, no evidence of a defect",
+  "mid-session run.py pass still produces two readiness records per day (user decision d-0024)",
+  "3 legacy unsettleable baskets and the 4 pending baskets settle via the daily run; first countable settlement ~2026-09-29",
+  "GST stays uncovered (iBorrowDesk page without daily rows) - excluded under v2, not a blocker"
+ ],
+ "next_unit": "(1) constant-time check that the 2026-09-25 nightly readiness record carries overlap_exclusion.rule_version news_propagation_pair_cross_side_overlap_exclusion_v2 and, if its batch has overlap, status measurement_ready with a basket_decision whose legs list excluded_cross_side_overlap; (2) weekly ready cadence recount (expect nearly every batch ready unless polarity-missing); (3) recounts: pair first countable settlement ~09-29, exit_lifecycle, entity_theme 312738 ~late Oct; (4) no further review of this gate without a new identity-visible blocker class",
+ "traps_recorded": [
+  "A pre-registered failure mode of the previous contract review (cross_side_overlap_remains_dominant_batch_blocker) is the cheapest identity-only trigger for the next review - read the prior prediction before the funnel",
+  "Test fixtures with 3 tickers per side cannot exercise a single-ticker exclusion under a 40% cap (residual 0.5 > 0.4) - size fixtures to the cap before asserting ready",
+  "Bash heredocs here break on backticks and apostrophes inside the body even with a quoted terminator - write patch scripts to files",
+  "The exp-20260923-004 label excluded_no_pit_borrow is emitted only when the record lists uncovered tickers; new labels that always emit (excluded_cross_side_overlap with []) differ by design - document per label"
+ ],
+ "decision_log": "d-0026",
+ "trade_enabled": false
+}

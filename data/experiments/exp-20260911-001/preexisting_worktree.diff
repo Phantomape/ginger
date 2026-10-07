@@ -1,0 +1,158 @@
+diff --git a/quant/report_generator.py b/quant/report_generator.py
+index a6fac79df..073149430 100644
+--- a/quant/report_generator.py
++++ b/quant/report_generator.py
+@@ -123,7 +123,9 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
+                            sec_10k_forward_watch=None,
+                            non_ohlcv_snapshot=None,
+                            crypto_sleeve=None,
+-                           bracket_orders=None):
++                           bracket_orders=None,
++                           broker_performance=None,
++                           execution_attribution=None):
+     """
+     Build a human-readable daily trade report string.
+ 
+@@ -185,6 +187,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
+     Returns:
+         str: Formatted report
+     """
++    diary_metrics = metrics
+     lines = []
+     now   = datetime.now().strftime("%Y-%m-%d %H:%M")
+ 
+@@ -3377,6 +3380,59 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
+             lines.append(a)
+ 
+     # ── Performance metrics ─────────────────────────────────────────────────
++    if broker_performance is not None:
++        lines.append("\n" + "-" * 60)
++        lines.append("BROKER TRADING P&L  (covered closed lifecycles)")
++        lines.append("-" * 60)
++        counts = broker_performance.get("counts") or {}
++        lines.append(
++            f"  Status: {broker_performance.get('status', 'unavailable')}  "
++            f"Source as of: {broker_performance.get('source_as_of') or 'unavailable'}"
++        )
++        lines.append(
++            f"  Evaluated: {counts.get('evaluated_lifecycle_count', 0)}  "
++            f"Excluded closed: {counts.get('excluded_lifecycle_count', 0)}  "
++            f"Unlinked fills: {counts.get('unlinked_fill_count', 0)}"
++        )
++        usd = (broker_performance.get("pnl_by_currency") or {}).get("USD") or {}
++        net = usd.get("net_trading_pnl_after_order_fees")
++        if net is not None:
++            lines.append(f"  Gross trading P&L: ${usd['gross_trading_pnl_before_order_fees']:,.2f}")
++            lines.append(f"  Reported order fees: ${usd['order_fee_total']:,.2f}")
++            lines.append(f"  Net trading P&L after order fees: ${net:,.2f}")
++        else:
++            lines.append("  Net trading P&L: unavailable (not zero)")
++        reasons = broker_performance.get("coverage_reasons") or {}
++        if reasons:
++            lines.append("  Coverage: " + "; ".join(f"{key}={value}" for key, value in sorted(reasons.items())))
++        lines.append("  Excludes open-position MTM, dividends, financing and borrow costs.")
++        attribution = broker_performance.get("strategy_attribution") or {}
++        by_strategy = attribution.get("by_strategy") or {}
++        if by_strategy:
++            lines.append("  EXPLICITLY TAGGED MACHINE-ADVICE TRADES (covered subset)")
++            for strategy, values in sorted(by_strategy.items()):
++                lines.append(f"    {strategy}: {values['evaluated_lifecycle_count']} closed; "
++                             f"net after order fees ${values['net_trading_pnl_after_order_fees']:,.2f}")
++            lines.append(f"  Unattributed closed lifecycles: {attribution.get('unattributed_lifecycle_count', 0)}")
++            lines.append("  Broker remark linkage verifies association, not causal alpha or LLM approval.")
++        else:
++            lines.append("  Account-wide trading sample; strategy attribution unavailable.")
++        lines.append("  This is not total account return or strategy alpha.")
++
++    if execution_attribution is not None:
++        lines.append("\nMACHINE ADVICE TRACKING (no orders submitted)")
++        lines.append(f"  Status: {execution_attribution.get('status', 'unavailable')}")
++        lines.append("  If independently approved and placed, copy the exact remark to the broker order.")
++        lines.append("  An existing order or a different quantity cannot reuse this tracking identity.")
++        lines.append("  Existing resting orders keep their original identity; this section does not request replacement orders.")
++        for snapshot in execution_attribution.get("decisions", []):
++            decision = snapshot["decision"]
++            lines.append(f"  {decision['code']} {decision['side']} {decision['quantity']} "
++                         f"[{decision['action_kind']}] {decision['strategy_id']} "
++                         f"remark={snapshot['broker_remark']}")
++        lines.append("  Missing explicit links remain unattributed; historical position labels are not proof.")
++
++    metrics = diary_metrics
+     if metrics and metrics.get("total_trades", 0) > 0:
+         lines.append("\n" + "-" * 60)
+         lines.append("PERFORMANCE METRICS  (realized P&L)")
+diff --git a/quant/run.py b/quant/run.py
+index 19a92b304..449bd8bca 100644
+--- a/quant/run.py
++++ b/quant/run.py
+@@ -167,6 +167,31 @@ def _save_text(text, filepath):
+     log.info(f"Saved → {filepath}")
+ 
+ 
++def _build_broker_performance_snapshot():
++    """Read account measurement after decisions; failure cannot change trading."""
++    from broker_performance import (
++        compute_broker_performance,
++        unavailable_broker_performance,
++    )
++
++    try:
++        return compute_broker_performance()
++    except Exception as exc:
++        log.warning("Broker performance unavailable: %s", type(exc).__name__)
++        return unavailable_broker_performance("measurement_failed")
++
++
++def _build_execution_attribution_snapshot(**kwargs):
++    from execution_attribution import build_daily_attribution_decisions
++
++    try:
++        return build_daily_attribution_decisions(**kwargs)
++    except Exception as exc:
++        log.warning("Prospective decision attribution unavailable: %s", exc)
++        return {"status": "unavailable", "decisions": [], "trade_enabled": False,
++                "stage": "machine_advice_not_order_authorization"}
++
++
+ _RUN_LOCK_HANDLE = None  # kept alive for the process lifetime so the OS holds the lock
+ 
+ 
+@@ -3529,6 +3554,7 @@ def main():
+         select_pilot_entry_candidates,
+     )
+ 
++    _broker_refresh_started_at = datetime.now(timezone.utc).isoformat()
+     _moomoo_refresh_status = _refresh_open_positions_from_moomoo()
+     _positions_stale = _moomoo_refresh_status in ("fallback", "unavailable")
+     open_positions    = _load_open_positions()
+@@ -5872,6 +5898,12 @@ def main():
+ 
+     # ── Step 7: Quant report ──────────────────────────────────────────────────
+     _print_section("STEP 7 — Quant report")
++    execution_attribution = _build_execution_attribution_snapshot(
++        as_of=today_iso, signals=signals, pilot_signals=pilot_signals,
++        addon_actions=addon_actions, bracket_orders=bracket_orders_plan,
++        refresh_status=_moomoo_refresh_status, capture_not_before=_broker_refresh_started_at,
++    )
++    broker_performance = _build_broker_performance_snapshot()
+     report = generate_daily_report(
+         signals          = signals,
+         features_dict    = features_dict,
+@@ -5928,6 +5960,8 @@ def main():
+         non_ohlcv_snapshot = non_ohlcv_snapshot,
+         crypto_sleeve = crypto_sleeve,
+         bracket_orders = bracket_orders_plan,
++        broker_performance = broker_performance,
++        execution_attribution = execution_attribution,
+     )
+     print("\n" + report)
+     saved_report_path = save_report(report)
+@@ -5939,6 +5973,8 @@ def main():
+ 
+     quant_signals_payload = {
+         "generated_at":   datetime.now(timezone.utc).isoformat(),
++        "broker_performance": broker_performance,
++        "execution_attribution": execution_attribution,
+         "market_regime":  market_regime,
+         "portfolio_heat": portfolio_heat,
+         "signals":        signals,

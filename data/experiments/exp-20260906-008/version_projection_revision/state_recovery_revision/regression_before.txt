@@ -1,0 +1,136 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_______ test_committed_capture_recovers_interrupted_state_write[False] ________
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3054/test_committed_capture_recover0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DFEDE240D0>
+existing_state = False
+
+    @pytest.mark.parametrize("existing_state", [False, True])
+    def test_committed_capture_recovers_interrupted_state_write(tmp_path, monkeypatch, existing_state):
+        first = _capture()
+        if existing_state:
+            L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+        latest = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+        latest["positions"][0]["qty"] = 12
+        original_write = L.atomic_write_json
+    
+        def fail_state_write(value, path, **kwargs):
+            if Path(path).name == "state.json":
+                raise PermissionError("simulated state write failure after manifest commit")
+            return original_write(value, path, **kwargs)
+    
+        with monkeypatch.context() as patch:
+            patch.setattr(L, "atomic_write_json", fail_state_write)
+            with pytest.raises(PermissionError, match="state write failure"):
+                L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+        raw = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+        assert _jsonl(tmp_path / "collection_manifests.jsonl")[-1]["fact"]["collection_id"] == "capture-2"
+        if existing_state:
+            with pytest.raises(L.BrokerLedgerConflictError, match="latest committed capture"):
+                L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+>       result = L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+quant\test_broker_execution_ledger.py:588: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+quant\broker_execution_ledger.py:1392: in persist_broker_execution_capture
+    state = json.loads((root / "state.json").read_text(encoding="utf-8"))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3054/test_committed_capture_recover0/state.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Administrator\\AppData\\Local\\Temp\\pytest-of-Administrator\\pytest-3054\\test_committed_capture_recover0\\state.json'
+
+C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\pathlib.py:1044: FileNotFoundError
+________ test_committed_capture_recovers_interrupted_state_write[True] ________
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3054/test_committed_capture_recover1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DFEDCB0450>
+existing_state = True
+
+    @pytest.mark.parametrize("existing_state", [False, True])
+    def test_committed_capture_recovers_interrupted_state_write(tmp_path, monkeypatch, existing_state):
+        first = _capture()
+        if existing_state:
+            L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+        latest = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+        latest["positions"][0]["qty"] = 12
+        original_write = L.atomic_write_json
+    
+        def fail_state_write(value, path, **kwargs):
+            if Path(path).name == "state.json":
+                raise PermissionError("simulated state write failure after manifest commit")
+            return original_write(value, path, **kwargs)
+    
+        with monkeypatch.context() as patch:
+            patch.setattr(L, "atomic_write_json", fail_state_write)
+            with pytest.raises(PermissionError, match="state write failure"):
+                L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+        raw = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+        assert _jsonl(tmp_path / "collection_manifests.jsonl")[-1]["fact"]["collection_id"] == "capture-2"
+        if existing_state:
+>           with pytest.raises(L.BrokerLedgerConflictError, match="latest committed capture"):
+E           Failed: DID NOT RAISE <class 'broker_execution_ledger.BrokerLedgerConflictError'>
+
+quant\test_broker_execution_ledger.py:586: Failed
+______ test_missing_state_does_not_allow_old_capture_or_changed_snapshot ______
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3054/test_missing_state_does_not_al0')
+
+    def test_missing_state_does_not_allow_old_capture_or_changed_snapshot(tmp_path):
+        first = _capture()
+        L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+        latest = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+        L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+        (tmp_path / "state.json").unlink()
+        raw = {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+        with pytest.raises(L.BrokerLedgerConflictError, match="latest committed capture"):
+>           L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+
+quant\test_broker_execution_ledger.py:606: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+quant\broker_execution_ledger.py:1392: in persist_broker_execution_capture
+    state = json.loads((root / "state.json").read_text(encoding="utf-8"))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3054/test_missing_state_does_not_al0/state.json')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Administrator\\AppData\\Local\\Temp\\pytest-of-Administrator\\pytest-3054\\test_missing_state_does_not_al0\\state.json'
+
+C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\pathlib.py:1044: FileNotFoundError
+=========================== short test summary info ===========================
+FAILED quant/test_broker_execution_ledger.py::test_committed_capture_recovers_interrupted_state_write[False]
+FAILED quant/test_broker_execution_ledger.py::test_committed_capture_recovers_interrupted_state_write[True]
+FAILED quant/test_broker_execution_ledger.py::test_missing_state_does_not_allow_old_capture_or_changed_snapshot
+3 failed, 24 deselected in 0.55s

@@ -1,0 +1,78 @@
+{
+ "record_type": "v2_hourly_run_receipt",
+ "run_id": "20260925T1631Z_warehouse_intraday_bar_write_guard_repair_accepted",
+ "agent": "claude-fable-5.1 scheduled alpha unit",
+ "started_at": "2026-09-25T16:09:08+00:00",
+ "finished_at": "2026-09-25T16:31:15+00:00",
+ "status": "completed",
+ "execution_lane": {
+  "worktree": "D:/Github/ginger",
+  "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+  "head": "f978e063a91b2621ac5c75341d868eca7eed5bf0",
+  "authoritative_state_ref": "refs/heads/automation/edge-v2 (V2 research authority); this unit is root production_maintenance of the root-owned OHLCV warehouse hot tier and its consumers; no qualification or conclusion migrated across refs",
+  "protocol_path": "docs/quant_agent_protocol_v2.md",
+  "protocol_sha256": "811e118b30df4435931f591400acf4880de1b68d76dfa2f0d7a53c8cd52e5d8c"
+ },
+ "work_unit": "startup recount -> exp-20260924-004 fault-recovery check PASSED (09-25T03:09Z readiness record pair-ready-bd1fdbdee04f36eca8bd2e40 measurement_ready with overlap_exclusion.rule_version news_propagation_pair_cross_side_overlap_exclusion_v2, 4 overlap tickers AI/GOOGL/NOW/PLTR; basket news-first-seen-803ae0ad91d24420f7 admitted with excluded_cross_side_overlap on both legs) -> weekly cadence recount (ready 2/8 since 09-18; 8/34 lifetime) -> identity anomaly: the 09-24 basket admitted 2 long / 1 short after 57/31 tickers were labelled unpriceable although liquid names (ADI, ASML, DIS, GM, AXP ...) have warehouse frames to 09-24 -> root cause: hot warehouse tier missing the 2026-09-22 bar for 1162/1320 tickers (vendor served none on the 09-22 evening pass, 110 more on 09-23) AND, worse, sessions 2026-09-15/16/17/18/21 written entirely by mid-session run.py passes (09:02-11:07 local; updated_at 16:55Z-19:13Z) and frozen by update_existing=False: 6583 partial-session bars, close gap vs massive over 0.3pct on 711-1132 of 1309 tickers per session vs 0 on 09-23 -> frozen plan hashed -> exp-20260925-007 reserved/claimed -> completed-session write guard in refresh_warehouse_ohlcv + unit test -> one-off same-vendor rewrite of exactly the frozen set (6583 updated, 1162 inserted, 0 vendor-missing, 0 rows outside the set) -> after census 0 intraday rows, gaps 33/22/18/14/2 -> close accepted, lean-strict green",
+ "startup_recount": {
+  "pair_readiness": "34 records lifetime, 8 measurement_ready; 09-24 and 09-25 nightly records both ready under v2 rules; sleeve 8 decisions (4 pending, 4 unsettleable, 0 settled); acceptance counting still 0 baskets (first countable settlement ~09-29: basket 39644ff3 entry 09-14)",
+  "reopen_readiness": "regenerated 2026-09-25T16:14Z: entity_theme_axis_c 235228/312738; negative-side and phase2 ready but reasoned-parked; exit_lifecycle 31/33; short_volume_q5 9/20; move_relief 0/30 stalled; no lane crossed its bar",
+  "edge_v2_codex": "codex.exe active on edge-v2: exp-20260924-001..006 and exp-20260925-001..006 observed_only fixed-result diagnoses (buyback/Treasury/SBC/ADTS/Form4 cohorts) plus exp-20260925-004 rejected V/MA pair; no write-scope overlap with this unit"
+ },
+ "experiments": [
+  {
+   "experiment_id": "exp-20260925-007",
+   "lane": "measurement_repair",
+   "status": "accepted",
+   "root_cause": "refresh_warehouse_ohlcv fetches with end=now and upserts with update_existing=False; mid-session run.py passes on 2026-09-15..09-18 and 09-21 wrote the whole 1304-ticker refresh universe (plus 56 core primary_batch and 12 cached_extra per day) as partial-session snapshots that the evening pass could never correct; separately the vendor served no 2026-09-22 bar on the 09-22/09-23 evening passes for 1162 tickers",
+   "fix": "guard: run_clock argument, fetched frames truncated to dates <= latest_completed_us_equity_session(run_clock) before split guard and upsert, summary completed_session + dropped_incomplete_session_rows (test: 10:00 NY run-date row dropped, 16:30 NY inserted); data: one-off re-fetch through data_layer.get_ohlcv_many of exactly the before-census set + 09-22 hole, rewritten under source ohlcv_warehouse_refresh:yfinance:intraday_bar_repair:exp-20260925-007 with update_existing=True",
+   "identity_projection": "before sha256 9c126def7ff57c610c5353d777703d331ea5de250c08a2c98a12d4fa5ad10823 (6583 intraday rows, 1162 hole tickers) / after sha256 9c617eba8406290a984021c358a8dd297faa04dc4aed23e2a70cd191c1273578 (0 / 0; close gap >0.3pct vs massive 33/22/18/14/2 of 1309 on the five sessions); repair_run.json: 7745 target rows, updated 6583, inserted 1162, vendor_missing 0; pair projection (identity only, no re-admission): 09-23 basket 6/3 -> 28/27 priceable, 09-24 basket 2/1 -> 30/20; remaining unpriceable = unlisted sic_peer symbols",
+   "frozen_plan_sha256": "982a2cfaa861506356887f686528e90cad846e1bbf44dbcb6b463f2fe69cf6c8 (hashed 16:22:23Z before reservation; reserved 16:23Z, claimed 16:24Z, repair 16:25-16:26Z, closed ~16:30Z)",
+   "tests": "quant/test_ohlcv_warehouse_refresh.py 1 new + existing, quant/test_ohlcv_warehouse.py: 24/24 (.venv python 3.11); lean-strict audit green after reflection fill"
+  }
+ ],
+ "zero_id_decisions": [
+  {
+   "kind": "regenerate",
+   "what": "data/reopen_readiness.json rebuilt at unit start",
+   "why": "daily counters"
+  },
+  {
+   "kind": "skip",
+   "what": "negative-side 1508 re-read and phase2 breadth candidate",
+   "why": "reasoned parks unchanged"
+  },
+  {
+   "kind": "defer",
+   "what": "re-settlement of outcomes closed against the five contaminated sessions (entity_theme 415 rows with exit_date 09-15..09-21; exposure observer subset of 359 closed rows with entry 09-01..09-21; broad/pead paper sleeves, forward_replacement_value, regime scorecard readers)",
+   "why": "append-only ledgers; needs its own registered decision binding the before/after census hashes; user decision"
+  }
+ ],
+ "economic_progress": false,
+ "alpha_trials": 0,
+ "budget": {
+  "declared_before_outcome_access": "<=1 measurement_repair ID, <=90 wall minutes, vendor HTTP limited to the daily refresh path (9 bulk calls), 0 external spend, 0 outcome/PnL fields read",
+  "consumed": "1 ID, ~22 wall minutes reservation->close (~45 incl. startup recount and diagnosis), 9 bulk yfinance calls, 0 spend, 0 outcome fields read (only bar prices and ledger identity counts)",
+  "remaining": "0 IDs this unit"
+ },
+ "concurrency": "codex.exe active on edge-v2 (own worktree data dir); no python run.py process during the repair (tasklist), run.lock idle since 07-18; only quant/ohlcv_warehouse_refresh.py, its test and the hot tier written; other dirty files untouched",
+ "not_done": [
+  "settled outcomes computed from the five contaminated sessions are NOT rewritten (user decision needed)",
+  "launcher of the mid-session full run.py passes (09-15..09-18 ~09:00-10:00 local, 09-21 11:07 local) still unidentified: not a Claude scheduled task, no Windows scheduled task visible; the guard now makes such runs harmless to the warehouse",
+  "run.py:primary_batch and run.py:cached_extra write paths (core ~56 tickers) were not guarded - pre-registered failure mode; they wrote 09-21 intraday rows too",
+  "frozen 09-23/09-24 pair baskets keep their 6/3 and 2/1 legs (no retroactive admission); healthy admissions resume with the 09-26 nightly batch once its 5 lookback sessions are all present"
+ ],
+ "next_unit": "(1) constant-time check the 09-25 evening refresh summary carries completed_session=2026-09-25 and dropped_incomplete_session_rows=0, and that the 09-26 nightly pair basket admits with excluded_unpriceable limited to unlisted symbols; (2) re-run the intraday census (rows with updated_at before session close) - must stay 0; (3) pair first countable settlement ~09-29; entity_theme 312738 ~late Oct; (4) put the consumer re-settlement question to the user with the census hashes",
+ "traps_recorded": [
+  "A ticker labelled unpriceable while its warehouse frame reaches the anchor date means a session HOLE inside the lookback window, not a stale frame - check per-session presence, not max(date)",
+  "Whole-ticker source fallback (warehouse-or-massive) cannot fill a single-session hole; exp-20260913-006 only covers frames that stop early",
+  "updated_at earlier than the session close is the identity signature of a partial-session bar; with update_existing=False it is frozen forever, so the write guard must sit before the upsert",
+  "The refresh universe self-heals vendor delays (30d re-fetch daily) but never corrects existing rows - holes fill, contamination does not",
+  "yfinance lives only in .venv (Bash python is Anaconda 3.10, PowerShell python 3.14 has none) - run vendor-path scripts and the tests with .venv/Scripts/python.exe",
+  "experiment.py new rejects --window unless START:END; a failed new leaves no ticket behind",
+  "close --status-override again leaves post_run_reflection TODOs - fill them before audit --lean-strict",
+  "Bash heredocs broke again on this unit (long JSON body) - write scripts with the Write tool, then run them"
+ ],
+ "decision_log": "d-0027",
+ "trade_enabled": false
+}

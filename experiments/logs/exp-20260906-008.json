@@ -1,0 +1,94 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_changed": false,
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [
+    "bounded full-window history collection",
+    "segment coverage manifests",
+    "current source observation ordering",
+    "append-only reobserved versions and committed-capture replay idempotency",
+    "read-only live proof and raw-prefix invariance"
+  ],
+  "change_summary": "Restore full-window broker history collection with inclusive 360-date paging, per-segment visibility and current-version replay correctness; 92 focused tests and frozen real-capture proof pass.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "broker_history_date_range_paging",
+  "component": "quant/moomoo_open_positions.py, quant/test_moomoo_open_positions.py, quant/test_moomoo_history_paging.py, quant/experiments/exp_20260906_008_broker_history_date_range_paging.py, docs/broker_execution_ledger.md, data/experiments/exp-20260906-008/, data/runtime/broker_history_date_range_paging/exp-20260906-008/, data/live_pilot/broker_execution/, experiments/tickets/exp-20260906-008.json, experiments/cards/exp-20260906-008.md, experiments/manifests/exp-20260906-008.json, experiments/artifacts/exp-20260906-008_broker_history_date_range_paging.md, experiments/logs/exp-20260906-008.json, docs/experiment_registry.json, quant/broker_execution_ledger.py, quant/test_broker_execution_ledger.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "economic_progress": false,
+  "engineering_acceptance_reason": "92 focused tests pass; six real segments succeed; isolated/canonical capture facts match; old raw prefixes and trading/position state are unchanged.",
+  "experiment_id": "exp-20260906-008",
+  "hypothesis": "Repair broker historical fill/order collection rejected by the local 360-day query-span limit while preserving the full 730-day lookback, current-version priority and fee handling.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "broker_execution_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "demonstrated_collection_span_failure_repaired",
+  "next_retry_requires": "A demonstrated new broker collection/version/replay/recovery defect, with a frozen reproducible failing case.",
+  "notes": "Engineering measurement acceptance only: six history segments succeeded; old raw prefixes and protected files unchanged. Evaluated 103-lifecycle net remains USD -14712.8662; two of 105 close-event groups excluded for invalid/incomplete quantity paths. No strategy attribution, backtest, account-return or alpha improvement claim. trade_enabled=false.",
+  "parameters": {
+    "locked_variables": [
+      "signals",
+      "ranking",
+      "sizing",
+      "exits",
+      "total_history_lookback",
+      "trade_permissions",
+      "old_canonical_ledger_prefixes"
+    ],
+    "single_causal_variable": "broker_history_date_range_paging"
+  },
+  "parity_boundary": "Production uses the same paged collector and append-only observation/recovery path exercised by synthetic and private real-capture proof.",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not shorten history, exclude losses, change strategy policy, or re-label this measurement repair as profitable alpha.",
+    "new_evidence_required": "A demonstrated new broker collection/version/replay/recovery defect, with a frozen reproducible failing case.",
+    "realized_failure_mode": "broker_history_query_span_exceeded",
+    "why_result_happened": "The full two-year interval exceeded the local broker query limit. Six bounded inclusive-date segments restored history. Late review regressions repaired exact observation reversion and interrupted derived-state recovery. The evaluated net loss is unchanged."
+  },
+  "prior_trial_count": 0,
+  "production_impact": "measurement_only_no_orders_no_strategy_no_ranking_no_sizing",
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260906-008/before.json",
+    "data/experiments/exp-20260906-008/final_after.json",
+    "experiments/artifacts/exp-20260906-008_broker_history_date_range_paging.md",
+    "data/experiments/exp-20260906-008/version_projection_revision/verification_after.json",
+    "quant/moomoo_open_positions.py",
+    "quant/broker_execution_ledger.py",
+    "quant/test_moomoo_history_paging.py",
+    "quant/test_broker_execution_ledger.py"
+  ],
+  "reproduction_command": ".venv/Scripts/python.exe -B quant/experiments/exp_20260906_008_broker_history_date_range_paging.py --verify-existing-capture",
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-06T17:12:26+00:00",
+  "trade_enabled": false,
+  "trial_family": "broker_history_date_range_paging",
+  "trial_variant_id": "exp-20260906-008"
+}

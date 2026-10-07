@@ -1,0 +1,89 @@
+{
+  "record_type": "outcome_blind_identity_projection",
+  "experiment_id": "exp-20260922-007",
+  "experiment_uid": "expuid-d09b1ba2d1b94778",
+  "generated_at": "2026-09-22T16:25:28+00:00",
+  "fields_read": [
+    "record_type",
+    "as_of",
+    "ticker",
+    "entry_date",
+    "observation_id",
+    "generated_at",
+    "strategy",
+    "closed_forward_row",
+    "form4_high_sale_overhang",
+    "replacement value presence (is-not-None only, via summarize_forward_reopen_progress)"
+  ],
+  "outcome_fields_read": 0,
+  "candidate_decision_training_ledger": {
+    "path": "data/paper_sleeves/candidate_decision_training_ledger/rows.jsonl",
+    "sha256": "7169911b0ffa922762b6b4e5cd252b76c6f5ea65a4dc6f0105037f50dbb170c3",
+    "snapshot_rows": 10,
+    "same_day_as_of_ticker_duplicate_groups": [
+      {
+        "as_of": "2026-09-21",
+        "ticker": "META",
+        "rows": 2,
+        "entry_dates": [
+          "2026-09-22"
+        ],
+        "observation_ids": [
+          "5ab5787e0f455b65fa28a715",
+          "bf4759ceb4a3577a2699a89a"
+        ],
+        "generated_at": [
+          "2026-09-21T18:13:22Z",
+          "2026-09-22T03:06:13Z"
+        ]
+      }
+    ],
+    "same_day_duplicate_rows_that_the_repair_would_have_skipped": 1,
+    "note": "persisted rows are not rewritten; the repair is forward-only (append-time skip)."
+  },
+  "form4_sale_overhang_forward": {
+    "path": "data/non_ohlcv/form4_sale_overhang_forward/rows.jsonl",
+    "sha256": "0134ac2f6e269d2be9886be4a74746d6d70279411b18d7f0b8c70c004a725a57",
+    "decision_rows": 7,
+    "economic_unique_ticker_entry_date": 5,
+    "duplicate_economic_groups": [
+      {
+        "ticker": "DE",
+        "entry_date": "2026-08-24",
+        "rows": 2
+      },
+      {
+        "ticker": "META",
+        "entry_date": "2026-09-22",
+        "rows": 2
+      }
+    ],
+    "progress_before_repair_from_state_json": {
+      "closed_forward_rows_current": 1,
+      "high_sale_overhang_closed_forward_rows_current": 0,
+      "replacement_value_complete_closed_rows_current": 1,
+      "unique_tickers_closed_forward_rows": 1,
+      "max_single_ticker_closed_forward_row_share": 1.0,
+      "gate_ready": false
+    },
+    "progress_after_repair_recomputed_read_only": {
+      "context_rows_current": 7,
+      "closed_forward_rows_current": 1,
+      "closed_forward_row_records_current": 1,
+      "duplicate_economic_closed_rows_excluded": 0,
+      "economic_decision_key": "ticker+entry_date",
+      "high_sale_overhang_closed_forward_rows_current": 0,
+      "replacement_value_complete_closed_rows_current": 1,
+      "unique_tickers_closed_forward_rows": 1,
+      "max_single_ticker_closed_forward_row_share": 1.0,
+      "gate_ready": false,
+      "not_ready_reasons": [
+        "closed_forward_rows_below_min",
+        "high_sale_overhang_forward_rows_below_min",
+        "single_ticker_share_above_max"
+      ]
+    },
+    "note": "closed rows are still 1/1 today so the gate counters are byte-identical before and after; the collapse becomes visible once the DE 2026-08-24 pair settles its 20d horizon (2 records -> 1 economic decision). state.json is daily-owned and untouched."
+  },
+  "trade_enabled": false
+}

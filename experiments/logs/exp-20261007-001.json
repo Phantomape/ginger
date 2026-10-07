@@ -1,0 +1,103 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0196,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "guard defers true unpriceable symbols forever",
+      "guard changes legacy no-bars path",
+      "unit test misses run.py ordering"
+    ],
+    "predicted_success_probability": 0.86,
+    "realized_failure_mode": "none_observed",
+    "surprise_level": "very_low",
+    "surprise_note": "The false unpriceable set came from SPY/core anchor rows through 2026-10-06 making valid 2026-09-25 hot rows look stale, then replacing them with older massive_history rows through 2026-09-24."
+  },
+  "causal_components": [],
+  "change_summary": "Preserve fresher pair sleeve warehouse rows when massive_history fallback is older, and defer admission when a majority of prior-complete tickers lag only the latest first-seen session.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "news_propagation_pair priceability readiness guard for latest-session-lagged bars",
+  "component": "quant/news_propagation_pair_paper_sleeve.py, quant/test_news_propagation_pair_paper_sleeve.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20261007-001",
+  "hypothesis": "Fault recovery for the current news-propagation pair daily admission: the 2026-09-25 basket consumed a transient price surface before the hot warehouse latest-session refresh landed, so liquid tickers with all prior lookback sessions were permanently recorded as excluded_unpriceable. Wire a priceability readiness guard into the sleeve admission path so future batches defer until latest-session lag clears, instead of materializing routine rows or rewriting old ledgers.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Targeted pytest: quant/test_news_propagation_pair_paper_sleeve.py and quant/test_ohlcv_warehouse_refresh.py passed 24 tests. Data replay admitted the full current hot-tier basket while a simulated majority latest-session lag returned no decision. Existing 2026-09-25 ledger rows were not rewritten.",
+  "parameters": {
+    "locked_variables": [
+      "existing pair ledger decisions/outcomes; H10/45bp/USD1000 acceptance contract; overlap and borrow exclusion rules; priceability requires bars on every pre-entry lookback session"
+    ],
+    "single_causal_variable": "Defer pair basket admission when any candidate ticker has all earlier pre-entry lookback sessions but is missing only the latest lookback session; do not rewrite existing ledger rows."
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not loosen priceability, rewrite the frozen 2026-09-25 ledger, or rerun the framework only to improve returns.",
+    "new_evidence_required": "A fresh reproducible basket with majority latest-session lag under otherwise complete hot-tier rows, or a failing regression around source freshness.",
+    "realized_failure_mode": "none_observed",
+    "why_result_happened": "The false unpriceable set came from SPY/core anchor rows through 2026-10-06 making valid 2026-09-25 hot rows look stale, then replacing them with older massive_history rows through 2026-09-24."
+  },
+  "prediction": {
+    "confidence_reason": "Current 09-25 basket excludes liquid ADI/ASML/AMAT/QCOM at 20:07 PT, while hot warehouse has their full 09-21..09-25 window after the 21:15 PT refresh; rebuilding the same record now admits them under unchanged priceability rules.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "guard defers true unpriceable symbols forever",
+      "guard changes legacy no-bars path",
+      "unit test misses run.py ordering"
+    ],
+    "recorded_at": "2026-10-07T00:49:04+00:00",
+    "success_probability": 0.86
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20261007-001/before.json",
+    "data/experiments/exp-20261007-001/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-10-07T00:57:18+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "pair_priceability_latest_session_defer_guard"
+}

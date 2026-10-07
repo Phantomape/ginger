@@ -1,0 +1,175 @@
+{
+ "schema_version": 1,
+ "surfaces": [
+  {
+   "surface_id": "estimate_revision_consensus_observer",
+   "data_source": "analyst_estimate_revision",
+   "component_sources": [
+    "analyst_estimate_revision"
+   ],
+   "roles": [
+    "market_expectation",
+    "explicit_consensus",
+    "independent_evidence"
+   ],
+   "artifacts": [
+    "data/reference/estimate_revision_instrument_map.jsonl",
+    "data/non_ohlcv/estimate_revision_readiness_latest.json"
+   ],
+   "pit_status": "canonical_pit",
+   "evidence_grade": "gate_candidate",
+   "settled_count": 518,
+   "independent_count": 1972,
+   "candidate_overlap_count": 20,
+   "gate_ready": true,
+   "expectation_proxy": {
+    "type": "explicit_consensus",
+    "field": "eps_estimate_revision",
+    "source": "analyst_estimate_revision"
+   },
+   "saturation_status": "open",
+   "reopen_condition": "Registered Phase-1.5 reopen bars are met as of 2026-08-28: qualified non-flat independent decisions 1972/30, mapped tickers 886/10, settled H5/H10/H20 1153/1002/518 vs 30 each, cash-admission trace ok sessions 32/30 with lifetime structured cash conflicts 1/1 (cash bar amended by exp-20260828-001 under the exp-20260811-001 pre-registered contract review). Source contract passes. Selection authority still requires this fresh outcome-blind D0-D3 scope to actually select. Machine evidence: data/reopen_readiness.json lane phase2_estimate_revision status=ready generated_at 2026-08-28T16:27:15Z sha256 2feaa682a41b4a14f5e150db159285da278137473ad6d377a630e9dbc414146e.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-28T16:26:59Z",
+   "artifact_snapshot_hashes": {
+    "data/reference/estimate_revision_instrument_map.jsonl": "ebe276d47b44aec9d75502b9f96766f31918dd3da043e93e5adb2b2fd42c567c",
+    "data/non_ohlcv/estimate_revision_readiness_latest.json": "d9ebdd04b9eda7a9c5853ede46ba4cd9a1a0b3f132d0db78a690771889ea5591"
+   },
+   "known_future_leakage": false
+  },
+  {
+   "surface_id": "ohlcv_price_revealed_context",
+   "data_source": "ohlcv_warehouse",
+   "component_sources": [
+    "ohlcv_warehouse"
+   ],
+   "roles": [
+    "market_expectation",
+    "price_revealed_context"
+   ],
+   "artifacts": [
+    "data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json",
+    "data/alpha_search/phase2_adjacent_overshoot_trigger_recount_20260912.json",
+    "data/experiments/exp-20260715-010/after_measurement.json"
+   ],
+   "pit_status": "research_pit",
+   "evidence_grade": "lead",
+   "settled_count": 0,
+   "independent_count": 150,
+   "candidate_overlap_count": 1,
+   "gate_ready": false,
+   "expectation_proxy": {
+    "type": "price_revealed",
+    "field": "pre_event_price_path",
+    "source": "ohlcv_warehouse"
+   },
+   "saturation_status": "open",
+   "reopen_condition": "Use only as a declared market-prior/context proxy; OHLCV relabeling is not a new evidence source.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-29T16:20:00Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json": "50ee0360c33117614eaf2311079aa11a164be5ae7a08fedb6294a1212c2ef901",
+    "data/alpha_search/phase2_adjacent_overshoot_trigger_recount_20260912.json": "a422c90d350c4079793b3355ee2c384292e87d56fc22e9aa237bfb3bfb1446b2",
+    "data/experiments/exp-20260715-010/after_measurement.json": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+   },
+   "known_future_leakage": false,
+   "research_pit_basis": "Decision timestamp: each qualified update's entry session open. Context = pre-event closes only (anchor A = last warehouse session <= as_of_date, sessions A-5..A), never a post-entry bar. The frozen conditioning rule, contamination fence (1352 ids, sha256 312dabe4...) and bars are bound in the 2026-08-31 contract (sha256 50ee0360...); the 2026-09-12 recount re-derived the fence byte-identically from the freeze commit 5967838ae and bound the exact 2307 pre-event (ticker, date, close) rows used for conditioning (sha256 aeb1f62e...). Unresolved vintage caveat unchanged: warehouse closes carry no earlier vintages and pre-entry split/dividend adjustments are invisible, so conclusions stay research_pit / observed_only."
+  },
+  {
+   "surface_id": "moomoo_capital_flow_day_observer",
+   "data_source": "moomoo_capital_flow",
+   "component_sources": [
+    "moomoo_capital_flow"
+   ],
+   "roles": [
+    "positioning_constraint",
+    "flow",
+    "independent_evidence"
+   ],
+   "artifacts": [
+    "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+    "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl"
+   ],
+   "pit_status": "pit_forward_unsettled",
+   "evidence_grade": "observer",
+   "settled_count": 0,
+   "independent_count": 0,
+   "candidate_overlap_count": 0,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "parked",
+   "reopen_condition": "Materially more independent closed Moomoo forward decisions, a genuinely different vendor flow decomposition, or PIT borrow economics; raw daily rows do not satisfy this condition.",
+   "source_contract_status": "pass",
+   "as_of": "2026-07-21T07:58:00Z",
+   "artifact_snapshot_hashes": {
+    "data/non_ohlcv/moomoo_capital_flow_day/manifest.json": "3d2e7708d88a498cb749330afd60db1548ee6f6fa4eea89cfbaa94cce6b75708",
+    "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl": "b53fcaf34f5c5450e9b00fefd2d0932bda5a07a3dcb206efcdde1ca168719432"
+   },
+   "known_future_leakage": false
+  },
+  {
+   "surface_id": "prediction_market_event_probability_observer",
+   "data_source": "prediction_market_event",
+   "component_sources": [
+    "prediction_market_event"
+   ],
+   "roles": [
+    "market_expectation",
+    "event_probability"
+   ],
+   "artifacts": [
+    "data/non_ohlcv/prediction_market_event_observer/source_manifest.json",
+    "data/non_ohlcv/prediction_market_event_observer/latest_summary.json"
+   ],
+   "pit_status": "pit_forward_unsettled",
+   "evidence_grade": "observer",
+   "settled_count": 0,
+   "independent_count": 0,
+   "candidate_overlap_count": 32,
+   "gate_ready": false,
+   "expectation_proxy": {
+    "type": "direct_implied_probability",
+    "field": "probability",
+    "source": "prediction_market_event"
+   },
+   "saturation_status": "parked",
+   "reopen_condition": "At least 60 unique post-repair settled candidates across 10 entry dates and 3 query groups, with top ticker <=15%, top query <=50%, at least 20 nonzero probability changes and 10 moves >=5pp under a frozen exposure map.",
+   "source_contract_status": "pass",
+   "as_of": "2026-07-21T07:58:00Z",
+   "artifact_snapshot_hashes": {
+    "data/non_ohlcv/prediction_market_event_observer/source_manifest.json": "8dca8a7cfbd88c59c6df4a4da7e6c296faa4f7db068bc58d2439760f0c544465",
+    "data/non_ohlcv/prediction_market_event_observer/latest_summary.json": "0ad44b0e7a81326873aa2ccdfa86e4fe4de810f2ddc7b681de3c34b3521f745b"
+   },
+   "known_future_leakage": false
+  },
+  {
+   "surface_id": "sec_official_event_evidence",
+   "data_source": "sec_official_event",
+   "component_sources": [
+    "sec_official_event"
+   ],
+   "roles": [
+    "independent_evidence",
+    "official_event"
+   ],
+   "artifacts": [
+    "data/non_ohlcv/daily_non_ohlcv_snapshot_20260720.json"
+   ],
+   "pit_status": "snapshot_only",
+   "evidence_grade": "lead",
+   "settled_count": 0,
+   "independent_count": 0,
+   "candidate_overlap_count": 0,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "saturated",
+   "reopen_condition": "A new semantic decision surface plus independent settled decisions; SEC form/item enumeration and fixed response templates remain frozen.",
+   "source_contract_status": "pass",
+   "as_of": "2026-07-21T07:58:00Z",
+   "artifact_snapshot_hashes": {
+    "data/non_ohlcv/daily_non_ohlcv_snapshot_20260720.json": "50460a68c8486ae50b4043c477677f41eae15c25467336917b9648e3c428b478"
+   },
+   "known_future_leakage": false
+  }
+ ]
+}

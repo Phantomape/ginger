@@ -1,0 +1,109 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0225,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "priceability_condition_empties_a_side_so_batches_stop_admitting",
+      "pre_entry_bar_check_leaks_post_entry_information",
+      "grace_period_terminalizes_a_basket_that_later_backfills"
+    ],
+    "predicted_success_probability": 0.85,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": null
+  },
+  "causal_components": [
+    "admission pre-entry bar-existence condition with weight renormalization;grace-bounded unsettleable terminal disposition"
+  ],
+  "change_summary": "Contract review of the exp-20260827-001 pair sleeve (pre-registered path: exp-20260913-006 new_evidence_required). Amendment wired into news_propagation_pair_paper_sleeve (daily run.py pass and replay share the code): (a) admission receives bars and admits a side ticker only if a bar (open>0, close>0) exists in warehouse-or-massive on every one of the 5 anchor sessions at or before the first_seen New York date (strictly before entry); excluded tickers are recorded per leg as excluded_unpriceable, equal-row weights renormalize over the remaining tickers, an emptied side or a too-short calendar fails closed (not admitted); decisions carry admission_priceability {rule_version news_propagation_pair_leg_priceability_v1, sessions}; (b) a pending basket whose exit session is followed by >=5 further anchor sessions while any leg is still unpriceable is terminalized append-only as outcome_status=unsettleable (unpriceable_legs, no PnL fields) and never counts toward the frozen acceptance contract; settlement blocker strings now list missing tickers from both legs. Outcome-blind identity projection on the 5 measurement_ready records: under the amended rule all 5 hypothetical baskets keep both sides non-empty (long kept/excluded 35/6, 48/10, 29/8, 10/4, 23/2; short 27/2, 26/2, 24/0, 15/0, 31/1) and every kept leg has a bar on the known entry/exit sessions; frozen decisions untouched, 0 unsettleable today (grace for the two H10-complete baskets ends after 2026-09-11 + 5 sessions ~2026-09-18/19). 14/14 sleeve tests (4 new) + 2 run.py wiring tests; no basket PnL read; trade_enabled=false.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "outcome-blind leg priceability contract for the news-propagation pair sleeve (5-session pre-entry bar existence at admission; 5-session grace unsettleable terminal disposition)",
+  "component": "quant/news_propagation_pair_paper_sleeve.py, quant/test_news_propagation_pair_paper_sleeve.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260913-007",
+  "hypothesis": "Contract review of the exp-20260827-001 news-propagation pair paper sleeve, triggered by identity-only evidence from exp-20260913-006: after the pricing repair 0 of 5 pending baskets can ever settle because every basket holds at least one leg ticker with no bar in any authorized price source (sic_peer_index symbols BAO/DBIM/EVON/HWEP/GTIJF absent from massive instrument_master, OTC ABIT/FMHS with zero bars, AIEV/BINI/ECDA delisted before their decision dates), so the frozen fail-closed missing-leg rule makes the forward acceptance contract (>=20 settled baskets over >=10 dates) structurally unreachable. Amendment: (a) admission gains an outcome-blind leg priceability condition - a side ticker is admitted only if a bar exists in warehouse-or-massive on every one of the 5 sessions strictly before the entry session; excluded tickers are recorded on the decision and the side's equal-row weights are renormalized over the remaining tickers, a side that empties is not admitted; (b) a pending basket whose exit session plus a 5-session grace period has passed while a leg is still unpriceable is terminalized as outcome_status=unsettleable with no PnL fields and never counts toward the acceptance contract. Both conditions are wired into the existing run.py daily pipeline pass (news_propagation_pair_paper_sleeve.run, the same code path replay uses) so admission filtering and terminalization happen automatically in every daily run with no further IDs. Frozen decisions are never rewritten; H10, 45bp/leg, USD 1000/leg, the 40% cap and the acceptance thresholds are unchanged; no basket PnL is read.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260827-001",
+    "exp-20260913-006",
+    "exp-20260828-001"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Forward evidence for the frozen acceptance contract (>=20 settled baskets / >=10 decision dates / net positive after 45bp per leg / both halves positive / <=40% single-ticker gross) starts counting only from baskets admitted under the priceability condition (first eligible: the next measurement_ready batch after 2026-09-13); the five frozen legacy baskets stay non-evidence and will terminalize as unsettleable via the daily run. Unchanged: H10, USD 1000/leg, 45bp/leg, fail-closed partial settlement, readiness borrow gate, 40% readiness cap (computed pre-exclusion; the ex-post acceptance concentration check still applies). Not fixed here (separate hygiene item, not a research blocker after this amendment): sic_peer_index still emits symbols absent from any authorized price source (BAO, DBIM, EVON, HWEP, GTIJF) and delisted names (AIEV, BINI, ECDA). The daily-owned ledger/summary were not mutated outside run.py; the amendment applies on the next daily pass.",
+  "parameters": {
+    "locked_variables": [
+      "outcome-blind leg priceability contract for the news-propagation pair sleeve (5-session pre-entry bar existence at admission; 5-session grace unsettleable terminal disposition)"
+    ],
+    "single_causal_variable": "outcome-blind leg priceability contract for the news-propagation pair sleeve (5-session pre-entry bar existence at admission; 5-session grace unsettleable terminal disposition)"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not tune the 5-session lookback or the 5-session grace against settled results, do not relax the bar-existence condition to 'any bar', do not rewrite or re-admit the five frozen legacy baskets, do not count unsettleable rows or excluded legs in any acceptance statistic, do not read basket PnL to choose which legs stay, and do not change H10 / 45bp / USD 1000 / 40% / >=20 / >=10.",
+    "new_evidence_required": "Only the frozen forward acceptance contract on baskets admitted under this condition: >=20 settled baskets over >=10 decision dates with net PnL after 45bp per leg positive, both chronological halves positive and <=40% single-ticker absolute gross share; any live short discussion still needs a real broker locate contract (iBorrowDesk remains indicative).",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The exp-20260827-001 build froze fail-closed partial settlement but admitted every readiness ticker regardless of whether any authorized price source could ever price it; the entity map (sic_peer_index) emits OTC, unlisted and delisted symbols, so 5/5 baskets carried permanently unpriceable legs and the >=20-settled-basket acceptance contract was structurally unreachable (identity evidence only). Adding an outcome-blind pre-entry bar-existence condition keeps both sides non-empty on all 5 historical records and makes future baskets settleable; a grace-bounded unsettleable disposition retires the frozen legacy baskets without rewriting them."
+  },
+  "prediction": {
+    "confidence_reason": "Identity evidence is complete: absent/OTC/delisted legs enumerated per basket in exp-20260913-006 after-artifact; the amendment is a fail-closed capability condition analogous to exp-20260828-001.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "priceability_condition_empties_a_side_so_batches_stop_admitting",
+      "pre_entry_bar_check_leaks_post_entry_information",
+      "grace_period_terminalizes_a_basket_that_later_backfills"
+    ],
+    "recorded_at": "2026-09-13T16:32:14+00:00",
+    "success_probability": 0.85
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260913-007/news_pair_leg_priceability_before.json",
+    "data/experiments/exp-20260913-007/news_pair_leg_priceability_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-13T16:38:45+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260913-007"
+}

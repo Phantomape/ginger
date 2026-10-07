@@ -1,0 +1,109 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.04,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "consumer_depends_on_restart_only_key",
+      "top2_order_changes_unexpectedly",
+      "per_variant_counts_missing",
+      "production_ledger_rewrite"
+    ],
+    "predicted_success_probability": 0.8,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The implementation was the narrower explanation: settlement filtered gap_variant before the membership/top2 pool, and readiness consumed the same restart-only count. A small compatibility branch was needed so pre-repair summaries remain readable until the next daily run writes the new fields."
+  },
+  "causal_components": [],
+  "change_summary": "Realigned massive dividend-restart settlement reopen counter to the original scout roster population: both restart_after_observed_gap and no_prior_positive_in_provider_history CS-active eligible candidates now enter the same 20-bar/1M/3USD top-2-per-declaration-date pool; summary/readiness expose settled_reopen_population_decisions and per-variant counts while retaining restart-only monitoring.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "settlement counted gap variants for massive_dividend_restart_forward",
+  "component": "quant/massive_dividend_restart_forward_settlement.py, quant/test_massive_dividend_restart_forward_settlement.py, scripts/build_reopen_readiness.py, quant/test_build_reopen_readiness.py",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260922-006",
+  "hypothesis": "The exp-20260803-002 massive dividend-restart settlement reopen counter counts only restart_after_observed_gap decisions, but the qualifying exp-20260801-004 scout roster included both restart_after_observed_gap and no_prior_positive_in_provider_history candidates after the same CS-active, 20-bar, 1M dollar-volume, 3 USD close and top-2-per-declaration-date policy. This narrows the frozen counted population and makes the 30-decision reopen bar structurally unreachable. Repair: realign settlement selection and reopen progress to the original roster population, while preserving per-variant monitoring counts and all entry/cost/settlement rules.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260801-004",
+    "exp-20260803-002",
+    "exp-20260921-001"
+  ],
+  "new_evidence_type": "pre_registered_contract_review",
+  "next_retry_requires": [],
+  "notes": "Measurement repair only; no alpha or trading permission change. Current daily coverage check for the prior symbol-variant repair is satisfied on run_label 20260921 / completed session 2026-09-21 with ticker_canonicalization_kind=instrument_master_variant_v1 and instrument_master_ticker_count=41368. This unit did not rewrite production observer or settlement ledgers and did not use PnL improvement as acceptance.",
+  "parameters": {
+    "locked_variables": [
+      "GAP_DAYS 1095; RECENT_WINDOW_DAYS 30; entry rule; frozen cost and comparator policy; CS-active membership gate; 20-bar / 1M / 3 USD gates; top-2 per declaration date; 30-decision reopen bar; append-only ledgers"
+    ],
+    "single_causal_variable": "massive dividend restart settlement reopen-counter counted population"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not open another dividend-restart measurement ID just to rename the old restart-only counter, relax the 30-decision bar, loosen CS-active / 20-bar / 1M / 3 USD gates, change H10 entry/exit/cost/comparator rules, or rewrite old observer/settlement ledger rows under the new population. Future work must wait for the daily settlement summary to write the new fields naturally or for a genuine observer/settlement fault.",
+    "new_evidence_required": "Next daily settlement pass should emit reopen_gap_variants, settled_reopen_population_decision_count, settled_decision_count_by_gap_variant, and reopen_progress.settled_decisions without rewriting historical ledger rows. Alpha or performance re-read still requires the realigned >=30 settled reopen-population decisions or canonical as-published dividend vintages; this repair itself supplies no alpha evidence.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The implementation was the narrower explanation: settlement filtered gap_variant before the membership/top2 pool, and readiness consumed the same restart-only count. A small compatibility branch was needed so pre-repair summaries remain readable until the next daily run writes the new fields."
+  },
+  "prediction": {
+    "confidence_reason": "The mismatch is documented in exp-20260921-001 next_retry_requires and visible in code: settlement filters gap_variant before membership/top2 selection. A synthetic same-date fixture can distinguish the contract mismatch from a summary-only naming issue without reading outcome results.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "consumer_depends_on_restart_only_key",
+      "top2_order_changes_unexpectedly",
+      "per_variant_counts_missing",
+      "production_ledger_rewrite"
+    ],
+    "recorded_at": "2026-09-22T09:06:44-07:00",
+    "success_probability": 0.8
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260922-006/reopen_counter_population_before.json",
+    "data/experiments/exp-20260922-006/reopen_counter_population_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-09-22T16:15:24+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260922-006"
+}

@@ -1,0 +1,44 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+___ test_new_collection_reobserves_prior_fact_without_double_counting_deal ____
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3051/test_new_collection_reobserves0')
+
+    def test_new_collection_reobserves_prior_fact_without_double_counting_deal(tmp_path):
+        first = _capture()
+        L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+        changed = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+        changed["deals"][0]["qty"] = 8
+        changed["orders"][0]["dealt_qty"] = 12
+        changed["order_fees"][0]["fee_amount"] = 2.5
+        changed["positions"][0]["qty"] = 12
+        L.persist_broker_execution_capture(changed, ledger_dir=tmp_path)
+        before = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+        reverted = _capture(collection_id="capture-3", completed_at="2026-07-11T22:00:00Z")
+        result = L.persist_broker_execution_capture(reverted, ledger_dir=tmp_path)
+        for name in ("fills", "orders", "order_fees"):
+>           assert result["ledgers"][name]["rows_appended"] == 1
+E           assert 0 == 1
+
+quant\test_broker_execution_ledger.py:536: AssertionError
+_____ test_final_desired_version_only_is_reobserved_within_a_new_capture ______
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-3051/test_final_desired_version_onl0')
+
+    def test_final_desired_version_only_is_reobserved_within_a_new_capture(tmp_path):
+        first = _capture()
+        L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+        next_capture = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+        original = dict(next_capture["deals"][0])
+        next_capture["deals"] = [dict(original, qty=8), original, next_capture["deals"][1]]
+        result = L.persist_broker_execution_capture(next_capture, ledger_dir=tmp_path)
+        effective, _, _ = L._economic_fill_projection(_jsonl(tmp_path / "fills.jsonl"))
+>       assert sum(float(row["fact"]["qty"]) for row in effective) == 10
+E       assert 12.0 == 10
+E        +  where 12.0 = sum(<generator object test_final_desired_version_only_is_reobserved_within_a_new_capture.<locals>.<genexpr> at 0x0000023404428C80>)
+
+quant\test_broker_execution_ledger.py:561: AssertionError
+=========================== short test summary info ===========================
+FAILED quant/test_broker_execution_ledger.py::test_new_collection_reobserves_prior_fact_without_double_counting_deal
+FAILED quant/test_broker_execution_ledger.py::test_final_desired_version_only_is_reobserved_within_a_new_capture
+2 failed, 22 deselected in 0.47s

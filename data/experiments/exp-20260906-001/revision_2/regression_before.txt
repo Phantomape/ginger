@@ -1,0 +1,124 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+_____ test_valid_fill_chain_prefix_cannot_hide_a_losing_closed_lifecycle ______
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-2935/test_valid_fill_chain_prefix_c0')
+
+    def test_valid_fill_chain_prefix_cannot_hide_a_losing_closed_lifecycle(tmp_path):
+        capture = _capture()
+        losing = deepcopy(capture)
+        for row in losing["deals"]:
+            row.update(code="US.MSFT", order_id="loss-" + row["order_id"], deal_id="loss-" + row["deal_id"])
+            if row["trd_side"] == "SELL":
+                row["price"] = 50
+        for row in losing["orders"]:
+            row.update(code="US.MSFT", order_id="loss-" + row["order_id"])
+        for row in losing["order_fees"]:
+            row["order_id"] = "loss-" + row["order_id"]
+        capture["deals"] += losing["deals"]
+        capture["orders"] += losing["orders"]
+        capture["order_fees"] += losing["order_fees"]
+        _persist(tmp_path, capture)
+        assert _usd(compute_broker_performance(tmp_path))["net_trading_pnl_after_order_fees"] == -410.0
+        path = tmp_path / "fills.jsonl"
+        path.write_bytes(b"".join(path.read_bytes().splitlines(keepends=True)[:3]))
+        assert L.validate_broker_execution_ledger(tmp_path)["status"] == "valid"
+        result = compute_broker_performance(tmp_path)
+>       assert result["status"] == "unavailable"
+E       AssertionError: assert 'ok' == 'unavailable'
+E         
+E         - unavailable
+E         + ok
+
+quant\test_broker_performance.py:380: AssertionError
+_ test_failed_economic_refresh_does_not_advance_successful_source_time[error] _
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-2935/test_failed_economic_refresh_d0')
+query_status = 'error'
+
+    @pytest.mark.parametrize("query_status", ["error", "partial", "skipped"])
+    def test_failed_economic_refresh_does_not_advance_successful_source_time(tmp_path, query_status):
+        _persist(tmp_path)
+        latest = _capture("c2")
+        latest["collection_completed_at_utc"] = "2026-07-04T20:00:01Z"
+        latest["deals"], latest["orders"], latest["order_fees"] = [], [], []
+        for query in ("history_deals", "history_orders", "order_fees"):
+            latest["queries"][query]["status"] = query_status
+        _persist(tmp_path, latest)
+        result = compute_broker_performance(tmp_path)
+>       assert result["status"] == "partial"
+E       AssertionError: assert 'ok' == 'partial'
+E         
+E         - partial
+E         + ok
+
+quant\test_broker_performance.py:396: AssertionError
+_ test_failed_economic_refresh_does_not_advance_successful_source_time[partial] _
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-2935/test_failed_economic_refresh_d1')
+query_status = 'partial'
+
+    @pytest.mark.parametrize("query_status", ["error", "partial", "skipped"])
+    def test_failed_economic_refresh_does_not_advance_successful_source_time(tmp_path, query_status):
+        _persist(tmp_path)
+        latest = _capture("c2")
+        latest["collection_completed_at_utc"] = "2026-07-04T20:00:01Z"
+        latest["deals"], latest["orders"], latest["order_fees"] = [], [], []
+        for query in ("history_deals", "history_orders", "order_fees"):
+            latest["queries"][query]["status"] = query_status
+        _persist(tmp_path, latest)
+        result = compute_broker_performance(tmp_path)
+>       assert result["status"] == "partial"
+E       AssertionError: assert 'ok' == 'partial'
+E         
+E         - partial
+E         + ok
+
+quant\test_broker_performance.py:396: AssertionError
+_ test_failed_economic_refresh_does_not_advance_successful_source_time[skipped] _
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-2935/test_failed_economic_refresh_d2')
+query_status = 'skipped'
+
+    @pytest.mark.parametrize("query_status", ["error", "partial", "skipped"])
+    def test_failed_economic_refresh_does_not_advance_successful_source_time(tmp_path, query_status):
+        _persist(tmp_path)
+        latest = _capture("c2")
+        latest["collection_completed_at_utc"] = "2026-07-04T20:00:01Z"
+        latest["deals"], latest["orders"], latest["order_fees"] = [], [], []
+        for query in ("history_deals", "history_orders", "order_fees"):
+            latest["queries"][query]["status"] = query_status
+        _persist(tmp_path, latest)
+        result = compute_broker_performance(tmp_path)
+>       assert result["status"] == "partial"
+E       AssertionError: assert 'ok' == 'partial'
+E         
+E         - partial
+E         + ok
+
+quant\test_broker_performance.py:396: AssertionError
+_______ test_legacy_manifest_missing_query_status_is_explicitly_unknown _______
+
+tmp_path = WindowsPath('C:/Users/Administrator/AppData/Local/Temp/pytest-of-Administrator/pytest-2935/test_legacy_manifest_missing_q0')
+
+    def test_legacy_manifest_missing_query_status_is_explicitly_unknown(tmp_path):
+        _persist(tmp_path)
+        path = tmp_path / "collection_manifests.jsonl"
+        rows = _rows(path)
+        rows[0]["fact"].pop("query_manifest")
+        _rewrite_chain(path, rows)
+        result = compute_broker_performance(tmp_path)
+>       assert result["status"] == "partial"
+E       AssertionError: assert 'ok' == 'partial'
+E         
+E         - partial
+E         + ok
+
+quant\test_broker_performance.py:411: AssertionError
+=========================== short test summary info ===========================
+FAILED quant/test_broker_performance.py::test_valid_fill_chain_prefix_cannot_hide_a_losing_closed_lifecycle
+FAILED quant/test_broker_performance.py::test_failed_economic_refresh_does_not_advance_successful_source_time[error]
+FAILED quant/test_broker_performance.py::test_failed_economic_refresh_does_not_advance_successful_source_time[partial]
+FAILED quant/test_broker_performance.py::test_failed_economic_refresh_does_not_advance_successful_source_time[skipped]
+FAILED quant/test_broker_performance.py::test_legacy_manifest_missing_query_status_is_explicitly_unknown
+5 failed, 29 deselected in 0.51s

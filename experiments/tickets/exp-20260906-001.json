@@ -1,0 +1,325 @@
+{
+  "acceptance_rule": "daily_report_and_quant_signals_broker_performance_visibility: before absent; after identical validated summary in both outputs; fixture cash-PnL less each order fee once reconciles; incomplete/corrupt facts explicitly unavailable; source ledger and trading outputs unchanged",
+  "allowed_write_scope": [
+    "quant/broker_performance.py",
+    "quant/test_broker_performance.py",
+    "quant/run.py",
+    "quant/report_generator.py",
+    "quant/test_broker_performance_reporting.py",
+    "docs/broker_execution_ledger.md",
+    "quant/experiments/exp_20260906_001_broker_performance_reporting.py",
+    "data/experiments/exp-20260906-001/",
+    "experiments/artifacts/exp-20260906-001_broker_performance_reporting.md",
+    "experiments/logs/exp-20260906-001.json",
+    "experiments/tickets/exp-20260906-001.json",
+    "experiments/cards/exp-20260906-001.md",
+    "experiments/manifests/exp-20260906-001.json",
+    "docs/experiment_registry.json"
+  ],
+  "baseline_result_file": "data/experiments/exp-20260906-001/before.json",
+  "blocked_downstream_check": "daily_report_and_quant_signals_broker_performance_visibility",
+  "card_file": "experiments/cards/exp-20260906-001.md",
+  "causal_components": [
+    "read-only committed ledger projection",
+    "closed lifecycle cash PnL",
+    "order fee coverage",
+    "daily JSON and report wiring",
+    "diary metrics isolation",
+    "regression tests"
+  ],
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "broker_closed_lifecycle_performance_reporting_v1",
+  "claimed_at": "2026-09-06T06:26:02+00:00",
+  "completed_at": "2026-09-06T06:35:57+00:00",
+  "created_at": "2026-09-06T06:25:40+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260906-001",
+  "experiment_uid": "expuid-f9394ab105b443ac",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260906-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-09-06T06:25:40+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "broker_performance_reporting"
+  },
+  "hypothesis": "Make committed broker closed-lifecycle trading PnL and latest reported order fees visible in daily outputs without changing trading behavior or historical evidence.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "signals",
+    "ranking",
+    "sizing",
+    "exits",
+    "cost assumptions",
+    "trade permissions",
+    "raw broker ledgers"
+  ],
+  "measurement_contract": {
+    "acceptance": "actual committed broker summary computed twice identically; raw source file hashes unchanged; same evaluated cohort gross minus order fees equals net; identical summary enters actual daily output statements without signal changes; missing/corrupt evidence explicitly unavailable",
+    "alpha_changed": false,
+    "first_outcome_read_complete": true,
+    "first_proof_artifact": "data/experiments/exp-20260906-001/after.json",
+    "frozen_at": "2026-09-06T06:33:42.629672+00:00",
+    "production_impact": "read-only measurement and reporting only; signals/rank/sizing/exits/cost assumptions/trade permissions unchanged",
+    "result_ceiling": "accepted_engineering_measurement_only",
+    "runner": "quant/experiments/exp_20260906_001_broker_performance_reporting.py",
+    "source_contract_file": "data/experiments/exp-20260906-001/source_contract.json",
+    "trade_enabled": false
+  },
+  "mechanism_family": "broker_performance_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "operator_inputs/",
+    "data/live_pilot/broker_execution/",
+    "quant/constants.py",
+    "quant/backtester.py"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "other",
+      "field_tags": [
+        "behavior",
+        "broker",
+        "changing",
+        "closed",
+        "committed",
+        "daily",
+        "evidence",
+        "fees",
+        "historical",
+        "in",
+        "latest",
+        "lifecycle",
+        "make",
+        "measurement",
+        "or",
+        "order",
+        "outputs",
+        "performance",
+        "pnl",
+        "reported",
+        "reporting",
+        "trading",
+        "without"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_order_backlog_demand_evidence_span_candidate_pool",
+        "reopen_condition": "A valid retry needs materially richer PIT semantic provenance, such as extracted backlog growth rate, book-to-bill magnitude, contract duration/funding certainty, named customer importance, or forward replacement-value rows from a shared daily helper.",
+        "score": 0.0296,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "moomoo_execution_history",
+        "family_key": "broker_execution_measurement",
+        "reopen_condition": "A separate consumer experiment may evaluate exit-side live drift on the 87 trusted closed lifecycles. A ledger/lifecycle revision requires verified broker timezone or push-event semantics, corporate-action/transfer records, a demonstrated cross-zero allocation contract, per-collection commit/visibility proof, or cursor-based cash-flow backfill evidence.",
+        "score": 0.0286,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "other",
+        "family_key": "daily_news_structured_event_evidence_ledger",
+        "reopen_condition": "Closed cash/SPY/QQQ replacement-value outcomes for these structured events, or an LLM scorer that writes the same actor/object/relation/magnitude/evidence schema at decision time.",
+        "score": 0.0286,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.8947,
+        "data_source": "revision_expectation",
+        "family_key": "identity_or_measurement_repair",
+        "reopen_condition": "Consumption path for the opened numeric gate: run the frozen outcome-blind D0-D3 discovery scope on the estimate-revision surface (docs/alpha_search_phase1_handoff.md contract) in the next work unit; the scope must select a candidate for phase 2 to reopen. Machine trigger artifact: data/reopen_readiness.json phase2_estimate_revision status=ready (first ready 2026-08-28T16:47Z).",
+        "score": 0.0286,
+        "status": "has_accepted",
+        "trials": 38
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "exit_lifecycle",
+        "family_key": "exit_lifecycle_outcome_settlement",
+        "reopen_condition": "A future alpha iteration needs automatically accumulated settled forward rows, a distinct gate shape, or a new data source; this measurement repair alone is not alpha evidence.",
+        "score": 0.0276,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "other",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "other",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-profit-repair",
+  "pre_repair_gate_value": {
+    "daily_report_broker_measurement_present": false,
+    "quant_signals_broker_measurement_present": false
+  },
+  "prediction": null,
+  "prior_trial_count": 0,
+  "registry_write_boundary": "Standard close helper may update only this experiment entry in derived registry under lock; no direct registry edits.",
+  "reservation_intent": {
+    "key": "076d728e145e8754312a033d7f7560f985d417eae60eac71f4da0e0a0359dcb6",
+    "payload_hash": "076d728e145e8754312a033d7f7560f985d417eae60eac71f4da0e0a0359dcb6",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260906-001/before.json",
+    "after_result_file": "data/experiments/exp-20260906-001/after.json",
+    "delta_metrics": {},
+    "research_refs": []
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260906-001.json",
+  "single_causal_variable": "broker_closed_lifecycle_performance_reporting_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260906-001.json",
+  "trial_family": "broker_closed_lifecycle_reporting",
+  "trial_variant_id": "exp-20260906-001",
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not select profitable ticker, sector or time buckets from this account history and call them alpha; do not substitute missing fees or unknown starting positions with zero.",
+    "new_evidence_required": "A demonstrated accounting defect with a reproducer, or independently frozen decision-order-fill lineage for a new strategy-attribution consumer.",
+    "realized_failure_mode": "missing_broker_performance_reporting",
+    "why_result_happened": "The broker already held useful execution facts but daily reports used a separate missing trade diary. A strict committed-ledger consumer makes a covered negative trading sample visible without changing the source or selecting rules from its outcomes."
+  },
+  "measurement_closeout": {
+    "engineering_accepted": true,
+    "economic_progress": false,
+    "alpha_changed": false,
+    "trade_enabled": false,
+    "proof_artifact": "data/experiments/exp-20260906-001/after.json",
+    "strategy_attribution_status": "unavailable_no_decision_order_lineage",
+    "current_revision": 2,
+    "current_proof_artifact": "data/experiments/exp-20260906-001/revision_2/after.json"
+  },
+  "measurement_revisions": [
+    {
+      "revision": 2,
+      "completed_at": "2026-09-06T06:52:03.162490+00:00",
+      "reason": [
+        "Independent review found complete valid fill-chain tail truncation can drop a losing lifecycle while committed links retain proof of missing facts.",
+        "Independent review found error/partial/skipped economic-source queries could advance source_as_of despite no successful economic refresh."
+      ],
+      "prior_artifact_sha256": {
+        "data/experiments/exp-20260906-001/after.json": "0581ba648708ef2ed66c98f667300c80cfdce426a90528bfca89bb1f7c91a030",
+        "data/experiments/exp-20260906-001/before.json": "cdd6e41b046c39d416e871db07d268ce19423173110e020b4be4a73bf66ffa90",
+        "data/experiments/exp-20260906-001/source_contract.json": "0e93ba130109cb7468cd594c8cbcd27c93f39a9d73437d70396556a04d804eaf",
+        "docs/broker_execution_ledger.md": "196142552f9b4b319d43ecd7ff96905c4433c6b8163def8d863592bcb8a9825d",
+        "experiments/artifacts/exp-20260906-001_broker_performance_reporting.md": "3b23d7c5f0cedde9e6b69ca350bf5772e7aa906d356436af250081fa575805e7",
+        "experiments/cards/exp-20260906-001.md": "3b7c436950e1cbeaa1b769a1dc7ba4104c3d3f755c957fb32d62b10668bc7f1a",
+        "experiments/logs/exp-20260906-001.json": "555c42934917493fa852cda66bdb93b279afa08170f8fd7de9718f85db125511",
+        "experiments/manifests/exp-20260906-001.json": "ffabca1f58aab32718efa8fb5b30da650196d7e988ccd94dd0808c2102137fab",
+        "experiments/tickets/exp-20260906-001.json": "ee549af96464c52a62715eb8867b24fd283cd21779ac2052b74efa75c0db4e9c",
+        "quant/broker_performance.py": "9262a9ee913908e5e5f456920f42b2aa70068f09308caf7bb13727dd3695b39f",
+        "quant/experiments/exp_20260906_001_broker_performance_reporting.py": "68e6500e49e4bbf27df9d5dab5eae96fd1cc49d652695eab31ebb65f9f722782",
+        "quant/test_broker_performance.py": "5dc9207b79269516ebcaf8e923cbd590d80056cf980e87bdb97f528450642727"
+      },
+      "source_contract_file": "data/experiments/exp-20260906-001/revision_2/source_contract.json",
+      "after_result_file": "data/experiments/exp-20260906-001/revision_2/after.json",
+      "engineering_accepted": true,
+      "acceptance_basis": "Five synthetic regressions reproduced review defects; 60 combined tests pass after reverse-reference and query freshness corrections. Two real projections identical and 10 source file hashes unchanged.",
+      "economic_progress": false,
+      "alpha_changed": false,
+      "trade_enabled": false,
+      "projection_status": "partial",
+      "source_as_of": "2026-08-10T03:02:46.240323Z",
+      "latest_collection_attempt_at": "2026-09-06T03:02:15.736022Z",
+      "query_coverage": {
+        "history_deals": {
+          "last_successful_at": "2026-08-10T03:02:46.240323Z",
+          "latest_status": "error"
+        },
+        "history_orders": {
+          "last_successful_at": "2026-08-10T03:02:48.975612Z",
+          "latest_status": "error"
+        },
+        "order_fees": {
+          "last_successful_at": "2026-09-05T03:03:25.507053Z",
+          "latest_status": "skipped"
+        }
+      },
+      "original_terminal_result_preserved": true
+    }
+  ]
+}

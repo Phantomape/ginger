@@ -1,0 +1,39 @@
+{
+ "schema_version": 1,
+ "generator_version": "alpha-search-phase2-estimate-revision-adjacent-reval-v1",
+ "candidate_kinds": [
+  "expectation_gap"
+ ],
+ "candidate_specific_results_access": false,
+ "experiment_reservation_enabled": false,
+ "queue_budgets": {
+  "exploration": 0,
+  "adjacent": 1,
+  "exploitation": 0
+ },
+ "required_evidence_roles": [
+  "market_expectation",
+  "independent_evidence",
+  "price_revealed_context"
+ ],
+ "required_precommitments": [
+  "baseline",
+  "treatment",
+  "expected_horizon",
+  "replacement_value_comparator",
+  "falsifier",
+  "execution_envelope"
+ ],
+ "required_queues": [
+  "adjacent"
+ ],
+ "selection_limit": 1,
+ "selection_policy": "one-candidate strict revalidation of the registered adjacent registrant; D0-D3 must pass again under a fresh prior snapshot or there is no selection",
+ "trade_enabled": false,
+ "selection_anchor": "The 2026-08-31 clean-forward falsification contract (d-0014, data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json sha256 50ee0360...) froze bars B1-B5 verbatim from this registrant's 2026-08-29 registration wording and a machine trigger: clean conditioned settled counts >=30 at h5 AND >=30 at h10 with both direction legs >=10, counted under the frozen rule and contamination fence. The 2026-09-12 outcome-blind recount (data/alpha_search/phase2_adjacent_overshoot_trigger_recount_20260912.json) reports the fence re-derived byte-identically from freeze commit 5967838ae (1352 ids), h5 settled 76 (up 29 / down 47), h10 settled 55 (up 20 / down 35): every bar holds, so the trigger fired. This scope revalidates that single registrant byte-identically; no new registrants are authored and no outcome fields are read.",
+ "provenance": {
+  "frozen_contract": "data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json (d-0014); registration = data/alpha_search/phase2_estimate_revision_candidate_pool_20260829.json (d-0012)",
+  "trigger": "data/alpha_search/phase2_adjacent_overshoot_trigger_recount_20260912.json trigger_fires=true (2026-09-12); contract evaluation_trigger requires reserve -> claim -> run within <=24h",
+  "note": "One-candidate outcome-blind revalidation scope over the schema-v3 estimate-revision surface for the adjacent registrant. Content is byte-identical to its 2026-08-29 registration; only the prior snapshot, surface identity artifacts and scope binding are fresh. Prior snapshot anchored 2026-08-29T16:15Z (before the registrant's own registration) per the 2026-08-30 precedent to avoid the structural D3 self-hit; the live reserve-time novelty guard still runs against every frozen family including exp-20260831-001."
+ }
+}

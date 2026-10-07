@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "record_type": "alpha_experiment_promotion_request",
+  "proposal": {
+    "lane": "alpha_search",
+    "hypothesis": "Registered adjacent registrant cand-68d2f5dad2f903488307: when the pre-event five-session price move of a mapped issuer already exceeds the repricing implied by the recorded qualified consensus EPS forecast update (frozen parameter-free rule: implied = |eps_estimate_delta_prev / (eps_estimate - eps_estimate_delta_prev)|; overshoot iff dir_sign * ln(close_A/close_{A-5}) > implied; anchor A = last warehouse session <= as_of_date; |prior eps| >= 0.10 and delta sign must match direction; exclude fail-closed), the excess move partially reverts over H5-H10 from the following tradable session: down-overshoot is the tradable long leg and up-overshoot is foregone-long avoidance evidence. The falsification runs ONLY on the clean forward slice frozen by the 2026-08-31 d-0014 contract: decisions first settled after 2026-08-31 (1352 contaminated ids fenced by sha256), bars B1-B5 verbatim from the 2026-08-29 registration wording, gated at h5 and h10 with >=30 settled per gated horizon and >=10 per direction leg, h20 reported only. Trigger recount 2026-09-12: h5 76 (29 up / 47 down), h10 55 (20 up / 35 down).",
+    "change_type": "private_replay_scout",
+    "single_causal_variable": "adjacent_overshoot_clean_forward_falsification_v1",
+    "causal_components": [
+      "frozen conditioning rule and cohort: clean = qualified non-flat mapped decisions whose decision_id is outside the 1352-id contamination fence (sha256 312dabe4...; h5 closed in the 2026-08-31 fileset); conditioned = constant-multiple update-implied repricing overshoot computed from identity fields plus pre-event OHLCV closes only (2307 rows bound by sha256 aeb1f62e...); membership is frozen before any outcome field is read; no sigma/volatility envelope",
+      "frozen falsification bars; ALL required for an observed_only accept; any failure rejects: B1 residual decay mean(h_return_pct|down_overshoot) - mean(h_return_pct|up_overshoot) > 0 at BOTH h5 and h10; B2 long leg sum(h10_replacement_value_vs_cash_usd|down_overshoot) > 0 (h5 reported); B3 comparators sum(h10_replacement_value_vs_spy_usd|down) > 0 AND sum(h10_replacement_value_vs_qqq_usd|down) > 0; B4 date placebo: real h10 down-minus-up reversion spread under one simple methodology (entry next warehouse session open strictly after as_of_date; exit at the 10th session close; gross) must exceed the 90th percentile of 200 draws reassigning each conditioned decision an as_of session uniformly from the other decision sessions with ticker and direction kept; B5 ticker shuffle: same methodology; real spread must exceed the 90th percentile of 200 draws permuting tickers among decisions within the same session; seed 20260901; displaced-core comparator reported only (no per-decision series)",
+      "no production surface changes: the runner only reads the settled outcome ledgers and the OHLCV warehouse; no signal; entry; exit; sizing; order; or observer behavior changes; trade_enabled stays false; maximum conclusion is an observed_only lead (research_pit price context; research_replay admission)",
+      "sample gates frozen 2026-08-31: >=30 settled conditioned clean decisions per gated horizon (h5 and h10) and >=10 per direction leg; no partial evaluation; h20 reported only; costs = persisted outcome-ledger pipeline values; no re-costing",
+      "up-overshoot decisions are evaluated as foregone-long avoidance evidence only (no borrow assumed anywhere); the tradable economic claim is confined to the down-overshoot long leg per the registrant's frozen execution envelope"
+    ],
+    "mechanism_family": "anticipatory_overshoot_partial_reversion_after_recorded_update",
+    "trial_family": "estimate_revision_pre_event_overshoot_clean_forward_falsification",
+    "changed_variable": "adjacent_overshoot_clean_forward_falsification_v1",
+    "prediction": {
+      "confidence_reason": "The 2026-08-29 registration put 0.10 on this mechanism before any density was known and that figure is kept: the adjacent quiet-tape family (exp-20260831-001) was rejected as already_priced on the same daily-batch consensus clock, the clean slice spans only 3-5 entry dates so the date placebo is weak, and five bars must all pass. The trigger recount only removed the insufficient-sample failure mode at the gated horizons.",
+      "expected_ev_delta": 0.0,
+      "expected_pnl_delta": 0.0,
+      "main_failure_modes": [
+        "already_priced",
+        "insufficient_independent_rows",
+        "placebo_indistinguishable"
+      ],
+      "success_probability": 0.1
+    }
+  },
+  "proposal_hash": "ece2306997b3ad3dd9bbba3e5c81e0cf12d6b7dc3ef47c66b90346a7109a1a76",
+  "panel_path": "data/alpha_search/phase2_adjacent_overshoot_selection_panel_20260912.json",
+  "panel_sha256": "33697fc3511626a6c74eeb28567af4f62c74134c75cf1a348af289481da7726b",
+  "panel_hash": "5701ac24f72249d6a27b20f54130c46106ecca0daffc46dd43f8ca88d5b32c9d",
+  "scope_manifest_path": "data/alpha_search/phase2_adjacent_overshoot_scope_manifest_20260912.json",
+  "scope_manifest_sha256": "df4559c8331203e1acc97f41cce2f91e5903b05ae32918e2af967f2c4462eba3",
+  "scope_manifest_hash": "fde6787b422da73b009c51e45d4d69d60eaf4a66aa5d965d7234e8aedf9ff92b",
+  "surface_registry_path": "data/alpha_search/phase2_adjacent_overshoot_surfaces_20260912.json",
+  "surface_registry_sha256": "e736316fbfa4512cf4e095cf7d997a9e680d999ecba7f7cb9572e21e537c13fd",
+  "surface_registry_hash": "241d498eb9079c30ff6e63d6bd466fda6f2a949295ddb60d1c7545e3c8795207",
+  "prior_fingerprints_path": "data/alpha_search/phase2_adjacent_overshoot_prior_fingerprints_20260912.json",
+  "prior_fingerprints_sha256": "3d63d34746bfa7a447005a0ba0588c2b359ece0d8d9ac5859c618377b8102746",
+  "prior_fingerprint_snapshot_hash": "144d79b0b6b5f26dfa5a00147a9e198b082f593df5fa6c580e87ae7823a6b784",
+  "selection_scope_id": "scope-fde6787b422da73b009c51e4",
+  "candidate_id": "cand-68d2f5dad2f903488307",
+  "candidate_snapshot_hash": "ac9e8e2fc12fe04b3ec0a1f63f3a8e39383dc2112f4f3999edeb6d0b86c6b4dc",
+  "preflight_hash": "d1fac14b383edb1856baa3aaf226e30a62c56359ed08334683730382310f01a7",
+  "final_candidate_pool_hash": "1f40943d3df8ca9511d5c04394704847fb84c7cbd74e5da4dec6da148750a7fe",
+  "research_refs": [],
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "promotion_hash": "40dd0e6ee1b7f9468ea555155fba3c218880a96263679365ac08dbe968aaa389",
+  "admission_class": "research_replay",
+  "selected_evidence_grade": "lead",
+  "result_ceiling": "observed_only",
+  "paper_live_eligible": false,
+  "source_readiness_bindings": [
+    {
+      "surface_id": "estimate_revision_consensus_observer",
+      "pit_status": "canonical_pit",
+      "source_contract_hash": "9ed7cab3ea09eafda7803ff8f22bc7e3d1101b623452a1ae7a8fca04d929288e",
+      "readiness_hash": "6ee7a48a59ac31a2e4a995c92274f787147241937981ed947f3270612bf7d151"
+    },
+    {
+      "surface_id": "ohlcv_price_revealed_context",
+      "pit_status": "research_pit",
+      "source_contract_hash": "8f1fc2e0f42ee9d704eb975510f234bbd1810e20873d39d24511725c9c02d0ff",
+      "readiness_hash": "27e83da651f0a8a0ac2c3f66dcb2ca565769f67585fba2bea0fcf0518300eac5"
+    }
+  ]
+}

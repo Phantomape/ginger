@@ -1,0 +1,52 @@
+{
+  "experiment_id": "exp-20260909-002",
+  "experiment_uid": "expuid-1818c9a28a3342b6",
+  "source_ref": "refs/heads/fix/alpha-score-sleeve-same-day-idempotency",
+  "recorded_at": "2026-09-09T07:50:28.783540+00:00",
+  "before_gate": "unavailable_no_decision_order_lineage",
+  "after_gate": "prospective_exact_identity_and_complete_lifecycle_attribution_available",
+  "measurement_accepted": true,
+  "economic_progress": false,
+  "trade_enabled": false,
+  "orders_submitted": false,
+  "tests": {
+    "passed": 145,
+    "command": ".venv/Scripts/python.exe -B -m pytest quant/test_execution_attribution.py quant/test_broker_performance.py quant/test_broker_performance_reporting.py quant/test_broker_execution_ledger.py quant/test_moomoo_history_paging.py quant/test_moomoo_open_positions.py quant/test_bracket_orders.py -q -p no:cacheprovider"
+  },
+  "independent_original_reproductions_passed": 5,
+  "live_proof_sha256": "d94541ee8627b5e028ab27ecc6cdd1e2fea580e5fb9de61adda5949bbdeefe91",
+  "live_checks": {
+    "old_eight_raw_prefixes_preserved": true,
+    "replay_zero_append": true,
+    "replay_raw_bytes_unchanged": true,
+    "protected_strategy_and_position_files_unchanged": true,
+    "economic_query_coverage_ok": true,
+    "anchored_collection_present": true,
+    "no_historical_strategy_ownership_invented": true,
+    "unknown_strategy_profit_is_null": true,
+    "real_daily_zero_advice_adapter_ok": true
+  },
+  "existing_logical_orders": 786,
+  "historical_bound_orders": 0,
+  "historical_strategy_pnl": null,
+  "code_and_document_hashes": {
+    "quant/execution_attribution.py": "f45ed01eb9cb779e7041a8da45e61a82965421505dc273c3268e7b3fca20587b",
+    "quant/broker_performance.py": "215896f956264fd84312316d1a5e5242cc1e41be8e7217a3e070e5aba442fe51",
+    "quant/broker_execution_ledger.py": "de8be6dcdf07986e2eaa50edea3e3cdcbe5180f83c1808c78c01061e18d5a1f8",
+    "quant/run.py": "4bcf1474869e134824322326b282f74b4b5fc4bfcfb70b6007f6e826381fc38f",
+    "quant/report_generator.py": "39b7e5979294aafd76cd8fc035d32dc3e3141ab6285cd334bd623660f4f0093d",
+    "quant/test_execution_attribution.py": "baf3c3eccd360715023b72c48e8c93320ea7a28212aca7f3cf2804a0c6414ef8",
+    "quant/test_broker_performance.py": "9fe865349131cfb7a4d384a83e6855b61b335f014c771e84c6fcedb8de391735",
+    "quant/test_broker_execution_ledger.py": "8329cab22fc688e21b40de11c9afeaed6d2f7c8534fdb84420e63e7b49fed488",
+    "quant/test_broker_performance_reporting.py": "be784d1b5ae4c364735aad3eeaeac7aa49d9d7c81e129e624b185381933889e2",
+    "quant/experiments/exp_20260909_002_broker_decision_order_attribution.py": "f6653a2ace6988f5a594b828ebec738dea2d0f1e1123e1917c9237144c32a0bc",
+    "docs/broker_execution_ledger.md": "6e64bd4d14606388ed3465ed317815b8863e90a97758da5c2d3af7b5284ab759",
+    ".gitignore": "dcab3046e79cec43e1fa91be5ebf4314bf7ce8c8426be53199e7da2c1e42f4f7"
+  },
+  "post_run_reflection": {
+    "why_result_happened": "Exact prospective identity and complete lifecycle accounting make attribution auditable; committed surface heads detect valid-chain tail truncation. Historical remarks remain empty, so historical strategy PnL stays unknown.",
+    "realized_failure_mode": "missing_explicit_order_identity",
+    "forbidden_near_neighbor_retry": "Do not infer old strategy ownership from ticker, time proximity or position labels; do not loosen complete lifecycle or immutable-head checks to manufacture coverage.",
+    "new_evidence_required": "A prospective broker lifecycle with recorded decision remarks on both legs, or a verified new broker schema/identity conflict requiring measurement repair."
+  }
+}
