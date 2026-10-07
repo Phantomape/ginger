@@ -1,0 +1,136 @@
+{
+  "candidates": [
+    {
+      "baseline": {
+        "policy": "100% active cash-feasible core on the exact three classic calendars."
+      },
+      "candidate_id": "cand-2225347516300e7f9533",
+      "candidate_kind": "expectation_gap",
+      "created_at": "2026-08-16T19:27:30Z",
+      "created_by": "codex-root",
+      "evidence_grade": "lead",
+      "execution_envelope": {
+        "borrow_dependency": "none; long-only",
+        "capacity_constraint": "total satellite <=10% NAV, each mechanism bucket <=5% NAV, null 100% core allowed, source/ticker concentration disclosed",
+        "costs_and_carry": "inherit the frozen 45bp round-trip candidate paths and cash-feasible core costs; no leverage or financing credit",
+        "execution_dependency": "exact frozen daily paths, deterministic grid, nonnegative capital weights, no production orders",
+        "intended_instrument": "existing long-only U.S. cash-equity strategy sleeves in a research replay",
+        "liquidity_dependency": "inherit each frozen strategy's own eligibility; no new ticker or fill rule",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "weights are static inside each evaluation window; chronological walk-forward fitting only",
+        "trade_enabled": false
+      },
+      "expectation_gap": {
+        "gap": {
+          "pricing_map": "100_percent_core versus core_plus_joint_satellite",
+          "selection_contract": "all 480 surfaces to eight frozen mechanism buckets; equal weight within bucket; 0-10% total satellite; 1% exhaustive grid; 0.25% local refinement; no outcome-ranked strategy inclusion"
+        },
+        "gap_definition": "A capital-neutral joint satellite is valuable only if its diversification benefit exceeds the opportunity cost of displaced cash-feasible core capital.",
+        "independent_evidence": [
+          {
+            "artifact": "data/experiments/exp-20260716-011/historical_evidence_manifest.json",
+            "claim": "480 unique frozen long strategy paths can be reconstructed on identical classic calendars.",
+            "known_at": "2026-07-16T20:23:10Z",
+            "source": "frozen_historical_strategy_panel_20260816"
+          },
+          {
+            "artifact": "data/paper_sleeves/forward_replacement_value.jsonl",
+            "claim": "196 settled forward rows across 21 current sleeves provide a recent observe-only contradiction check.",
+            "known_at": "2026-08-16T04:10:44Z",
+            "source": "paper_forward_replacement_recent_20260816"
+          }
+        ],
+        "market_prior": {
+          "known_at": "2026-07-15T22:26:16Z",
+          "observable": true,
+          "provenance": {
+            "artifact": "data/experiments/exp-20260715-010/after_measurement.json",
+            "artifact_sha256": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+          },
+          "proxy_type": "price_revealed",
+          "source": "cash_feasible_core_classic_20260816",
+          "units": "daily_return_and_USD100000_funded_portfolio",
+          "value": "100_percent_cash_feasible_core"
+        },
+        "schema_version": 1,
+        "transmission": {
+          "affected_tickers": [
+            "ALL_RECOVERABLE_LONG_STRATEGY_SURFACES"
+          ],
+          "catalyst": "cross-strategy cashflow timing diversification",
+          "expected_direction": "positive funded aggregate EV and PnL delta with bounded risk",
+          "half_life": "six-month classic windows with recent forward stability check"
+        }
+      },
+      "expected_horizon": "old_thin, mid_weak, late_strong; recent 2026-05-05 through 2026-08-14 observe-only",
+      "falsifier": "Reject unless a capital-neutral vector improves aggregate classic-window EV and PnL versus 100% core, has at most one material window regression under Gate 4-P, worsens max drawdown by no more than 0.5pp and ES95 by no more than 5%, passes chronological walk-forward checks, respects 10% total satellite and concentration caps, and is not contradicted by mapped recent forward replacement value. Any positive result remains observed_only.",
+      "fingerprint": {
+        "component_sources": [
+          "cash_feasible_core",
+          "forward_replacement_value",
+          "historical_strategy_artifacts"
+        ],
+        "data_source": "portfolio_covariance_lane",
+        "decision_surface": "joint_multi_strategy_allocator_10pct",
+        "economic_mechanism": "capital_neutral_hierarchical_diversification_across_source_mechanisms",
+        "execution_dependency": "frozen_daily_paths_exact_weight_grid_cash_conservation",
+        "expectation_proxy": "price_revealed",
+        "horizon": "old_thin, mid_weak, late_strong; recent 2026-05-05 through 2026-08-14 observe-only",
+        "payoff_shape": "long_only_cash_equity_portfolio_contribution",
+        "portfolio_role": "satellite_risk_budget_competing_with_full_core"
+      },
+      "hypothesis": "Equalizing the influence of eight outcome-blind source-mechanism buckets and exhaustively allocating at most 10% of capital across their aggregate return paths can combine differently timed strategy cashflows into higher classic-window expected value than the full cash-feasible core, while recent settled forward rows should not contradict the selected source mix.",
+      "next_machine_action": "run outcome-blind D0-D3",
+      "prediction": {
+        "confidence_reason": "A joint covariance shape is economically distinct from the failed single-sleeve lane, but the cash-feasible core is strong, the classic panel is adaptively reused, and recent forward sleeve results are immature; a robust positive allocation is plausible but unlikely.",
+        "main_failure_modes": [
+          "drawdown_or_tail_risk_failure",
+          "full_core_opportunity_cost_not_covered",
+          "recent_forward_contradiction",
+          "selection_history_incompleteness",
+          "source_bucket_dilution",
+          "walk_forward_instability"
+        ],
+        "success_probability": 0.2
+      },
+      "production_impact": {
+        "alters_candidate_ranking": false,
+        "alters_exits": false,
+        "alters_orders": false,
+        "alters_signal_generation": false,
+        "alters_sizing": false,
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "reopen_condition": "If rejected, do not retune bucket definitions, capital grid, total budget, objective or recent mapping on the same frozen paths. Reopen only with a prospective pre-frozen joint portfolio ledger, a materially new strategy family, or an owner-authorized execution/risk gate shape backed by new evidence.",
+      "replacement_value_comparator": "100% cash-feasible core primary; core plus the same unallocated satellite budget held as zero-return cash secondary diagnostic.",
+      "schema_version": 1,
+      "search_queue": "exploration",
+      "source_readiness_snapshot": [],
+      "surface_ids": [
+        "cash_feasible_core_classic_20260816",
+        "current_portfolio_exposure_20260816",
+        "frozen_historical_strategy_panel_20260816",
+        "paper_forward_replacement_recent_20260816"
+      ],
+      "title": "Capital-neutral hierarchical joint strategy allocator",
+      "treatment": {
+        "policy": "Consider all 480 frozen long surfaces; map them deterministically into eight source-mechanism buckets; equal-weight unique paths inside each bucket; enumerate every 1% capital vector with total satellite <=10%, retain the null, refine around the best feasible point at 0.25%, and never use the recent cohort in formal Gate arithmetic."
+      },
+      "why_not_arbitraged": "The repository accumulated many individually tested strategies, but capital displacement and covariance were historically evaluated one sleeve at a time. Joint funding can expose diversification that standalone champion comparisons miss, while capacity, costs, regime correlation and estimation error can erase it."
+    }
+  ]
+}

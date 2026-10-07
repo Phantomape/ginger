@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "record_type": "outcome_blind_readiness_preflight",
+  "created_at": "2026-08-16T15:11:17Z",
+  "data_cutoff": "2026-08-16T15:11:17Z",
+  "outcome_blind": true,
+  "outcome_fields_used": false,
+  "trade_enabled": false,
+  "selected_candidate_key": "exit_lifecycle_advisory_severity",
+  "canonical_reopen_surface": {
+    "generated_at": "2026-08-16T15:03:37Z",
+    "lane_count": 13,
+    "ready_count": 0,
+    "sha256": "a72062f0c7fc7f6e491bb33fe805132829d28579b77d9899fed52e3ca3b64a86"
+  },
+  "candidate_checks": [
+    {
+      "candidate_key": "exit_lifecycle_advisory_severity",
+      "observable_market_prior": "pass: canonical completed-session OHLCV plus cash/SPY/QQQ context",
+      "independent_evidence": "pass: the forward exit-lifecycle advisory ledger is operationally distinct from the price prior",
+      "known_at_contract": "pass: stored lifecycle decision timestamp precedes the fixed H5 settlement clock",
+      "pit_tier": "canonical_pit",
+      "evidence_maturity": "settled_forward_sufficient in total, not sufficient for the frozen treatment subtypes",
+      "known_future_leakage": false,
+      "source_surface_component_identity": "pass: ohlcv_warehouse and exit_lifecycle are each registered exactly once under unique 20260816 surface IDs and current hashes",
+      "candidate_overlap": "47 advisory decisions, including 26 hard-stop and 21 high-urgency decisions",
+      "historical_settled_rows": "429 total versus 422 required; subtype bars remain 26/33 hard-stop and 47/60 advisory",
+      "executable_treatment_touches": {
+        "required_per_standard_window": 5,
+        "late_strong": null,
+        "mid_weak": null,
+        "old_thin": null,
+        "status": "fail_not_machine_demonstrated"
+      },
+      "touch_reason": "Prospective subtype totals cannot be substituted for a per-standard-window intersection with executable baseline decisions.",
+      "transmission_mapping": "pass at observer level: each advisory maps to one held position and one frozen severity class; a shared bounded action helper is still absent",
+      "replacement_comparator": "frozen same-held-notional H5 continuation, cash/SPY/QQQ context, slot reuse and winner collateral",
+      "concentration_limits": "existing name/sector/portfolio caps remain unchanged; the frozen adverse-value concentration and winner-collateral proofs remain binding",
+      "execution_envelope": "existing long cash-equity positions only, one bounded paper action per name/session, no new notional or leverage, stale state fail closed, trade_enabled=false",
+      "source_contract": "pass",
+      "novelty_reopen_saturation": "fail: seven additional hard-stop and thirteen additional advisory decisions are required under the unchanged family; no wording or threshold retune is allowed",
+      "portfolio_control": "fail: twenty of twenty rows remain blocked by manual_bracket_orders_not_broker_confirmed",
+      "decision": "park_before_candidate_projection"
+    },
+    {
+      "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+      "observable_market_prior": "pass: canonical deep-drawdown price cohort and cash/SPY/QQQ comparators",
+      "independent_evidence": "pass as distinct Moomoo flow and OnclickMedia option sources, but their join is not a new source",
+      "known_at_contract": "pass only for stored forward research rows used no earlier than the next session",
+      "pit_tier": "research_pit",
+      "evidence_maturity": "pit_forward_unsettled",
+      "known_future_leakage": false,
+      "source_surface_component_identity": "pass: each component is registered exactly once and hash-bound",
+      "candidate_overlap": "fifteen last-audited fixed-formula disagreements",
+      "historical_settled_rows": "last clean audited nine of twenty H10 paired disagreements; the current nineteen flow dates cannot make new recent rows H10-settled",
+      "executable_treatment_touches": {
+        "required_per_standard_window": 5,
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0,
+        "status": "fail"
+      },
+      "transmission_mapping": "pass only as an absorption-plus-inventory proxy; institution identity, put support and bullish dealer gamma are forbidden interpretations",
+      "replacement_comparator": "same-date RSI top one under identical clock, notional and cost",
+      "concentration_limits": "forty-percent maximum selection share and ten-percent NAV name cap",
+      "execution_envelope": "one USD4000 long paper slot, 35bp base/70bp stress costs, snapshots fail closed, trade_enabled=false",
+      "source_contract": "partial: research/education use only, no original licensed-feed lineage, incomplete historical term structure",
+      "novelty_reopen_saturation": "fail: fewer than twenty H10 settlements and no legal new evidence axis",
+      "decision": "park"
+    },
+    {
+      "candidate_key": "prediction_market_probability_change_overlay",
+      "observable_market_prior": "pass: canonical cash/core/SPY/QQQ price surface",
+      "independent_evidence": "pass for the separate public prediction-market observer at research level",
+      "known_at_contract": "pass for stored first-seen observer timestamps; immutable provider-vintage lineage remains an upgrade condition",
+      "pit_tier": "research_pit",
+      "evidence_maturity": "observed_only_attribution",
+      "known_future_leakage": false,
+      "source_surface_component_identity": "pass: prediction_market_event_observer is registered once with its source manifest and readiness hash",
+      "candidate_overlap": "2458 unique settled candidate rows across thirteen decision dates and three query groups",
+      "historical_settled_rows": "quantity and date breadth pass, but the full frozen concentration/change contract does not",
+      "executable_treatment_touches": {
+        "required_per_standard_window": 5,
+        "late_strong": 0,
+        "mid_weak": 0,
+        "old_thin": 0,
+        "status": "fail_forward_observer_has_no_canonical_historical_windows"
+      },
+      "transmission_mapping": "observer query-to-ticker mapping exists, but a unique executable affected-cash-flow path and overlap-safe decision mapping are not frozen",
+      "replacement_comparator": "unchanged core candidate or cash with same-clock SPY/QQQ context",
+      "concentration_limits": "top ticker must be at most 15% and top query at most 50%; current values are 15.7852% and 94.7111%",
+      "execution_envelope": "one USD4000 default-off paper slot, no stacking, missing mapping fail closed, trade_enabled=false",
+      "source_contract": "pass for research observer only",
+      "novelty_reopen_saturation": "fail: only 17/20 markets change probability and structural query concentration cannot be fixed by a threshold change",
+      "decision": "park"
+    }
+  ],
+  "selected_candidate_readiness": "strongest_static_contracts_but_not_qualify_ready",
+  "decision": "investment_team_park_then_single_authoritative_no_candidate_qualification",
+  "conditions_honestly_repaired_this_run": [
+    "rebuilt all canonical reopen counters without reading outcome direction",
+    "refreshed current SHA-256 bindings and verified every bound artifact is under an allowed claim root",
+    "verified the largest bound artifact is 4596038 bytes and the deduplicated bundle is 4728045 bytes, below the 64 MiB per-file and 128 MiB batch limits",
+    "registered one and only one primary surface row per source/component",
+    "declared known_at, PIT tier, evidence maturity and known_future_leakage=false",
+    "froze replacement comparators, concentration limits and a zero-live-notional execution boundary",
+    "completed the same-session cross-sectional opportunity-cost comparison and digest consumption audit"
+  ],
+  "conditions_not_repairable_this_run": [
+    "exit lifecycle needs seven additional hard-stop decisions and thirteen additional advisory decisions",
+    "exit lifecycle lacks a machine-verifiable 5/5/5 standard-window treatment-touch proof and shared action-helper parity",
+    "flow-options needs at least eleven additional H10-settled paired disagreements from the last clean audit and an authorized complete option chain",
+    "prediction overlay violates ticker/query concentration and changed-market breadth bars",
+    "all twenty portfolio-control rows require broker-confirmed protection orders"
+  ],
+  "contamination_quarantine": {
+    "excluded_from_formal_bundle": [
+      "space_catalyst_event_ledger",
+      "event_overlay_bundle",
+      "alpha_score_market_regime",
+      "form4_insider_purchase_lead"
+    ],
+    "outcome_values_discarded": true,
+    "used_for_candidate_selection": false
+  }
+}

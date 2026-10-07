@@ -1,0 +1,281 @@
+{
+  "acceptance_rule": "Accept only if the exact Hawkes trial family fingerprints as news_event_exposure, the readiness builder emits a non-ready/manual lane with frozen 25/38 and 12/18 counters, focused tests pass, and no alpha behavior changes.",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "scripts/build_reopen_readiness.py",
+    "quant/test_experiment_fingerprint.py",
+    "data/reopen_readiness.json",
+    "docs/frozen_families.jsonl",
+    "data/experiments/exp-20260816-003/before.json",
+    "data/experiments/exp-20260816-003/after.json"
+  ],
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260816-003.md",
+  "causal_components": [
+    "exact trial-family fingerprint routing to news_event_exposure",
+    "conservative machine-visible manual readiness registration at 25 of 38 decisions and 12 of 18 dates",
+    "no alpha or order behavior change"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "hawkes_lane_reopen_and_fingerprint_registration",
+  "claimed_at": "2026-08-16T20:00:34+00:00",
+  "completed_at": "2026-08-16T20:01:37+00:00",
+  "created_at": "2026-08-16T20:00:30+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260816-003",
+  "experiment_uid": "expuid-a785f95d20a2458e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260816-003",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-16T20:00:30+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "hawkes_lane_governance_registration"
+  },
+  "hypothesis": "Governance measurement repair after exp-20260816-002: register the rejected signed-arrival conditional-intensity lane in the machine reopen surface and route its exact trial-family fingerprints to the existing news_event_exposure source, so future sessions cannot silently treat the family as other or retry before the frozen 38-decision/18-date bar.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "exp_20260816_002_reopen_threshold_38",
+    "minimum_dates_18",
+    "max_group_share_40pct"
+  ],
+  "mechanism_family": "experiment_governance",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "run.py",
+    "production orders",
+    "live sizing"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260816-002"
+  ],
+  "new_evidence_type": "measurement_repair",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "news_event_exposure",
+      "field_tags": [
+        "after",
+        "arrival",
+        "as",
+        "bar",
+        "before",
+        "cannot",
+        "conditional",
+        "date",
+        "decision",
+        "event",
+        "exact",
+        "existing",
+        "exp",
+        "experiment",
+        "exposure",
+        "family",
+        "fingerprint",
+        "fingerprints",
+        "frozen",
+        "future",
+        "governance",
+        "hawkes",
+        "in",
+        "intensity",
+        "its",
+        "lane",
+        "machine",
+        "measurement",
+        "news",
+        "or",
+        "other",
+        "register",
+        "registration",
+        "rejected",
+        "reopen",
+        "repair",
+        "retry",
+        "route",
+        "sessions",
+        "signed",
+        "silently",
+        "so",
+        "surface",
+        "to",
+        "treat",
+        "trial"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_fingerprint_coverage",
+        "reopen_condition": "Do not run another news_event_exposure alias repair unless a concrete family still lands in other. Alpha on this surface still requires closed current/post-replay second-order rows, a distinct PIT relation/economic source, or a new execution gate shape.",
+        "score": 0.4908,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_observer",
+        "reopen_condition": "More closed rows per (polarity x relation_type) cell — target >= 50 per cell — then one predeclared attribution read reusing the exp-20260702-017 baseline framework.",
+        "score": 0.4885,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+        "score": 0.482,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_attribution",
+        "reopen_condition": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition.",
+        "score": 0.4808,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_split_contaminated_outcome_repair",
+        "reopen_condition": "Future alpha work needs materially more closed current-event second-order rows under the daily observer, a distinct PIT relation/economic source, or a new execution gate shape.",
+        "score": 0.4802,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "news_event_exposure",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "news_event_exposure",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "Both defects are deterministic governance metadata gaps discovered after the rejected alpha close; the existing classifier and readiness registry have narrow extension points and no trading code is involved.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "fingerprint_overmatch",
+      "readiness_lane_missing",
+      "builder_schema_failure"
+    ],
+    "recorded_at": "2026-08-16T20:00:10+00:00",
+    "success_probability": 0.99
+  },
+  "prior_trial_count": 0,
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260816-003/before.json",
+    "after_result_file": "data/experiments/exp-20260816-003/after.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.99,
+      "brier_score": 0.0001,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "fingerprint_overmatch",
+        "readiness_lane_missing",
+        "builder_schema_failure"
+      ],
+      "realized_failure_mode": null,
+      "predicted_failure_mode_hit": null,
+      "surprise_note": "The alpha ticket correctly classified at reservation time because its hypothesis named news_event_exposure, but the frozen-family builder later saw only the trial-family alias and routed it to other; exact aliases fixed that cross-view mismatch."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260816-003.json",
+  "single_causal_variable": "hawkes_lane_reopen_and_fingerprint_registration",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260816-003.json",
+  "trial_family": "experiment_fingerprint_and_reopen_registration",
+  "trial_variant_id": "exp-20260816-003"
+}

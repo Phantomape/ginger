@@ -1,0 +1,74 @@
+{
+ "schema_version": 1,
+ "run_id": "20260831T0830Z_quiet_tape_falsification",
+ "started_at": "2026-08-31T06:30:00Z",
+ "finished_at": "2026-08-31T08:30:00Z",
+ "agent": "claude-scheduled-alpha",
+ "work_unit": "alpha_search_frozen_falsification",
+ "experiment_id": "exp-20260831-001",
+ "status": "completed",
+ "alpha_pulse_24h": {
+  "alpha_trials": 1,
+  "canonical_gate4_passes": 0,
+  "forward_decisions": 0,
+  "settled_outcomes": 0,
+  "net_replacement_value_usd": 0.0,
+  "active_forward_sleeves": {
+   "news_propagation_pair": {
+    "observer_health": "ok - 2 pending baskets admitted, no new ready batch overnight",
+    "decisions": 2,
+    "pending_baskets": 2,
+    "due_unsettled": 0,
+    "eligible_unadmitted": 0,
+    "eta_first_settlement": "2026-09-10",
+    "eta_contract_completion": "contract needs >=20 closed baskets over >=10 decision dates; earliest realistically late September 2026"
+   },
+   "move_rate_volatility_relief": {
+    "observer_health": "ok but event-starved: 0 rows; no calendar ETA"
+   }
+  },
+  "observer_stale_sleeves": 0,
+  "eligible_unadmitted": 0,
+  "due_unsettled": 0
+ },
+ "scope_debt": [
+  {
+   "debt_type": "scope_debt",
+   "trigger_artifact": "data/v2/hourly_runs/20260829T1710Z_phase2_estimate_revision_scope_run.json scope_debt entry",
+   "opened_at": "2026-08-29T16:55:00Z",
+   "frozen_contract_ref": "Registered exploitation candidate cand-1a665d7350fd8d6349e8 quiet-tape density check -> one-candidate scope -> frozen falsification",
+   "consumed_at": "2026-08-31T08:10:00Z",
+   "selected_candidate": "cand-1a665d7350fd8d6349e8",
+   "consumed_by_experiment_id": "exp-20260831-001",
+   "resolution": "CONSUMED. Density gate passed (802 conditioned; settled legs 656/427/142 all >= 30), candidate revalidated byte-identically (scope-636adc12eb4748ccf2a9a052), falsifier frozen (F1-F6), experiment reserved, claimed, run, and REJECTED (already_priced; d-0013)."
+  }
+ ],
+ "conversion_debt": [],
+ "economic_progress": false,
+ "economic_progress_note": "One full frozen alpha trial ran and produced a clean rejection with a machine-quantified reopen bar. No settled forward value was added; the pair sleeve stays healthy with 2 pending baskets.",
+ "changes": [
+  "data/alpha_search/phase2_estimate_revision_quiet_tape_density_20260830.json (outcome-blind density gate, pass)",
+  "data/alpha_search/phase2_estimate_revision_ohlcv_context_pit_reconstruction_20260830.json (conservative updated_at research-PIT evidence, 620/802)",
+  "data/alpha_search/phase2_exploitation_{prior_fingerprints,generation_config,scope_manifest,candidate,candidate_pool,preflight,selection_panel,panel_verification,proposal}_20260830.json",
+  "data/alpha_search/phase2_exploitation_surfaces_20260830.json (ohlcv_price_revealed_context snapshot_only -> research_pit with research_pit_basis; all other surfaces unchanged)",
+  "data/alpha_search/promotions/phase2_exploitation_quiet_tape_20260830.json (research_replay admission, result ceiling observed_only)",
+  "quant/experiments/exp_20260831_001_quiet_tape_delayed_repricing.py (read-only falsification runner)",
+  "data/experiments/exp-20260831-001/quiet_tape_falsification_result.json",
+  "experiments/tickets/exp-20260831-001.json + experiments/logs/exp-20260831-001.json (closed rejected)",
+  "docs/v2/current_state.md, docs/v2/backlog.md, docs/v2/decision_log.jsonl d-0013",
+  "data/alpha_search/events.jsonl (append-only discovery records from the one-candidate panel)"
+ ],
+ "verification": [
+  "density and PIT artifacts read identity fields + h_status only before falsifier freeze; outcome values first read inside the reserved experiment",
+  "one-candidate scope: prior snapshot anchored 2026-08-29T16:15Z (before the candidate's own registration) to avoid the structural self-near-neighbor hit; D0-D3 pass, zero legacy hits, verify-panel valid",
+  "novelty gate: wording dry-run rerouted the fingerprint off two tokenizer mines ('incorporation' -> sec_text_event, 'candidate' -> candidate_pool gate); final routing revision_expectation/forward_attribution; one 0.6065 WARN vs the failed onclickmedia options family overridden with the pre-registered Phase-1.5 reopen axis (settled 1153/1002/518 vs 30) - override accepted by the gate",
+  "falsification deterministic (seed 20260831, 200 draws each for placebo and shuffle); result artifact binds outcome fileset sha256",
+  "lean-strict experiment audit passed; trade_enabled=false throughout; no production behavior changed"
+ ],
+ "next_alpha_action": {
+  "primary": "Freeze the clean-forward falsification contract for the registered adjacent candidate cand-68d2f5dad2f903488307 (pre-event overshoot partial reversion): falsifier wording strictly from its 2026-08-29 registration (the 2026-08-31 observed non-quiet contrast is CONTAMINATION and must not shape any bar); evaluation gates ONLY on decisions first settled after 2026-08-31, with a pre-freeze expected-arrival check per the 2026-08-28 reachability rule (current overshoot share ~20% of qualified flow, 163 h5-pending + new decisions; require a conservative path to >=30 clean-forward settled per gated horizon before freezing, else park with the measured arrival rate). If frozen, this becomes a forward-waiting contract and the front lane switches to a registered low-friction long-only surface preflight in the same or next unit.",
+  "secondary": "Watch the pair sleeve daily run; both pending baskets settle ~2026-09-10; any due-unsettled or eligible-unadmitted is an economic_incident that preempts new work.",
+  "forbidden": "No quiet-tape envelope retunes (reopen bars in d-0013); no adjacent-candidate evaluation on decisions settled on or before 2026-08-31; no breadth redefinition on the daily-batch clock; no touching the other five phase-2 numeric bars."
+ },
+ "trade_enabled": false
+}

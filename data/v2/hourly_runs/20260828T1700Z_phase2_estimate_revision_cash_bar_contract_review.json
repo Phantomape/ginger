@@ -1,0 +1,69 @@
+{
+ "schema_version": 1,
+ "run_id": "20260828T1700Z_phase2_estimate_revision_cash_bar_contract_review",
+ "started_at": "2026-08-28T16:10:00Z",
+ "finished_at": "2026-08-28T17:00:00Z",
+ "agent": "claude-scheduled-alpha",
+ "work_unit": "measurement_repair_contract_review",
+ "experiment_id": "exp-20260828-001",
+ "status": "completed",
+ "alpha_pulse_24h": {
+  "alpha_trials": 0,
+  "canonical_gate4_passes": 0,
+  "forward_decisions": 1,
+  "settled_outcomes": 0,
+  "net_replacement_value_usd": 0.0,
+  "active_forward_sleeves": {
+   "news_propagation_pair": {
+    "observer_health": "ok - second measurement_ready batch (news-first-seen-0d1d4dcda48056d673f7) auto-admitted by the overnight daily run, first unattended proof of the exp-20260827-001 wiring",
+    "decisions": 2,
+    "pending_baskets": 2,
+    "due_unsettled": 0,
+    "eligible_unadmitted": 0,
+    "eta_first_settlement": "2026-09-10",
+    "eta_contract_completion": "contract needs >=20 closed baskets over >=10 decision dates; at ~1 batch/day of measurement_ready flow, earliest ~mid/late September 2026"
+   },
+   "move_rate_volatility_relief": {
+    "observer_health": "ok but event-starved: 0 closed / 0 open / 0 pending; 30-row reopen bar has no calendar ETA"
+   }
+  },
+  "observer_stale_sleeves": 0,
+  "eligible_unadmitted": 0,
+  "due_unsettled": 0,
+  "note": "exp-20260828-001 is a measurement/contract repair and does not count as an alpha trial. The 1 forward decision is the auto-admitted second pair basket."
+ },
+ "conversion_debt": [
+  {
+   "trigger_artifact": "data/reopen_readiness.json phase2_estimate_revision lane status=ready",
+   "opened_at": "2026-08-28T16:47:00Z",
+   "frozen_contract_ref": "docs/alpha_search_phase1_handoff.md Phase 1.5 reopen contract (exp-20260721-002; cash bar amended by exp-20260828-001 per the exp-20260811-001 pre-registered contract review)",
+   "consumed_by_experiment_id": null,
+   "blocker": "Numeric gate open is not phase-2 reopen. Consumption requires the frozen outcome-blind D0-D3 discovery scope on the estimate-revision surface plus source-contract checks; only a scope that actually selects a candidate reopens phase 2. The scope run is the next work unit."
+  }
+ ],
+ "economic_progress": false,
+ "economic_progress_note": "The lane's last unreachable numeric blocker was removed under the pre-registered contract review and the numeric gate opened for the first time, but no alpha experiment ran and no settled net replacement value exists. First pair-sleeve settlement ~2026-09-10.",
+ "changes": [
+  "quant/estimate_revision_outcomes.py (_summarize_cash_admission_traces helper; gate_ready cash term replaced by capability conditions; payload + reopen_condition amended, monitoring counter kept)",
+  "scripts/build_reopen_readiness.py (phase2 lane: capability counters + thresholds; actual_cash_conflicts demoted to monitoring)",
+  "quant/test_estimate_revision_outcomes.py (+3 tests: trace summary counting/fail-closed, missing dir, readiness payload + amended reopen_condition)",
+  "quant/test_build_reopen_readiness.py (helper payload extended; ready test now proves conflicts=0 no longer gates; +fail-closed capability-bar test; +2 malformed-field cases)",
+  "quant/experiments/exp_20260828_001_estimate_revision_cash_conflict_bar_contract_review.py (7-check verification runner)",
+  "data/experiments/exp-20260828-001/ (before/after readiness + reopen snapshots, contract_review_verification.json)",
+  "data/non_ohlcv/estimate_revision_readiness_latest.json + data/reopen_readiness.json (regenerated downstream in the same work unit)",
+  "docs/alpha_search_phase1_handoff.md (dated amendment appendix; frozen 2026-07-21 text untouched)",
+  "docs/v2/current_state.md, docs/v2/backlog.md, docs/v2/decision_log.jsonl d-0011"
+ ],
+ "verification": [
+  "7/7 runner checks incl. before gate closed -> after gate open, pre-existing counters byte-identical, other reopen lanes' statuses unchanged, no outcome fields in payload",
+  "66/66 tests (test_estimate_revision_outcomes, test_build_reopen_readiness, test_estimate_revision_source_contract, test_alpha_reopen_contract)",
+  "scripts/experiment.py audit --lean-strict: lean_strict_passed=true",
+  "trace scan performance 0.92s over 133 daily artifacts (acceptable in the daily readiness step)"
+ ],
+ "next_alpha_action": {
+  "primary": "Consume the open phase2_estimate_revision conversion debt: run the frozen outcome-blind D0-D3 discovery scope on the estimate-revision surface (docs/alpha_search_phase1_handoff.md contract; discovery layer only, no outcome reading) plus source-contract checks. Success gate: the scope actually selects a candidate -> phase 2 reopens and the selected candidate proceeds to a frozen falsification experiment; a scope that selects none closes the debt with a machine-readable no-candidate record.",
+  "secondary": "Verify tonight's daily run admits any new measurement_ready pair batch and that no pair basket is due-unsettled; first settlement check ~2026-09-10.",
+  "forbidden": "No changes to the other five phase-2 numeric bars; no re-gating on decision-coincident conflict counts; no phase-2 alpha experiment before the D0-D3 scope selects; no news-family attribution re-reads below 1508 closed negative-side rows."
+ },
+ "trade_enabled": false
+}

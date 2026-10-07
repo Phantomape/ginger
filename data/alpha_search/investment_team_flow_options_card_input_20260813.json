@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "record_type": "investment_team_research_card",
+  "card_id": "pending",
+  "created_at": "2026-08-13T15:23:23Z",
+  "data_cutoff": "2026-08-13T15:20:00Z",
+  "outcome_blind": true,
+  "trade_enabled": false,
+  "subject": {
+    "company": "Cross-sectional liquid U.S. equities",
+    "tickers": [
+      "APP",
+      "CAT",
+      "META",
+      "MU",
+      "TSLA"
+    ],
+    "research_question": "Can the frozen deep-drawdown flow and captured near-put-OI interaction select a more resilient next-open H10 rebound than same-date lowest RSI after the forward PIT, source-contract, paired-settlement, concentration and execution contracts pass?"
+  },
+  "researchability": {
+    "grade": "B",
+    "basis": "The mechanism has a fixed cohort, deterministic two-arm ranking, observable next-session clocks, independent cash-flow and option-inventory sources, and an explicit same-date comparator. It remains admission-ineligible because only nine H10 paired disagreements have settled versus twenty required, the option feed is research-only and aggregated, and the two-expiry strike-truncated chain cannot establish a canonical standard-window surface.",
+    "limitations": [
+      "Moomoo main_in_flow is a block-order aggressor-side proxy, not investor identity or account-level capital flow.",
+      "Open interest has no bullish or bearish sign without opening/closing and trade-direction data.",
+      "The collector keeps only the nearest two expiries and a limited strike window, which can bias the near-put numerator and denominator differently across tickers.",
+      "Only fifteen frozen-formula disagreements exist and nine have reached H10 settlement versus twenty required.",
+      "The forward option face cannot provide five executable touches in any of the three historical canonical windows.",
+      "OnclickMedia limits the data to educational/research use and disclaims use for real-time trading or financial decisions.",
+      "Current production position control blocks additions, and the USD4000 slot would consume 6.62 percent of NAV and 33.88 percent of cash before existing-name caps."
+    ]
+  },
+  "roles": {
+    "business_analyst": {
+      "status": "complete",
+      "conclusion": "The interaction is economically coherent only as a joint positioning-state lead: large-order buying may indicate absorption, while near-put OI marks concentrated option inventory. It must not be described as institutional sponsorship or bullish put support. Public EOD inputs and truncation make any residual edge likely small and state-dependent, so PARK is required until the frozen forward bar is met.",
+      "evidence": [
+        {
+          "claim": "Moomoo defines main_in_flow as block-order net inflow but does not identify institutions or provide a fully auditable participant classification.",
+          "source": "https://openapi.moomoo.com/moomoo-api-doc/en/quote/get-capital-flow.html",
+          "source_group": "moomoo_vendor",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        },
+        {
+          "claim": "OnclickMedia describes an open research API aggregated from public sources, warns of gaps or inconsistencies, and limits the data to educational and research purposes rather than financial decisions.",
+          "source": "https://www.onclickmedia.com/About",
+          "source_group": "onclickmedia_vendor",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        }
+      ],
+      "uncertainty": "Order classification, option OI reporting lag, event-day confounding and cross-ticker coverage differences can dominate the interaction rank."
+    },
+    "financial_analyst": {
+      "status": "complete",
+      "conclusion": "The primary financial comparator must be same-date RSI top1 under identical clock, H10, USD4000 and 35bp assumptions; cash, SPY and QQQ are secondary. The current USD4000 slot is 6.62 percent of portfolio NAV and 33.88 percent of cash, while production control blocks additions, so no live displacement or capital allocation is permitted.",
+      "evidence": [
+        {
+          "claim": "The current broker snapshot reports portfolio value USD60426.5214, cash USD11807.91 and twenty-one holdings as of 2026-08-13.",
+          "source": "operator_inputs/open_positions.json",
+          "source_group": "moomoo_broker_account",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T06:00:12Z"
+        },
+        {
+          "claim": "The canonical production control has ok_to_add_control_pass false because an immediate exit, unconfirmed manual brackets and a stale target remain unresolved.",
+          "source": "data/live_pilot/position_control/state.json",
+          "source_group": "ginger_live_controls",
+          "source_kind": "secondary",
+          "known_at": "2026-08-12T04:19:59Z"
+        },
+        {
+          "claim": "A market order prioritizes execution rather than price, so a fixed 35bp research cost cannot cover every next-open gap or tail-slippage outcome.",
+          "source": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins-14",
+          "source_group": "sec_investor_education",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        }
+      ],
+      "uncertainty": "Portfolio overlap and name-level caps can reduce usable notional below USD4000 even after research attribution becomes mature."
+    },
+    "industry_researcher": {
+      "status": "complete",
+      "conclusion": "Flow and option OI are different markets and therefore independent source groups, but OI is not directionally identified. The defensible mapping is deep drawdown to large-order absorption times near-price option-inventory concentration; dealer gamma, protective-put demand and bullish support are not observed. Two-expiry and strike truncation materially weaken comparability.",
+      "evidence": [
+        {
+          "claim": "OCC educational guidance explains that open interest is the count of outstanding contracts and does not by itself indicate a bullish or bearish position.",
+          "source": "https://www.optionseducation.org/referencelibrary/faq/general-information",
+          "source_group": "occ_oic",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        },
+        {
+          "claim": "Cboe's authoritative EOD option specification treats expiration, strike, type and OI at the series level, showing why full term and strike coverage matter for an inventory surface.",
+          "source": "https://datashop.cboe.com/option-eod-summary",
+          "source_group": "cboe_option_specification",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        },
+        {
+          "claim": "The repository collector fixes two nearest expiries and at most twelve strikes per side around spot, so the captured near-put ratio is not a full-chain OI measure.",
+          "source": "quant/options_onclickmedia.py",
+          "source_group": "ginger_options_collector",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        }
+      ],
+      "uncertainty": "The captured denominator can lose more far-downside strikes than the numerator, mechanically raising the ratio for some tickers and dates."
+    },
+    "risk_assessor": {
+      "status": "complete",
+      "conclusion": "PARK is mandatory. The genuine-forward-date bar passes at sixteen versus ten, but the frozen formula has fifteen disagreements and only nine H10-settled paired decisions versus twenty required. Source authorization is partial, canonical-window touches are zero, and position control is blocked. No wording, threshold, chain-width, horizon or output-directory change can cure those facts this run.",
+      "evidence": [
+        {
+          "claim": "The outcome-blind preflight counts sixteen genuine forward PIT flow dates, fifteen fixed-formula disagreements and nine H10-settled paired disagreements against a required twenty.",
+          "source": "data/alpha_search/alpha_automation_flow_options_readiness_preflight_20260813.json",
+          "source_group": "frozen_flow_options_preflight",
+          "source_kind": "secondary",
+          "known_at": "2026-08-13T15:20:00Z"
+        },
+        {
+          "claim": "The canonical reopen contract requires at least ten additional genuine forward PIT dates and twenty settled paired disagreement decisions, or canonical untruncated three-expiry historical PIT chains plus decision-time flow vintages.",
+          "source": "data/reopen_readiness.json",
+          "source_group": "canonical_reopen_readiness",
+          "source_kind": "secondary",
+          "known_at": "2026-08-13T15:08:00Z"
+        },
+        {
+          "claim": "The local provider contract explicitly marks forward rows as next-session research data with unavailable vendor_asof and possible OI lag.",
+          "source": "quant/options_onclickmedia.py",
+          "source_group": "ginger_options_collector",
+          "source_kind": "primary",
+          "known_at": "2026-08-13T15:20:00Z"
+        }
+      ],
+      "uncertainty": "The earliest calendar completion date is unknowable because new disagreement arrival is endogenous to the fixed cohort and each row then needs ten regular sessions to settle."
+    }
+  },
+  "conflicts": [],
+  "decision": {
+    "disposition": "park",
+    "rationale": "All four roles find the mechanism researchable but not directionally identified or admission-ready. The forward date bar is satisfied, yet only nine of twenty required H10 paired disagreements are settled, canonical touches are absent, the option source contract is partial, chain coverage is truncated and live controls are blocked.",
+    "next_machine_action": "Keep the formula unchanged and wait until at least eleven additional PIT-safe H10 paired disagreements settle, reaching twenty total; then verify maximum ticker share at most forty percent, full-chain coverage bias, source-contract status and canonical touch eligibility before a fresh outcome-blind qualification.",
+    "candidate": null
+  }
+}

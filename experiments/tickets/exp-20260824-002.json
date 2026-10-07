@@ -1,0 +1,334 @@
+{
+  "acceptance_rule": "Accept only if legacy rows are never backfilled or admitted, new rows receive one immutable first_seen_at, readiness uses no outcome fields, stale or missing borrow data fails closed, repeated daily runs are idempotent, run.py exposes the observer, focused tests pass, and the canonical strategy baseline hash/metrics remain unchanged because no strategy path changed.",
+  "allowed_write_scope": [
+    "quant/news_event_exposure_observer.py",
+    "quant/news_propagation_pair_forward_observer.py",
+    "quant/test_news_event_exposure_observer.py",
+    "quant/test_news_propagation_pair_forward_observer.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/run.py",
+    "docs/production_backtest_parity_matrix.md"
+  ],
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260824-002.md",
+  "causal_components": [
+    "immutable local first_seen_at only on newly appended exposure rows",
+    "legacy rows remain unbackfilled and ineligible",
+    "same-batch polarity and disjoint-ticker readiness counts",
+    "fresh point-in-time iBorrowDesk coverage audit only",
+    "no order intent paper fill or strategy decision"
+  ],
+  "change_type": "measurement_repair",
+  "changed_variable": "news_pair_first_seen_forward_readiness_contract_v1",
+  "claimed_at": "2026-08-24T18:10:46+00:00",
+  "completed_at": "2026-08-24T18:17:43+00:00",
+  "created_at": "2026-08-24T18:10:36+00:00",
+  "evaluation_windows": [],
+  "experiment_id": "exp-20260824-002",
+  "experiment_uid": "expuid-7f7cb4ae6703439e",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260824-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-24T18:10:36+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "news_pair_first_seen_forward_readiness"
+  },
+  "hypothesis": "The news-propagation family cannot produce executable evidence until every newly discovered exposure row carries an immutable local first_seen_at and a daily observer measures same-batch two-sided candidate density plus point-in-time borrow coverage without reading outcomes. Add that measurement contract, leave legacy rows ineligible, and expose it through the existing daily structured-news observer with no signal, sizing, exit, or order change.",
+  "lane": "measurement_repair",
+  "locked_variables": [
+    "news_pair_first_seen_forward_readiness_contract_v1"
+  ],
+  "mechanism_family": "news_pair_forward_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [],
+  "nearby_prior_experiments": [
+    "exp-20260824-001",
+    "exp-20260712-013",
+    "exp-20260702-028"
+  ],
+  "new_evidence_type": "production_first_seen_and_borrow_alignment",
+  "novelty": {
+    "blocking_matches": [
+      {
+        "accept_rate": 0.0,
+        "family_key": "sec_ftd_finra_no_core_flow_candidate_pool",
+        "score": 0.6121,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "score": 0.6116,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "score": 0.6062,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "finra_borrow_pressure_broad_universe",
+        "score": 0.6061,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+        "score": 0.6061,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "finra_short_interest",
+      "field_tags": [
+        "a",
+        "add",
+        "an",
+        "at",
+        "batch",
+        "borrow",
+        "cannot",
+        "carries",
+        "change",
+        "contract",
+        "coverage",
+        "daily",
+        "density",
+        "discovered",
+        "every",
+        "evidence",
+        "executable",
+        "existing",
+        "exit",
+        "expose",
+        "exposure",
+        "family",
+        "first",
+        "forward",
+        "immutable",
+        "in",
+        "ineligible",
+        "it",
+        "leave",
+        "legacy",
+        "local",
+        "measurement",
+        "measures",
+        "newly",
+        "news",
+        "no",
+        "observer",
+        "or",
+        "order",
+        "outcomes",
+        "pair",
+        "plus",
+        "point",
+        "produce",
+        "propagation",
+        "readiness",
+        "reading",
+        "row",
+        "rows",
+        "same",
+        "seen",
+        "sided",
+        "signal",
+        "sizing",
+        "structured",
+        "that",
+        "through",
+        "time",
+        "two",
+        "until",
+        "without"
+      ],
+      "gate_shape": "candidate_pool_top1_10d"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "sec_ftd_finra_no_core_flow_candidate_pool",
+        "reopen_condition": "Forward replacement rows or a materially new free data field, such as a borrow-cost, catalyst, liquidity, or order-flow relation that explains why core-flow dates should be displaced rather than retained.",
+        "score": 0.6121,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_candidate_pool",
+        "reopen_condition": "If accepted, build a shared default-off adapter plus parity tests. If rejected, move away from FINRA threshold/support variants unless new borrow-cost, loan-availability, or forward replacement evidence arrives.",
+        "score": 0.6116,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_iwm_same_ticker_cooldown_candidate_pool",
+        "reopen_condition": "Closed forward replacement-value rows, cash/core displacement comparison, concentration and kill-gate monitoring before any live activation review.",
+        "score": 0.6062,
+        "status": "has_accepted",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "finra_borrow_pressure_broad_universe",
+        "reopen_condition": "If positive, promote a shared-paper-first BROAD FINRA helper with historical replay + daily snapshot + parity test, and collect closed forward replacement-value rows. If negative, FINRA short interest is not standalone entry alpha even broadly; use it as crowding/risk context and require a materially different PIT borrow-cost / availability field before any retry. Do not threshold-sweep the frozen",
+        "score": 0.6061,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "finra_short_interest",
+        "family_key": "form4_finra_borrow_pressure_cross_source_overlap",
+        "reopen_condition": "If rejected, do not retry nearby Form4/FINRA overlap unless forward replacement rows or a materially richer borrow-cost or loan-availability field appears. If accepted, implement only through shared default-off parity-covered adapters.",
+        "score": 0.6061,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "finra_short_interest",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": false,
+      "blocked": false,
+      "matched_conditions": [],
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "proposal_classification": {
+        "fault_recovery": false,
+        "pipeline_wiring": false,
+        "routine": false
+      },
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.2667,
+      "accepts": 4,
+      "applicable": true,
+      "gate_shape": "candidate_pool_top1_10d",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "finra_short_interest",
+      "trials": 15
+    },
+    "warn": true,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex",
+  "prediction": {
+    "confidence_reason": "This is a narrow measurement repair over an already-wired append-only observer. The main risk is accidentally treating publication/event date or stale iBorrowDesk rows as decision-time evidence; explicit eligibility and idempotency tests should catch that, while no strategy metric is expected to move.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "legacy_clock_backfill",
+      "borrow_freshness_leak",
+      "daily_wiring_or_idempotency_failure"
+    ],
+    "recorded_at": "2026-08-24T18:09:51+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "reservation_intent": {
+    "key": "3b01f838c370bc4aa6f61195ea1f5f0d952ad7d0e918078bb297b80b41f2786b",
+    "payload_hash": "3b01f838c370bc4aa6f61195ea1f5f0d952ad7d0e918078bb297b80b41f2786b",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "accepted",
+    "acceptance_reasons": [],
+    "before_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "after_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "calibration": {
+      "actual_decision": "accepted",
+      "actual_success": 1,
+      "predicted_success_probability": 0.9,
+      "brier_score": 0.01,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "legacy_clock_backfill",
+        "borrow_freshness_leak",
+        "daily_wiring_or_idempotency_failure"
+      ],
+      "realized_failure_mode": "none",
+      "predicted_failure_mode_hit": false,
+      "surprise_note": "The narrow repair passed its predeclared clock, outcome-blindness, fail-closed borrow, idempotency, and daily-wiring checks without moving any canonical strategy metric; the existing borrow archive is correctly treated as indicative rather than executable locate evidence."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260824-002.json",
+  "single_causal_variable": "news_pair_first_seen_forward_readiness_contract_v1",
+  "status": "accepted",
+  "ticket_file": "experiments/tickets/exp-20260824-002.json",
+  "trial_family": "news_pair_first_seen_borrow_readiness",
+  "trial_variant_id": "exp-20260824-002"
+}

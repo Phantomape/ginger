@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "record_type": "outcome_blind_readiness_preflight",
+  "created_at": "2026-08-13T15:23:23Z",
+  "data_cutoff": "2026-08-13T15:20:00Z",
+  "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+  "outcome_blind": true,
+  "outcome_fields_read": false,
+  "trade_enabled": false,
+  "frozen_policy": {
+    "candidate_formula": "DD60 <= -15% and (RSI14 <= 40 or ret20 <= -15%)",
+    "baseline": "same-date lowest-RSI top1 in the identical complete-case cohort",
+    "treatment": "same-date top1 by sqrt(flow_strength_percentile * captured_near_put_oi_share_percentile)",
+    "entry": "next regular-session open",
+    "primary_horizon": "H10 close",
+    "paper_notional_usd": 4000,
+    "round_trip_cost_pct": 0.0035,
+    "missing_data": "fail closed",
+    "tie_breaks": "frozen deterministic ticker order",
+    "trade_enabled": false
+  },
+  "surface_identity": {
+    "price": "ohlcv_warehouse",
+    "flow": "moomoo_capital_flow_day",
+    "derivatives": "onclickmedia_options_forward_daily",
+    "component_sources": [
+      "ohlcv_warehouse",
+      "moomoo_capital_flow",
+      "onclickmedia_options"
+    ],
+    "join_is_not_a_new_source": true,
+    "flow_manifest_sha256": "28f54dd98751718e070157424c423a305b2af847daec139250e036f689950370",
+    "flow_rows_sha256": "04b705319831021ae18c72c3ab97348ce5d1af7c18d1ba0fd1343d14da3ae540",
+    "options_quality_sha256": "435771ba02c1f5ec54f6c8d4172bd94c70ee5b8ad4173609fe28f3f9c04e469c",
+    "readiness_sha256": "0634bced43bb5f1a5388e218f019c00e6a811b27c2c15ce241c3dbba6787f296"
+  },
+  "known_at_contract": {
+    "flow": "Earliest fetched_at for a flow_date/ticker must be no later than the next-session entry date; rows first fetched later fail closed.",
+    "options": "Forward EOD snapshots are usable no earlier than stored options_usable_trade_date; OI is treated as next-session state because same-day clearing direction is unavailable.",
+    "price": "Signal-day OHLCV only; no future bar enters cohort formation or ranking.",
+    "known_future_leakage": false,
+    "pit_tier": "pit_forward_unsettled",
+    "evidence_grade": "observer",
+    "result_ceiling": "invalid_until_reopen_then_observed_only"
+  },
+  "outcome_blind_counts": {
+    "genuine_forward_pit_flow_dates_post_20260720": 16,
+    "required_forward_pit_flow_dates_post_20260720": 10,
+    "fixed_formula_selection_dates": 20,
+    "fixed_formula_disagreement_dates": 15,
+    "h10_settled_paired_disagreement_decisions": 9,
+    "required_h10_settled_paired_disagreement_decisions": 20,
+    "minimum_additional_h10_settled_disagreements": 11,
+    "canonical_standard_window_executable_touches": {
+      "old_thin": 0,
+      "mid_weak": 0,
+      "late_strong": 0
+    },
+    "required_executable_touches_per_standard_window": 5
+  },
+  "source_contract": {
+    "moomoo_capital_flow": "pass_for_owner_authorized_forward_research",
+    "onclickmedia_options": "partial",
+    "onclickmedia_authorization_basis": "Provider describes an open, no-key research API but limits data to educational/research use and disclaims real-time trading or financial-decision use.",
+    "onclickmedia_lineage_caveat": "Aggregator uses public sources; vendor_asof and original licensed-feed lineage are unavailable.",
+    "source_contract_status": "partial"
+  },
+  "transmission_mapping": {
+    "mechanism": "Deep drawdown plus stronger large-order net buying and concentrated near-price put inventory may identify short-lived absorption and hedging-rebalance states.",
+    "allowed_interpretation": "joint positioning-state proxy",
+    "forbidden_interpretation": "put support, bullish dealer gamma, or institution-confirmed accumulation",
+    "machine_verifiable": true,
+    "mapping_fields": [
+      "dd60",
+      "rsi14",
+      "ret20",
+      "main_in_flow",
+      "prior_adv20_usd",
+      "near_put_oi_share_proxy",
+      "option_usable_trade_date"
+    ]
+  },
+  "replacement_value_comparator": {
+    "primary": "same-date lowest-RSI top1 in identical cohort",
+    "secondary": [
+      "zero-return cash",
+      "SPY identical interval",
+      "QQQ identical interval"
+    ],
+    "same_clock_notional_cost_horizon": true
+  },
+  "concentration_limits": {
+    "maximum_ticker_selection_share_pct": 40,
+    "maximum_incremental_name_exposure_pct_nav": 10,
+    "single_active_slot": 1
+  },
+  "live_realistic_execution_envelope": {
+    "instrument": "liquid U.S. common stock only",
+    "order_semantics": "research next-open fill model; no live order",
+    "incremental_notional": "min(USD 4000, 10% NAV minus existing ticker market value)",
+    "liquidity_and_slippage": "35bp round trip is the fixed research assumption; next-open gap tail risk remains a falsifier.",
+    "borrow_dependency": "none",
+    "kill_switches": [
+      "position_control must pass",
+      "stale or missing flow/options snapshot fails closed",
+      "existing ticker or portfolio cap breach fails closed"
+    ],
+    "current_portfolio_value_usd": 60426.5214,
+    "current_cash_usd": 11807.91,
+    "current_position_control_pass": false,
+    "live_ready": false,
+    "trade_enabled": false
+  },
+  "readiness_checks": {
+    "observable_market_prior": true,
+    "independent_evidence_source": true,
+    "known_at_bound": true,
+    "known_future_leakage_false": true,
+    "unique_component_identity": true,
+    "artifact_hashes_bound": true,
+    "candidate_overlap_positive": true,
+    "forward_date_reopen_bar": true,
+    "settled_disagreement_reopen_bar": false,
+    "canonical_window_touch_density": false,
+    "machine_verifiable_transmission": true,
+    "replacement_comparator_frozen": true,
+    "concentration_limit_frozen": true,
+    "execution_envelope_frozen": true,
+    "source_contract_pass": false
+  },
+  "decision": "park",
+  "why_not_repairable_this_run": [
+    "Eleven additional H10-settled disagreement decisions require new calendar observations and settlement; they cannot be backfilled as forward PIT evidence.",
+    "The three canonical windows predate the forward option-chain face, so five executable touches per window require a separately authorized, auditable historical PIT chain rather than relabeling present archives.",
+    "The provider's research-only disclaimer cannot be converted into live-trading authorization by a local schema edit.",
+    "Changing expiries, strike coverage, thresholds, cost, horizon, top-N, or response would retune the frozen lane rather than satisfy its reopen contract."
+  ],
+  "reopen_condition": {
+    "primary": "Keep the formula unchanged and reach at least 20 H10-settled PIT-safe paired disagreement decisions; current 9, so at least 11 additional are required.",
+    "canonical_alternative": "Obtain an authorized, untruncated historical PIT option chain with at least three expiries plus decision-time flow vintages, then demonstrate at least five executable treatment touches in each canonical window.",
+    "additional_bars": [
+      "source contract pass for the claimed use",
+      "maximum ticker selection share at most 40 percent",
+      "full-chain coverage audit for expiry and strike truncation",
+      "position-control pass before any future live consideration"
+    ],
+    "earliest_calendar_date": null,
+    "earliest_check_event": "A new fixed-formula disagreement reaches its tenth subsequent regular-session close and the total H10-settled disagreement count advances above 9."
+  }
+}

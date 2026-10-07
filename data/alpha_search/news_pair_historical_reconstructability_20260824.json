@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "record_type": "outcome_blind_historical_reconstructability_census",
+  "data_cutoff": "2026-08-24T18:45:00Z",
+  "outcome_fields_read": false,
+  "trade_enabled": false,
+  "surface": "structured_news_second_order_polarity_pair",
+  "frozen_policy": {
+    "long_polarity": "negative",
+    "short_polarity": "positive",
+    "entry": "first_regular_session_open_strictly_after_known_at",
+    "exit": "tenth_session_close",
+    "cross_side_tickers_disjoint": true,
+    "maximum_ticker_row_weight_per_side": 0.4
+  },
+  "exact_git_route": {
+    "clock": "earliest_git_commit_containing_the_exact_current_blob",
+    "structured_snapshot_files_total": 51,
+    "exact_git_blob_proven_files": 38,
+    "file_proof_manifest_hash": "91d2b724c7492c98f24cc703e668a9ff65149e992ccc55f4c89447daa2d1d146",
+    "mapping_proof": [
+      {
+        "path": "data/non_ohlcv/entity_exposure_map/sic_peer_index.json",
+        "known_at": "2026-07-02T21:57:24-07:00",
+        "commit": "29fa3d5b6695839b1717aba3eeb88f1587246028",
+        "git_blob": "239a0ffb1e37c539c64d6ba2bc5897941bf037be"
+      },
+      {
+        "path": "data/non_ohlcv/entity_exposure_map/theme_overlay.json",
+        "known_at": "2026-07-02T21:57:24-07:00",
+        "commit": "29fa3d5b6695839b1717aba3eeb88f1587246028",
+        "git_blob": "bb1072b476a9eec3ce742859913bfe22da2a652d"
+      }
+    ],
+    "unique_event_ids_seen": 219,
+    "invalid_or_post_commit_published_events": 0,
+    "decision_time_groups": 13,
+    "entry_ready_groups_after_same_clock_aggregation": 5,
+    "borrow_filtered_pair_ready_groups": 3,
+    "formal_historical_execution_gate": {
+      "minimum_batches": 20,
+      "minimum_decision_dates": 10,
+      "passed": false
+    }
+  },
+  "research_pit_route": {
+    "clock": "snapshot_date_23:59:59_America/Los_Angeles_then_strict_next_open",
+    "clock_caveat": "The daily snapshot date and frozen content hash are research provenance, not immutable proof that the current blob existed on that date.",
+    "result_ceiling": "observed_only",
+    "snapshot_proof_count": 48,
+    "snapshot_proof_manifest_hash": "ea6915fc1d027a32b05871fbca4312f94a723868c0b8095d030fe433b65a407b",
+    "decision_dates_considered": 46,
+    "clock_map_density_ready_batches": 24,
+    "entry_ready_batches": 20,
+    "h10_ready_batches": 16,
+    "borrow_filtered_pair_ready_batches": 2,
+    "borrow_blocker_counts": {
+      "missing_pit_borrow": 128,
+      "stale_pit_borrow": 336
+    },
+    "research_stress_gate": {
+      "minimum_h10_batches_predeclared": 20,
+      "observed_h10_batches": 16,
+      "pending_h10_batches": 4,
+      "passed": false
+    }
+  },
+  "decision": "park_without_experiment_id",
+  "reason": "The exact-Git route has only five independent entry-ready decision clocks, while the research-PIT route has 16 of the 20 predeclared H10 batches. Lowering the threshold after seeing the count is forbidden. Historical short execution is additionally unproven because only two research batches survive the point-in-time borrow filter.",
+  "reopen_condition": "Recompute outcome-blind after the four already identified entry-ready batches acquire H10 price coverage. A research-only cost/latency stress replay may start at at least 20 H10 batches, but paper/live eligibility still requires materially broader point-in-time short availability or a broker-locate contract.",
+  "next_action": "Do not wait on this family as the main alpha lane; move immediately to a source with fuller canonical PIT history while the observer accumulates in the background."
+}

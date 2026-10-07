@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_synthesis_pass",
+  "created_at": "2026-08-16T15:11:17Z",
+  "data_cutoff": "2026-08-16T15:11:17Z",
+  "outcome_blind_generation": true,
+  "candidate_outcomes_read": false,
+  "trade_enabled": false,
+  "experiment_id_reserved": false,
+  "baseline_universe": [
+    "core_43",
+    "pilot_13",
+    "broad_market_1227",
+    "current_broker_portfolio",
+    "cash",
+    "SPY",
+    "QQQ"
+  ],
+  "cross_sectional_opportunity_cost": {
+    "latest_complete_market_session": "2026-08-14",
+    "market_regime": "BULL_low_vol_grind",
+    "core_signal_count": 0,
+    "broad_market_candidate_count": 0,
+    "pilot_new_entry_status": "three_pilots_kill_new_entries_blocked",
+    "position_count": 20,
+    "portfolio_value_usd": 60767.98,
+    "cash_usd": 11390.24,
+    "cash_pct_nav": 18.74,
+    "reported_core_slots": 4,
+    "position_control_pass": false,
+    "position_control_blocker": "manual_bracket_orders_not_broker_confirmed",
+    "opportunity_cost_winner": "cash_no_new_exposure",
+    "basis": "The same-session core and broad-market cross-section produced no executable entry, all three pilot sleeves block new entries, and all twenty position-control rows remain blocked by forty unconfirmed bracket instructions."
+  },
+  "opportunity_cost_winner": "cash_no_new_exposure",
+  "evidence_surface_inventory": [
+    {
+      "category": "price",
+      "surface": "canonical_ohlcv_warehouse_and_cash_feasible_baseline",
+      "pit_boundary": "completed market session and earlier only",
+      "hot_row_count": 106321,
+      "hot_ticker_count": 1348,
+      "broad_market_ticker_count": 1227,
+      "latest_date": "2026-08-14",
+      "status": "available_market_prior_and_cash_spy_qqq_comparator"
+    },
+    {
+      "category": "flow",
+      "surface": "moomoo_capital_flow_day",
+      "pit_boundary": "only stored forward rows may use their captured decision clock; historical fetches cannot be relabelled",
+      "row_count": 13966,
+      "ticker_count": 62,
+      "forward_pit_dates_post_20260720": 19,
+      "status": "available_research_pit_but_fixed_flow_options_lane_unsettled"
+    },
+    {
+      "category": "derivatives",
+      "surface": "onclickmedia_options_forward_daily",
+      "pit_boundary": "forward EOD snapshot usable only on its stored subsequent trade date",
+      "latest_pit_safe_rows": 5564,
+      "usable_quote_dates": 62,
+      "quarantined_quote_dates": 9,
+      "status": "shadow_only_source_contract_partial_and_historical_term_structure_incomplete"
+    },
+    {
+      "category": "event",
+      "surface": "exit_lifecycle_and_prediction_market_forward_ledgers",
+      "pit_boundary": "stored decision timestamps joined only to subsequent fixed-horizon settlement",
+      "exit_lifecycle_settled": 429,
+      "exit_hard_stop": 26,
+      "exit_advisory_total": 47,
+      "prediction_unique_settled_candidates": 2458,
+      "status": "both_below_complete_frozen_reopen_contract"
+    },
+    {
+      "category": "positioning",
+      "surface": "published_short_interest_and_borrow_context",
+      "pit_boundary": "publication timestamp controls use; stale or failed borrow snapshots fail closed",
+      "short_interest_archive_rows": 52475,
+      "latest_short_interest_publication": "2026-07-24",
+      "borrow_ready": false,
+      "status": "delayed_context_only_not_entry_admission_ready"
+    },
+    {
+      "category": "portfolio_exposure",
+      "surface": "broker_positions_and_position_control",
+      "pit_boundary": "broker and control snapshots observed no later than the data cutoff",
+      "position_count": 20,
+      "cash_pct_nav": 18.74,
+      "largest_name_pct_nav": 12.78,
+      "status": "no_new_exposure_until_bracket_confirmation"
+    },
+    {
+      "category": "research_digest",
+      "surface": "research_digest_20260727",
+      "pit_boundary": "consumption only; no novelty, reopen, saturation or admission authority",
+      "displayed_entry_count": 9,
+      "fresh_entry_count": 0,
+      "status": "all_displayed_entries_already_declined_no_new_ledger_append_required"
+    }
+  ],
+  "global_stock_data_contract_audit": {
+    "explicitly_used": true,
+    "official_primary_sources_allowed_for_research": [
+      "SEC EDGAR",
+      "U.S. Treasury",
+      "CFTC"
+    ],
+    "excluded_or_limited": [
+      "CBOE data requires advance written approval or a license and is not authorized here",
+      "FINRA is B-grade and use-specific; a bulk investment-strategy right cannot be inferred",
+      "Nasdaq, Yahoo and similar C-grade feeds cannot be promoted without an audited use contract",
+      "OnclickMedia remains research-only with partial lineage and an incomplete historical chain",
+      "A cross-source join is a recipe, not a new source or novelty axis"
+    ],
+    "result": "No external-source substitution can honestly repair the current settlement, touch-density or concentration gaps in this run."
+  },
+  "research_digest_consumption": {
+    "digest_generated_at": "2026-07-27T17:23:34Z",
+    "fresh_entries": 0,
+    "picked": [],
+    "declined": [
+      {
+        "entry_scope": "all_nine_displayed_entries",
+        "reason": "Every displayed entry already has a terminal declined decision in the ledger and the digest has not advanced."
+      }
+    ],
+    "research_refs": [],
+    "ledger_action": "none_no_fresh_entry"
+  },
+  "evidence_surfaces_used": [
+    "canonical_ohlcv_warehouse",
+    "moomoo_capital_flow_day",
+    "onclickmedia_options_forward_daily",
+    "exit_lifecycle_advisory_forward",
+    "prediction_market_event_observer",
+    "published_short_interest_and_borrow_context",
+    "broker_positions_and_position_control",
+    "research_digest_20260727"
+  ],
+  "evidence_surfaces_missing": [
+    "machine-verifiable five-per-standard-window treatment touches for the exit advisory policy",
+    "authorized untruncated historical PIT option chain with at least three expiries",
+    "less concentrated independent prediction-market query coverage",
+    "broker-confirmed protective orders",
+    "fresh reliable borrow and locate evidence"
+  ],
+  "hypothesis_candidates": [
+    {
+      "candidate_key": "exit_lifecycle_advisory_severity",
+      "search_queue": "exploration",
+      "baseline": "At the identical held-position decision timestamp, keep the same cash-equity notional through H5 under the current canonical lifecycle behavior.",
+      "treatment": "Map the frozen hard_stop or high_urgency advisory state to a bounded default-off paper reduce-or-exit action, without changing entry ranking, sizing or live orders.",
+      "economic_mechanism": "A high-severity lifecycle deterioration may persist after the first advisory; bounded de-risking can avoid adverse continuation, while explicit winner-collateral and slot-reuse accounting prevents apparent value created by simply selling winners or freeing capital.",
+      "expected_horizon": "decision timestamp through H5",
+      "replacement_value_comparator": "same held notional left unchanged over the identical H5 clock, with cash, SPY and QQQ context plus explicit slot-reuse and winner-collateral accounting",
+      "execution_envelope": "Existing long cash-equity positions only; no new notional, leverage, shorting or live order; at most one bounded action per name per session; stale or missing advisory state fails closed; trade_enabled=false; portfolio/name/sector caps unchanged.",
+      "falsifier": "Reject readiness if hard-stop decisions remain below 33, advisory decisions below 60, five executable treatment touches per standard window are not machine-proved, concentration or winner-collateral bars fail, or shared-helper parity is absent.",
+      "readiness": "429/422 total settled passes, but 26/33 hard-stop and 47/60 advisory do not; nineteen advisory rows remain pending and no 5/5/5 historical touch proof is bound.",
+      "decision": "selected_for_investment_team_readiness_review"
+    },
+    {
+      "candidate_key": "fixed_drawdown_flow_near_put_oi_allocator",
+      "search_queue": "exploitation",
+      "baseline": "Within the identical complete-case deep-drawdown cohort, select the same-date lowest-RSI top one.",
+      "treatment": "Select the same-date top one by sqrt(flow-strength percentile times captured near-put-OI-share percentile) under the unchanged formula.",
+      "economic_mechanism": "Large-order absorption combined with concentrated near-price option inventory may identify a short-lived stabilization state without claiming institution identity, put support or bullish dealer gamma.",
+      "expected_horizon": "next regular-session open through H10 close",
+      "replacement_value_comparator": "same-date RSI top one primary and cash/SPY/QQQ secondary under identical clock, USD4000 notional and 35bp round-trip cost",
+      "execution_envelope": "One liquid long common-stock paper slot, USD4000 notional, ten-percent NAV name cap, forty-percent selection-concentration cap, 35bp base and 70bp stress cost, missing flow/options snapshots fail closed, trade_enabled=false.",
+      "falsifier": "Reject if fewer than twenty paired H10-settled disagreements, any standard window has fewer than five touches, ticker concentration exceeds forty percent, rank identity is unstable to complete chain coverage, or either source contract fails.",
+      "readiness": "Nineteen forward PIT flow dates, last clean manual count nine of twenty H10 settlements, 0/0/0 canonical-window touches and a partial option-source contract.",
+      "decision": "park"
+    },
+    {
+      "candidate_key": "prediction_market_probability_change_overlay",
+      "search_queue": "adjacent",
+      "baseline": "Current cash-feasible core candidate policy and cash/no-new-exposure when there is no executable candidate.",
+      "treatment": "Apply a bounded default-off candidate tilt only when a frozen provider-market probability change has a unique, auditable ticker transmission mapping.",
+      "economic_mechanism": "A public probability update may change expected cash flows before the mapped equity fully reprices, but only diversified query coverage and a unique transmission path make the update attributable.",
+      "expected_horizon": "next regular-session open through H10",
+      "replacement_value_comparator": "unchanged core candidate or cash, with SPY and QQQ context under the same decision timestamp and cost envelope",
+      "execution_envelope": "One USD4000 default-off paper slot, maximum ticker share fifteen percent, maximum query share fifty percent, no stacking with existing exposure, missing mapping fails closed, trade_enabled=false.",
+      "falsifier": "Reject readiness if top-ticker share exceeds fifteen percent, top-query share exceeds fifty percent, fewer than twenty markets change probability, standard-window touches are below five each, or the unique executable mapping is absent.",
+      "readiness": "2458 unique settled candidate rows and thirteen decision dates pass quantity, but top ticker is 15.7852%, top query 94.7111% and only 17/20 markets change probability.",
+      "decision": "park"
+    }
+  ],
+  "selection_basis": "Exit lifecycle is readiness-strongest because it uses a canonical held-position mapping, its total settled counter already exceeds the frozen quantity floor, the source contract passes, and it needs no new instrument or new external source. Selection did not use historical win rates, adapter maturity or any candidate return/PnL field.",
+  "selected_hypothesis": "exit_lifecycle_advisory_severity",
+  "economic_mechanism": "severity_conditioned_adverse_continuation_avoidance_with_winner_collateral_and_slot_reuse_accounting",
+  "falsifier": "frozen_subtype_counts_touch_density_concentration_winner_collateral_or_shared_parity_fail",
+  "pit_tier": "canonical_pit",
+  "evidence_grade": "observer",
+  "result_ceiling": "invalid_until_frozen_reopen_and_touch_contracts_pass",
+  "next_machine_action": "complete the four-role Investment Team contradiction review, freeze a PARK card, and call authoritative qualify exactly once; start is forbidden unless the frozen qualification is promoted",
+  "contamination_quarantine": {
+    "occurred": true,
+    "excluded_surfaces_or_leads": [
+      "space_catalyst_event_ledger",
+      "event_overlay_bundle",
+      "alpha_score_market_regime",
+      "form4_insider_purchase_lead"
+    ],
+    "reason": "Read-only reconnaissance accidentally surfaced outcome-bearing fields for these surfaces while inspecting unrelated readiness/history. They were discarded before formal candidate selection and are excluded from the card, proposal and qualification bundle.",
+    "used_for_generation_or_selection": false,
+    "formal_bundle_clean": true
+  }
+}

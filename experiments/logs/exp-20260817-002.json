@@ -1,0 +1,144 @@
+{
+  "after_metrics": {
+    "expected_value_score": 6.201019935227,
+    "max_drawdown_pct": 0.088930973246,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.35000000005,
+    "total_return_pct": 130.99235,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": 6.201019935227,
+    "max_drawdown_pct": 0.088930973246,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": 0.8116,
+    "total_pnl": 130992.35000000005,
+    "total_return_pct": 130.99235,
+    "trade_count": 49,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": 0.0,
+    "actual_pnl_delta": 0.0,
+    "actual_success": 1,
+    "brier_score": 0.0025,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": 0.0,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": 0.0,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "pairwise_graph_still_over_excludes",
+      "combination_count_mismatch",
+      "new_nonnull_vector_fails_walk_forward",
+      "recommendation_changes"
+    ],
+    "predicted_success_probability": 0.95,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The user's request for the exact combination list exposed that clique groups over-excluded sibling strategies. Correcting the graph materially enlarged the domain and changed the recent hindsight winner, but did not change the classic Gate4-P optimum."
+  },
+  "causal_components": [
+    "pairwise_parent_child_edges",
+    "complete_sparse_grid",
+    "frontier_refinement",
+    "walk_forward",
+    "recent_settled_diagnostic"
+  ],
+  "change_summary": "Accepted measurement repair: replaced clique-style overlap groups with exact pairwise parent-child conflict edges, admitted valid sibling-sleeve combinations, and regenerated a row-level manifest for every corrected coarse allocation.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "overlap_constraint_from_group_cliques_to_exact_parent_child_edges",
+  "component": "quant/current_paper_core_allocator.py, quant/test_current_paper_core_allocator.py, quant/experiments/exp-20260817-002_current_paper_core_allocator.py, data/experiments/exp-20260817-002/",
+  "date_range": {
+    "end": "2025-04-22",
+    "start": "2024-10-02"
+  },
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score": 0.0,
+    "max_drawdown_pct": 0.0,
+    "survival_rate": 0.0,
+    "total_pnl": 0.0,
+    "total_return_pct": 0.0,
+    "trade_count": 0
+  },
+  "experiment_id": "exp-20260817-002",
+  "hypothesis": "Repair exp-20260817-001's overlap graph: parent-child non-double-counting must be represented as exact pairwise edges, not as cliques that incorrectly ban sibling sleeves from coexisting. Re-enumerate the complete 41-surface current-rule Gate4-P domain and withdraw the prior 100pct-core conclusion unless it survives the corrected search.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "portfolio_allocator_overlap_graph_repair",
+  "multiple_testing_risk_bucket": "high",
+  "nearby_prior_experiments": [
+    "exp-20260817-001",
+    "exp-20260816-001",
+    "exp-20260715-002"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "next_retry_requires": [],
+  "notes": "The corrected domain contains 11,271 vectors: null 1, one-sleeve 42, two-sleeve 824, three-sleeve 5,032, and four-sleeve 5,372. This adds 4,660 vectors excluded by exp-20260817-001. All 11,270 non-null vectors were evaluated and zero simultaneously improved aggregate EV and PnL; frontier refinement also found zero. Classic recommendation therefore remains 100% active core. Recent settled hindsight changes to 5% SEC financial-report plus 5% SEC governance, but it remains observe-only because both lack complete current-rule classic paths and the samples are thin.",
+  "parameters": {
+    "locked_variables": [
+      "active_core",
+      "41_surface_registry",
+      "21_classic_eligible_surfaces",
+      "total_paper_cap_10pct",
+      "per_surface_cap_5pct",
+      "max_four_active",
+      "coarse_levels_0_2p5_5pct",
+      "refined_step_0p5pct",
+      "current_rule_only",
+      "recent_observe_only",
+      "trade_enabled_false"
+    ],
+    "single_causal_variable": "current_paper_allocator_pairwise_overlap_graph_v2"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "TODO",
+    "new_evidence_required": "TODO",
+    "realized_failure_mode": null,
+    "why_result_happened": "The user's request for the exact combination list exposed that clique groups over-excluded sibling strategies. Correcting the graph materially enlarged the domain and changed the recent hindsight winner, but did not change the classic Gate4-P optimum."
+  },
+  "prediction": {
+    "confidence_reason": "The defect is localized and deterministic: current has_overlap treats each parent-and-children set as a clique. Replacing it with explicit parent-child edges is straightforward, but the corrected economic optimum is unknown until the larger domain is rerun.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "pairwise_graph_still_over_excludes",
+      "combination_count_mismatch",
+      "new_nonnull_vector_fails_walk_forward",
+      "recommendation_changes"
+    ],
+    "recorded_at": "2026-08-17T01:14:58+00:00",
+    "success_probability": 0.95
+  },
+  "prior_trial_count": 2,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260817-002/before_measurement.json",
+    "data/experiments/exp-20260817-002/after_measurement.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [
+    {
+      "end": "2025-10-22",
+      "start": "2025-04-23"
+    },
+    {
+      "end": "2026-04-21",
+      "start": "2025-10-23"
+    }
+  ],
+  "status": "accepted",
+  "timestamp": "2026-08-17T01:20:22+00:00",
+  "trial_family": "current_registered_paper_surface_portfolio_measurement",
+  "trial_variant_id": "pairwise_overlap_graph_v2"
+}

@@ -5,7 +5,7 @@
 > [backtesting.md](backtesting.md)、
 > [agent_experiment_protocol.md](agent_experiment_protocol.md)、
 > [production_backtest_parity.md](production_backtest_parity.md) 和
-> [AGENTS.md](../AGENTS.md) 为准。
+> [quant_agent_protocol_v2.md](quant_agent_protocol_v2.md) 为准。
 
 ## 1. 目标与引擎定义
 

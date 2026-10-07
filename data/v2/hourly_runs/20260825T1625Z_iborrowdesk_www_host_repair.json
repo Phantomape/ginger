@@ -1,0 +1,25 @@
+{
+  "receipt_id": "20260825T1625Z_iborrowdesk_www_host_repair",
+  "run_at": "2026-08-25T16:25:00Z",
+  "agent": "claude-scheduled-alpha",
+  "milestone": "measurement_repair_forward_blocker",
+  "work_unit": "exp-20260825-001 iBorrowDesk apex->www host fault recovery",
+  "status": "completed",
+  "experiment_id": "exp-20260825-001",
+  "lane": "measurement_repair",
+  "decision": "accepted",
+  "summary": "The iBorrowDesk borrow-economics fetch pipeline had been fully dead since ~2026-07-21: the upstream site moved to www.iborrowdesk.com and the apex host drops /api requests with empty replies (RemoteDisconnected), so every daily refresh aborted after 5 consecutive failures, the PIT borrow archive froze, and every news-propagation pair forward-readiness batch fail-closed on stale_pit_borrow (covered_tickers=0). One-line API_URL repoint to the www host; 5 unit tests pass; targeted refresh of the 10 blocked short-side tickers 10/10 succeeded (+263 rows, archived through 2026-08-24, within the 3-calendar-day freshness bar); a standard 150-shard added +2580 rows across 89 tickers before hitting the www rate limit (http_444 after ~90 req at 1 req/s; abort-early resumable).",
+  "wrong_label_repair": "close facade defaulted to rejected on null Gate-4 metrics and --status-override failed on the already-terminal ticket; hand-edited ticket+log shard to accepted per exp-20260824-001 precedent, rebuilt log, upserted registry cache from the ticket; lean-strict audit passed.",
+  "residual_blockers": [
+    "microcap batch short-side tickers absent from build_default_refresh_universe (missing_pit_borrow persists; iBorrowDesk itself covers them)",
+    "rotation cadence cannot guarantee 3-calendar-day borrow freshness for arbitrary batch tickers without targeted daily fetches of active batch short-side tickers",
+    "cross_side_ticker_overlap blocker is data-driven"
+  ],
+  "next_gate": "d-0003 unchanged: >=1 real measurement_ready batch before the shared paper-policy pair alpha experiment; exp-20260824-001 single-use pair-build qualification unconsumed.",
+  "verification": [
+    "quant/test_iborrowdesk_data_source.py 5 passed",
+    "experiment.py audit --lean-strict: lean_strict_passed=true",
+    "before/after: data/experiments/exp-20260825-001/iborrowdesk_www_host_repair_{before,after}.json"
+  ],
+  "trade_enabled": false
+}

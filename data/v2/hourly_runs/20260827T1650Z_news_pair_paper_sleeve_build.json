@@ -1,0 +1,51 @@
+{
+ "schema_version": 1,
+ "run_id": "20260827T1650Z_news_pair_paper_sleeve_build",
+ "started_at": "2026-08-27T16:10:00Z",
+ "finished_at": "2026-08-27T16:50:00Z",
+ "agent": "claude-scheduled-alpha",
+ "work_unit": "alpha_search_conversion_gate_consumption",
+ "experiment_id": "exp-20260827-001",
+ "status": "completed",
+ "alpha_pulse_24h": {
+  "alpha_trials": 1,
+  "canonical_gate4_passes": 0,
+  "forward_decisions": 1,
+  "settled_outcomes": 0,
+  "net_replacement_value_usd": 0.0,
+  "note": "exp-20260827-001 is the frozen pair-sleeve build (alpha lane, observed_only ceiling); 1 forward paper basket decision admitted (news-first-seen-845025fae409b81adeb3), settles ~2026-09-10."
+ },
+ "conversion_debt": {
+  "trigger_artifact": "data/alpha_search/news_pair_build_readiness_20260827.json",
+  "trigger_artifact_sha256": "57b48f48212a6a66fdf9ff7fb44d70b18b507384220602b90055eb2f1ea1518c",
+  "opened_at": "2026-08-27T03:07:27Z",
+  "frozen_contract_ref": "exp-20260824-001 post_run_reflection.new_evidence_required; d-0003 next_gate",
+  "consumed_by_experiment_id": "exp-20260827-001",
+  "outstanding": false
+ },
+ "economic_progress": false,
+ "economic_progress_note": "The conversion gate was consumed and the first forward paper basket now exists on the default-off sleeve, but no settled net replacement value exists yet; first settlement ~2026-09-10 (H10 from the 2026-08-27 entry session).",
+ "changes": [
+  "quant/news_propagation_pair_paper_sleeve.py (new shared helper: admission, pricing with massive fallback, fail-closed settlement, frozen acceptance contract)",
+  "quant/test_news_propagation_pair_paper_sleeve.py (9 tests)",
+  "quant/run.py (_persist_news_propagation_pair_paper_sleeve wired after the exposure/readiness observer inside _persist_daily_structured_news_observation; covers both STEP 6A and STEP 8 paths)",
+  "quant/test_run_daily_wiring.py (2 new pair-sleeve wiring tests; 2 existing structured-news tests patched for the new call)",
+  "quant/experiments/exp_20260827_001_news_propagation_pair_paper_sleeve_build.py (build verification runner, 8/8 checks)",
+  "data/alpha_search/news_pair_build_* + data/alpha_search/promotions/news_pair_paper_sleeve_build_20260827.json (D0-D3 panel + promotion)",
+  "data/paper_sleeves/news_propagation_pair/ (ledger/state/latest_summary; 1 admitted basket pending)",
+  "docs/v2/current_state.md, docs/v2/backlog.md, docs/v2/decision_log.jsonl d-0010"
+ ],
+ "verification": [
+  "9/9 quant/test_news_propagation_pair_paper_sleeve.py",
+  "4/4 structured_news wiring tests in quant/test_run_daily_wiring.py",
+  "31/31 neighborhood tests (pair forward observer + exposure observer + sleeve)",
+  "build runner 8/8 checks incl. replay/daily parity, same-day idempotency, default-off boundary, no settled outcome read",
+  "scripts/experiment.py audit --lean-strict: lean_strict_passed=true"
+ ],
+ "next_alpha_action": {
+  "primary": "Forward accumulation is background per protocol (forward waiting must not occupy the research lane): tonight's daily run should auto-admit any new measurement_ready batch via the new wiring - verify pair_paper_sleeve appended counts in the run log; first settlement check due ~2026-09-10.",
+  "next_work_unit": "Outcome-blind alpha preflight on an independent canonical-PIT surface (NOT the news family: attribution re-reads parked at >=1508 rows, qualification consumed, no near-neighbor builds). Candidate surfaces to preflight first: existing accepted-but-starved sleeves' readiness (move_relief forward rows) or an unused field on a live source per docs/frozen_families.jsonl saturation lines.",
+  "forbidden": "No re-read/re-slice of the 983-row cohort; no retune of 100bp/45bp/45bp-leg/H10/$1000/40% constants; no retroactive admission of blocked or legacy batches; no long-only tilt reading."
+ },
+ "trade_enabled": false
+}

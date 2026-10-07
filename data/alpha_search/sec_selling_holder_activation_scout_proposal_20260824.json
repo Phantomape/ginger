@@ -1,0 +1,31 @@
+{
+  "lane": "alpha_search",
+  "hypothesis": "Research-PIT private replay validation: the selling-holder H10 short-stock plus equal-notional long-SPY effect remains positive when the fixed decision clock moves from SEC acceptance to the later exact official EFFECT and first 424B3/424B4 clock when both exist; the 83-row activation roster is frozen at 31/23/29 and the result ceiling is observed_only.",
+  "change_type": "private_replay_scout",
+  "single_causal_variable": "sec_selling_holder_activation_h10_v1",
+  "causal_components": [
+    "new gate shape: exact legal activation clock from official SEC EFFECT XML and 424B3 or 424B4 metadata",
+    "selection: frozen activation roster sha256 722f71bcf26e37dbfd4755f25a3fd2caf686f95e9c484a3f77537cf99dd18a9a; 83 rows; 31/23/29 by original cohort; 67 tickers",
+    "decision clock: later exact EFFECT and final prospectus clock when both exist; sole exact clock otherwise; next-open entry and H10 close",
+    "eligibility: activation-time research-PIT active common-stock membership plus 20 completed bars; median dollar volume at least $1000000 and close at least $3",
+    "economics: short stock plus equal-notional long SPY; fixed $2000 per leg; 90bp total pair cost plus 20% annualized borrow for 10/252 years",
+    "falsifier: aggregate and at least two windows positive at base; aggregate positive at 180bp pair cost; cluster-bootstrap CI90 lower bound positive; concentration gates fixed",
+    "research-only boundary: historical broker locate and immutable identity vintages are absent; no shared policy or paper or orders or sizing or exits or live behavior; trade_enabled=false"
+  ],
+  "mechanism_family": "selling_holder_registration_supply_overhang",
+  "trial_family": "sec_selling_holder_activation_clock_validation",
+  "changed_variable": "private_replay_scout_sec_selling_holder_activation_clock_v1",
+  "prediction": {
+    "success_probability": 0.35,
+    "main_failure_modes": [
+      "acceptance_effect_dissipates_before_legal_activation",
+      "activation_clock_clusters_duplicate_supply_events",
+      "borrow_stress_consumes_edge",
+      "window_instability",
+      "research_pit_identity_ceiling"
+    ],
+    "confidence_reason": "The acceptance-time lead was broad and large, but exact legal activation moves many entries later and directly tests whether the effect survives anticipation.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null
+  }
+}

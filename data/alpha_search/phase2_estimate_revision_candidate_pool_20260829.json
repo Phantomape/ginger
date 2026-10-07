@@ -1,0 +1,333 @@
+{
+ "schema_version": 1,
+ "data_cutoff": "2026-08-29T16:22:00Z",
+ "selection_pool_complete": true,
+ "queue_budgets": {
+  "adjacent": 1,
+  "exploitation": 1,
+  "exploration": 1
+ },
+ "candidates": [
+  {
+   "schema_version": 1,
+   "candidate_kind": "expectation_gap",
+   "candidate_id": "cand-1a665d7350fd8d6349e8",
+   "search_queue": "exploitation",
+   "title": "Delayed price incorporation of qualified consensus forecast updates",
+   "created_at": "2026-08-29T16:23:00Z",
+   "created_by": "alpha_search_phase2_estimate_revision_synthesis",
+   "hypothesis": "When the schema-v3 estimate ledger records a qualified non-flat consensus EPS forecast update for a mapped issuer and the pre-event five-session price path shows no same-direction move beyond its recent volatility envelope, the equity reprices toward the updated forecast over the H5-H20 horizon starting from the following tradable session.",
+   "fingerprint": {
+    "data_source": "analyst_estimate_revision",
+    "component_sources": [
+     "analyst_estimate_revision",
+     "ohlcv_warehouse"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "staged_diffusion_of_analyst_forecast_updates_into_prices",
+    "decision_surface": "qualified_nonflat_consensus_update_event_ledger",
+    "payoff_shape": "directional_event_repricing_h5_h20",
+    "horizon": "H5-H20",
+    "execution_dependency": "liquid_cash_equity_following_session",
+    "portfolio_role": "orthogonal_event_sleeve"
+   },
+   "surface_ids": [
+    "estimate_revision_consensus_observer",
+    "ohlcv_price_revealed_context"
+   ],
+   "expectation_gap": {
+    "market_prior": {
+     "observable": true,
+     "proxy_type": "price_revealed",
+     "source": "ohlcv_warehouse",
+     "known_at": "2026-08-28T20:00:00Z",
+     "units": "trailing_five_session_log_return_path",
+     "provenance": "Frozen pre-event price path from the OHLCV warehouse as of the last completed session before each qualified update; no post-event bars."
+    },
+    "independent_evidence": [
+     {
+      "evidence_id": "qualified-nonflat-consensus-update-v3",
+      "source": "analyst_estimate_revision",
+      "known_at": "2026-08-28T16:26:59Z",
+      "state": "qualified_nonflat_update_recorded",
+      "provenance": "Schema-v3 event identity with row-level timezone-aware observation clock and effective-dated instrument map; readiness counters only, no outcome fields."
+     }
+    ],
+    "gap_definition": "Sign and magnitude of the frozen consensus EPS update minus the same-direction component already present in the pre-event five-session price path.",
+    "transmission": {
+     "affected_tickers": [
+      "BKNG",
+      "COHR",
+      "CVX",
+      "DDOG",
+      "DE",
+      "GS",
+      "HOOD",
+      "IAU",
+      "INTC",
+      "JPM",
+      "LITE",
+      "MU",
+      "PLTR",
+      "XOM"
+     ],
+     "expected_direction": "sign_of_consensus_update",
+     "catalyst": "A qualified non-flat consensus update is recorded after the pre-event price path is frozen.",
+     "half_life": "H5-H20",
+     "causal_steps": [
+      "analyst consensus for the mapped issuer changes",
+      "the update is recorded with a point-in-time clock and instrument mapping",
+      "prices incorporate the revised cash-flow expectation over following sessions"
+     ]
+    }
+   },
+   "why_not_arbitraged": "Attention concentrates at the release clock; the residual repricing after a quiet pre-event tape is small per name and only economic in aggregate across many mapped issuers, which requires the event identity and effective-dated instrument map this surface gained only with schema v3.",
+   "falsifier": "Exact-clock placebo on shuffled event dates, ticker shuffle within the mapped set, loss of monotonicity between update sign or magnitude and H5-H20 repricing, or failure to beat cash, SPY, QQQ and the displaced core sleeve under identical capital constraints.",
+   "baseline": {
+    "universe": "current tradable observation universe",
+    "policy": "Do not act on qualified consensus updates; hold the existing cash-feasible core policy unchanged."
+   },
+   "treatment": {
+    "policy": "Act on every qualified non-flat mapped update whose pre-event five-session price path lacks a same-direction move beyond its volatility envelope: positive updates take the long cash-equity response from the following tradable session; negative updates are evaluated as foregone-long avoidance evidence without borrow; H5/H10/H20 evaluation under frozen costs."
+   },
+   "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate under identical capital constraints.",
+   "expected_horizon": "H5-H20",
+   "execution_envelope": {
+    "intended_instrument": "liquid cash equity only",
+    "liquidity_dependency": "predeclared ADV and spread floor on mapped issuers",
+    "costs_and_carry": "canonical cash-equity cost model",
+    "borrow_dependency": "none; the tradable response is long-only and negative updates are avoidance evidence",
+    "capacity_constraint": "default-off paper notional cap",
+    "timing_constraint": "no earlier than the following tradable session after the recorded update clock",
+    "trade_enabled": false,
+    "orders_enabled": false,
+    "live_ready": false
+   },
+   "evidence_grade": "lead",
+   "prediction": {
+    "success_probability": 0.15,
+    "main_failure_modes": [
+     "already_priced",
+     "insufficient_independent_rows",
+     "duplicate_or_frozen"
+    ],
+    "confidence_reason": "The surface's numeric readiness bars and source contract now pass, but the quiet-tape conditioning may remove most rows and the mechanism family has many frozen ancestors on the legacy quarantined surface."
+   },
+   "reopen_condition": "If rejected or parked, reopen only with materially new qualified decision flow beyond the registered Phase-1.5 bars or a genuinely different conditioning variable; wording changes and threshold moves do not qualify."
+  },
+  {
+   "schema_version": 1,
+   "candidate_kind": "expectation_gap",
+   "candidate_id": "cand-68d2f5dad2f903488307",
+   "search_queue": "adjacent",
+   "title": "Pre-event price overshoot beyond the recorded forecast update",
+   "created_at": "2026-08-29T16:23:00Z",
+   "created_by": "alpha_search_phase2_estimate_revision_synthesis",
+   "hypothesis": "When the pre-event five-session price move for a mapped issuer already exceeds the repricing implied by the recorded qualified consensus EPS forecast update, the excess move partially reverts over H5-H10; the schema-v3 event identity and effective-dated instrument mapping distinguish this conditional reversion from generic short-horizon mean reversion.",
+   "fingerprint": {
+    "data_source": "analyst_estimate_revision",
+    "component_sources": [
+     "analyst_estimate_revision",
+     "ohlcv_warehouse"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "anticipatory_overshoot_partial_reversion_after_update_release",
+    "decision_surface": "qualified_nonflat_consensus_update_event_ledger",
+    "payoff_shape": "conditional_reversion_h5_h10",
+    "horizon": "H5-H10",
+    "execution_dependency": "liquid_cash_equity_following_session",
+    "portfolio_role": "orthogonal_event_sleeve"
+   },
+   "surface_ids": [
+    "estimate_revision_consensus_observer",
+    "ohlcv_price_revealed_context"
+   ],
+   "expectation_gap": {
+    "market_prior": {
+     "observable": true,
+     "proxy_type": "price_revealed",
+     "source": "ohlcv_warehouse",
+     "known_at": "2026-08-28T20:00:00Z",
+     "units": "trailing_five_session_log_return_path",
+     "provenance": "Frozen pre-event price path from the OHLCV warehouse as of the last completed session before each qualified update; no post-event bars."
+    },
+    "independent_evidence": [
+     {
+      "evidence_id": "qualified-nonflat-consensus-update-v3",
+      "source": "analyst_estimate_revision",
+      "known_at": "2026-08-28T16:26:59Z",
+      "state": "qualified_nonflat_update_recorded",
+      "provenance": "Schema-v3 event identity with row-level timezone-aware observation clock and effective-dated instrument map; readiness counters only, no outcome fields."
+     }
+    ],
+    "gap_definition": "Excess of the pre-event five-session price move over the repricing implied by the frozen consensus EPS update, in the update's direction.",
+    "transmission": {
+     "affected_tickers": [
+      "BKNG",
+      "COHR",
+      "CVX",
+      "DDOG",
+      "DE",
+      "GS",
+      "HOOD",
+      "IAU",
+      "INTC",
+      "JPM",
+      "LITE",
+      "MU",
+      "PLTR",
+      "XOM"
+     ],
+     "expected_direction": "against_the_excess_pre_event_move",
+     "catalyst": "The recorded update resolves how much of the anticipatory move was justified.",
+     "half_life": "H5-H10",
+     "causal_steps": [
+      "prices move ahead of an anticipated consensus change",
+      "the recorded qualified update fixes the justified repricing",
+      "the unjustified residual decays over following sessions"
+     ]
+    }
+   },
+   "why_not_arbitraged": "Separating justified anticipation from overshoot requires the recorded update magnitude with a point-in-time clock and an effective-dated instrument map; without the schema-v3 event identity the residual is not identifiable at decision time.",
+   "falsifier": "Exact-clock placebo on shuffled event dates, ticker shuffle within the mapped set, absence of decay in the unjustified residual, or failure to beat cash, SPY, QQQ and the displaced core sleeve under identical capital constraints.",
+   "baseline": {
+    "universe": "current tradable observation universe",
+    "policy": "Do not act on qualified consensus updates; hold the existing cash-feasible core policy unchanged."
+   },
+   "treatment": {
+    "policy": "Act only where the pre-event move exceeds the update-implied repricing: when the excess move is downward the response is a long cash-equity position from the following tradable session; upward excess is evaluated as foregone-long avoidance evidence without borrow; H5/H10 evaluation under frozen costs."
+   },
+   "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate under identical capital constraints.",
+   "expected_horizon": "H5-H10",
+   "execution_envelope": {
+    "intended_instrument": "liquid cash equity only",
+    "liquidity_dependency": "predeclared ADV and spread floor on mapped issuers",
+    "costs_and_carry": "canonical cash-equity cost model",
+    "borrow_dependency": "none; the tradable response is long-only and upward excess is avoidance evidence",
+    "capacity_constraint": "default-off paper notional cap",
+    "timing_constraint": "no earlier than the following tradable session after the recorded update clock",
+    "trade_enabled": false,
+    "orders_enabled": false,
+    "live_ready": false
+   },
+   "evidence_grade": "lead",
+   "prediction": {
+    "success_probability": 0.1,
+    "main_failure_modes": [
+     "already_priced",
+     "insufficient_independent_rows",
+     "duplicate_or_frozen"
+    ],
+    "confidence_reason": "The update-implied repricing calibration must be frozen before any outcome access, and the overshoot conditioning may isolate too few qualified rows."
+   },
+   "reopen_condition": "If rejected or parked, reopen only with materially new qualified decision flow beyond the registered Phase-1.5 bars or a genuinely different conditioning variable; wording changes and threshold moves do not qualify."
+  },
+  {
+   "schema_version": 1,
+   "candidate_kind": "expectation_gap",
+   "candidate_id": "cand-c748224bb9bc0f6a9118",
+   "search_queue": "exploration",
+   "title": "Same-session breadth of qualified forecast updates as a shared expectation shock",
+   "created_at": "2026-08-29T16:23:00Z",
+   "created_by": "alpha_search_phase2_estimate_revision_synthesis",
+   "hypothesis": "A session where qualified same-direction consensus EPS forecast updates arrive for several mapped issuers carries shared expectation information beyond each single event; issuers inside such a breadth event continue to reprice over H5-H20 relative to issuers with isolated updates, because the shared component diffuses more slowly than the issuer-specific component.",
+   "fingerprint": {
+    "data_source": "analyst_estimate_revision",
+    "component_sources": [
+     "analyst_estimate_revision",
+     "ohlcv_warehouse"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "cross_issuer_shared_expectation_shock_slow_diffusion",
+    "decision_surface": "qualified_nonflat_consensus_update_event_ledger",
+    "payoff_shape": "breadth_conditioned_event_repricing_h5_h20",
+    "horizon": "H5-H20",
+    "execution_dependency": "liquid_cash_equity_following_session",
+    "portfolio_role": "orthogonal_event_sleeve"
+   },
+   "surface_ids": [
+    "estimate_revision_consensus_observer",
+    "ohlcv_price_revealed_context"
+   ],
+   "expectation_gap": {
+    "market_prior": {
+     "observable": true,
+     "proxy_type": "price_revealed",
+     "source": "ohlcv_warehouse",
+     "known_at": "2026-08-28T20:00:00Z",
+     "units": "trailing_five_session_log_return_path",
+     "provenance": "Frozen pre-event price paths for all issuers in the same-session event set; no post-event bars."
+    },
+    "independent_evidence": [
+     {
+      "evidence_id": "qualified-nonflat-consensus-update-v3",
+      "source": "analyst_estimate_revision",
+      "known_at": "2026-08-28T16:26:59Z",
+      "state": "qualified_nonflat_update_recorded",
+      "provenance": "Schema-v3 event identity with row-level timezone-aware observation clock and effective-dated instrument map; readiness counters only, no outcome fields."
+     }
+    ],
+    "gap_definition": "Count and signed agreement of same-session qualified updates across mapped issuers minus the shared component already present in their pre-event price paths.",
+    "transmission": {
+     "affected_tickers": [
+      "BKNG",
+      "COHR",
+      "CVX",
+      "DDOG",
+      "DE",
+      "GS",
+      "HOOD",
+      "IAU",
+      "INTC",
+      "JPM",
+      "LITE",
+      "MU",
+      "PLTR",
+      "XOM"
+     ],
+     "expected_direction": "sign_of_the_shared_update_direction",
+     "catalyst": "Several qualified same-direction updates are recorded in one session across mapped issuers.",
+     "half_life": "H5-H20",
+     "causal_steps": [
+      "a shared fundamental driver moves analyst consensus for several issuers at once",
+      "each update is recorded with a point-in-time clock and instrument mapping",
+      "the shared expectation component diffuses into prices more slowly than the issuer-specific component"
+     ]
+    }
+   },
+   "why_not_arbitraged": "The shared component is only observable by joining event identities across issuers under one point-in-time clock, which the legacy quarantined rows could not do; single-name event followers do not aggregate the same-session breadth signal.",
+   "falsifier": "Breadth events defined on shuffled session labels, ticker shuffle within the mapped set, no difference between breadth and isolated events, or failure to beat cash, SPY, QQQ and the displaced core sleeve under identical capital constraints.",
+   "baseline": {
+    "universe": "current tradable observation universe",
+    "policy": "Do not act on qualified consensus updates; hold the existing cash-feasible core policy unchanged."
+   },
+   "treatment": {
+    "policy": "On sessions where at least three mapped issuers record same-direction qualified updates, take the long cash-equity response on the positive-direction members from the following tradable session; negative-direction breadth events are evaluated as foregone-long avoidance evidence without borrow; H5/H10/H20 evaluation under frozen costs."
+   },
+   "replacement_value_comparator": "Cash, SPY, QQQ, and the displaced core candidate under identical capital constraints.",
+   "expected_horizon": "H5-H20",
+   "execution_envelope": {
+    "intended_instrument": "liquid cash equity only",
+    "liquidity_dependency": "predeclared ADV and spread floor on mapped issuers",
+    "costs_and_carry": "canonical cash-equity cost model",
+    "borrow_dependency": "none; the tradable response is long-only and negative breadth events are avoidance evidence",
+    "capacity_constraint": "default-off paper notional cap",
+    "timing_constraint": "no earlier than the following tradable session after the recorded update clocks",
+    "trade_enabled": false,
+    "orders_enabled": false,
+    "live_ready": false
+   },
+   "evidence_grade": "lead",
+   "prediction": {
+    "success_probability": 0.08,
+    "main_failure_modes": [
+     "insufficient_independent_rows",
+     "already_priced",
+     "duplicate_or_frozen"
+    ],
+    "confidence_reason": "Breadth events are rare within the current mapped flow, and the shared component may already be captured by index-level pricing."
+   },
+   "reopen_condition": "If rejected or parked, reopen only with materially new qualified decision flow beyond the registered Phase-1.5 bars or a genuinely different conditioning variable; wording changes and threshold moves do not qualify."
+  }
+ ]
+}

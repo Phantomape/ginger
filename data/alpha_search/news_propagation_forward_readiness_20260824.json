@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "record_type": "news_propagation_forward_cohort_readiness",
+  "generated_at": "2026-08-24T16:16:03Z",
+  "generated_by": "claude-scheduled-alpha-20260824",
+  "outcome_blind": true,
+  "ledger_path": "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+  "ledger_sha256": "4ebf424d89d5072f9b69df55d7eddb173cc3ea3d00dc9eb9b99a41d70a8bf1ab",
+  "forward_predicate": {
+    "event_date_min": "2026-07-01",
+    "outcome_status": "closed",
+    "rationale": "Replay rows (exp-20260702-020/021, exp-20260703-005) cover events 2026-01..06; the run.py-wired daily observer (exp-20260702-028) accumulates current events from 2026-07 onward, so event_date >= 2026-07-01 isolates strictly out-of-replay forward rows. Identical predicate to the exp-20260807-001 and exp-20260815-001 freezes."
+  },
+  "reopen_bar": {
+    "source": "data/reopen_readiness.json lane news_propagation_negative_side (bar declared at the 2026-08-15 re-park, exp-20260815-001 post_run_reflection)",
+    "negative_side_closed_required": 983,
+    "negative_side_closed_baseline_at_park": 655
+  },
+  "pair_viability_bars_frozen_20260808": {
+    "event_level_separation_bp_required_gt": 100.0,
+    "row_level_mean_separation_bp_required_gt": 45.0,
+    "source": "build_reopen_readiness.py lane note synced 2026-08-08; two-sided cost bar (2 legs x 45bp round trip ~= 90bp) plus buffer; unchanged per the do-not-retune-costs clause of the 2026-08-15 re-park contract",
+    "tilt_touch_bar": ">=5 executed-entry touches per canonical window; measured 1/0/0 at the 2026-08-08 preflight, structurally uncovered because the observer starts 2026-01; not re-read this round"
+  },
+  "cohort": {
+    "negative": {
+      "closed_rows": 1005,
+      "unique_events": 99,
+      "unique_event_dates": 32,
+      "unique_tickers": 88,
+      "max_single_ticker_row_share": 0.025871
+    },
+    "positive": {
+      "closed_rows": 1205,
+      "unique_events": 109,
+      "unique_event_dates": 32,
+      "unique_tickers": 109,
+      "max_single_ticker_row_share": 0.026556
+    }
+  },
+  "pending_forward_rows": 2553,
+  "relation_type_closed_counts": {
+    "sic_peer": 1456,
+    "theme_peer": 754
+  },
+  "polarity_relation_closed_counts": {
+    "negative|sic_peer": 637,
+    "negative|theme_peer": 368,
+    "positive|sic_peer": 819,
+    "positive|theme_peer": 386
+  }
+}

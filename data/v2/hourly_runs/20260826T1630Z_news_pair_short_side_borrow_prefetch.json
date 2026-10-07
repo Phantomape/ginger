@@ -1,0 +1,30 @@
+{
+  "receipt_id": "20260826T1630Z_news_pair_short_side_borrow_prefetch",
+  "run_at": "2026-08-26T16:30:00Z",
+  "agent": "claude-scheduled-alpha",
+  "milestone": "measurement_repair_forward_blocker",
+  "work_unit": "exp-20260826-001 pre-first-seen targeted short-side borrow prefetch wiring",
+  "status": "completed",
+  "experiment_id": "exp-20260826-001",
+  "lane": "measurement_repair",
+  "decision": "accepted",
+  "alpha_pulse_24h": {
+    "alpha_trials": 0,
+    "canonical_gate4_passes": 0,
+    "forward_decisions": 0,
+    "settled_outcomes": "background observers settle daily; no pair forward decisions exist yet",
+    "net_replacement_value": 0,
+    "same_path_repair_exception": "protocol section 5 permits continuing this path: borrow freshness/coverage was the LAST quantitative blocker of the d-0003 gate (latest batch pair-ready-81e8043a1b900c1f45c1114c had cross_side_ticker_overlap already clear and only missing/stale_pit_borrow blockers), and the pair sleeve holds the unconsumed single-use build qualification (exp-20260824-001) - no lower-friction measurable candidate offers comparable expected value"
+  },
+  "summary": "Pair forward readiness requires borrow evidence archived at or before each batch first_seen_at (age <= 3 calendar days), but nothing fetched the day's short-side exposure tickers before the exposure observer froze first_seen_at, and the Step 1.65 stalest-first rotation (60-150/day over 1365 tickers) neither knows batch tickers nor includes microcaps - so every batch structurally fail-closed. Repair: prefetch_short_side_borrow wired into news_event_exposure_observer.run strictly before the first_seen_at stamp (targeted refresh_archive of the run's NEW positive-polarity exposure tickers; production path only; fail-open; shared env opt-out), plus run.py Step 1.65 budget split 150->60 under the ~90-request www throttle.",
+  "verification": [
+    "27 focused tests passed (4 new prefetch tests: targeting excludes long-side and already-ledgered rows, no-op, env opt-out, fail-open; non-production skip asserted in rollout test)",
+    "live targeted fetch via same production path: 23/23 stale/missing short-side tickers of the current blocked batch succeeded, +1328 rows, incl. microcaps ALMU/AMBQ/ASTI, no throttle",
+    "production rollout smoke: full wired run() clean; prefetch no_new_short_side_rows; ledger idempotent (appended 0); readiness re-evaluated; today's frozen batches correctly REMAIN blocked (no retro-repair: archived_at > first_seen rejected by design)",
+    "experiment.py audit --lean-strict passed"
+  ],
+  "post_repair_gate_value": "measurement_ready_batches=0 today by design; conversion check is the next daily batch",
+  "economic_progress": false,
+  "next_alpha_action": "When the next daily run produces a first-seen batch, check data/non_ohlcv/news_propagation_pair_forward_readiness/latest_snapshot.json: if measurement_ready_batches >= 1, the d-0003 gate opens - reserve the single-use shared-paper-first dollar-neutral pair-sleeve build experiment (exp-20260824-001 qualification: default-off, locate/borrow contract, synchronous two-leg next-open entry, fail-closed missing leg, 10-session horizon, frozen 45bp/leg costs, own forward acceptance contract: 20 closed baskets / 10 decision dates / cost-positive net spread / both halves positive / <=40% single-ticker gross). If the batch is still blocked, read blockers: only cross_side_ticker_overlap or empirical microcap non-coverage are legal residuals; any stale/missing_pit_borrow on a NEW batch means the prefetch failed - diagnose the prefetch summary in the exposure manifest, do not park.",
+  "trade_enabled": false
+}

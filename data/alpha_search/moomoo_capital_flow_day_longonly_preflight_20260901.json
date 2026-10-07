@@ -1,0 +1,108 @@
+{
+ "schema_version": 1,
+ "artifact_kind": "outcome_blind_surface_preflight_and_no_candidate_close",
+ "generated_at": "2026-09-01T16:35:00Z",
+ "generated_by": "claude-scheduled-alpha (unit 20260901)",
+ "frozen_action_source": "data/v2/hourly_runs/20260831T1640Z_adjacent_overshoot_clean_forward_contract_freeze.json next_alpha_action (primary + frozen fallback order)",
+ "outcome_blind": true,
+ "outcome_blind_note": "All density/status counts below use identity, status, and date fields only. One display-contamination incident occurred during this unit and is fully documented in contamination_incident; it did not feed any candidate selection because the affected mechanism is fenced, not selected.",
+ "primary_surface": {
+  "surface": "moomoo_capital_flow_day_observer (data/non_ohlcv/moomoo_capital_flow_day)",
+  "archive_status": {
+   "manifest_updated_at": "2026-09-01T04:11:49+00:00",
+   "latest_flow_date": "2026-08-31",
+   "ticker_count": 62,
+   "row_count": 14516,
+   "pit_boundary": "same-day-fetched rows PIT for forward use since daily refresh active 2026-07-21; pre-materialization history research_pit at best (vendor rolling ~1y)",
+   "authorization": "moomoo OpenAPI get_capital_flow, established accepted source contract (exp-20260703-007 wiring, exp-20260705-016 forward row materialization)"
+  },
+  "candidate_axes_enumerated": [
+   {
+    "axis": "same-rule top1 main-inflow forward retest (family moomoo_capital_flow_day_accumulation_candidate_pool registered reopen axis: materially more settled forward rows)",
+    "machine_blocker": "closed forward stock = 11 positions (data/paper_sleeves/moomoo_capital_flow/state.json closed_positions, entries 2026-07-06..2026-08-14, H10 hold) - below any materially-more bar; AND display-contamination incident 2026-09-01 (see contamination_incident) exposed the sleeve's aggregate realized PnL through 2026-08-31, so every position first settled on or before 2026-08-31 is contaminated for this mechanism",
+    "fence": "evaluation of the top1 main-inflow accumulation mechanism only on positions first settled after 2026-08-31; no reading of sleeve PnL/state outcome fields until an experiment ID is reserved after the trigger",
+    "frozen_reopen_trigger": "clean closed positions (exit_date > 2026-08-31) >= 20 across >= 10 distinct entry dates under the unchanged moomoo_capital_flow_day_main_inflow_top1_v1 rule; constant-time count on data/paper_sleeves/moomoo_capital_flow/state.json closed_positions identity fields (ticker, entry_date, exit_date) only",
+    "eta": "~mid-November 2026 at observed ~1.4 closes/week"
+   },
+   {
+    "axis": "H1-H5 horizon variant of the same rule",
+    "machine_blocker": "forbidden near-neighbor: exp-20260702-019 fence freezes hold days ('Do not retune ... hold days ... on these same frozen windows'); a horizon change on the same conditioning is a hold-day retune, not a new evidence axis"
+   },
+   {
+    "axis": "flow bucket (super/big/mid/sml) or impact-normalized reslices",
+    "machine_blocker": "forbidden: exp-20260702-019 ('do not re-slice the same archive by flow bucket as if it were a new axis') and exp-20260709-019 ('no raw main-flow thresholds, buckets, impact floor, response functions on this same archive')"
+   },
+   {
+    "axis": "flow x put-OI interaction",
+    "machine_blocker": "forbidden on the same proxy rows (exp-20260721-001 fence); the registered valid axis runs through core_drawdown_flow_put_stabilization sleeve settled decisions, whose readiness lane is not_ready (independent_closed_decisions_at_least_20 failing, event-starved)"
+   },
+   {
+    "axis": "intraday vendor flow decomposition with PIT provenance (registered reopen axis of families 792/801)",
+    "machine_blocker": "requires a new fetch pipeline plus forward accumulation from first fetch; not runnable in this unit and must compete for a future unit on conservative net value x success probability / wall-clock, not on readiness alone"
+   }
+  ],
+  "conclusion": "no registrable long-only H1-H5 candidate on this surface in this unit; per-item machine blockers above with quantitative reopen conditions"
+ },
+ "contamination_incident": {
+  "case": "display_contamination_3rd_case (prior: 2026-08-11, 2026-08-18)",
+  "occurred_at": "2026-09-01T16:05Z (this unit, during sleeve state inspection)",
+  "what_was_exposed": "aggregate realized_pnl_to_date of sleeve MOOMOO_CAPITAL_FLOW_ACCUMULATION_PAPER at two snapshots (2026-07-02 trivially 0; 2026-08-31 negative, approximately -1979 USD) covering its 11 closed H10 positions; no per-position outcome values were printed",
+  "root_cause": "masking used a substring blocklist filter for 'date-ish' fields; the key realized_pnl_to_date matched the 'date' substring and was printed. Blocklist masking is structurally unsafe; the ALLOWED-identity-whitelist pattern (as used by the d-0014 freeze generator) is the required read mode for any ledger/state file that carries outcome values",
+  "containment": {
+   "experiment_ids_burned": 0,
+   "fenced_mechanism": "moomoo_capital_flow_day_main_inflow_top1_v1 accumulation long (and any near-neighbor of it) on positions first settled on or before 2026-08-31",
+   "clean_slice_rule": "positions with exit_date > 2026-08-31 only; bar wording for any future falsification must be frozen from the pre-exposure rule/contract artifacts (rule version + exp-20260702-019 registration), not shaped by the exposed aggregate",
+   "not_contaminated": "other archive axes (intraday decomposition, borrow-econ joins) and all non-moomoo surfaces; the exposed value is an aggregate of one rule's closed positions only"
+  }
+ },
+ "fallback_surface_recheck": {
+  "surface": "prediction_market_postfix (Gamma observer, exp-20260718-002 frozen numeric contract)",
+  "readiness_rebuilt_at": "2026-09-01T16:18:55Z (scripts/build_reopen_readiness.py, canonical machinery)",
+  "checks": "4/7 pass",
+  "failing": {
+   "top_ticker_share": {"now": 0.156443, "bar_max": 0.15, "history": {"2026-08-18": 0.157852, "2026-08-28": 0.157055}},
+   "top_query_share": {"now": 0.938659, "bar_max": 0.5, "history": {"2026-08-18": 0.947111, "2026-08-28": 0.942327}},
+   "markets_with_any_probability_change": {"now": 17, "bar_min": 20, "history": {"2026-08-18": 17, "2026-08-28": 17}}
+  },
+  "stagnation_evidence": "postfix_unique_markets static at 34 since 2026-08-04; markets_with_any_probability_change frozen at 17 since first measured; top_query_share drifting ~-0.4pp/2wk (years to bar at this rate)",
+  "conclusion": "structurally blocked pending genuinely new non-dominant markets/tickers with probability changes; threshold edits forbidden by the frozen contract; blocker fingerprint unchanged since 2026-08-18 except glacial share drift",
+  "family_271_note": "exp-20260704-012's bundled reopen clause is 3/4 met (warehouse coverage ok + quick_check ok; settled rows 7722 >= 250; intraday structured-news entry_date non-null on 318 ticker-date rows >= 20) but its target_price predicate is structurally unreachable under the current observation contract (all 353 rows carry target_price_applicability=not_applicable_fixed_horizon_observation by design). Amending it would require a pre-registered contract review; none is needed now because the operative exp-20260718-002 gate is independently failing"
+ },
+ "registered_surface_inventory_sweep": {
+  "source": "data/reopen_readiness.json rebuilt 2026-09-01T16:18:55Z; statuses below are machine-computed",
+  "lanes": {
+   "phase2_estimate_revision": "ready BUT consumed: d-0012 panel fully disposed (exploration parked on breadth reachability, exploitation rejected exp-20260831-001, adjacent fenced as d-0014 blocked_watch_item); no unchecked D0-D3 pass candidate remains in the frozen panel",
+   "core_drawdown_flow_put_stabilization": "not_ready: independent_closed_decisions_at_least_20 failing (event-starved)",
+   "entity_theme_axis_c": "not_ready: settled bar 171812 not reached (3rd reopen rejected at 114541, streak at cap 3)",
+   "exit_lifecycle_advisory": "not_ready: 422/60/33 bar not reached (d 2026-08-06)",
+   "flow_options_lead": "not_ready (exp-20260721-001 line; same-proxy-row retries forbidden)",
+   "form4_sale_overhang_forward": "not_ready: closed_forward_rows>=25, high_overhang>=8, RV completeness, concentration all failing",
+   "intraday_triage_completed_close_settlement": "not_ready: strict settlements bars failing",
+   "massive_dividend_restart_forward": "not_ready: settled_restart_decisions_at_least_30 failing",
+   "move_relief_forward": "not_ready: event-starved, 0 rows",
+   "news_propagation_negative_side": "not_ready: 1222/1508 closed; arrival ~40/day -> ETA ~2026-09-08",
+   "prediction_market_postfix": "not_ready (see fallback_surface_recheck)",
+   "short_volume_q5_soft_tilt": "not_ready: q5_settled 1/20, max_q5_ticker_share 1.0 > 0.4",
+   "allocator_cross_source_conflict": "manual_check_required [STALLED]: lane closed by 2026-07-20 arbitration verdict; both sleeve-capital paths dead",
+   "hawkes_news_cross_excitation_candidate_pool": "manual_check_required [STALLED]: V1-era lane, no active writer"
+  },
+  "conclusion": "no_candidate: every registered surface machine-closes with a quantitative blocker or is consumed/fenced; per the frozen fallback order this unit closes with this artifact and waits on event triggers"
+ },
+ "d0014_trigger_recount": {
+  "method": "identity-whitelist recount (decision ids, statuses, dates, eps identity fields, pre-event closes); fence reconstructed as h5_status != closed OR h5_exit_date >= 2026-08-31 (a row with h5_exit_date = 2026-08-31 cannot have been closed in the 16:40Z 2026-08-31 frozen fileset because the 08-31 close print did not exist yet)",
+  "reconciliation": "clean pool 170, conditioned stock 57 (20 up / 37 down) - exact byte match to the frozen contract's reachability evidence",
+  "counts_now": {"h5_settled": 24, "h5_legs": {"up": 8, "down": 16}, "h10_settled": 0},
+  "bars": {"h5": 30, "h10": 30, "per_leg": 10},
+  "triggered": false,
+  "eta_update": "h5 arrival faster than the frozen conservative ETA (24 already vs ~09-02 first bulk); binding bar is h10 >= 30, still ~2026-09-08..09-11"
+ },
+ "event_triggers_watched": [
+  {"item": "cand-68d2f5dad2f903488307 clean-forward falsification", "trigger": "h5>=30 AND h10>=30 AND legs>=10 under frozen rule+fence", "eta": "~2026-09-08..09-11"},
+  {"item": "news_propagation_negative_side 1508-row re-read", "trigger": "negative_side_closed >= 1508 in data/reopen_readiness.json", "eta": "~2026-09-08"},
+  {"item": "news_propagation_pair first basket settlement", "trigger": "sleeve daily run settles due baskets", "eta": "~2026-09-10"},
+  {"item": "moomoo top1 clean-forward retest", "trigger": "clean closed positions (exit>2026-08-31) >= 20 across >= 10 entry dates", "eta": "~mid-November 2026"},
+  {"item": "prediction_market_postfix", "trigger": "3 failing counters reach bars (organic market diversification)", "eta": "indeterminate; stagnant"}
+ ],
+ "vestigial_surface_note": "data/daily/news/structured/daily_news_structured_event_observations_*.jsonl (353 rows, 55 files since 2026-06-30) are written once with outcome_status=pending_forward_close and have NO settlement consumer anywhere in quant/scripts/run.py; the entity_theme observers carry the actual settled news-event outcomes. Not an active-sleeve incident (no admissions/decisions), but a retire/consolidation candidate for a future management unit; also hosts the structurally unreachable target_price predicate referenced by family 271",
+ "trade_enabled": false
+}

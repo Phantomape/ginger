@@ -1,0 +1,87 @@
+{
+ "schema_version": 1,
+ "run_id": "20260831T1640Z_adjacent_overshoot_clean_forward_contract_freeze",
+ "started_at": "2026-08-31T16:05:00Z",
+ "finished_at": "2026-08-31T16:40:00Z",
+ "agent": "claude-scheduled-alpha",
+ "work_unit": "outcome_blind_reachability_check_and_contract_freeze",
+ "experiment_id": null,
+ "status": "completed",
+ "execution_lane": {
+  "worktree": "D:/Github/ginger",
+  "branch": "fix/alpha-score-sleeve-same-day-idempotency",
+  "head_at_start": "ce426e4db",
+  "upstream": "origin/fix/alpha-score-sleeve-same-day-idempotency (ahead 22, not pushed)",
+  "authoritative_state_ref": "this lane; .codex/worktrees/edge-v2 (automation/edge-v2) is the separate V2 build automation currently emitting post-cutoff no-op audits and shares no experiment/debt state with this alpha lane; .claude/worktrees/fervent-shockley-8202ac is a dormant V1-era lane (last tickets exp-202606xx)"
+ },
+ "pulse_as_of": "2026-08-31T16:40:00Z",
+ "alpha_pulse_24h": {
+  "alpha_trials": 1,
+  "trials_note": "exp-20260831-001 (quiet-tape falsification, rejected) closed 2026-08-31T08:30Z, inside the rolling window; this unit burned no ID (contract freeze + reachability are outcome-blind prep)",
+  "canonical_gate4_passes": 0,
+  "forward_decisions": 1,
+  "forward_decisions_note": "pair sleeve auto-admitted its 3rd measurement_ready basket overnight (appended_this_run=1)",
+  "settled_outcomes": 0,
+  "net_replacement_value_usd": 0.0,
+  "active_forward_sleeves": {
+   "news_propagation_pair": {
+    "observer_health": "ok - 3 pending baskets, unattended admission working (summary as_of 2026-08-30T23:41-07:00)",
+    "decisions": 3,
+    "pending_baskets": 3,
+    "due_unsettled": 0,
+    "eligible_unadmitted": 0,
+    "eta_first_settlement": "2026-09-10",
+    "eta_contract_completion": ">=20 closed baskets over >=10 decision dates; realistically late September 2026"
+   },
+   "move_rate_volatility_relief": {
+    "observer_health": "ok but event-starved: 0 rows; no calendar ETA"
+   }
+  },
+  "observer_stale_sleeves": 0,
+  "eligible_unadmitted": 0,
+  "due_unsettled": 0,
+  "oldest_actionable_debt_age_hours": 0,
+  "missed_alpha_execution_slots": 0
+ },
+ "scope_debt": [],
+ "conversion_debt": [],
+ "economic_progress": false,
+ "economic_progress_note": "Outcome-blind prep only: the adjacent candidate's clean-forward falsification contract is now frozen with a decisively reachable sample path (clean conditioned stock already 57 vs bar 30), converting a contaminated candidate into a machine-triggered forward-waiting experiment. No settled value was added.",
+ "changes": [
+  "quant/experiments/adjacent_overshoot_clean_forward_contract_freeze_20260831.py (new, outcome-blind freeze generator)",
+  "data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json (frozen contract artifact)",
+  "docs/v2/current_state.md, docs/v2/backlog.md, docs/v2/decision_log.jsonl d-0014",
+  "data/v2/hourly_runs/20260831T1640Z_adjacent_overshoot_clean_forward_contract_freeze.json (this receipt)"
+ ],
+ "verification": [
+  "outcome-blind by construction: the generator projects every ledger row onto an identity/status whitelist (decision_id, ticker, dates, direction, eps identity fields, h*_status) before any use; no return/PnL/replacement-value key is ever loaded; OHLCV reads are pre-event closes only",
+  "contamination fence machine-frozen: 1352 contaminated decision ids (h5 closed in fileset sha256 6c5a5f6c66528fe7e4317e68d422626e6d30e1fcc6a43314373ac361409aa540), ids-list sha256 312dabe4e50c6078a74e5ffa992b53bc629afd07ff92a2abd5ce139151d9fd29; eligibility = h5 first close after 2026-08-31",
+  "conditioning rule taken verbatim from the 2026-08-29 registration gap_definition (candidate blob sha256 cfd622c6c3a965f11aef922e4c233071d32b015ca0fee2cd5364720a0688dc62); no sigma envelope (rejected quiet-tape family conditioning is forbidden); guards fail-closed",
+  "reachability: clean pool 170, frozen-rule conditioned stock 57 (20 up / 37 down), entries 08-24..08-30; zero-arrival conservative ETA h5>=30 by ~2026-09-08, h10>=30 by ~2026-09-11, both legs >=10; observed qualified arrival ~45/session mean over last 10 sessions makes the path strictly conservative",
+  "bar wording audited one-to-one against the registration falsifier clause; horizons (H5-H10), treatment legs (down-overshoot long / up-overshoot avoidance) and falsifier families were all fixed on 2026-08-29 before the contamination event, so nothing was shaped by the observed contrast",
+  "cross-lane pulse dedupe: edge-v2 lane emitting no-op audits only, no experiment lifecycle overlap; staged union for this commit contains only this unit's files (concurrent observer data writes left unstaged)"
+ ],
+ "blocked_watch_items": [
+  {
+   "item": "cand-68d2f5dad2f903488307 clean-forward falsification (contract frozen, waiting on settlements)",
+   "blocker_fingerprint": "clean conditioned settled counts below bars (h5>=30 AND h10>=30, legs>=10) under frozen rule + fence; fileset sha256 6c5a5f6c66528fe7e4317e68d422626e6d30e1fcc6a43314373ac361409aa540",
+   "blocked_until": "2026-09-08 earliest (h5 bar), 2026-09-11 conservative (h10 bar)",
+   "recheck_trigger": "daily outcome-file append -> constant-time recount under the frozen rule; when all bars hold, reserve->claim->run within the next alpha slot (<=24h)",
+   "forbidden_meanwhile": "no clean-slice outcome access, no bar/threshold/seed changes, no estimate-revision near-neighbor work"
+  },
+  {
+   "item": "pair sleeve first settlement",
+   "blocked_until": "2026-09-10",
+   "recheck_trigger": "daily sleeve run settles due baskets; due_unsettled>0 or eligible_unadmitted>0 is an economic_incident preempting new work"
+  }
+ ],
+ "next_alpha_action": {
+  "primary": "Outcome-blind low-friction long-only alpha preflight on the registered moomoo_capital_flow_day_observer surface: enumerate the local canonical DAY capital-flow archive (daily refresh active since 2026-07-21), check authorization/PIT/mapping/density/frozen-family collisions and real candidate reach for a long-only cash-equity H1-H5 hypothesis; entrypoint = read-only scan of the archive tables + docs/frozen_families.jsonl dry-run; success gate = either a D0-style pass list with >=1 registrable candidate and a frozen falsifier sketch, or a per-item machine blocker list with quantitative reopen conditions; action_due_at = next scheduled alpha slot, <=24h (2026-09-01T17:00Z)",
+  "fallback_order": [
+   "prediction_market_event_probability_observer (Gamma observer, repaired 07-18, long-only replacement framing) - does not share the capital-flow archive blocker",
+   "if both surfaces machine-close: no_candidate artifact over the registered surface inventory, then wait on the two event triggers above"
+  ],
+  "forbidden": "touching the frozen adjacent contract or any estimate-revision near-neighbor; quiet-tape envelope reuse; breadth redefinition on the daily-batch clock; using V1 sleeve conclusions as qualification"
+ },
+ "trade_enabled": false
+}

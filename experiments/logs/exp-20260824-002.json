@@ -1,0 +1,144 @@
+{
+  "after_metrics": {
+    "expected_value_score_sum": 6.2057,
+    "minimum_survival_rate": 0.8116,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "acceptance_basis": "All predeclared clock, legacy-ineligibility, outcome-blindness, borrow fail-closed, idempotency, and daily-wiring checks passed while the canonical baseline artifact stayed byte-identical.",
+  "accepted": true,
+  "accepted_alpha": false,
+  "accepted_measurement_repair": true,
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score_sum": 6.2057,
+    "minimum_survival_rate": 0.8116,
+    "positive_ev_windows": 3,
+    "total_pnl_sum": 130992.36,
+    "trade_count_sum": 49,
+    "worst_max_drawdown_pct": 0.0889
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.01,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": false,
+    "predicted_failure_modes": [
+      "legacy_clock_backfill",
+      "borrow_freshness_leak",
+      "daily_wiring_or_idempotency_failure"
+    ],
+    "predicted_success_probability": 0.9,
+    "realized_failure_mode": "none",
+    "surprise_level": "very_low",
+    "surprise_note": "The narrow repair passed its predeclared clock, outcome-blindness, fail-closed borrow, idempotency, and daily-wiring checks without moving any canonical strategy metric; the existing borrow archive is correctly treated as indicative rather than executable locate evidence."
+  },
+  "causal_components": [
+    "immutable local first_seen_at only on newly appended exposure rows",
+    "legacy rows remain unbackfilled and ineligible",
+    "same-batch polarity and disjoint-ticker readiness counts",
+    "fresh point-in-time iBorrowDesk coverage audit only",
+    "no order intent paper fill or strategy decision"
+  ],
+  "change_summary": "Added immutable local first_seen clocks for new structured-news exposure rows plus an outcome-blind same-batch polarity, concentration, overlap, and PIT indicative-borrow readiness observer; legacy rows remain ineligible and no strategy or order path changed.",
+  "change_type": "measurement_repair",
+  "changed_variable": "news_pair_first_seen_forward_readiness_contract_v1",
+  "changed_files": [
+    "quant/news_event_exposure_observer.py",
+    "quant/news_propagation_pair_forward_observer.py",
+    "quant/test_news_event_exposure_observer.py",
+    "quant/test_news_propagation_pair_forward_observer.py",
+    "quant/test_run_daily_wiring.py",
+    "quant/run.py",
+    "docs/production_backtest_parity_matrix.md",
+    "experiments/artifacts/exp-20260824-002_news_pair_first_seen_forward_readiness.md"
+  ],
+  "checks": {
+    "baseline_sha256_unchanged": true,
+    "daily_wiring_passed": true,
+    "focused_pytest_97_passed": true,
+    "legacy_rows_unbackfilled": true,
+    "outcome_blindness_mutation_passed": true,
+    "py_compile_passed": true,
+    "repeated_run_idempotent": true,
+    "stale_or_missing_borrow_failed_closed": true,
+    "strategy_metrics_zero_delta": true,
+    "trade_enabled_false": true
+  },
+  "component": "quant/news_event_exposure_observer.py, quant/news_propagation_pair_forward_observer.py, quant/test_news_event_exposure_observer.py, quant/test_news_propagation_pair_forward_observer.py, quant/test_run_daily_wiring.py, quant/run.py, docs/production_backtest_parity_matrix.md",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {
+    "expected_value_score_sum": 0.0,
+    "minimum_survival_rate": 0.0,
+    "positive_ev_windows": 0,
+    "total_pnl_sum": 0.0,
+    "trade_count_sum": 0,
+    "worst_max_drawdown_pct": 0.0
+  },
+  "experiment_id": "exp-20260824-002",
+  "hypothesis": "The news-propagation family cannot produce executable evidence until every newly discovered exposure row carries an immutable local first_seen_at and a daily observer measures same-batch two-sided candidate density plus point-in-time borrow coverage without reading outcomes. Add that measurement contract, leave legacy rows ineligible, and expose it through the existing daily structured-news observer with no signal, sizing, exit, or order change.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "news_pair_forward_measurement",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260824-001",
+    "exp-20260712-013",
+    "exp-20260702-028"
+  ],
+  "new_evidence_type": "production_first_seen_and_borrow_alignment",
+  "next_retry_requires": [
+    "At least one persisted real measurement_ready first-seen batch before opening the shared alpha-policy experiment.",
+    "At least 20 closed baskets across 10 decision dates with positive net spread and both chronological halves positive before forward acceptance.",
+    "A broker-locate contract plus separate user-approved activation review before any live eligibility claim."
+  ],
+  "notes": "Accepted measurement repair only, not alpha. 97 focused tests passed; canonical baseline metrics and hash are unchanged; trade_enabled=false.",
+  "parameters": {
+    "locked_variables": [
+      "news_pair_first_seen_forward_readiness_contract_v1"
+    ],
+    "single_causal_variable": "news_pair_first_seen_forward_readiness_contract_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not backfill first_seen_at onto legacy rows, reuse event_date or published_at as the executable clock, read more historical attribution before 1,508 closed negative rows, or treat iBorrowDesk as a broker locate.",
+    "new_evidence_required": "Persist at least one real measurement-ready v2 batch to justify the next shared paper-policy build; alpha acceptance still requires 20 closed first-seen baskets across 10 dates under the frozen cost and concentration contract.",
+    "realized_failure_mode": "none",
+    "why_result_happened": "The narrow repair passed its predeclared clock, outcome-blindness, fail-closed borrow, idempotency, and daily-wiring checks without moving any canonical strategy metric; the existing borrow archive is correctly treated as indicative rather than executable locate evidence."
+  },
+  "prediction": {
+    "confidence_reason": "This is a narrow measurement repair over an already-wired append-only observer. The main risk is accidentally treating publication/event date or stale iBorrowDesk rows as decision-time evidence; explicit eligibility and idempotency tests should catch that, while no strategy metric is expected to move.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "legacy_clock_backfill",
+      "borrow_freshness_leak",
+      "daily_wiring_or_idempotency_failure"
+    ],
+    "recorded_at": "2026-08-24T18:09:51+00:00",
+    "success_probability": 0.9
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-24T18:17:44+00:00",
+  "trial_family": "news_pair_first_seen_borrow_readiness",
+  "trial_variant_id": "exp-20260824-002"
+}

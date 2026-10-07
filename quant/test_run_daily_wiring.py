@@ -1105,6 +1105,11 @@ def test_structured_news_observation_runs_second_order_exposure_observer(monkeyp
             "closed_rows": 5,
             "pending_rows": 6,
             "appended_this_run": 2,
+            "pair_forward_readiness": {
+                "measurement_ready_batches": 1,
+                "blocked_batches": 2,
+                "trade_enabled": False,
+            },
         }
 
     monkeypatch.setitem(
@@ -1117,6 +1122,11 @@ def test_structured_news_observation_runs_second_order_exposure_observer(monkeyp
         "news_event_exposure_observer",
         types.SimpleNamespace(run=fake_observer_run),
     )
+    monkeypatch.setitem(
+        sys.modules,
+        "news_propagation_pair_paper_sleeve",
+        types.SimpleNamespace(run=lambda: {"decisions": 0, "trade_enabled": False}),
+    )
 
     snapshot = _persist_daily_structured_news_observation("20260702")
 
@@ -1124,6 +1134,12 @@ def test_structured_news_observation_runs_second_order_exposure_observer(monkeyp
     assert snapshot["strategy_behavior_changed"] is False
     assert snapshot["trade_enabled"] is False
     assert snapshot["second_order_exposure_observer"]["rows"] == 11
+    readiness = snapshot["second_order_exposure_observer"][
+        "pair_forward_readiness"
+    ]
+    assert readiness["measurement_ready_batches"] == 1
+    assert readiness["blocked_batches"] == 2
+    assert readiness["trade_enabled"] is False
 
 
 def test_structured_news_observation_keeps_snapshot_when_exposure_observer_fails(
@@ -1153,6 +1169,11 @@ def test_structured_news_observation_keeps_snapshot_when_exposure_observer_fails
         "news_event_exposure_observer",
         types.SimpleNamespace(run=failing_observer_run),
     )
+    monkeypatch.setitem(
+        sys.modules,
+        "news_propagation_pair_paper_sleeve",
+        types.SimpleNamespace(run=lambda: {"decisions": 0, "trade_enabled": False}),
+    )
 
     snapshot = _persist_daily_structured_news_observation("20260702")
 
@@ -1160,6 +1181,99 @@ def test_structured_news_observation_keeps_snapshot_when_exposure_observer_fails
     assert snapshot["trade_enabled"] is False
     assert snapshot["second_order_exposure_observer"]["status"] == "unavailable"
     assert "observer unavailable" in snapshot["second_order_exposure_observer"]["error"]
+
+
+def test_structured_news_observation_runs_pair_paper_sleeve(monkeypatch):
+    calls = {"sleeve": 0}
+
+    def fake_snapshot(today):
+        return {
+            "event_contract_audit": {"ledger_rows": 1},
+            "forward_observation_contract_audit": {
+                "observation_rows": 1,
+                "target_relation_quality_rows": 1,
+            },
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+    def fake_sleeve_run():
+        calls["sleeve"] += 1
+        return {
+            "decisions": 1,
+            "settled_baskets": 0,
+            "pending_baskets": 1,
+            "appended_this_run": 1,
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+    monkeypatch.setitem(
+        sys.modules,
+        "daily_news_structured_event_snapshot",
+        types.SimpleNamespace(persist_daily_structured_event_snapshot=fake_snapshot),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "news_event_exposure_observer",
+        types.SimpleNamespace(run=lambda: {"rows": 0}),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "news_propagation_pair_paper_sleeve",
+        types.SimpleNamespace(run=fake_sleeve_run),
+    )
+
+    snapshot = _persist_daily_structured_news_observation("20260702")
+
+    assert calls == {"sleeve": 1}
+    pair_sleeve = snapshot["news_propagation_pair_paper_sleeve"]
+    assert pair_sleeve["decisions"] == 1
+    assert pair_sleeve["trade_enabled"] is False
+    assert snapshot["trade_enabled"] is False
+
+
+def test_structured_news_observation_keeps_snapshot_when_pair_sleeve_fails(
+    monkeypatch,
+):
+    def fake_snapshot(today):
+        return {
+            "event_contract_audit": {"ledger_rows": 1},
+            "forward_observation_contract_audit": {
+                "observation_rows": 1,
+                "target_relation_quality_rows": 1,
+            },
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+    def failing_sleeve_run():
+        raise RuntimeError("pair sleeve unavailable")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "daily_news_structured_event_snapshot",
+        types.SimpleNamespace(persist_daily_structured_event_snapshot=fake_snapshot),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "news_event_exposure_observer",
+        types.SimpleNamespace(run=lambda: {"rows": 0}),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "news_propagation_pair_paper_sleeve",
+        types.SimpleNamespace(run=failing_sleeve_run),
+    )
+
+    snapshot = _persist_daily_structured_news_observation("20260702")
+
+    assert snapshot["strategy_behavior_changed"] is False
+    assert snapshot["trade_enabled"] is False
+    pair_sleeve = snapshot["news_propagation_pair_paper_sleeve"]
+    assert pair_sleeve["status"] == "unavailable"
+    assert "pair sleeve unavailable" in pair_sleeve["error"]
+    assert pair_sleeve["trade_enabled"] is False
 
 
 def test_sec_corporate_event_stream_daily_wiring(monkeypatch):

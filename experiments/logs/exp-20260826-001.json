@@ -1,0 +1,69 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Wired a targeted pre-first-seen iBorrowDesk prefetch of each run's new short-side exposure tickers into news_event_exposure_observer.run and split the run.py Step 1.65 request budget (150->60), so pair forward-readiness borrow coverage can land automatically per batch instead of structurally fail-closing on missing/stale_pit_borrow.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "presence and ordering of a targeted pre-first-seen iBorrowDesk prefetch wired into news_event_exposure_observer.run and the run.py Step 1.65 shard budget split",
+  "component": "quant/news_event_exposure_observer.py, quant/run.py, quant/test_news_event_exposure_observer.py, data/experiments/exp-20260826-001/news_pair_short_side_borrow_prefetch_before.json, data/experiments/exp-20260826-001/news_pair_short_side_borrow_prefetch_after.json, experiments/cards/exp-20260826-001.md, experiments/manifests/exp-20260826-001.json, experiments/tickets/exp-20260826-001.json, experiments/logs/exp-20260826-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260826-001",
+  "hypothesis": "Wire the missing borrow-coverage step into the daily pipeline: the pair forward-readiness borrow gate needs iBorrowDesk evidence archived at or before each batch first_seen_at and at most 3 calendar days old, but nothing in run.py fetches the day's short-side exposure tickers before the exposure observer freezes first_seen_at, and the Step 1.65 shard rotation skips microcaps outside build_default_refresh_universe, so batches structurally fail-close on missing/stale_pit_borrow (blocked_downstream_check: news_propagation_pair_forward_readiness measurement_ready_batches, pre-repair gate value 0; latest batch pair-ready-81e8043a1b900c1f45c1114c is blocked solely by 3 missing plus 21 stale borrow tickers with cross-side overlap already clear). This repair wires a targeted prefetch of the run's new positive-polarity exposure tickers into news_event_exposure_observer.run before the first_seen_at stamp, and splits the run.py Step 1.65 request budget under the ~90-request www throttle, after which per-batch borrow coverage lands automatically in every daily run with no further IDs and no readiness-contract change.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Structural coverage-gap wiring, continuation of exp-20260825-001 residual blockers (1)+(2): pair forward readiness only counts borrow evidence archived at or before batch first_seen_at (age <=3 calendar days), but nothing fetched the day's short-side tickers before the exposure observer froze first_seen_at, and the Step 1.65 rotation skips microcaps outside build_default_refresh_universe. Repair: (a) prefetch_short_side_borrow in news_event_exposure_observer.run - targeted refresh_archive of this run's NEW positive-polarity exposure tickers strictly before the first_seen_at stamp (production path only, fail-open, env opt-out shared with Step 1.65); (b) run.py Step 1.65 shard budget 150->60 under the ~90-request www throttle so the prefetch keeps headroom. Verification: 27 focused tests passed (4 new prefetch tests: targeting excludes long-side and already-ledgered rows, no-op, env opt-out, fail-open; rollout-smoke assertion for the non-production skip); live targeted fetch 23/23 succeeded +1328 rows incl. microcaps ALMU/AMBQ/ASTI, no throttle; production rollout smoke ran the full wired path cleanly (prefetch no_new_short_side_rows, idempotent ledger, readiness re-evaluated). Post-repair gate value: measurement_ready_batches still 0 TODAY by design - already-frozen batches must not be retro-repaired (archived_at > first_seen correctly rejected); economic_progress=false; conversion check is the NEXT daily batch whose short-side tickers are prefetched before first_seen. Residual: cross_side_ticker_overlap stays data-driven; per-microcap iBorrowDesk coverage stays empirical. No signal, sizing, exit, order, or trade behavior changed; trade_enabled=false; d-0003 gate unchanged (>=1 real measurement_ready batch before the pair-build alpha experiment; exp-20260824-001 single-use qualification unconsumed).",
+  "parameters": {
+    "locked_variables": [
+      "presence and ordering of a targeted pre-first-seen iBorrowDesk prefetch wired into news_event_exposure_observer.run and the run.py Step 1.65 shard budget split"
+    ],
+    "single_causal_variable": "presence and ordering of a targeted pre-first-seen iBorrowDesk prefetch wired into news_event_exposure_observer.run and the run.py Step 1.65 shard budget split"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not burn further IDs tuning prefetch parameters (min_age_days, sleep, budget split ratio), do not relax the readiness 3-calendar-day / archived-before-first-seen contract, and do not retro-repair already-frozen batches; iBorrowDesk must not be re-labeled a broker locate.",
+    "new_evidence_required": "The next daily run's new first-seen batch is the conversion check: its short_side borrow_coverage must reach covered==required with no missing/stale_pit_borrow blockers. Once >=1 real measurement_ready batch lands, d-0003 permits the single-use shared-paper-first pair-build alpha experiment (exp-20260824-001 qualification).",
+    "realized_failure_mode": "structural_coverage_gap_pre_first_seen_fetch_missing",
+    "why_result_happened": "The readiness PIT rule (archived_at <= first_seen_at, age <= 3 calendar days) is only satisfiable if the borrow fetch precedes the first_seen stamp, but the daily pipeline's only borrow step was a blind stalest-first shard over build_default_refresh_universe that neither knew the day's short-side exposure tickers nor included microcaps; once the batch froze, no later fetch could ever count, so every batch structurally fail-closed. Ordering the targeted fetch before the stamp inside the exposure observer makes coverage land automatically for exactly the tickers the readiness check requires."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260826-001/news_pair_short_side_borrow_prefetch_before.json",
+    "data/experiments/exp-20260826-001/news_pair_short_side_borrow_prefetch_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-26T16:21:47+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260826-001"
+}

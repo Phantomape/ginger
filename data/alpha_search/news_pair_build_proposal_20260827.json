@@ -1,0 +1,26 @@
+{
+ "lane": "alpha_search",
+ "change_type": "observed_only_attribution",
+ "single_causal_variable": "news_propagation_pair_paper_sleeve_build_v1",
+ "mechanism_family": "news_second_order_propagation",
+ "trial_family": "news_event_second_order_exposure_forward_validation",
+ "changed_variable": "news_propagation_pair_paper_sleeve_build_v1",
+ "hypothesis": "Consume the exp-20260824-001 single-use pair-build qualification through the now-open d-0003 conversion gate (first real measurement_ready first-seen batch news-first-seen-845025fae409b81adeb3, frozen 2026-08-27T03:07:27Z with 29/29 PIT indicative borrow coverage, no cross-side overlap, both sides within the 40% concentration cap): build the ONE shared-paper-first default-off dollar-neutral pair sleeve that mechanically admits every measurement_ready batch as one basket - long negative-polarity exposure rows, short positive-polarity rows, equal row weight within side, $1,000 per leg - entered synchronously at the first regular-session open strictly after batch first_seen_at with fail-closed missing-leg handling, exited at the 10th session close, charged frozen 45bp/leg round-trip costs, settled against cash/SPY/QQQ same-capital comparators, and judged ONLY by its own pre-registered forward acceptance contract of >=20 closed baskets over >=10 decision dates with net total PnL after costs positive, both chronological halves positive, and single-ticker absolute gross contribution <=40%; trade_enabled stays false and no OrderIntent is created.",
+ "causal_components": [
+  "shared helper quant/news_propagation_pair_paper_sleeve.py used identically by historical replay over the append-only readiness decisions ledger and by the daily default-off snapshot path; admission is mechanical (every measurement_ready batch exactly once keyed by first_seen_batch_id) so no discretionary selection can see outcomes",
+  "frozen execution contract inherited unchanged from the exp-20260824-001 qualification: synchronous two-leg next-open entry after first_seen_at; fail-closed when either leg cannot be fully priced; 10-session horizon; 45bp/leg round-trip cost constant; dollar-neutral $1000 per leg with equal row weights within side",
+  "settlement from the canonical OHLCV warehouse with the split-normalized massive_history broad-universe fallback for microcap short-side tickers; a basket that cannot fully price both legs stays pending and never partially settles",
+  "daily run.py wiring immediately after the readiness observer with trade_enabled=false; same-day idempotency by first_seen_batch_id plus append-only record_id dedup; focused parity test proving replay and daily admission/settlement share rule version and representative basket behavior",
+  "pre-registered forward acceptance contract frozen in the closeout artifact: >=20 closed baskets over >=10 decision dates with net total PnL after 45bp/leg costs positive and both chronological halves positive and single-ticker absolute gross contribution <=40%; the d-0005 historical-replay park and the 1508-row further-re-read bar stay untouched"
+ ],
+ "prediction": {
+  "success_probability": 0.6,
+  "main_failure_modes": [
+   "entry_or_settlement_bars_missing_for_microcap_short_legs",
+   "forward_batch_cadence_too_slow_for_acceptance_contract"
+  ],
+  "confidence_reason": "The build converts an already-qualified single-use viability verdict (exp-20260824-001: event-level 152.0bp > 100bp, row-mean 189.0bp > 45bp, all five confirmation bars held on 1005 negative-side rows) into a default-off forward paper sleeve, so success means the sleeve stands up, admits the first real measurement_ready batch idempotently, and passes parity - a mostly mechanical claim with the mechanism evidence already banked; the main disconfirming risks are microcap short-side tickers missing warehouse and massive_history bars at entry (fail-closed pending baskets that starve the acceptance contract) and measurement_ready batch cadence being too slow to reach 20 closed baskets, both of which park rather than falsify the mechanism.",
+  "expected_ev_delta": 0.0,
+  "expected_pnl_delta": 0.0
+ }
+}

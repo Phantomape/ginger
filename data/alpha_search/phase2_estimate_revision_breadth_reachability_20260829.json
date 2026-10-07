@@ -1,0 +1,47 @@
+{
+ "schema_version": 1,
+ "artifact_kind": "falsifier_freeze_reachability_check",
+ "generated_at": "2026-08-29T16:55:00Z",
+ "selection_scope_id": "scope-2d453592cbe4b7b822ff9fdf",
+ "panel_hash": "e9ca292b1f7b832c8b88aa7cbe5d17a6dc666a12436c272750ce7d5841999a81",
+ "candidate_id": "cand-c748224bb9bc0f6a9118",
+ "candidate_title": "Same-session breadth of qualified forecast updates as a shared expectation shock",
+ "outcome_blind": true,
+ "fields_read": [
+  "decision_id",
+  "ticker",
+  "revision_direction",
+  "decision_qualified",
+  "instrument_mapping_qualified",
+  "decision_clock",
+  "as_of_date"
+ ],
+ "outcome_fields_read": [],
+ "decision": "park_before_reserve",
+ "blocker": "The frozen contrast (breadth members versus isolated updates) has a structurally starved control cohort: the consensus feed batches qualified updates into daily snapshots, so nearly every qualified decision is a breadth member. Only 8 isolated (1-2 same-direction issuers in a session) decisions exist lifetime versus 1510 breadth-member decisions across 21 decision sessions (~72 decisions per session). Any credible comparison bar (>=30 control decisions) is unreachable under the current feed cadence; this is exactly the unreachable rare-event bar class the 2026-08-28 protocol amendment forbids freezing.",
+ "counts": {
+  "qualified_nonflat_mapped_decisions": 1518,
+  "decision_sessions": 21,
+  "breadth_sessions_ge3_same_direction": {
+   "up": 17,
+   "down": 16
+  },
+  "breadth_member_decisions": {
+   "up": 712,
+   "down": 798
+  },
+  "isolated_control_decisions": {
+   "up": 2,
+   "down": 6
+  },
+  "per_session_decision_counts_min_max": [
+   1,
+   209
+  ]
+ },
+ "outcome_files_count": 79,
+ "outcome_fileset_sha256": "bd9ae6d762789008663120aad937a870c6e462cae491ae28bb448ad26c3089ea",
+ "quantitative_reopen_condition": "Reopen this parked candidate only when the isolated-control cohort (sessions with 1-2 same-direction qualified mapped issuers) reaches >=30 decisions under an unchanged qualification rule, or when a finer intra-session event clock (true per-update publication times rather than daily batch snapshots) is added to the source contract so that breadth can be defined on real event clustering; redefining the breadth threshold on the same daily-batch clock does not qualify.",
+ "no_experiment_id_burned": true,
+ "notes": "The scope itself completed and selected this candidate, so the Phase-2 reopen precondition (a fresh outcome-blind D0-D3 scope that actually selects) is met; the park applies to this candidate's falsification contract, not to the scope. The two D0-D3-passed unselected registrants (cand-1a665d7350fd8d6349e8 exploitation, cand-68d2f5dad2f903488307 adjacent) remain registered in the discovery ledger for a future scope round."
+}

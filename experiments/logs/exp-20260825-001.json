@@ -1,0 +1,69 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "causal_components": [],
+  "change_summary": "Repointed iborrowdesk_data_source API_URL from the dead apex host to www.iborrowdesk.com, restoring the frozen PIT borrow archive (10/10 blocked pair short-side tickers refreshed through 2026-08-24, +2843 rows total) after ~34 days of silent RemoteDisconnected aborts.",
+  "change_type": "identity_or_measurement_repair",
+  "changed_variable": "iborrowdesk_data_source API host (apex vs www) feeding the PIT borrow archive and pair forward-readiness borrow evidence",
+  "component": "quant/experiments/exp_20260825_001_iborrowdesk_www_host_repair.py, data/experiments/exp-20260825-001/exp_20260825_001_iborrowdesk_www_host_repair.json, experiments/cards/exp-20260825-001.md, experiments/manifests/exp-20260825-001.json, experiments/tickets/exp-20260825-001.json, experiments/logs/exp-20260825-001.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260825-001",
+  "hypothesis": "Genuine upstream fault recovery: the iBorrowDesk borrow-economics archive fetch pipeline has been fully broken since ~2026-07-21 by an upstream host change (apex iborrowdesk.com now drops /api requests with empty replies after moving to www.iborrowdesk.com), so every daily refresh aborts with RemoteDisconnected and the PIT borrow archive is frozen; repairing API_URL to the www host restores the pipeline and unstarves the news-propagation pair forward-readiness borrow gate that currently fail-closes every batch on stale_pit_borrow.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "identity_or_measurement_repair",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [],
+  "notes": "Fault: upstream moved to www; apex drops /api with empty replies (probe: apex RemoteDisconnected, www 200). Repair: one-line API_URL change; 5 unit tests pass. Verification: targeted refresh of the 10 blocked pair short-side tickers 10/10 succeeded (+263 rows, all archived through 2026-08-24), standard 150-shard added +2580 rows across 89 tickers before hitting www rate limit http_444 (~90 req at 1 req/s); abort-early is resumable by design. Residual gaps recorded for the readiness lane owner: (1) 7 microcap short-side tickers (AIEV,AIIO,BINI,ECDA,FFAI,FLYE,HWEP) are covered by iBorrowDesk (www returns 200) but absent from build_default_refresh_universe, so missing_pit_borrow persists until batch tickers are fetched; (2) even a healthy cadence (~90-150/day over 1365 tickers, min_age 5d) cannot guarantee the readiness contract 3-calendar-day freshness for arbitrary batch tickers - needs targeted daily fetch of active batch short-side tickers or a contract decision; (3) cross_side_ticker_overlap blocker is data-driven and untouched. No signal, sizing, exit, order, or trade behavior changed; trade_enabled=false.",
+  "parameters": {
+    "locked_variables": [
+      "iborrowdesk_data_source API host (apex vs www) feeding the PIT borrow archive and pair forward-readiness borrow evidence"
+    ],
+    "single_causal_variable": "iborrowdesk_data_source API host (apex vs www) feeding the PIT borrow archive and pair forward-readiness borrow evidence"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not burn further IDs on host/UA/retry-parameter tweaks for this fetcher; the host repoint is the complete fix. Do not widen build_default_refresh_universe or relax the readiness 3-calendar-day borrow freshness contract without an explicit decision by the pair-readiness lane owner; do not reinterpret stale pre-outage rows as fresh evidence.",
+    "new_evidence_required": "Daily run.py Step 1.65 shards resume automatically; measurement_ready batches now depend on the remaining readiness blockers (batch-ticker fetch coverage/cadence and cross-side overlap), tracked in docs/v2/backlog.md.",
+    "realized_failure_mode": "upstream_host_migration_empty_reply",
+    "why_result_happened": "The upstream site migrated to the www host; the apex host kept accepting TCP but closed /api connections without a response, so every retry path (RemoteDisconnected is not an HTTPError) exhausted and the daily 5-consecutive-failure abort fired on every run from ~2026-07-21, freezing the archive while fetch_state kept stale ok tags from earlier successes. The one-line host repoint restored 10/10 targeted fetches and a normal shard immediately."
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260825-001/iborrowdesk_www_host_repair_before.json",
+    "data/experiments/exp-20260825-001/iborrowdesk_www_host_repair_after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-25T16:19:53+00:00",
+  "trial_family": "identity_or_measurement_repair",
+  "trial_variant_id": "exp-20260825-001"
+}

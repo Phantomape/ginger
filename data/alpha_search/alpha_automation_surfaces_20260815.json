@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "surfaces": [
+    {
+      "surface_id": "cash_feasible_price_and_news_settlement_prior_20260815",
+      "data_source": "ohlcv_warehouse",
+      "component_sources": [
+        "ohlcv_warehouse"
+      ],
+      "roles": [
+        "market_expectation",
+        "opportunity_cost",
+        "price",
+        "price_revealed_context"
+      ],
+      "artifacts": [
+        "data/experiments/exp-20260715-010/after_measurement.json"
+      ],
+      "pit_status": "canonical_pit",
+      "evidence_grade": "gate_candidate",
+      "settled_count": 49,
+      "independent_count": 49,
+      "candidate_overlap_count": 49,
+      "gate_ready": true,
+      "expectation_proxy": {
+        "type": "price_revealed",
+        "field": "cash_feasible_core_or_same_clock_SPY_opportunity_cost",
+        "source": "data/experiments/exp-20260715-010/after_measurement.json"
+      },
+      "saturation_status": "open",
+      "reopen_condition": "Comparator only; this surface grants no novelty, reopen, source-contract or promotion authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-15T15:15:28Z",
+      "artifact_snapshot_hashes": {
+        "data/experiments/exp-20260715-010/after_measurement.json": "4e9ef413126c947b9712fd0879b83c74160f787898860987d204bfc9d60f7731"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "news_event_exposure_forward_identity_20260815",
+      "data_source": "news_event_exposure",
+      "component_sources": [
+        "news_event_exposure"
+      ],
+      "roles": [
+        "independent_evidence",
+        "candidate_pool",
+        "event"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/news_event_exposure_observations/rows.jsonl",
+        "data/reopen_readiness.json"
+      ],
+      "pit_status": "settled_forward_sufficient",
+      "evidence_grade": "observed_only",
+      "settled_count": 1467,
+      "independent_count": 1467,
+      "candidate_overlap_count": 655,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "The frozen attribution counter passed at 655/650. A deployable pair still requires event-level separation above 100bp and row-level mean above 45bp under unchanged H10 polarity mapping; a core-entry tilt additionally requires at least 5/5/5 executable touches.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-15T15:10:08Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/news_event_exposure_observations/rows.jsonl": "48f127e13b20f1fe9b58b2d19f6396f957ba29505791a708cf291919b436c7a8",
+        "data/reopen_readiness.json": "7bb95995c75b8f23a167d52f42ce518ec0da9ba590dc0c6ad8699c0d164eb92e"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "moomoo_capital_flow_forward_20260815",
+      "data_source": "moomoo_capital_flow",
+      "component_sources": [
+        "moomoo_capital_flow"
+      ],
+      "roles": [
+        "flow",
+        "independent_evidence"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 9,
+      "independent_count": 9,
+      "candidate_overlap_count": 15,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Keep the fixed allocator unchanged and reach at least 20 H10-settled paired disagreements; last frozen audited count was 9, while the forward-date counter is now 19.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-15T04:15:14Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/moomoo_capital_flow_day/manifest.json": "83ddcb120e21abc2623b0056549241ffc43b1ede91bfc3604a9f51519aceadca",
+        "data/non_ohlcv/moomoo_capital_flow_day/rows.jsonl": "3f83aa02a3e0b5218d6d4b1c4ad4448f68c7f836f43c334627d884184f2068f1"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "onclickmedia_options_forward_20260815",
+      "data_source": "onclickmedia_options",
+      "component_sources": [
+        "onclickmedia_options"
+      ],
+      "roles": [
+        "derivatives",
+        "positioning",
+        "independent_evidence"
+      ],
+      "artifacts": [
+        "data/non_ohlcv/options_forward/options_collection_quality_gate.json"
+      ],
+      "pit_status": "pit_forward_unsettled",
+      "evidence_grade": "observer",
+      "settled_count": 9,
+      "independent_count": 9,
+      "candidate_overlap_count": 15,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "A canonical path requires an authorized untruncated historical PIT option chain with at least three expiries and at least 5 treatment touches in each standard window; the current two-expiry strike-truncated research feed cannot satisfy that contract.",
+      "source_contract_status": "partial",
+      "as_of": "2026-08-15T04:17:25Z",
+      "artifact_snapshot_hashes": {
+        "data/non_ohlcv/options_forward/options_collection_quality_gate.json": "bf0ddaf0688b4363dba18f674662725b5043fbf54e1902a0774126d6d110ec3d"
+      },
+      "known_future_leakage": false,
+      "research_pit_basis": "Forward EOD snapshots have stored usable-trade dates and no known future leakage, but immutable vendor vintage, original licensed-feed lineage, full term structure and investment-decision authorization are not established."
+    },
+    {
+      "surface_id": "exit_lifecycle_advisory_forward_20260815",
+      "data_source": "exit_lifecycle",
+      "component_sources": [
+        "exit_lifecycle"
+      ],
+      "roles": [
+        "positioning",
+        "portfolio_exposure",
+        "candidate_pool"
+      ],
+      "artifacts": [
+        "data/reopen_readiness.json"
+      ],
+      "pit_status": "settled_forward_sufficient",
+      "evidence_grade": "observed_only",
+      "settled_count": 422,
+      "independent_count": 422,
+      "candidate_overlap_count": 26,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Reach at least 60 advisory decisions and 33 hard-stop decisions under the frozen contract; current counts are 47 and 26, with 18 advisory rows pending H5 settlement.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-15T15:10:08Z",
+      "artifact_snapshot_hashes": {
+        "data/reopen_readiness.json": "7bb95995c75b8f23a167d52f42ce518ec0da9ba590dc0c6ad8699c0d164eb92e"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "broker_portfolio_exposure_20260815",
+      "data_source": "moomoo_broker_account",
+      "component_sources": [
+        "moomoo_broker_account"
+      ],
+      "roles": [
+        "portfolio_exposure",
+        "opportunity_cost"
+      ],
+      "artifacts": [
+        "operator_inputs/open_positions.json",
+        "data/live_pilot/position_control/state.json"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 20,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "open",
+      "reopen_condition": "New entries remain forbidden until all protection orders are broker-confirmed and the total-account slot and position-control checks pass.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-15T04:16:54Z",
+      "artifact_snapshot_hashes": {
+        "operator_inputs/open_positions.json": "2467625043dc2af29d0270f3c67b8e9cbceeebaf957d08f160f9bde93a4200b6",
+        "data/live_pilot/position_control/state.json": "57f9367c0683630d29a789194f043a9fc09da9ab72ee5292400c55516d441a9a"
+      },
+      "known_future_leakage": false
+    },
+    {
+      "surface_id": "research_digest_20260727_consumption_20260815",
+      "data_source": "research_digest",
+      "component_sources": [
+        "research_digest"
+      ],
+      "roles": [
+        "research_digest"
+      ],
+      "artifacts": [
+        "data/research_digest/latest_digest.md"
+      ],
+      "pit_status": "snapshot_only",
+      "evidence_grade": "lead",
+      "settled_count": 0,
+      "independent_count": 9,
+      "candidate_overlap_count": 0,
+      "gate_ready": false,
+      "expectation_proxy": null,
+      "saturation_status": "parked",
+      "reopen_condition": "Recheck when the digest generated_at or entry set advances; digest entries never grant novelty, reopen or admission authority.",
+      "source_contract_status": "pass",
+      "as_of": "2026-08-15T15:15:28Z",
+      "artifact_snapshot_hashes": {
+        "data/research_digest/latest_digest.md": "9e89108d4079521a6eca89202523e8f656a90bebd808fbd0ff75db016f42be3b"
+      },
+      "known_future_leakage": false
+    }
+  ]
+}

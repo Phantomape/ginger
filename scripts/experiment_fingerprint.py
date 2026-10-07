@@ -637,6 +637,7 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "news_second_order", "news second order",
         "second_order_exposure", "second-order exposure", "second order exposure",
         "structured-news exposure", "structured news exposure",
+        "hawkes_news_cross_excitation", "signed_news_hawkes",
     )),
     ("prediction_market_event", (
         "prediction_market", "prediction-market", "prediction market", "kalshi", "polymarket",
@@ -655,6 +656,18 @@ _DATA_SOURCE_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
         "pilot_scorecard", "pilot scorecard", "pilot_recommendations", "pilot recommendations",
         "scorecard_kill", "scorecard kill", "kill_rule_readiness", "kill rule readiness",
         "graduation_readiness", "graduation readiness", "graduate_rule", "graduate rule",
+    )),
+    # A joint allocator is a generator surface: it searches one capital vector
+    # across several pre-frozen strategy paths.  Keep it distinct from the
+    # legacy Gate 4-P lane, which evaluated one 90/10 core-plus-sleeve pair at
+    # a time.  The compound spellings prevent generic "portfolio" prose from
+    # routing unrelated tickets into this source family.
+    ("joint_strategy_allocator", (
+        "joint_strategy_allocator", "joint strategy allocator",
+        "hierarchical_joint_strategy_allocator",
+        "hierarchical joint strategy allocator",
+        "joint_multi_strategy_allocator",
+        "joint multi strategy allocator",
     )),
     ("portfolio_covariance_lane", (
         "portfolio_covariance", "portfolio covariance", "portfolio-lane", "portfolio lane",

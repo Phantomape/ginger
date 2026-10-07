@@ -1,0 +1,81 @@
+{
+ "artifact_kind": "quiet_tape_conditioning_density_check",
+ "candidate_id": "cand-1a665d7350fd8d6349e8",
+ "candidate_title": "Delayed price incorporation of qualified consensus forecast updates",
+ "conditioned_decision_sessions": 21,
+ "conditioned_direction_split": {
+  "down": 440,
+  "up": 362
+ },
+ "conditioned_per_session_min_max": [
+  1,
+  143
+ ],
+ "conditioned_settled_per_horizon": {
+  "h10": 427,
+  "h20": 142,
+  "h5": 656
+ },
+ "conditioned_settled_per_horizon_by_direction": {
+  "h10": {
+   "down": 231,
+   "up": 196
+  },
+  "h20": {
+   "down": 72,
+   "up": 70
+  },
+  "h5": {
+   "down": 363,
+   "up": 293
+  }
+ },
+ "fields_read": [
+  "decision_id",
+  "instrument_ticker",
+  "ticker",
+  "as_of_date",
+  "revision_direction",
+  "decision_qualified",
+  "instrument_mapping_qualified",
+  "h5_status",
+  "h10_status",
+  "h20_status"
+ ],
+ "frozen_conditioning_rule": {
+  "anchor": "last warehouse session <= as_of_date",
+  "condition": "dir_sign * R5 <= 1.0 * sigma5",
+  "envelope": "sigma5 = stdev(60 daily log returns strictly before the 5-session window) * sqrt(5); >=40 returns required fail-closed",
+  "envelope_sessions": 60,
+  "k_sigma": 1.0,
+  "min_envelope_returns": 40,
+  "path": "R5 = ln(close_A / close_{A-5})",
+  "path_sessions": 5
+ },
+ "gate": {
+  "pass": true,
+  "rule": ">= 30 conditioned settled decisions at each of h5/h10/h20"
+ },
+ "generated_at": "2026-08-31T06:42:49Z",
+ "outcome_blind": true,
+ "outcome_fields_read": [],
+ "outcome_files_count": 81,
+ "outcome_fileset_sha256": "49d29402d848d86186367858497cdff883cc30d2584ab252a5ace7115e509885",
+ "population": {
+  "conditioned_quiet_tape": 802,
+  "evaluated": 1004,
+  "excluded_already_moved_tape": 202,
+  "excluded_degenerate_sigma": 0,
+  "excluded_insufficient_history": 518,
+  "excluded_missing_identity": 0,
+  "qualified_nonflat_mapped_decisions": 1522
+ },
+ "schema_version": 1,
+ "trade_enabled": false,
+ "unconditioned_settled_per_horizon_comparator_leg": {
+  "h10": 127,
+  "h20": 41,
+  "h5": 178
+ },
+ "warehouse": "data/warehouse/warehouse_main_hot.sqlite"
+}

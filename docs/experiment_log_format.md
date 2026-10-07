@@ -2,13 +2,18 @@
 
 本仓库把策略修改视为实验，而不是一次性代码调整。
 
-主日志文件：
+单个实验的真相源：
 
-- `docs/experiment_log.jsonl`
+- `experiments/logs/<experiment_id>.json`
+
+派生总览：
+
+- `docs/experiment_log.jsonl`，只读；需要时用 `scripts/experiment.py rebuild-log`
+  从分片重建，禁止直接追加。
 
 记录原则：
 
-1. 一次实验写一行 JSON
+1. 一次实验写一个 JSON 分片
 2. 成功和失败都要记录
 3. 若实验被拒绝或回滚，仍然必须记录
 4. 参数、窗口、指标必须可复现
@@ -16,13 +21,13 @@
 
 推荐流程：
 
-1. 先查 `docs/experiment_log.jsonl` 是否已有相似尝试
+1. 先查分片、派生总览和 frozen family 是否已有相似尝试
 2. 明确假设推断、固定 policy bundle、主要失败模式和窗口
 3. 跑基线
 4. 做同一 policy bundle 所需的 helper / replay / daily output / parity / execution-envelope 改动
 5. 跑改后结果
 6. 写出结果反思和下一步禁止/允许重试条件
-7. 将实验结果追加写入 `docs/experiment_log.jsonl`
+7. 通过 `scripts/experiment.py close` 写入实验分片；需要总览时再重建
 
 ## JSONL 字段规范
 
@@ -289,7 +294,8 @@ observe-ready，不能写成 live-ready。若 `live_realism_evaluated=true` 且
 
 ## 什么时候还要写进 Alpha 文档
 
-`docs/experiment_log.jsonl` 负责记录“这次具体怎么试、结果怎样”。
+`experiments/logs/<experiment_id>.json` 负责记录“这次具体怎么试、结果怎样”；
+`docs/experiment_log.jsonl` 只是它们的派生总览。
 
 但如果一次实验带来的主要价值是下面这类内容，就不应只停留在 JSONL，还应同步写进
 `docs/alpha-optimization-playbook.md` 或当日研究文档：
@@ -306,7 +312,7 @@ observe-ready，不能写成 live-ready。若 `live_realism_evaluated=true` 且
 
 ## 示例使用
 
-追加一条实验记录时，确保每条 JSON 独占一行。不要写 Markdown，不要写注释，不要跨多行。
+写实验记录时使用结构化 JSON 分片，不要手改派生总览。需要 JSONL 时由重建命令保证一条实验一行。
 
 适合机器读取的后续操作：
 

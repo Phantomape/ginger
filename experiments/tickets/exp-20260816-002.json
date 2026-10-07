@@ -1,0 +1,391 @@
+{
+  "acceptance_rule": "Observed-only pass only if OOS arrival likelihood improves; mean and median after-cost contribution are positive; score-weighted return beats both equal-notional controls; both chronological halves are positive; at least 4/7 groups are positive; and group/decision positive-PnL concentration are each <=40%.",
+  "allowed_write_scope": [
+    "quant/experiments/exp_20260816_002_hawkes_news_polarity_intensity.py",
+    "data/experiments/exp-20260816-002/exp_20260816_002_hawkes_news_polarity_intensity.json",
+    "experiments/cards/exp-20260816-002.md",
+    "experiments/manifests/exp-20260816-002.json",
+    "experiments/tickets/exp-20260816-002.json",
+    "experiments/logs/exp-20260816-002.json",
+    "docs/experiment_log.jsonl",
+    "docs/experiment_registry.json"
+  ],
+  "alpha_promotion": {
+    "admission_class": "settled_forward_attribution",
+    "candidate_id": "cand-59435a9c34b25215dd7b",
+    "candidate_snapshot_hash": "194b18b0ed6d3a0c3f151a38b8667b7452c873fe06afa9bb4d7a1cbc27d35f37",
+    "panel_hash": "980d966961439eafdfa52a7ab85f4111d306cd99dff1b35e5027cb7237afb360",
+    "panel_path": "data/alpha_search/hawkes_news_polarity_selection_panel_20260816.json",
+    "panel_sha256": "428ee827682f8947cce7fc64e1839d8150d9fdc6e80de9915d20b0758bca6576",
+    "paper_live_eligible": false,
+    "preflight_hash": "aac8f8ce153e9561a8b7d25b764bd33cc8533c8693966887ea103b29128f9de2",
+    "promotion_hash": "0ec78b91c329f981ececead1ac00493559c3b772c606c5fdfc59cf4bfb909229",
+    "promotion_request_path": "data/alpha_search/promotions/hawkes_news_polarity_20260816.json",
+    "promotion_request_sha256": "f2eff26598ffa7dec51adb4f7ddbada5a161796681d77f75f702ca3f73562132",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "observed_only",
+    "selection_scope_id": "scope-0afcf9a2d53736672460990e",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "aae5f8b70754cd79cbe5a72dc43e66575ce0025868bb0a35d49140f6708131bb",
+        "source_contract_hash": "25787e2b9079b046c2ac2f2ca3964c6a2371a087540a0fdd476b4bd46d84fac3",
+        "surface_id": "news_hawkes_entity_map_20260816"
+      },
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "406b9c435346f1b11c7f51a6ef5cb7c802e02d4b8b9888978573a8985035dc65",
+        "source_contract_hash": "5c2f5facf985c086a52c255262b20db533441514c90f8819ddc03de31091a2d5",
+        "surface_id": "news_hawkes_spy_settlement_20260816"
+      },
+      {
+        "pit_status": "settled_forward_sufficient",
+        "readiness_hash": "85bc9cb2abca0d311bfcc3255f128e0f612b614638a1048de61d522e53bebf4e",
+        "source_contract_hash": "9488691e42ece86d2863d9b473cbafdf36a5e511fef9ef00b8f0a090fa18e30a",
+        "surface_id": "news_signed_hawkes_forward_20260816"
+      }
+    ]
+  },
+  "baseline_result_file": "data\\backtests\\backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json",
+  "card_file": "experiments/cards/exp-20260816-002.md",
+  "causal_components": [
+    "new gate shape on an unsaturated news_event_exposure source: continuous conditional-intensity notional scalar; not the previously tested static polarity pair/tilt or a threshold retune",
+    "outcome-blind frozen model and cohort in data/alpha_search/hawkes_news_polarity_readiness_20260816.json: event-arrival OOS likelihood improves by 373.119938; 25 independent group-date decisions; 12 dates; 7 groups; 297 closed unique peer legs; max group share 36%",
+    "frozen falsifier requires positive mean and median after-cost decision contribution; higher score-weighted return than both equal-notional controls; both chronological halves positive; at least 4/7 groups positive; and <=40% group/decision positive-PnL concentration",
+    "no strategy; shared policy; ranking; live sizing; exit; or order change; trade_enabled=false; result ceiling observed_only",
+    "failure freezes half-life/grouping/fit cutoff/score/cost/H10; reopen only on a new source/gate or >=38 independent settled group-dates across >=18 dates with <=40% max group share"
+  ],
+  "change_type": "observed_only_attribution",
+  "changed_variable": "signed_news_hawkes_conditional_intensity_notional_scalar_v1",
+  "claimed_at": "2026-08-16T19:46:16.370568+00:00",
+  "completed_at": "2026-08-16T19:55:11+00:00",
+  "created_at": "2026-08-16T19:45:56+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-08-15",
+      "start": "2026-07-21"
+    }
+  ],
+  "experiment_id": "exp-20260816-002",
+  "experiment_uid": "expuid-3ffc7bcf5ed64bf0",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260816-002",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-16T19:45:56+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "hawkes_news_polarity_intensity"
+  },
+  "hypothesis": "news_event_exposure Hawkes signed-arrival intensity: on the frozen forward structured-news cohort, a fixed bivariate exponential model (SIC4/theme group, two-calendar-day half-life, Jul1-Jul20 arrival-only fit, Jul21-Aug15 OOS, no outcome-based retune) produces a positive conditional-intensity imbalance that adds continuous notional-scaling information beyond static polarity; 25 independent group-date decisions across 12 dates and 7 groups must earn positive and stable next-open-to-H10 SPY-excess after 45bp and beat both equal-notional cohort controls; observer-only, no production or order change.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "half_life_2_calendar_days",
+    "SIC4_theme_grouping",
+    "fit_cutoff_2026_07_20",
+    "H10_horizon",
+    "round_trip_cost_45bp",
+    "score_transform"
+  ],
+  "mechanism_family": "news_second_order_propagation",
+  "multiple_testing_risk_bucket": "low",
+  "must_not_touch": [
+    "quant/strategy.py",
+    "run.py",
+    "production orders",
+    "live sizing"
+  ],
+  "nearby_prior_experiments": [
+    "exp-20260815-001",
+    "exp-20260703-002",
+    "exp-20260606-018"
+  ],
+  "new_evidence_type": "new_gate_shape",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": true,
+    "fingerprint": {
+      "data_source": "news_event_exposure",
+      "field_tags": [
+        "45bp",
+        "a",
+        "across",
+        "adds",
+        "after",
+        "arrival",
+        "aug15",
+        "based",
+        "beat",
+        "beyond",
+        "bivariate",
+        "both",
+        "calendar",
+        "change",
+        "cohort",
+        "conditional",
+        "continuous",
+        "controls",
+        "cross",
+        "date",
+        "dates",
+        "decisions",
+        "earn",
+        "equal",
+        "event",
+        "excess",
+        "excitation",
+        "exponential",
+        "exposure",
+        "fit",
+        "forward",
+        "frozen",
+        "group",
+        "groups",
+        "h10",
+        "half",
+        "hawkes",
+        "imbalance",
+        "independent",
+        "information",
+        "intensity",
+        "jul1",
+        "jul20",
+        "jul21",
+        "life",
+        "model",
+        "must",
+        "news",
+        "no",
+        "notional",
+        "observer",
+        "on",
+        "only",
+        "oos",
+        "or",
+        "order",
+        "outcome",
+        "polarity",
+        "positive",
+        "produces",
+        "propagation",
+        "retune",
+        "scalar",
+        "scaling",
+        "second",
+        "sic4",
+        "signed",
+        "spy",
+        "stable",
+        "static",
+        "structured",
+        "that",
+        "theme",
+        "to",
+        "two"
+      ],
+      "gate_shape": "notional_scalar"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_forward_validation",
+        "reopen_condition": "TODO",
+        "score": 0.4841,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_attribution",
+        "reopen_condition": "Closed second-order rows from CURRENT (post-replay) events; if the verdict was survives, those rows decide the shared-paper full-stack; if reversal_explained, the surface parks with that reopen condition.",
+        "score": 0.4804,
+        "status": "frozen_rejected",
+        "trials": 2
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_second_order_exposure_observer",
+        "reopen_condition": "More closed rows per (polarity x relation_type) cell — target >= 50 per cell — then one predeclared attribution read reusing the exp-20260702-017 baseline framework.",
+        "score": 0.48,
+        "status": "has_accepted",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_second_order_exposure_top1_candidate_source",
+        "reopen_condition": "A valid retry needs materially more current closed rows from the daily observer, historical structured-news coverage across all canonical windows, or intraday timestamped execution semantics.",
+        "score": 0.4763,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 1.0,
+        "data_source": "news_event_exposure",
+        "family_key": "news_event_exposure_observer_daily_pipeline_wiring",
+        "reopen_condition": "Closed current-event second-order rows under this daily observer, or a distinct PIT relation/economic source. Not another slice of the exp-20260702-020/021 replay rows.",
+        "score": 0.4703,
+        "status": "has_accepted",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": "New gate shape: a continuous Hawkes conditional-intensity notional scalar on an unsaturated news_event_exposure surface; not static polarity, a threshold retune, or an OHLCV relation retry.",
+    "observed_only_streak_guard": {
+      "applicable": true,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "news_event_exposure",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": "New gate shape: a continuous Hawkes conditional-intensity notional scalar on an unsaturated news_event_exposure surface; not static polarity, a threshold retune, or an OHLCV relation retry.",
+        "categories": [
+          "new_gate_shape"
+        ],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": true
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": "New gate shape: a continuous Hawkes conditional-intensity notional scalar on an unsaturated news_event_exposure surface; not static polarity, a threshold retune, or an OHLCV relation retry.",
+      "categories": [
+        "new_gate_shape"
+      ],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": true
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "notional_scalar",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "news_event_exposure",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-root",
+  "prediction": {
+    "confidence_reason": "Arrival clustering is strong enough to pass event-only OOS likelihood and density preflight, but that does not imply return predictability; the short forward window and recent instability of static polarity justify only 20% success probability.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "conditional_arrival_state_is_already_priced",
+      "economic_group_concentration",
+      "half_window_instability",
+      "no_incremental_value_vs_equal_notional_cohort",
+      "no_net_edge_after_45bp"
+    ],
+    "recorded_at": "2026-08-16T19:45:11+00:00",
+    "success_probability": 0.2
+  },
+  "prior_trial_count": 0,
+  "research_refs": [],
+  "reservation_intent": {
+    "key": "906bf427a6c9eef8b14e785e67d873f76a80fee5406872c05ea987863267c4ef",
+    "payload_hash": "906bf427a6c9eef8b14e785e67d873f76a80fee5406872c05ea987863267c4ef",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "rejected",
+    "acceptance_reasons": [],
+    "before_result_file": "data/experiments/exp-20260816-002/exp_20260816_002_hawkes_news_polarity_intensity.json",
+    "after_result_file": "data/experiments/exp-20260816-002/exp_20260816_002_hawkes_news_polarity_intensity.json",
+    "delta_metrics": {},
+    "research_refs": [],
+    "admission_class": "settled_forward_attribution",
+    "selected_evidence_grade": "observed_only",
+    "result_ceiling": "observed_only",
+    "paper_live_eligible": false,
+    "calibration": {
+      "actual_decision": "rejected",
+      "actual_success": 0,
+      "predicted_success_probability": 0.2,
+      "brier_score": 0.04,
+      "calibration_direction": "directionally_calibrated",
+      "surprise_level": "very_low",
+      "expected_ev_delta": 0.0,
+      "actual_ev_delta": null,
+      "ev_prediction_error": null,
+      "expected_pnl_delta": 0.0,
+      "actual_pnl_delta": null,
+      "pnl_prediction_error": null,
+      "predicted_failure_modes": [
+        "conditional_arrival_state_is_already_priced",
+        "economic_group_concentration",
+        "half_window_instability",
+        "no_incremental_value_vs_equal_notional_cohort",
+        "no_net_edge_after_45bp"
+      ],
+      "realized_failure_mode": "no_net_edge_after_45bp",
+      "predicted_failure_mode_hit": true,
+      "surprise_note": "Strong OOS event-arrival clustering did not translate into return predictability: score weighting made net H10 SPY excess worse than both equal-notional controls, with both halves negative."
+    }
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260816-002.json",
+  "single_causal_variable": "signed_news_hawkes_conditional_intensity_notional_scalar_v1",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260816-002.json",
+  "trial_family": "hawkes_news_cross_excitation_candidate_pool",
+  "trial_variant_id": "exp-20260816-002",
+  "alpha_promotion_claim_receipt": {
+    "schema_version": 1,
+    "record_type": "alpha_promotion_claim_receipt",
+    "experiment_id": "exp-20260816-002",
+    "experiment_uid": "expuid-3ffc7bcf5ed64bf0",
+    "promotion_hash": "0ec78b91c329f981ececead1ac00493559c3b772c606c5fdfc59cf4bfb909229",
+    "promotion_request_sha256": "f2eff26598ffa7dec51adb4f7ddbada5a161796681d77f75f702ca3f73562132",
+    "claimed_validation_at": "2026-08-16T19:46:16.370568+00:00",
+    "research_artifact_snapshots": [],
+    "receipt_hash": "81e724af6c5a026009ca51f5b9d9041926c486cfea1ed1c9c362b698eae1b2f8"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "record_type": "alpha_workflow_execution_spec",
+  "baseline_result_file": "data/experiments/exp-20260715-010/after_measurement.json",
+  "allowed_write_scope": [
+    "scripts/experiment_fingerprint.py",
+    "quant/joint_strategy_allocator.py",
+    "quant/test_joint_strategy_allocator.py",
+    "quant/experiments/{experiment_id}_joint_strategy_allocator.py",
+    "data/experiments/{experiment_id}/"
+  ],
+  "must_not_touch": [
+    "run.py",
+    "quant/policy",
+    "data/live_pilot",
+    "operator_inputs",
+    "data/paper_sleeves/forward_replacement_value.jsonl",
+    "data/experiments/exp-20260715-010",
+    "data/experiments/exp-20260716-011"
+  ],
+  "locked_variables": [
+    "cash_feasible_core_exp_20260715_010",
+    "frozen_480_surface_manifest_exp_20260716_011",
+    "eight_bucket_taxonomy_v1",
+    "equal_weight_within_bucket",
+    "total_satellite_cap_10pct",
+    "per_bucket_cap_5pct",
+    "global_grid_1pct",
+    "local_refinement_0p25pct",
+    "classic_three_window_formal_gate",
+    "recent_forward_observe_only_mapping_v1",
+    "trade_enabled_false"
+  ],
+  "evaluation_windows": [
+    {"start": "2024-10-02", "end": "2025-04-22"},
+    {"start": "2025-04-23", "end": "2025-10-22"},
+    {"start": "2025-10-23", "end": "2026-04-21"}
+  ],
+  "acceptance_rule": "Research ceiling observed_only regardless of sign. Include the null 100% core vector. Select the deterministic capital-neutral vector that maximizes the sum of classic-window expected_value_score on the exact global 1% grid, then the fixed 0.25% local neighborhood, subject to: aggregate EV delta > 0; aggregate PnL delta > 0; at most one material classic-window regression where EV delta is worse than 1% of that window's core EV and PnL delta is negative; maximum drawdown worsening <= 0.5 percentage points; ES95 worsening <= 5%; total satellite <= 10%; each source-mechanism bucket <= 5%; chronological old_thin->mid_weak and old_thin+mid_weak->late_strong walk-forward folds must each have nonnegative OOS EV and PnL delta. Recent settled forward replacement value is excluded from weight selection and formal Gate arithmetic, but a mapped negative recent contribution rejects interpretation. Missing reconstruction, hash, cash, calendar, concentration, or execution inputs fail closed. No retune after outcome access.",
+  "file_slug": "joint_strategy_allocator",
+  "trial_variant_id": "joint_strategy_allocator_v1",
+  "prior_trial_count": 2,
+  "nearby_prior_experiments": [
+    "exp-20260715-002",
+    "exp-20260716-011"
+  ],
+  "multiple_testing_risk_bucket": "high",
+  "new_evidence_type": "new_gate_shape",
+  "new_evidence_axis": "new gate shape: one simultaneous capital-neutral eight-bucket joint allocation vector with an explicit null core portfolio and chronological walk-forward guards, rather than the prior 90% core plus one candidate sleeve tests"
+}

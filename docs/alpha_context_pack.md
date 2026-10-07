@@ -7,9 +7,9 @@ facts before changing strategy behavior.
 
 ## Source Snapshot
 
-- Strategy records counted: `1555`
-- Raw records loaded by history report: `5353`
-- History fingerprint: `2c40ff2083be8315`
+- Strategy records counted: `1556`
+- Raw records loaded by history report: `5382`
+- History fingerprint: `a8ce85e981e4b9df`
 - Authoritative raw facts: `experiments/tickets`, `experiments/logs`,
   `experiments/cards`, `experiments/artifacts`, and committed code.
 - Compact state entrypoint: `docs/current_state_snapshot.md`.
@@ -46,8 +46,6 @@ facts before changing strategy behavior.
 
 ## Recent Experiments
 
-- `exp-20260717-004` `rejected_fed_h8_weekly_bank_size_relative_value`: EV `-0.1411`, PnL `$-2,089.05`, family `official_bank_balance_sheet_transmission_relative_value`, trial `fed_h8_weekly_release_bank_size_pair`.
-  Lesson: The bank-size signal had essentially no gross directional edge: 39 of 78 weeks were gross winners but aggregate gross PnL was only +$94.96. Fixed $28 pair costs consumed $2,184, leaving only 8 net-positive weeks, thre...
 - `exp-20260717-005` `rejected_tsa_historical_source_contract`: EV `+0.0000`, PnL `$0.00`, family `production_visible_tsa_checkpoint_travel_demand_candidate_pool`, trial `tsa_weekly_checkpoint_throughput_travel_demand_basket`.
   Lesson: The official weekly PDF is not an auditable initial vintage: its seven daily totals differ from the current annual table by 532684 passengers (3.070%), and its modification/HTTP Last-Modified date is three weeks after...
 - `exp-20260717-006` `rejected`: EV `-0.0122`, PnL `$-585.77`, family `cash_feasible_policy_stack_simplification`, trial `capital_allocation_simplification_confirmation`.
@@ -70,6 +68,8 @@ facts before changing strategy behavior.
   Lesson: The v2 surfaces registry bound the raw 2.2GB research warehouse sqlite directly, so claim-receipt construction deterministically exceeded the 64MB per-file snapshot cap; the reservation could never be claimed, no repl...
 - `exp-20260814-003` `rejected`: EV `-15620.7100`, PnL `$0.00`, family `persistent_reported_dollar_per_transaction_state`, trial `massive_multi_session_adts_state_research_replay`.
   Lesson: A robust multi-session elevated average-dollar-per-transaction state with sustained participation and nonnegative tape does not mark incomplete upward price discovery; on this universe it marks short-horizon exhaustio...
+- `exp-20260816-001` `rejected`: EV `+0.0000`, PnL `$0.00`, family `joint_multi_strategy_portfolio_allocation`, trial `capital_neutral_hierarchical_strategy_ensemble`.
+  Lesson: The cash-feasible core dominated every nonzero joint allocation on the declared classic objective. The least harmful global nonzero vector was 1% allocator_policy and 99% core, but it still reduced aggregate EV by 0.0...
 
 ## Mechanism Lesson Cards
 
@@ -81,10 +81,10 @@ facts before changing strategy behavior.
 - [`external_event_satellite_overlay_allocation`](lessons/external-event-satellite-overlay-allocation.md)
 - [`sec_earnings_semantic_field`](lessons/sec-earnings-semantic-field.md)
 - [`state_surface_concentration`](lessons/state-surface-concentration.md)
+- [`joint_multi_strategy_portfolio_allocation`](lessons/joint-multi-strategy-portfolio-allocation.md)
 - [`persistent_reported_dollar_per_transaction_state`](lessons/persistent-reported-dollar-per-transaction-state.md)
 - [`alpha_workflow_operator_contract`](lessons/alpha-workflow-operator-contract.md)
 - [`measurement_governance_tooling`](lessons/measurement-governance-tooling.md)
-- [`production_visible_finra_venue_short_interest_quiet_absorption_candidate_pool`](lessons/production-visible-finra-venue-short-interest-quiet-absorption-candidate-pool.md)
 
 ## Line Budget
 

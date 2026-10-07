@@ -1,0 +1,132 @@
+{
+  "candidates": [
+    {
+      "schema_version": 1,
+      "candidate_kind": "expectation_gap",
+      "candidate_id": "cand-03d8e9f3c30a97e7131d",
+      "search_queue": "exploration",
+      "title": "Selling-holder legal-activation overhang validation",
+      "hypothesis": "The acceptance-time selling-holder lead remains positive when the decision clock is moved without retuning to the later of the official SEC EFFECT XML clock and the first 424B3/424B4 acceptance clock when both exist, because legally activated resale supply should underperform equal-notional SPY over the following ten sessions if the measured effect is genuine rather than an acceptance-date artifact.",
+      "fingerprint": {
+        "data_source": "sec_registration_activation_clock",
+        "component_sources": [
+          "sec_registration_activation_clock",
+          "sec_s1_f1_offering_economics",
+          "massive_reference_asof_identity",
+          "ohlcv_warehouse"
+        ],
+        "expectation_proxy": "price_revealed",
+        "economic_mechanism": "selling_holder_registration_supply_overhang",
+        "decision_surface": "candidate_pool",
+        "payoff_shape": "short_stock_long_spy_h10_pair_replacement_value",
+        "horizon": "activation_next_open_to_10_session_close",
+        "execution_dependency": "short_locate_and_synchronous_two_leg_next_open",
+        "portfolio_role": "market_hedged_event_short_research_only"
+      },
+      "surface_ids": [
+        "cash_feasible_core_price_prior_20260715",
+        "sec_s1_f1_selling_holder_overhang_research_pit_20260824",
+        "sec_registration_activation_clock_research_pit_20260824",
+        "massive_reference_asof_identity_research_pit_20260728"
+      ],
+      "expectation_gap": {
+        "schema_version": 1,
+        "market_prior": {
+          "observable": true,
+          "proxy_type": "price_revealed",
+          "source": "cash_feasible_core_price_prior_20260715",
+          "known_at": "2026-08-24T20:55:00Z",
+          "provenance": {
+            "baseline_policy": "Equal-notional long SPY over each frozen activation interval; zero pair return is the hurdle.",
+            "price_clock": "Both legs enter at the first regular-session open strictly after activation_at and exit at the tenth session close."
+          }
+        },
+        "independent_evidence": [
+          {
+            "field": "primary_document_affirmative_selling_holder_resale_evidence",
+            "known_at": "2026-08-24T20:55:00Z",
+            "source": "sec_s1_f1_selling_holder_overhang_research_pit_20260824",
+            "policy_version": "sec_offering_economics_v1",
+            "decision_exclusions": "No outcome, parser alternative, amount threshold, or form reslice enters selection."
+          },
+          {
+            "field": "official_effect_xml_or_resale_prospectus_activation_clock",
+            "known_at": "2026-08-24T20:55:00Z",
+            "source": "sec_registration_activation_clock_research_pit_20260824",
+            "policy_version": "sec_selling_holder_activation_h10_v1",
+            "decision_exclusions": "The clock linkage and 83-row roster were frozen before any post-activation price access."
+          },
+          {
+            "field": "activation_time_active_common_stock_membership_and_completed_bar_liquidity",
+            "known_at": "2026-08-24T20:55:00Z",
+            "source": "massive_reference_asof_identity_research_pit_20260728",
+            "policy_version": "sec_selling_holder_activation_h10_v1",
+            "decision_exclusions": "Current reference metadata and bars not completed by activation_at are excluded."
+          }
+        ],
+        "gap_definition": "Acceptance-time replay is positive but acceptance is not legal resale activation. Exact EFFECT and final-prospectus clocks provide an independent execution-time falsifier without changing the mechanism, cost, hedge, hold, or eligibility rules.",
+        "transmission": {
+          "affected_tickers": ["67 unique liquid active common stocks in the frozen 83-row activation roster"],
+          "catalyst": "The later exact clock of official EFFECT and first 424B3/424B4 when both exist; the sole exact activation evidence otherwise.",
+          "expected_direction": "Event stock underperforms equal-notional SPY from activation next open through H10.",
+          "half_life": "First regular-session open strictly after activation through the tenth session close."
+        }
+      },
+      "why_not_arbitraged": "Registration effectiveness is not a standardized trade feed, final prospectus timing can differ from acceptance, borrow is uncertain, and file-number linkage plus historical identity are operationally noisy.",
+      "falsifier": "Reject unless the roster remains exactly 83 rows with 31/23/29 across old_thin/mid_weak/late_strong, every row executes, at least 20 rows remain in each window, aggregate and at least two windows are strictly positive after 90bp pair cost plus 20% annualized borrow for 10/252 years, aggregate remains positive after 180bp pair cost, the overlapping-hold cluster bootstrap 90% lower bound is positive, max single-ticker positive contribution is at most 40%, top-five at most 60%, and absolute contribution HHI at most 0.25. Missing rows invalidate rather than resize the sample.",
+      "baseline": {
+        "policy": "Equal-notional long SPY over each frozen activation interval; zero market-hedged pair return."
+      },
+      "treatment": {
+        "policy": "Short the event stock and buy equal-notional SPY at activation next open, close both at H10, apply the unchanged 90bp base pair cost plus 20% annualized borrow and 180bp cost stress."
+      },
+      "replacement_value_comparator": "Zero-return cash on the equal-dollar market-hedged pair.",
+      "expected_horizon": "activation_next_open_to_10_session_close",
+      "execution_envelope": {
+        "borrow_dependency": "20% annualized research borrow assumption; paper/live blocked until broker locate is proven at decision time.",
+        "capacity_constraint": "Fixed $2,000 per leg, at most two rows on one activation entry date; no capital allocated.",
+        "costs_and_carry": "90bp total pair round-trip cost plus 20% annualized borrow for 10/252; stress doubles pair cost to 180bp.",
+        "intended_instrument": "Short active common stock plus equal-notional long SPY.",
+        "liquidity_dependency": "Latest 20 completed sessions known at activation require median dollar volume at least $1,000,000 and last close at least $3.",
+        "live_ready": false,
+        "orders_enabled": false,
+        "timing_constraint": "Activation_at is the later exact EFFECT and final-prospectus clock when both exist; entry is the first regular-session open strictly afterward.",
+        "trade_enabled": false
+      },
+      "evidence_grade": "lead",
+      "source_readiness_snapshot": [],
+      "production_impact": {
+        "backtester_adapter_changed": false,
+        "daily_snapshot_exposed": false,
+        "entry_rules_changed": false,
+        "exit_rules_changed": false,
+        "live_ready": false,
+        "live_realism_evaluated": false,
+        "orders_changed": false,
+        "parity_test_added": false,
+        "ranking_changed": false,
+        "replay_only": false,
+        "run_adapter_changed": false,
+        "shared_policy_changed": false,
+        "sizing_changed": false,
+        "trade_enabled": false
+      },
+      "created_at": "2026-08-24T20:55:00Z",
+      "created_by": "codex",
+      "prediction": {
+        "success_probability": 0.35,
+        "main_failure_modes": [
+          "acceptance_effect_dissipates_before_legal_activation",
+          "activation_clock_clusters_duplicate_supply_events",
+          "borrow_stress_consumes_edge",
+          "window_instability",
+          "research_pit_identity_ceiling"
+        ],
+        "confidence_reason": "The acceptance-time lead was broad and large, but this independent clock moves many entries later and directly tests whether the effect survives legal activation rather than anticipation."
+      },
+      "reopen_condition": "If rejected, do not change form, parser, clock-combination, amount, liquidity, cooldown, cost, borrow, hold, hedge, or sample. Reopen only with verified actual shares sold, true takedown dates, historical broker locate, immutable identity vintages, or materially new settled forward rows.",
+      "next_machine_action": "Run outcome-blind D0-D3 against history including exp-20260824-003 and reserve one observed-only activation-clock validation only if all gates pass.",
+      "research_refs": []
+    }
+  ]
+}

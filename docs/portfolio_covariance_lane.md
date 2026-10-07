@@ -50,7 +50,7 @@ observed-only 并入 forward 观察，不直接给真钱权重。
   日 mark-to-market equity overlay 配方），**全部 observed_only_rejected**：
   023/024/025、20260707-001/003/005/006/007/008/015/016。
 - **消费协议（自 2026-07-07 起）**：配方固定后，剩余代表禁止继续一名一 ID
-  枚举（见 AGENTS.md §2.4 排名清单消费通道）。合法出路二选一：
+  枚举（见 `docs/quant_agent_protocol_v2.md` §5 的换皮/饱和规则）。合法出路二选一：
   1. 单个批量实验把剩余 admissible 代表全部跑完，输出一张 per-family delta 表
      一次性收尾；
   2. park 车道，`reopen_condition` = 出现新的 rejected-positive 候选家族（相对

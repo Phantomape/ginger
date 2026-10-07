@@ -1,0 +1,121 @@
+{
+ "schema_version": 1,
+ "surfaces": [
+  {
+   "surface_id": "news_propagation_pair_measurement_ready_20260827",
+   "data_source": "news_event_exposure",
+   "component_sources": [
+    "news_event_exposure",
+    "iborrowdesk_indicative_borrow"
+   ],
+   "roles": [
+    "independent_evidence",
+    "event_polarity_state"
+   ],
+   "artifacts": [
+    "data/alpha_search/news_pair_build_readiness_20260827.json"
+   ],
+   "pit_status": "settled_forward_sufficient",
+   "evidence_grade": "observed_only",
+   "settled_count": 6374,
+   "independent_count": 6374,
+   "candidate_overlap_count": 117,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "open",
+   "reopen_condition": "The exp-20260826-001 pre-first-seen borrow prefetch produced the first real measurement_ready first-seen batch (news-first-seen-845025fae409b81adeb3, first_seen_at 2026-08-27T03:07:27Z, 41 long-side rows / 76 short-side rows over 29 borrow-covered tickers, no cross-side overlap, concentration within 40%), opening the d-0003 conversion gate; this single build experiment consumes the exp-20260824-001 single-use pair-build qualification under its frozen contract (dollar-neutral, synchronous two-leg next-open entry, fail-closed missing leg, 10-session horizon, 45bp/leg round-trip costs, default-off) and further attribution re-reads of the family remain parked behind the 1508-row bar.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-27T03:07:27Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/news_pair_build_readiness_20260827.json": "57b48f48212a6a66fdf9ff7fb44d70b18b507384220602b90055eb2f1ea1518c"
+   }
+  },
+  {
+   "surface_id": "news_pair_warehouse_settlement_20260827",
+   "data_source": "ohlcv_warehouse",
+   "component_sources": [
+    "ohlcv_warehouse",
+    "massive_history_daily_bars"
+   ],
+   "roles": [
+    "market_expectation",
+    "price_revealed_context"
+   ],
+   "artifacts": [
+    "data/alpha_search/news_pair_build_readiness_20260827.json"
+   ],
+   "pit_status": "settled_forward_sufficient",
+   "evidence_grade": "observed_only",
+   "settled_count": 6374,
+   "independent_count": 6374,
+   "candidate_overlap_count": 117,
+   "gate_ready": false,
+   "expectation_proxy": {
+    "type": "price_revealed",
+    "field": "next_open_to_10_session_close_leg_return",
+    "source": "ohlcv_warehouse"
+   },
+   "saturation_status": "open",
+   "reopen_condition": "The exp-20260826-001 pre-first-seen borrow prefetch produced the first real measurement_ready first-seen batch (news-first-seen-845025fae409b81adeb3, first_seen_at 2026-08-27T03:07:27Z), opening the d-0003 conversion gate; this single build experiment consumes the exp-20260824-001 single-use pair-build qualification under its frozen contract and settles both legs from the canonical OHLCV warehouse with the massive_history broad-universe fallback for microcap short-side tickers, never partially.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-27T03:07:27Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/news_pair_build_readiness_20260827.json": "57b48f48212a6a66fdf9ff7fb44d70b18b507384220602b90055eb2f1ea1518c"
+   }
+  },
+  {
+   "surface_id": "news_pair_iborrowdesk_indicative_borrow_20260827",
+   "data_source": "iborrowdesk_indicative_borrow",
+   "component_sources": [
+    "iborrowdesk_indicative_borrow"
+   ],
+   "roles": [
+    "independent_evidence"
+   ],
+   "artifacts": [
+    "data/alpha_search/news_pair_build_readiness_20260827.json"
+   ],
+   "pit_status": "settled_forward_sufficient",
+   "evidence_grade": "observed_only",
+   "settled_count": 29,
+   "independent_count": 29,
+   "candidate_overlap_count": 29,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "open",
+   "reopen_condition": "Supports the single d-0003-gated pair-sleeve build consuming the exp-20260824-001 single-use qualification; see news_propagation_pair_measurement_ready_20260827. iBorrowDesk is indicative research evidence, not a broker locate; PIT rule archived_at <= first_seen_at and <= 3 calendar days.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-27T03:07:27Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/news_pair_build_readiness_20260827.json": "57b48f48212a6a66fdf9ff7fb44d70b18b507384220602b90055eb2f1ea1518c"
+   }
+  },
+  {
+   "surface_id": "news_pair_massive_history_fallback_20260827",
+   "data_source": "massive_history_daily_bars",
+   "component_sources": [
+    "massive_history_daily_bars"
+   ],
+   "roles": [
+    "price_revealed_context"
+   ],
+   "artifacts": [
+    "data/alpha_search/news_pair_build_readiness_20260827.json"
+   ],
+   "pit_status": "settled_forward_sufficient",
+   "evidence_grade": "observed_only",
+   "settled_count": 29,
+   "independent_count": 29,
+   "candidate_overlap_count": 29,
+   "gate_ready": false,
+   "expectation_proxy": null,
+   "saturation_status": "open",
+   "reopen_condition": "Supports the single d-0003-gated pair-sleeve build consuming the exp-20260824-001 single-use qualification; see news_propagation_pair_measurement_ready_20260827. Broad-universe Polygon grouped-daily archive used only as the split-normalized price fallback for microcap short-side tickers absent from warehouse_main.",
+   "source_contract_status": "pass",
+   "as_of": "2026-08-27T03:07:27Z",
+   "artifact_snapshot_hashes": {
+    "data/alpha_search/news_pair_build_readiness_20260827.json": "57b48f48212a6a66fdf9ff7fb44d70b18b507384220602b90055eb2f1ea1518c"
+   }
+  }
+ ]
+}

@@ -1751,3 +1751,18 @@ def test_ordinary_dividend_prose_does_not_route_to_restart_forward_source():
             fp.infer_fingerprint(text)["data_source"]
             != "massive_dividend_restart_forward"
         )
+
+
+def test_signed_news_hawkes_family_routes_to_news_event_exposure():
+    assert fp.infer_fingerprint(
+        "hawkes_news_cross_excitation_candidate_pool"
+    )["data_source"] == "news_event_exposure"
+    assert fp.infer_fingerprint(
+        "signed_news_hawkes conditional intensity notional scalar"
+    )["data_source"] == "news_event_exposure"
+
+
+def test_generic_non_news_hawkes_prose_does_not_overmatch_news_exposure():
+    assert fp.infer_fingerprint(
+        "mutual Hawkes price jump process on index futures"
+    )["data_source"] != "news_event_exposure"

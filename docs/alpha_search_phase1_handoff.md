@@ -128,6 +128,25 @@ estimate × Moomoo/SEC join are forbidden substitutes for new evidence.
 
 `opportunity_cost_winner` 为 `null`，因为 outcome-blind 阶段不能读取候选收益；机会成本比较已经预先写入每个候选的 replacement-value comparator，只有候选先通过发现层才执行。
 
+### Phase 1.5 cash-conflict bar amendment — 2026-08-28 (exp-20260828-001)
+
+上文 2026-07-21 冻结的重开条件保留为历史原文。其中 `actual cash conflicts >= 10`
+一项已由 exp-20260828-001 按 exp-20260811-001 预登记的单次 contract review 修约：
+
+- 触发证据（全部为计数，未读取任何 outcome/PnL）：entry-cash-admission trace 自
+  2026-07-21 起 32 个 session 全部 status=ok，终身仅 1 次结构化冲突（2026-08-19
+  IAU trend_long 请求 $41,995.80 对可用 $13,474.38），且 0 次与 1,972 个合格
+  决策同日同 ticker 重合；同时其余全部数值 bar 已超阈 17-38 倍
+  （independent=1972/30、mapped=886/10、settled h5/h10/h20=1153/1002/518 对 30）。
+  按决策重合冲突次数计数的 bar 是结构性不可达的罕见事件计数，不再测量其登记
+  意图（结构化现金准入证据存在且有效）。
+- 修约后的机器条件：`cash_admission_trace_ok_sessions >= 30` 且
+  `structured_cash_conflict_observations_lifetime >= 1`（均从持久化
+  quant_signals 工件直接重算，fail-closed）。`actual_cash_conflict_decisions`
+  保留为监控计数，不再进 gate。
+- 其余五项数值 bar、source-contract 要求与"新的 outcome-blind D0-D3 scope 必须
+  实际选出候选"要求全部不变。数值 gate 打开不等于 Phase 2 重开完成。
+
 ## 6. 第一阶段实现
 
 - 冻结合同：`EvidenceSurface`、`ExpectationGap`、`HypothesisCandidate`、`PreflightDecision`、`SelectionPanel` 和闭集 `FailureReason`；

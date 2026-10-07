@@ -1,0 +1,111 @@
+{
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": null,
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "accepted",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": 1,
+    "brier_score": 0.0001,
+    "calibration_direction": "directionally_calibrated",
+    "ev_prediction_error": null,
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "fingerprint_overmatch",
+      "readiness_lane_missing",
+      "builder_schema_failure"
+    ],
+    "predicted_success_probability": 0.99,
+    "realized_failure_mode": null,
+    "surprise_level": "very_low",
+    "surprise_note": "The alpha ticket correctly classified at reservation time because its hypothesis named news_event_exposure, but the frozen-family builder later saw only the trial-family alias and routed it to other; exact aliases fixed that cross-view mismatch."
+  },
+  "causal_components": [
+    "exact trial-family fingerprint routing to news_event_exposure",
+    "conservative machine-visible manual readiness registration at 25 of 38 decisions and 12 of 18 dates",
+    "no alpha or order behavior change"
+  ],
+  "change_summary": "Registered the rejected Hawkes lane in fingerprint and reopen governance surfaces; no trading behavior changed.",
+  "change_type": "measurement_repair",
+  "changed_variable": "hawkes_lane_reopen_and_fingerprint_registration",
+  "component": "scripts/experiment_fingerprint.py, scripts/build_reopen_readiness.py, quant/test_experiment_fingerprint.py, data/reopen_readiness.json, docs/frozen_families.jsonl, data/experiments/exp-20260816-003/before.json, data/experiments/exp-20260816-003/after.json",
+  "date_range": {},
+  "decision": "accepted",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260816-003",
+  "hypothesis": "Governance measurement repair after exp-20260816-002: register the rejected signed-arrival conditional-intensity lane in the machine reopen surface and route its exact trial-family fingerprints to the existing news_event_exposure source, so future sessions cannot silently treat the family as other or retry before the frozen 38-decision/18-date bar.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "experiment_governance",
+  "multiple_testing_risk_bucket": "minimal",
+  "nearby_prior_experiments": [
+    "exp-20260816-002"
+  ],
+  "new_evidence_type": "measurement_repair",
+  "next_retry_requires": [],
+  "notes": "Accepted measurement repair. The exact Hawkes trial-family aliases now route to news_event_exposure without generic Hawkes overmatch; 264 focused fingerprint tests pass. data/reopen_readiness.json now exposes a conservative manual_check_required lane at frozen 25/38 independent decisions, 12/18 dates, and 36%/40% maximum group share, preventing raw-row growth from falsely reopening the rejected alpha. No alpha, ranking, sizing, exit, or order behavior changed.",
+  "parameters": {
+    "locked_variables": [
+      "exp_20260816_002_reopen_threshold_38",
+      "minimum_dates_18",
+      "max_group_share_40pct"
+    ],
+    "single_causal_variable": "hawkes_lane_reopen_and_fingerprint_registration"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not add generic Hawkes keywords that would overmatch price, order-flow, or derivatives point processes; do not create another governance ticket unless a concrete family still lands in the wrong source or bypasses its reopen bar.",
+    "new_evidence_required": "A concrete new fingerprint misroute, a false-ready/false-blocked reopen decision, or enough matured rows to justify automating the exact frozen Hawkes counter instead of the conservative manual lane.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The alpha ticket correctly classified at reservation time because its hypothesis named news_event_exposure, but the frozen-family builder later saw only the trial-family alias and routed it to other; exact aliases fixed that cross-view mismatch."
+  },
+  "prediction": {
+    "confidence_reason": "Both defects are deterministic governance metadata gaps discovered after the rejected alpha close; the existing classifier and readiness registry have narrow extension points and no trading code is involved.",
+    "expected_ev_delta": 0.0,
+    "expected_pnl_delta": 0.0,
+    "main_failure_modes": [
+      "fingerprint_overmatch",
+      "readiness_lane_missing",
+      "builder_schema_failure"
+    ],
+    "recorded_at": "2026-08-16T20:00:10+00:00",
+    "success_probability": 0.99
+  },
+  "prior_trial_count": 0,
+  "rejection_reason": null,
+  "related_files": [
+    "data/experiments/exp-20260816-003/before.json",
+    "data/experiments/exp-20260816-003/after.json"
+  ],
+  "research_refs": [],
+  "secondary_windows": [],
+  "status": "accepted",
+  "timestamp": "2026-08-16T20:01:38+00:00",
+  "trial_family": "experiment_fingerprint_and_reopen_registration",
+  "trial_variant_id": "exp-20260816-003"
+}

@@ -522,6 +522,9 @@ def _persist_daily_structured_news_observation(today):
         snapshot["second_order_exposure_observer"] = (
             _persist_news_event_exposure_observer()
         )
+        snapshot["news_propagation_pair_paper_sleeve"] = (
+            _persist_news_propagation_pair_paper_sleeve()
+        )
         return snapshot
     except Exception as e:
         log.warning(f"Structured-news observation snapshot unavailable: {e}")
@@ -540,15 +543,44 @@ def _persist_news_event_exposure_observer():
 
         manifest = run_exposure_observer()
         log.info(
-            "Structured-news second-order exposures: rows=%s closed=%s appended=%s pending=%s",
+            "Structured-news second-order exposures: rows=%s closed=%s appended=%s pending=%s pair_ready=%s pair_blocked=%s",
             manifest.get("rows"),
             manifest.get("closed_rows"),
             manifest.get("appended_this_run"),
             manifest.get("pending_rows"),
+            (manifest.get("pair_forward_readiness") or {}).get(
+                "measurement_ready_batches"
+            ),
+            (manifest.get("pair_forward_readiness") or {}).get("blocked_batches"),
         )
         return manifest
     except Exception as e:
         log.warning(f"Structured-news second-order exposure observer unavailable: {e}")
+        return {
+            "status": "unavailable",
+            "error": str(e),
+            "strategy_behavior_changed": False,
+            "trade_enabled": False,
+        }
+
+
+def _persist_news_propagation_pair_paper_sleeve():
+    """Default-off dollar-neutral pair sleeve over measurement_ready batches
+    (exp-20260827-001). Observation only; trade_enabled stays false."""
+    try:
+        from news_propagation_pair_paper_sleeve import run as run_pair_sleeve
+
+        summary = run_pair_sleeve()
+        log.info(
+            "News-propagation pair paper sleeve: decisions=%s settled=%s pending=%s appended=%s",
+            summary.get("decisions"),
+            summary.get("settled_baskets"),
+            summary.get("pending_baskets"),
+            summary.get("appended_this_run"),
+        )
+        return summary
+    except Exception as e:
+        log.warning(f"News-propagation pair paper sleeve unavailable: {e}")
         return {
             "status": "unavailable",
             "error": str(e),
@@ -3875,12 +3907,16 @@ def main():
     # loss-free with a bounded per-run request budget. Data collection only;
     # total failure changes nothing downstream. Env opt-out:
     # IBORROWDESK_REFRESH_DISABLED=1.
+    # exp-20260826-001: budget split under the www host's ~90-request throttle
+    # (http_444 at ~90 req @1 req/s): the shard keeps 60 so the exposure
+    # observer's targeted short-side prefetch minutes later (which pair
+    # forward readiness actually consumes) retains headroom.
     if os.environ.get("IBORROWDESK_REFRESH_DISABLED", "").strip() not in ("1", "true"):
         try:
             from iborrowdesk_data_source import refresh_archive as _ibd_refresh
             from ohlcv_warehouse_refresh import build_default_refresh_universe as _ibd_universe
             _ibd_summary = _ibd_refresh(
-                _ibd_universe(), max_fetches=150, min_age_days=5.0, sleep_s=1.0,
+                _ibd_universe(), max_fetches=60, min_age_days=5.0, sleep_s=1.0,
             )
             log.info(
                 "iBorrowDesk archive refresh: %s/%s fetched, %s rows added, "

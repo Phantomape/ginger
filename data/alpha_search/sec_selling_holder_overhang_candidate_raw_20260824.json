@@ -1,0 +1,125 @@
+{
+  "candidates": [
+{
+  "schema_version": 1,
+  "candidate_kind": "expectation_gap",
+  "candidate_id": "cand-396251af1329881f695c",
+  "search_queue": "exploration",
+  "title": "Selling-holder registration supply-overhang pair",
+  "hypothesis": "Shorting a liquid active common stock and buying equal-notional SPY at the first regular-session open strictly after an accepted S-1/F-1 whose primary document affirmatively identifies selling holders produces positive H10 pair replacement value after two-leg costs and conservative borrow stress, because secondary-holder resale creates incremental float supply without delivering cash to the issuer and that distinction is obscured when registration statements are treated as one generic dilution category.",
+  "fingerprint": {
+    "data_source": "sec_s1_f1_offering_economics",
+    "component_sources": [
+      "sec_s1_f1_offering_economics",
+      "massive_reference_asof_identity",
+      "ohlcv_warehouse"
+    ],
+    "expectation_proxy": "price_revealed",
+    "economic_mechanism": "selling_holder_registration_supply_overhang",
+    "decision_surface": "candidate_pool",
+    "payoff_shape": "short_stock_long_spy_h10_pair_replacement_value",
+    "horizon": "next_open_to_10_session_close",
+    "execution_dependency": "short_locate_and_synchronous_two_leg_next_open",
+    "portfolio_role": "market_hedged_event_short_research_only"
+  },
+  "surface_ids": [
+    "cash_feasible_core_price_prior_20260715",
+    "sec_s1_f1_selling_holder_overhang_research_pit_20260824",
+    "massive_reference_asof_identity_research_pit_20260728"
+  ],
+  "expectation_gap": {
+    "schema_version": 1,
+    "market_prior": {
+      "observable": true,
+      "proxy_type": "price_revealed",
+      "source": "cash_feasible_core_price_prior_20260715",
+      "known_at": "2026-08-24T20:31:00Z",
+      "provenance": {
+        "baseline_policy": "Equal-notional long SPY over each frozen stock interval is the market hedge; zero pair return is the replacement-value hurdle.",
+        "price_clock": "Both legs enter at the first regular-session open strictly after SEC accepted_at and exit at the tenth session close counting entry."
+      }
+    },
+    "independent_evidence": [
+      {
+        "field": "primary_document_affirmative_selling_holder_resale_evidence",
+        "known_at": "2026-08-24T20:31:00Z",
+        "source": "sec_s1_f1_selling_holder_overhang_research_pit_20260824",
+        "policy_version": "sec_offering_economics_v1",
+        "decision_exclusions": "No price after accepted_at, return, PnL, outcome label, filing-form reslice, amount threshold, or parser alternative enters roster selection."
+      },
+      {
+        "field": "latest_known_active_common_stock_membership_and_completed_bar_liquidity",
+        "known_at": "2026-08-24T20:31:00Z",
+        "source": "massive_reference_asof_identity_research_pit_20260728",
+        "policy_version": "sec_selling_holder_overhang_h10_v1",
+        "decision_exclusions": "Current reference metadata, FIGIs, future revisions, and bars not completed by SEC accepted_at are excluded."
+      }
+    ],
+    "gap_definition": "The observable market prior groups S-1/F-1 registrations as generic financing or dilution. The frozen sidecar separates a sharper case: shares registered for selling holders can expand tradable supply while the issuer receives no corresponding proceeds, so equal treatment of primary issuance and secondary resale may underprice the supply overhang.",
+    "transmission": {
+      "affected_tickers": [
+        "84 unique liquid active common stocks in the frozen 118-row roster"
+      ],
+      "catalyst": "SEC acceptance of an S-1, S-1/A, F-1, or F-1/A whose primary document contains affirmative selling-holder resale evidence.",
+      "expected_direction": "The stock underperforms equal-notional SPY from the next open through the tenth session close, making short-stock plus long-SPY pair value positive after costs and borrow stress.",
+      "half_life": "First regular-session open after SEC acceptance through the tenth session close counting entry."
+    }
+  },
+  "why_not_arbitraged": "Registration statements mix IPOs, primary capital raises, amendments, mixed offerings, and secondary resales; ticker identity is noisy, the effective sale date is uncertain, borrow can be expensive, and most event feeds expose form metadata rather than parsed selling-holder economics. The frozen filter removes IPO and non-common-stock rows but still leaves timing and locate risk, which is why the result must clear a deliberately severe execution stress before it earns further work.",
+  "falsifier": "Reject unless the frozen roster remains exactly 118 decisions with 38/45/35 rows in old_thin/mid_weak/late_strong, at least 30 decisions in every window, and the short-stock plus equal-notional long-SPY pair has strictly positive aggregate net value and strictly positive net value in every canonical window after 90bp two-leg round-trip cost plus 20% annualized stock-borrow carry for 10/252 years. The aggregate must remain positive under double two-leg cost (180bp) plus the same borrow stress; maximum single-ticker positive contribution must be at most 40%, top-five at most 60%, and contribution HHI at most 0.25. Missing either leg, missing locate proxy, revised decision-time identity, or any outcome field in selection invalidates rather than retunes the run.",
+  "baseline": {
+    "policy": "Equal-notional long SPY over each frozen next-open-to-H10 interval; zero return on the market-hedged pair is the primary replacement-value hurdle."
+  },
+  "treatment": {
+    "policy": "For all 118 hash-frozen selling-holder decisions, short the event stock and buy equal-notional SPY at the first regular-session open strictly after SEC accepted_at, close both at the tenth session close, apply 90bp base pair cost plus 20% annualized borrow carry, and report the predeclared 180bp pair-cost stress without changing forms, parser, liquidity floors, cooldown, hold, or sample."
+  },
+  "replacement_value_comparator": "Zero-return cash on the equal-dollar market-hedged pair is primary; the short stock leg is also reported against zero-return cash descriptively, but cannot rescue a failed pair verdict.",
+  "expected_horizon": "next_open_to_10_session_close",
+  "execution_envelope": {
+    "borrow_dependency": "Every research row assumes stock borrow at 20% annualized for 10/252 years; paper or live use remains blocked until broker locate is proven per ticker at decision time.",
+    "capacity_constraint": "Fixed $2,000 per leg, at most three rows on one entry date in the frozen roster; no capital is allocated by this research run.",
+    "costs_and_carry": "Base verdict charges 90bp total round-trip cost across both legs plus 20% annualized stock-borrow carry for 10/252 years; stress verdict doubles the two-leg cost to 180bp with unchanged borrow carry.",
+    "intended_instrument": "Short active common stock plus equal-notional long SPY; no options, leverage, present-day ticker remapping, or unlocated live short.",
+    "liquidity_dependency": "Latest 20 completed sessions known at accepted_at must have median dollar volume at least $1,000,000 and the last completed close at least $3.",
+    "live_ready": false,
+    "orders_enabled": false,
+    "timing_constraint": "SEC accepted_at is the decision clock; entry is the first regular-session open strictly afterward and both legs exit at the tenth session close counting entry.",
+    "trade_enabled": false
+  },
+  "evidence_grade": "lead",
+  "source_readiness_snapshot": [],
+  "production_impact": {
+    "backtester_adapter_changed": false,
+    "daily_snapshot_exposed": false,
+    "entry_rules_changed": false,
+    "exit_rules_changed": false,
+    "live_ready": false,
+    "live_realism_evaluated": false,
+    "orders_changed": false,
+    "parity_test_added": false,
+    "ranking_changed": false,
+    "replay_only": false,
+    "run_adapter_changed": false,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "created_at": "2026-08-24T20:31:00Z",
+  "created_by": "codex",
+  "prediction": {
+    "success_probability": 0.25,
+    "main_failure_modes": [
+      "resale_overhang_already_priced_at_acceptance",
+      "registration_does_not_imply_immediate_sale",
+      "borrow_stress_consumes_gross_edge",
+      "window_instability",
+      "identity_vintage_ceiling"
+    ],
+    "confidence_reason": "Selling-holder supply is economically sharper than generic offering metadata and the roster has 30+ decisions in every window, but acceptance is not effectiveness or takedown and the severe borrow/cost hurdle is intentionally difficult."
+  },
+  "reopen_condition": "If rejected, do not change form set, selling-holder regexes, amount cut, liquidity floors, cooldown, cost, borrow stress, hold, or sample. Reopen only with PIT effectiveness/takedown dates, verified shares actually sold, broker locate history, immutable identity vintages, or materially new forward rows under the same helper.",
+  "next_machine_action": "Validate the semantic candidate, run outcome-blind D0-D3 against the fresh 2026-08-24 historical prior, and reserve one observed-only experiment only if all gates pass; otherwise park without reading outcomes.",
+  "research_refs": []
+}
+  ]
+}

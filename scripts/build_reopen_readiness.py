@@ -750,21 +750,23 @@ def lane_news_propagation_negative_side():
             neg_dates.add(r.get("event_date"))
     counters = {
         "negative_side_closed": neg_rows,
-        "negative_side_closed_baseline_at_park": 655,
+        "negative_side_closed_baseline_at_park": 1005,
         "negative_side_closed_unique_events": len(neg_events),
         "negative_side_closed_unique_event_dates": len(neg_dates),
     }
-    thresholds = {"negative_side_closed": 983}
+    thresholds = {"negative_side_closed": 1508}
     return {
         "counters": counters,
         "thresholds": thresholds,
-        "status": "ready" if neg_rows >= 983 else "not_ready",
+        "status": "ready" if neg_rows >= 1508 else "not_ready",
         "threshold_source": (
-            "exp-20260815-001 post_run_reflection: the 650-row bar (declared "
-            "at the 2026-08-08 re-park, baseline 433) was consumed at 655 rows "
-            "by the REJECTED viability re-read; another attribution re-read "
-            "needs >= 983 closed negative-side rows (+50% and >= +10 absolute "
-            "from 655)"
+            "exp-20260824-001 post_run_reflection: the 983-row bar (declared "
+            "at the 2026-08-15 re-park, baseline 655) was consumed at 1005 "
+            "rows by the QUALIFIED stability-first viability re-read; the "
+            "qualification is single-use for one shared-paper-first pair "
+            "sleeve build, and any FURTHER attribution re-read of this face "
+            "needs >= 1508 closed negative-side rows (+50% and >= +10 "
+            "absolute from 1005)"
         ),
         "counter_source": (
             "data/non_ohlcv/news_event_exposure_observations/rows.jsonl "
@@ -772,34 +774,84 @@ def lane_news_propagation_negative_side():
             "event_date >= 2026-07-01)"
         ),
         "note": (
-            "exp-20260815-001 REJECTED the 650-row viability re-read at 655 "
-            "rows / 72 events / 24 dates: event-level separation 90.2bp "
-            "missed the 100bp two-leg cost bar AND the exp-20260807-001 "
-            "half-stability confirmation BROKE (half1 -91.0bp reversed, half2 "
-            "+245.2bp; at 433 rows both halves had been positive), so the "
-            "separation is regime-concentrated in the recent half, not "
-            "time-stable. Row-level mean 61.2bp did clear the 45bp bar and "
-            "concentration stayed clean (event 4.2%, ticker 8.5%). Reopen "
-            "contract at the 983-row re-read: FIRST re-verify all five "
-            "exp-20260807-001 confirmation bars including BOTH chronological "
-            "halves positive; only then ask viability - pair sleeve ONLY if "
-            "event-level separation > 100bp (two-sided cost bar + buffer) "
-            "with row-level mean also > 45bp; the tilt shape additionally "
-            "needs >= 5 executed-entry touches per evaluation window from "
-            "the machine join (entry ticker+date x observer rows with "
-            "event_date within 10 sessions before entry; still 1/0/0 and "
-            "structurally uncovered - needs a PIT-safe historical "
-            "transmission surface). Horizon/polarity/settlement stay frozen; "
-            "do not retune costs; do not condition on the passing half."
+            "exp-20260824-001 QUALIFIED the pair sleeve at 1005 rows / 99 "
+            "events / 32 dates: all five exp-20260807-001 confirmation bars "
+            "passed with half-stability RESTORED (half1 +90.5bp, half2 "
+            "+202.7bp; at 655 rows half1 had reversed to -91.0bp) and both "
+            "frozen viability bars cleared (event-level 152.0bp > 100bp, "
+            "row-mean 189.0bp > 45bp; concentration event 3.8% / ticker "
+            "8.0%). Honest caveat recorded in the ticket: much of the "
+            "widening came from the positive-polarity CONTROL side "
+            "deteriorating (-103.3bp row mean vs zero), so the evidence "
+            "supports the dollar-neutral PAIR construct only - a long-only "
+            "tilt reading of the negative side alone is forbidden. Next "
+            "machine action: ONE shared-paper-first dollar-neutral pair "
+            "sleeve build experiment (default-off, locate/borrow contract, "
+            "synchronous two-leg entry at next open, fail-closed missing "
+            "leg, 10-session horizon, frozen 45bp/leg costs, own forward "
+            "acceptance contract). The 1508 bar guards only FURTHER "
+            "attribution re-reads (e.g. if the build is parked); it is not "
+            "a prerequisite for the build. The tilt shape stays dead "
+            "outcome-blind (1/0/0 executed-entry touches vs >= 5 per "
+            "window, structurally uncovered). Horizon/polarity/settlement "
+            "stay frozen; do not retune costs; do not condition on halves."
+        ),
+    }
+
+
+def lane_hawkes_news_cross_excitation_candidate_pool():
+    """Rejected signed-news Hawkes return lane from exp-20260816-002.
+
+    The exact fixed model selected 25 settled independent economic-group/date
+    decisions across 12 dates at a 36% maximum group share.  Reopen requires
+    38 decisions across 18 dates while preserving the <=40% concentration bar.
+    Recomputing that counter requires replaying the frozen Hawkes state, so the
+    conservative registry remains manual and cannot become spuriously ready
+    from raw row growth alone.
+    """
+
+    return {
+        "counters": {
+            "settled_independent_group_date_decisions_last_frozen": 25,
+            "unique_decision_dates_last_frozen": 12,
+            "max_group_decision_share_last_frozen": 0.36,
+        },
+        "thresholds": {
+            "settled_independent_group_date_decisions": 38,
+            "unique_decision_dates": 18,
+            "max_group_decision_share": 0.40,
+        },
+        "status": "manual_check_required",
+        "threshold_source": (
+            "exp-20260816-002 post_run_reflection: rejected at 25 independent "
+            "group-date decisions / 12 dates / 36% maximum group share; same "
+            "fixed model may reopen only at >=38 / >=18 / <=40%"
+        ),
+        "counter_source": (
+            "data/experiments/exp-20260816-002/"
+            "exp_20260816_002_hawkes_news_polarity_intensity.json and a manual "
+            "outcome-blind replay of the frozen signed-arrival model over "
+            "data/non_ohlcv/news_event_exposure_observations/rows.jsonl"
+        ),
+        "note": (
+            "Do not infer readiness from raw settled-row growth. Recount the "
+            "independent Hawkes-positive group/date decisions without reading "
+            "returns; keep the two-day half-life, SIC4/theme grouping, Jul20 "
+            "fit cutoff, score transform, 45bp cost and H10 horizon frozen. "
+            "No threshold/response retune on the rejected 25-decision cohort."
         ),
     }
 
 
 def lane_phase2_estimate_revision():
     """Discovery-layer Phase 2 NO-GO (exp-20260721-002). Reopen requires ALL of:
-    >=30 qualified non-flat independent decisions, >=10 mapped tickers, >=10
-    structured actual cash conflicts, >=30 settled decisions at each of H5/H10/H20,
-    passing source contracts, and a fresh outcome-blind D0-D3 scope that selects."""
+    >=30 qualified non-flat independent decisions, >=10 mapped tickers,
+    structured cash-admission capability (>=30 trace-ok sessions and >=1
+    lifetime structured conflict; exp-20260828-001 amendment of the
+    unreachable actual_cash_conflicts>=10 bar, pre-registered by
+    exp-20260811-001), >=30 settled decisions at each of H5/H10/H20,
+    passing source contracts, and a fresh outcome-blind D0-D3 scope that
+    selects."""
     path = os.path.join(
         REPO_ROOT,
         "data",
@@ -838,6 +890,16 @@ def lane_phase2_estimate_revision():
             "actual_cash_conflict_decisions",
             source="estimate_revision_readiness",
         ),
+        "cash_admission_trace_ok_sessions": _required_nonnegative_int(
+            readiness,
+            "cash_admission_trace_ok_sessions",
+            source="estimate_revision_readiness",
+        ),
+        "structured_cash_conflicts_lifetime": _required_nonnegative_int(
+            readiness,
+            "structured_cash_conflict_observations_lifetime",
+            source="estimate_revision_readiness",
+        ),
         "settled_h5": _required_nonnegative_int(
             settled,
             "h5",
@@ -857,7 +919,8 @@ def lane_phase2_estimate_revision():
     thresholds = {
         "qualified_nonflat_decisions": 30,
         "mapped_tickers": 10,
-        "actual_cash_conflicts": 10,
+        "cash_admission_trace_ok_sessions": 30,
+        "structured_cash_conflicts_lifetime": 1,
         "settled_h5": 30,
         "settled_h10": 30,
         "settled_h20": 30,
@@ -867,11 +930,16 @@ def lane_phase2_estimate_revision():
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if ready else "not_ready",
-        "threshold_source": "docs/alpha_search_phase1_handoff.md Phase 1.5 (exp-20260721-002)",
+        "threshold_source": (
+            "docs/alpha_search_phase1_handoff.md Phase 1.5 (exp-20260721-002); "
+            "cash bar amended by exp-20260828-001 (contract review "
+            "pre-registered in exp-20260811-001)"
+        ),
         "counter_source": os.path.relpath(path, REPO_ROOT).replace("\\", "/"),
         "note": (
             "Counters come from the canonical default-off readiness artifact. Legacy rows "
-            "remain quarantined and do not count. Passing these numeric bars still requires "
+            "remain quarantined and do not count. actual_cash_conflicts is reported for "
+            "monitoring only since exp-20260828-001. Passing these numeric bars still requires "
             "source-contract checks plus a fresh outcome-blind D0-D3 scope and verified "
             "promotion before any alpha experiment."
         ),
@@ -1432,6 +1500,7 @@ LANES = {
     "flow_options_lead": lane_flow_options_lead,
     "allocator_cross_source_conflict": lane_allocator_cross_source_conflict,
     "news_propagation_negative_side": lane_news_propagation_negative_side,
+    "hawkes_news_cross_excitation_candidate_pool": lane_hawkes_news_cross_excitation_candidate_pool,
     "phase2_estimate_revision": lane_phase2_estimate_revision,
 }
 

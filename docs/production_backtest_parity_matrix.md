@@ -5,6 +5,22 @@ Use it when an experiment needs the exact shared-source, replay, production, all
 
 The core production/backtest contract remains in `docs/production_backtest_parity.md`.
 
+## Structured-News Pair Forward Readiness Observer
+
+`exp-20260824-002` repairs the decision clock for new second-order structured-
+news exposure rows and adds an outcome-blind readiness observer. Historical v1
+rows remain ineligible and are never backfilled. New v2 rows freeze one local
+`first_seen_at` and batch identity on first append, then use the first regular
+session open strictly after that timestamp. The observer measures only whether
+the same first-seen batch contains diversified, disjoint negative/positive
+candidate sides and whether every positive-side ticker had fresh iBorrowDesk
+availability already archived at that time. iBorrowDesk remains indicative
+research evidence, not a broker locate.
+
+| Decision point | Shared source | Backtester use | Production use | Allowed difference |
+| --- | --- | --- | --- | --- |
+| Default-off structured-news pair forward readiness | `news_event_exposure_observer.py`, `news_propagation_pair_forward_observer.py`, `run.py` | canonical backtests and legacy event-date rows are excluded; a future replay may use only persisted v2 `first_seen_at` batches, the frozen negative-long/positive-short side convention, 40% per-side row concentration ceiling, disjoint tickers, and iBorrowDesk rows with `archived_at <= first_seen_at`, positive availability, valid fee, and age <=3 calendar days | daily ingestion appends immutable v2 first-seen rows idempotently, assigns entry only after the first executable regular-session open, and publishes pair readiness under the second-order exposure manifest; missing/stale borrow or either missing leg fails closed | readiness never reads outcomes, measures PnL, emits signals/order intents/orders, or changes strategy behavior; even a ready batch is not paper/live eligible, and live shorting still requires broker locate plus a separate shared policy and Gate review |
+
 ## V2 SEC 8-K Research Universe Runtime
 
 The V2 SEC 8-K adapter is a source-bounded, research-only membership consumer.

@@ -1,0 +1,174 @@
+{
+  "admission_class": "research_replay",
+  "after_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-396251af1329881f695c",
+    "candidate_snapshot_hash": "bc5897a05c8b0f3b8fe2e20f60b618255b8f47abe47451b9b56955b64339ad93",
+    "panel_hash": "67109396e5249a67641f8ab2e6b1c6cb930450125bd90b4290b934fabe47bcb4",
+    "panel_path": "data/alpha_search/sec_selling_holder_overhang_panel_20260824.json",
+    "panel_sha256": "7d4e29f492b105586f3207fd20565a24276f97d28452d31bdda8d6703c617a95",
+    "paper_live_eligible": false,
+    "preflight_hash": "5145f5b98ae51f8dafedfcbc76a3978a10d2aa05ed4d5c33c7ef98f53052c4c0",
+    "promotion_hash": "545a30aa3a45e39c08215def2086ccc6d0047001dc4e262af3e860d06374e988",
+    "promotion_request_path": "data/alpha_search/promotions/sec_selling_holder_overhang_scout_20260824_v2.json",
+    "promotion_request_sha256": "122394014e7c7a8f1d4ca4e98c3f1f7c26d4078751d78c857b507820c4cfed0d",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "lead",
+    "selection_scope_id": "scope-e820635d35eb50bab4db7040",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "canonical_pit",
+        "readiness_hash": "3eadb0008c90ccb0c372d72b5d75d78216d14dff84787fbe4ffb9eebf35fa838",
+        "source_contract_hash": "cf3781c7abe349e1f41794d4fa33eef81d70dee7d1c1935c6cd99889b191bcda",
+        "surface_id": "cash_feasible_core_price_prior_20260715"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "11aab7998b4bac072349a3310e2e9e9b31845a4990f791fdbb9002be72c0ace6",
+        "source_contract_hash": "8a8095e70bed88180ca7807def4bd73b87574910ca81df9085bf235b0c926eb9",
+        "surface_id": "massive_reference_asof_identity_research_pit_20260728"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "0ded07abc80809e4f020971ad14de1eabf00c1dcd64ed0ee17e0d831c7319e6b",
+        "source_contract_hash": "c4d5048950144cfed3ff543d30103761432d3f0cd9f0613458f10369dc2d96df",
+        "surface_id": "sec_s1_f1_selling_holder_overhang_research_pit_20260824"
+      }
+    ]
+  },
+  "before_metrics": {
+    "expected_value_score": null,
+    "max_drawdown_pct": null,
+    "sharpe": null,
+    "sharpe_daily": null,
+    "survival_rate": null,
+    "total_pnl": null,
+    "total_return_pct": null,
+    "trade_count": null,
+    "win_rate": null
+  },
+  "calibration": {
+    "actual_decision": "observed_only",
+    "actual_ev_delta": null,
+    "actual_pnl_delta": null,
+    "actual_success": null,
+    "brier_score": null,
+    "calibration_direction": "not_scored",
+    "ev_prediction_error": null,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "pnl_prediction_error": null,
+    "predicted_failure_mode_hit": null,
+    "predicted_failure_modes": [
+      "resale_overhang_already_priced_at_acceptance",
+      "registration_does_not_imply_immediate_sale",
+      "borrow_stress_consumes_gross_edge",
+      "window_instability",
+      "identity_vintage_ceiling"
+    ],
+    "predicted_success_probability": 0.25,
+    "realized_failure_mode": null,
+    "surprise_level": "not_scored",
+    "surprise_note": "The market-hedged H10 effect cleared every frozen window and remained strongly positive after double transaction cost plus 20% annualized borrow, materially stronger than the 25% pre-run success probability."
+  },
+  "causal_components": [
+    "new evidence axis: replayable SEC S-1/F-1 primary-document selling-holder evidence; materialized after the prior resolved issuer-overhang family explicitly required resale-versus-primary or selling-holder economics",
+    "decision clock: SEC accepted_at; both legs enter at the first regular-session open strictly afterward and exit at the tenth session close counting entry",
+    "identity and eligibility: latest known research-PIT active common-stock membership plus 20 completed sessions with median dollar volume at least $1000000 and last close at least $3",
+    "selection: frozen roster sha256 b35b6078b19f3ab0aa90d23a4080e60a3e31ecfdeacff3bc02435882e83bd616; 118 decisions; 38/45/35 by canonical window; 84 tickers; same ticker-entry dedup; 10-session cooldown",
+    "comparator: equal-notional long SPY; primary hurdle is positive short-stock plus long-SPY pair value after 90bp pair cost and 20% annualized borrow carry for 10/252 years",
+    "stress and concentration: all windows and aggregate positive at base cost; aggregate positive at 180bp pair cost plus unchanged borrow; max single-ticker positive contribution <=40%; top-five <=60%; HHI <=0.25",
+    "research-only boundary: identity vintages are research-PIT and historical broker locate is absent; no shared policy or paper or order or sizing or exit or live behavior changes; trade_enabled=false and result ceiling observed_only"
+  ],
+  "change_summary": "Hash-frozen 118-row SEC selling-holder S-1/F-1 H10 stock-short plus SPY-long research replay; fixed 90bp pair cost, 20% annualized borrow, and 180bp cost stress.",
+  "change_type": "private_replay_scout",
+  "changed_variable": "private_replay_scout_sec_selling_holder_pair_value_v1",
+  "component": "quant/experiments/exp_20260824_003_sec_selling_holder_overhang.py, data/experiments/exp-20260824-003/exp_20260824_003_sec_selling_holder_overhang.json, experiments/cards/exp-20260824-003.md, experiments/manifests/exp-20260824-003.json, experiments/tickets/exp-20260824-003.json, experiments/logs/exp-20260824-003.json, docs/experiment_log.jsonl, docs/experiment_registry.json",
+  "date_range": {
+    "end": "2020-12-31",
+    "start": "2018-01-01"
+  },
+  "decision": "observed_only",
+  "delta_metrics": {},
+  "experiment_id": "exp-20260824-003",
+  "hypothesis": "Research-PIT private replay scout: shorting a liquid active common stock and buying equal-notional SPY at the first regular-session open strictly after an accepted S-1/F-1 whose primary document affirmatively identifies selling holders produces positive H10 pair replacement value after 90bp two-leg cost, 20% annualized borrow carry, and the frozen double-cost stress; the 118-row roster is fixed at 38/45/35 across canonical windows and the result ceiling is observed_only.",
+  "llm_metrics": {
+    "used_llm": false
+  },
+  "market_regime_summary": {},
+  "mechanism_family": "selling_holder_registration_supply_overhang",
+  "multiple_testing_risk_bucket": "low",
+  "nearby_prior_experiments": [
+    "exp-20260702-023",
+    "exp-20260702-024",
+    "exp-20260702-027"
+  ],
+  "new_evidence_type": "not_declared",
+  "next_retry_requires": [
+    "exact SEC EFFECT or actual takedown clock",
+    "historical broker locate or materially new settled forward rows"
+  ],
+  "notes": "Observed-only positive lead. All 118 rows executed; old/mid/late base net PnL +1543.16/+6770.53/+1787.26; aggregate +10100.94 and double-cost stress +7976.94; CI90 +5456.32 to +15398.18; concentration gates passed. Research-PIT identity and no historical broker locate block paper/live promotion. Artifact: data/experiments/exp-20260824-003/exp_20260824_003_sec_selling_holder_overhang.json",
+  "paper_live_eligible": false,
+  "parameters": {
+    "locked_variables": [
+      "sec_selling_holder_overhang_h10_v1"
+    ],
+    "single_causal_variable": "sec_selling_holder_overhang_h10_v1"
+  },
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not retune form set, selling-holder parser, offering amount, liquidity floor, cooldown, cost, borrow rate, hold, comparator, or the frozen sample from this replay.",
+    "new_evidence_required": "Before any paper/live step, require PIT effectiveness or takedown timing, verified shares actually sold, historical broker-locate evidence, immutable identity vintages, or materially new settled forward rows under the unchanged helper.",
+    "realized_failure_mode": null,
+    "why_result_happened": "The market-hedged H10 effect cleared every frozen window and remained strongly positive after double transaction cost plus 20% annualized borrow, materially stronger than the 25% pre-run success probability."
+  },
+  "prediction": {
+    "confidence_reason": "Selling-holder supply is economically sharper than generic offering metadata and every window has at least 35 frozen decisions, but SEC acceptance is not effectiveness or takedown and the severe cost-plus-borrow hurdle is deliberately difficult.",
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "resale_overhang_already_priced_at_acceptance",
+      "registration_does_not_imply_immediate_sale",
+      "borrow_stress_consumes_gross_edge",
+      "window_instability",
+      "identity_vintage_ceiling"
+    ],
+    "recorded_at": "2026-08-24T20:39:27+00:00",
+    "success_probability": 0.25
+  },
+  "prior_trial_count": 3,
+  "rejection_reason": null,
+  "related_files": [
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+    "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json"
+  ],
+  "research_refs": [],
+  "result_ceiling": "observed_only",
+  "secondary_windows": [
+    {
+      "end": "2023-12-31",
+      "start": "2021-01-01"
+    },
+    {
+      "end": "2026-07-31",
+      "start": "2024-01-01"
+    }
+  ],
+  "selected_evidence_grade": "lead",
+  "status": "observed_only",
+  "timestamp": "2026-08-24T20:42:24+00:00",
+  "trial_family": "sec_selling_holder_overhang_research_replay",
+  "trial_variant_id": "exp-20260824-003"
+}
