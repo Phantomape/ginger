@@ -841,6 +841,7 @@ SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION = 1
 SPACE_CATALYST_OBSERVATION_SLOT_NAME = "SPACE_CATALYST_PRODUCTION_OBSERVATION_SLOT"
 SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION = "space_catalyst_observation_slot_v2"
 SPACE_CATALYST_OBSERVATION_SLOT_COUNT = 1
+SPACE_CATALYST_RETIREMENT_CUTOFF = "2026-09-11T06:06:56+00:00"
 DEFAULT_SPACE_CATALYST_OBSERVATION_SLOT_LEDGER_PATH = data_artifact_path(
     "space_catalyst_observation_slot_ledger"
 )
@@ -1465,6 +1466,8 @@ def empty_space_catalyst_observation_slot(
     reason: str = "not_built",
 ) -> dict:
     """Return an empty observe-only production slot snapshot."""
+    if reason == "retired_default_off_paper_disabled":
+        return retired_space_catalyst_observation_slot(as_of)
     return {
         "schema_version": SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION,
         "slot_name": SPACE_CATALYST_OBSERVATION_SLOT_NAME,
@@ -1737,6 +1740,144 @@ def empty_space_catalyst_observation_slot(
         },
         "production_impact": _observation_slot_production_impact(),
     }
+
+
+def retired_space_catalyst_observation_slot(as_of) -> dict:
+    """Retire new plans while leaving historical observation ledgers intact."""
+    return {
+        "schema_version": SPACE_CATALYST_OBSERVATION_SLOT_SCHEMA_VERSION,
+        "slot_name": SPACE_CATALYST_OBSERVATION_SLOT_NAME,
+        "rule_version": SPACE_CATALYST_OBSERVATION_SLOT_RULE_VERSION,
+        "asof_date": str(as_of)[:10],
+        "generated_at": _utc_now_iso(),
+        "enabled": False,
+        "paper_enabled": False,
+        "trade_enabled": False,
+        "retired": True,
+        "build_status": "retired_default_off_paper_disabled",
+        "reason": "retired_default_off_paper_disabled",
+        "next_action": "settle_existing_positions_only",
+        "mode": "retired",
+        "slot_count": 0,
+        "live_slots": 0,
+        "candidate_count": 0,
+        "selected_count": 0,
+        "blocked_trade_plans": [],
+        "candidates": [],
+        "forward_hypothesis": {},
+    }
+
+
+def _registered_retired_space_event_rows(ledger_path, as_of=None) -> list[dict]:
+    history = _read_jsonl_rows(Path(ledger_path))
+    cutoff = datetime.fromisoformat(SPACE_CATALYST_RETIREMENT_CUTOFF)
+    registered = set()
+    for row in history:
+        try:
+            logged = datetime.fromisoformat(str(row.get("logged_at") or "").replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if logged.tzinfo is not None and logged < cutoff:
+            registered.add((str(row.get("event_id") or ""), str(row.get("ticker") or "").upper()))
+    latest = {}
+    for row in history:
+        key = (str(row.get("event_id") or ""), str(row.get("ticker") or "").upper())
+        if not all(key) or key not in registered:
+            continue
+        if as_of is not None and str(row.get("asof_date") or "")[:10] > str(as_of)[:10]:
+            continue
+        previous = latest.get(key)
+        if previous is None or (str(row.get("asof_date") or ""), str(row.get("logged_at") or "")) >= (str(previous.get("asof_date") or ""), str(previous.get("logged_at") or "")):
+            latest[key] = row
+    return [latest[key] for key in sorted(latest)]
+
+
+def _retired_space_same_theme_tickers(row) -> list[str]:
+    tickers = set(row.get("same_theme_tickers") or [])
+    for result in (row.get("horizons") or {}).values():
+        basket = result.get("same_theme_basket") or {}
+        tickers.update(basket.get("available_tickers") or [])
+        tickers.update(basket.get("missing_tickers") or [])
+    return sorted(tickers)
+
+
+def retired_space_catalyst_event_tickers(
+    *, ledger_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_LEDGER_PATH,
+) -> list[str]:
+    """Price only identities registered before retirement and their old controls."""
+    rows = [
+        row for row in _registered_retired_space_event_rows(ledger_path)
+        if row.get("outcome_status") != "mature"
+    ]
+    tickers = set(SPACE_CATALYST_EVENT_BENCHMARKS) if rows else set()
+    for row in rows:
+        tickers.add(str(row["ticker"]).upper())
+        tickers.update(_retired_space_same_theme_tickers(row))
+    return sorted(tickers)
+
+
+def build_retired_space_catalyst_event_ledger_snapshot(
+    *, as_of, ohlcv_by_ticker: dict[str, Any] | None = None,
+    ledger_path: Path | str = DEFAULT_SPACE_CATALYST_EVENT_LEDGER_PATH,
+    space_catalyst_shadow: dict[str, Any] | None = None,
+) -> dict:
+    """Advance registered event horizons without admitting seeds or new pairs."""
+    asof_date = str(as_of)[:10]
+    registered = _registered_retired_space_event_rows(ledger_path, asof_date)
+    prices = {
+        str(ticker).upper(): _truncate_rows(_normalise_ohlcv_rows(rows), asof_date)
+        for ticker, rows in (ohlcv_by_ticker or {}).items()
+    }
+    event_rows = []
+    for previous in registered:
+        row = deepcopy(previous)
+        was_mature = row.get("outcome_status") == "mature"
+        old_horizons = row.get("horizons") or {}
+        same_theme = _retired_space_same_theme_tickers(row)
+        row["same_theme_tickers"] = same_theme
+        if not was_mature:
+            event = _normalise_event_seed(row)
+            if event is not None:
+                measured = _evaluate_event_ticker(
+                    event=event, ticker=row["ticker"], asof_date=asof_date,
+                    rows_by_ticker=prices, same_theme_tickers=same_theme,
+                    space_catalyst_shadow=space_catalyst_shadow or {},
+                    same_day_core_alternatives=row.get("same_day_core_alternatives") or [],
+                )
+                for horizon, result in old_horizons.items():
+                    if result.get("status") == "mature" and result.get("event_return") is not None:
+                        measured["horizons"][horizon] = deepcopy(result)
+                row["horizons"] = measured["horizons"]
+                if not row.get("entry_date"):
+                    row["entry_date"] = measured.get("entry_date")
+                row["pending_reason"] = measured.get("pending_reason")
+        complete = sum(
+            result.get("status") == "mature" and result.get("event_return") is not None
+            for result in (row.get("horizons") or {}).values()
+        )
+        row["outcome_status"] = "mature" if complete == len(SPACE_CATALYST_EVENT_HORIZONS) else ("partially_mature" if complete else "pending")
+        ten_day = (row.get("horizons") or {}).get("10d") or {}
+        row["closed_decision"] = ten_day.get("status") == "mature" and ten_day.get("event_return") is not None
+        if not was_mature:
+            row["asof_date"] = asof_date
+        row["trade_enabled"] = False
+        event_rows.append(row)
+    snapshot = empty_space_catalyst_event_ledger(asof_date, "retired_default_off_paper_disabled")
+    aggregate = _aggregate_event_rows(event_rows)
+    snapshot.update(
+        retired=True, paper_enabled=False, mode="retired_settlement_only",
+        build_status="retired_default_off_paper_disabled",
+        next_action="settle_existing_positions_only",
+        retirement_cutoff=SPACE_CATALYST_RETIREMENT_CUTOFF,
+        active_event_count=len({row["event_id"] for row in event_rows}),
+        event_row_count=len(event_rows), event_rows=event_rows, aggregate=aggregate,
+        closed_decision_count=aggregate["closed_decision_count"],
+        pending_decision_count=sum(row["outcome_status"] != "mature" for row in event_rows),
+        horizons=list(SPACE_CATALYST_EVENT_HORIZONS),
+        benchmarks=list(SPACE_CATALYST_EVENT_BENCHMARKS),
+        data_source={"status": "registered_ledger_only", "ledger_path": str(ledger_path)},
+    )
+    return snapshot
 
 
 def load_space_catalyst_event_seeds(
@@ -2549,6 +2690,13 @@ def persist_space_catalyst_event_ledger(
         "aggregate": snapshot.get("aggregate") or {},
         "production_impact": _event_ledger_production_impact(),
     }
+    if snapshot.get("retired"):
+        out.update(
+            retired=True,
+            paper_enabled=False,
+            build_status="retired_default_off_paper_disabled",
+            next_action="settle_existing_positions_only",
+        )
     with summary.open("w", encoding="utf-8") as handle:
         json.dump(out, handle, indent=2, sort_keys=True)
         handle.write("\n")
@@ -2567,7 +2715,10 @@ def persist_space_catalyst_event_ledger(
             "entry_date": row.get("entry_date"),
         }
         for row in (snapshot.get("event_rows") or [])
-        if isinstance(row, dict) and row.get("closed_decision") is not True
+        if isinstance(row, dict) and (
+            row.get("outcome_status") != "mature"
+            if snapshot.get("retired") else row.get("closed_decision") is not True
+        )
     ]
     out["standard_surfaces"] = write_standard_sleeve_surfaces(
         sleeve_dir=summary.parent,
@@ -2576,6 +2727,12 @@ def persist_space_catalyst_event_ledger(
         asof_date=snapshot.get("asof_date"),
         pending_entries=pending_rows,
         extra_snapshot_fields={
+            **({
+                "retired": True,
+                "paper_enabled": False,
+                "build_status": "retired_default_off_paper_disabled",
+                "next_action": "settle_existing_positions_only",
+            } if snapshot.get("retired") else {}),
             "active_event_count": snapshot.get("active_event_count", 0),
             "event_row_count": snapshot.get("event_row_count", 0),
             "closed_decision_count": snapshot.get("closed_decision_count", 0),
@@ -2607,8 +2764,11 @@ def build_space_catalyst_observation_slot(
     space_source_diversity_profiles: dict[str, dict[str, Any]] | None = None,
     space_forward_replacement_profiles: dict[str, dict[str, Any]] | None = None,
     generated_at: datetime | None = None,
+    observation_enabled: bool = False,
 ) -> dict[str, Any]:
     """Build the one-slot blocked trade plan used for Space forward evidence."""
+    if not observation_enabled:
+        return retired_space_catalyst_observation_slot(as_of)
     asof_date = str(as_of)[:10]
     generated_at = generated_at or datetime.now(timezone.utc)
     shadow = space_catalyst_shadow or {}

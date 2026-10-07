@@ -88,7 +88,7 @@ DEFAULT_CONFIG = {
     "kill_recent_source_trades": 5,
     "kill_recent_source_min_win_rate": 0.40,
     "kill_drawdown_notional_fraction": 0.50,
-    "state_surface_addon_paper_enabled": True,
+    "state_surface_addon_paper_enabled": False,
     "state_surface_addon_scalar": 2.0,
     "state_surface_rotation_tilt_surface": STATE_SURFACE_ROTATION_TILT_SURFACE,
     "state_surface_rotation_tilt_scalar": 3.0,
@@ -1073,6 +1073,7 @@ def _with_state_surface_addon(
     adjusted_notional = base_notional * scalar
     out["state_surface_addon"] = {
         "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
+        "retired": not bool(config.get("state_surface_addon_paper_enabled", False)),
         "paper_enabled": bool(config.get("state_surface_addon_paper_enabled", True)),
         "trade_enabled": False,
         "eligible": eligible,
@@ -1219,6 +1220,7 @@ def _state_surface_addon_summary(
         )
     return {
         "rule_version": STATE_SURFACE_ADDON_RULE_VERSION,
+        "retired": not bool(config.get("state_surface_addon_paper_enabled", False)),
         "paper_enabled": bool(config.get("state_surface_addon_paper_enabled", True)),
         "trade_enabled": False,
         "candidate_count": len(candidates),

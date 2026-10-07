@@ -27,7 +27,7 @@ import logging
 import os
 import time
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -165,6 +165,31 @@ def _save_json_best_effort(obj, filepath, artifact_name):
 def _save_text(text, filepath):
     atomic_write_text(text, filepath)
     log.info(f"Saved → {filepath}")
+
+
+def _build_broker_performance_snapshot():
+    """Read account measurement after decisions; failure cannot change trading."""
+    from broker_performance import (
+        compute_broker_performance,
+        unavailable_broker_performance,
+    )
+
+    try:
+        return compute_broker_performance()
+    except Exception as exc:
+        log.warning("Broker performance unavailable: %s", type(exc).__name__)
+        return unavailable_broker_performance("measurement_failed")
+
+
+def _build_execution_attribution_snapshot(**kwargs):
+    from execution_attribution import build_daily_attribution_decisions
+
+    try:
+        return build_daily_attribution_decisions(**kwargs)
+    except Exception as exc:
+        log.warning("Prospective decision attribution unavailable: %s", exc)
+        return {"status": "unavailable", "decisions": [], "trade_enabled": False,
+                "stage": "machine_advice_not_order_authorization"}
 
 
 _RUN_LOCK_HANDLE = None  # kept alive for the process lifetime so the OS holds the lock
@@ -1461,9 +1486,17 @@ def _resolve_options_forward_inputs(run_clock, ohlcv_by_ticker, requested_ticker
     post-midnight run, for example, still belongs to the prior completed market
     session.  Resolve that session from the exchange calendar, require exact-
     date SPY and QQQ rows from the already-loaded canonical OHLCV batch, and
-    select every strike-window price from that same date.
+    select every strike-window price from that same date.  OnclickMedia's free
+    EOD options endpoint is not consistently provider-ready before the New
+    York calendar rolls past the quote date, so late-evening same-date runs use
+    the previous completed session for this data-only feed.
     """
-    completed_session = latest_completed_us_equity_session(run_clock)
+    raw_completed_session = latest_completed_us_equity_session(run_clock)
+    completed_session = raw_completed_session
+    if completed_session >= run_clock.date():
+        completed_session = latest_completed_us_equity_session(
+            run_clock - timedelta(days=1)
+        )
     requested = sorted(
         {
             str(ticker).strip().upper()
@@ -1514,9 +1547,11 @@ def _resolve_options_forward_inputs(run_clock, ohlcv_by_ticker, requested_ticker
         ),
         "run_market_clock": run_clock.isoformat(),
         "completed_session_date": completed_session.isoformat(),
+        "raw_completed_session_date": raw_completed_session.isoformat(),
         "quote_date_source": (
-            "latest_completed_us_equity_session_with_exact_canonical_SPY_QQQ_cap"
+            "provider_ready_d_plus_1_us_equity_session_with_exact_canonical_SPY_QQQ_cap"
         ),
+        "provider_readiness_lag_applied": completed_session != raw_completed_session,
         "canonical_benchmark_latest_dates": {
             ticker: latest_dates.get(ticker) for ticker in ("SPY", "QQQ")
         },
@@ -2812,166 +2847,6 @@ def _persist_ortex_borrow_observer(
         return summary
 
 
-def _build_space_catalyst_observation_step(
-    *,
-    today_iso,
-    space_catalyst_shadow,
-    features_dict,
-    core_signals,
-    entry_execution_plan,
-    portfolio_heat,
-    portfolio_value,
-    trade_risk_pct,
-    market_context,
-    market_regime,
-    spy_pct_from_ma,
-    qqq_pct_from_ma,
-    exit_profile,
-    atr_target_mult,
-    open_positions,
-    cached_ohlcv_fn,
-    cached_earnings_fn,
-):
-    """STEP 6 — space-catalyst observation slot (default-off, read-only observer).
-
-    Runs the core signal chain over the space-catalyst observation universe and
-    persists an observation slot. Like the AI-optical observer, the core run's
-    risk_engine.last_dropped_signals is saved/restored around the observer-local
-    enrichment so the enrichment audit is unaffected.
-    """
-    from feature_layer import compute_features
-    from portfolio_engine import size_signals
-    from production_parity import filter_entry_signal_candidates
-    from risk_engine import enrich_signals, last_dropped_signals
-    from signal_engine import generate_signals, rank_signals_for_allocation
-    from space_catalyst_sleeve import (
-        build_space_catalyst_observation_slot,
-        empty_space_catalyst_observation_slot,
-        persist_space_catalyst_observation_slot,
-        space_catalyst_forward_replacement_positive_profiles,
-        space_catalyst_observation_feature_tickers,
-        space_catalyst_observation_tickers,
-    )
-
-    try:
-        space_official_observation_tickers = set(
-            space_catalyst_observation_tickers(space_catalyst_shadow)
-        )
-        space_observation_tickers = space_catalyst_observation_feature_tickers(
-            space_catalyst_shadow
-        )
-        space_observation_features = {}
-        for ticker in space_observation_tickers:
-            if features_dict.get(ticker):
-                space_observation_features[ticker] = features_dict[ticker]
-                continue
-            try:
-                ticker_ohlcv = cached_ohlcv_fn(ticker)
-                ticker_earnings = cached_earnings_fn(ticker)
-                ticker_features = compute_features(ticker, ticker_ohlcv, ticker_earnings)
-                if ticker_features:
-                    space_observation_features[ticker] = ticker_features
-            except Exception as ticker_error:
-                log.warning(
-                    "Space catalyst observation data unavailable for %s: %s",
-                    ticker,
-                    ticker_error,
-                )
-
-        space_observation_signals = []
-        space_observation_raw_count = 0
-        space_observation_enriched_count = 0
-        space_observation_filter_audit = {}
-        space_signal_features = {
-            ticker: features
-            for ticker, features in space_observation_features.items()
-            if ticker in space_official_observation_tickers
-        }
-        if space_signal_features:
-            space_observation_feature_context = {
-                **features_dict,
-                **space_observation_features,
-            }
-            space_observation_signals = generate_signals(
-                space_signal_features,
-                market_context=market_context,
-                enabled_strategies=ENABLED_STRATEGIES,
-                breakout_max_pullback_from_52w_high=BREAKOUT_MAX_PULLBACK_FROM_52W_HIGH,
-            )
-            space_observation_raw_count = len(space_observation_signals)
-            if BREAKOUT_RANK_BY_52W_HIGH:
-                space_observation_signals = rank_signals_for_allocation(
-                    space_observation_signals
-                )
-            _pre_space_dropped_signals = list(last_dropped_signals)
-            space_observation_signals = enrich_signals(
-                space_observation_signals,
-                space_observation_feature_context,
-                atr_target_mult=atr_target_mult,
-            )
-            space_observation_enriched_count = len(space_observation_signals)
-            last_dropped_signals.clear()
-            last_dropped_signals.extend(_pre_space_dropped_signals)
-            if REGIME_AWARE_EXIT:
-                for s in space_observation_signals:
-                    s["target_mult_used"] = exit_profile["target_mult"]
-                    s["regime_exit_bucket"] = exit_profile["bucket"]
-                    s["regime_exit_score"] = exit_profile["score"]
-            space_observation_signals, space_observation_filter_audit = (
-                filter_entry_signal_candidates(
-                    space_observation_signals,
-                    open_positions=open_positions,
-                    market_regime=market_regime.get("regime", "").upper(),
-                    spy_pct_from_ma=spy_pct_from_ma,
-                    qqq_pct_from_ma=qqq_pct_from_ma,
-                )
-            )
-            if portfolio_value and (
-                not portfolio_heat
-                or portfolio_heat.get("can_add_new_positions", True)
-            ):
-                space_observation_signals = size_signals(
-                    space_observation_signals,
-                    portfolio_value,
-                    risk_pct=trade_risk_pct,
-                )
-
-        space_catalyst_observation_slot = persist_space_catalyst_observation_slot(
-            build_space_catalyst_observation_slot(
-                as_of=today_iso,
-                candidate_signals=space_observation_signals,
-                features_by_ticker={**features_dict, **space_observation_features},
-                space_catalyst_shadow=space_catalyst_shadow,
-                core_signals=core_signals,
-                entry_execution_plan=entry_execution_plan,
-                portfolio_heat=portfolio_heat,
-                entry_filter_audit=space_observation_filter_audit,
-                raw_signal_count=space_observation_raw_count,
-                enriched_signal_count=space_observation_enriched_count,
-                space_forward_replacement_profiles=(
-                    space_catalyst_forward_replacement_positive_profiles(
-                        included_tickers=space_official_observation_tickers
-                    )
-                ),
-            )
-        )
-        if space_catalyst_observation_slot.get("candidate_count", 0) > 0:
-            persistence = space_catalyst_observation_slot.get("persistence") or {}
-            log.info(
-                "Space catalyst observation slot: candidates=%d selected=%d appended=%d",
-                space_catalyst_observation_slot.get("candidate_count", 0),
-                space_catalyst_observation_slot.get("selected_count", 0),
-                persistence.get("appended_count", 0),
-            )
-        return space_catalyst_observation_slot
-    except Exception as e:
-        log.warning(f"Space catalyst observation slot unavailable: {e}")
-        return empty_space_catalyst_observation_slot(
-            today_iso,
-            "space_catalyst_observation_slot_build_failed",
-        )
-
-
 def _build_sec_10k_watch_step(
     *, today_iso, sec_filing_events_path, ohlcv_dict, universe, pilot_universe,
     core_signals, entry_execution_plan,
@@ -3509,13 +3384,12 @@ def main():
         prep_and_build_finra_otc_internalization_paper_sleeve_snapshot,
     )
     from space_catalyst_sleeve import (
-        build_space_catalyst_event_ledger_snapshot,
-        build_space_catalyst_shadow_snapshot,
+        build_retired_space_catalyst_event_ledger_snapshot,
         empty_space_catalyst_event_ledger,
-        empty_space_catalyst_observation_slot,
+        retired_space_catalyst_observation_slot,
         empty_space_catalyst_shadow_snapshot,
         persist_space_catalyst_event_ledger,
-        space_catalyst_event_tickers,
+        retired_space_catalyst_event_tickers,
     )
     from pilot_sleeve       import (
         AI_INFRA_AGGRESSIVE_SLEEVE_NAME,
@@ -3529,6 +3403,7 @@ def main():
         select_pilot_entry_candidates,
     )
 
+    _broker_refresh_started_at = datetime.now(timezone.utc).isoformat()
     _moomoo_refresh_status = _refresh_open_positions_from_moomoo()
     _positions_stale = _moomoo_refresh_status in ("fallback", "unavailable")
     open_positions    = _load_open_positions()
@@ -3541,9 +3416,21 @@ def main():
     pilot_universe = []
     pilot_metadata = {}
     universe_governance_state = None
-    space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(today_iso)
+    space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(
+        today_iso, "retired_default_off_paper_disabled"
+    )
+    space_catalyst_shadow.update({
+        "retired": True,
+        "mode": "retired",
+        "enabled": False,
+        "paper_enabled": False,
+        "trade_enabled": False,
+        "build_status": "retired_default_off_paper_disabled",
+        "next_action": "settle_existing_positions_only",
+    })
+    space_catalyst_shadow.pop("forward_hypothesis", None)
     space_catalyst_event_ledger = empty_space_catalyst_event_ledger(today_iso)
-    space_catalyst_observation_slot = empty_space_catalyst_observation_slot(today_iso)
+    space_catalyst_observation_slot = retired_space_catalyst_observation_slot(today_iso)
     try:
         universe_governance_state = universe_segments_as_of(
             today_iso,
@@ -3583,28 +3470,6 @@ def main():
             log.info("Pilot sleeve trade-enabled tickers: %s", pilot_universe)
     except Exception as e:
         log.warning(f"Universe governance adapter unavailable: {e}")
-    try:
-        space_catalyst_shadow = build_space_catalyst_shadow_snapshot(today_iso)
-        if universe_governance_state is not None:
-            universe_governance_state["space_catalyst_shadow"] = space_catalyst_shadow
-            save_universe_state_report(
-                universe_governance_state,
-                str(daily_artifact_path("universe_state", today)),
-            )
-        if space_catalyst_shadow.get("candidate_count", 0) > 0:
-            log.info(
-                "Space catalyst shadow: candidates=%d trade_enabled=%d mode=%s",
-                space_catalyst_shadow.get("candidate_count", 0),
-                len(space_catalyst_shadow.get("trade_enabled_tickers") or []),
-                space_catalyst_shadow.get("mode"),
-            )
-    except Exception as e:
-        log.warning(f"Space catalyst shadow snapshot unavailable: {e}")
-        space_catalyst_shadow = empty_space_catalyst_shadow_snapshot(
-            today_iso,
-            "space_catalyst_shadow_build_failed",
-        )
-
     data_universe = sorted(set(universe) | set(pilot_universe))
     ohlcv_warehouse_path = os.environ.get(
         "OHLCV_WAREHOUSE_PATH",
@@ -4625,26 +4490,6 @@ def main():
             },
         }
 
-    space_catalyst_observation_slot = _build_space_catalyst_observation_step(
-        today_iso=today_iso,
-        space_catalyst_shadow=space_catalyst_shadow,
-        features_dict=features_dict,
-        core_signals=signals,
-        entry_execution_plan=entry_execution_plan,
-        portfolio_heat=portfolio_heat,
-        portfolio_value=portfolio_value,
-        trade_risk_pct=_trade_risk_pct,
-        market_context=market_context,
-        market_regime=market_regime,
-        spy_pct_from_ma=spy_pct_from_ma,
-        qqq_pct_from_ma=qqq_pct_from_ma,
-        exit_profile=exit_profile,
-        atr_target_mult=atr_target_mult,
-        open_positions=open_positions,
-        cached_ohlcv_fn=_cached_ohlcv,
-        cached_earnings_fn=_cached_earnings,
-    )
-
     platform_rs20_watch = _build_platform_rs20_watch_step(
         today_iso=today_iso,
         entry_execution_plan=entry_execution_plan,
@@ -4792,10 +4637,7 @@ def main():
 
     try:
         space_event_ohlcv = {}
-        for ticker in space_catalyst_event_tickers(
-            today_iso,
-            space_catalyst_shadow=space_catalyst_shadow,
-        ):
+        for ticker in retired_space_catalyst_event_tickers():
             if ticker in ohlcv_dict:
                 space_event_ohlcv[ticker] = ohlcv_dict[ticker]
                 continue
@@ -4811,12 +4653,10 @@ def main():
                     ticker_error,
                 )
         space_catalyst_event_ledger = persist_space_catalyst_event_ledger(
-            build_space_catalyst_event_ledger_snapshot(
+            build_retired_space_catalyst_event_ledger_snapshot(
                 as_of=today_iso,
                 ohlcv_by_ticker=space_event_ohlcv,
                 space_catalyst_shadow=space_catalyst_shadow,
-                core_signals=signals,
-                entry_execution_plan=entry_execution_plan,
             )
         )
         if space_catalyst_event_ledger.get("active_event_count", 0) > 0:
@@ -4834,6 +4674,11 @@ def main():
             today_iso,
             "space_catalyst_event_ledger_build_failed",
         )
+        space_catalyst_event_ledger.update({
+            "retired": True,
+            "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only",
+        })
 
     non_ohlcv_paths = non_ohlcv_snapshot.get("paths") or {}
 
@@ -5589,6 +5434,7 @@ def main():
         log_metrics=_STD_SLEEVE_METRICS,
     )
 
+    # Retired sleeves keep their settlement snapshots outside the active map.
     paper_sleeve_execution_contract = apply_execution_sizing_contracts(
         {
             "form4_event_sleeve": form4_event_sleeve,
@@ -5597,7 +5443,6 @@ def main():
             "sec_leadership_event_sleeve": sec_leadership_event_sleeve,
             "sec_financial_report_event_sleeve": sec_financial_report_event_sleeve,
             "event_sleeve_bundle": event_sleeve_bundle,
-            "state_surface_sleeve": state_surface_sleeve,
             "low_deployment_etf_overlay": low_deployment_etf_overlay,
             "core_misfit_paper_sleeve": core_misfit_paper_sleeve,
             "broad_market_paper_sleeve": broad_market_paper_sleeve,
@@ -5605,7 +5450,6 @@ def main():
             "volatility_relief_stock_leadership_paper_sleeve": volatility_relief_stock_leadership_paper_sleeve,
             "move_rate_volatility_relief_paper_sleeve": move_rate_volatility_relief_paper_sleeve,
             "rolling_corr_peer_shock_paper_sleeve": rolling_corr_peer_shock_paper_sleeve,
-            "industry_relative_laggard_repair_paper_sleeve": industry_relative_laggard_repair_paper_sleeve,
             "industry_stable_core_flow_paper_sleeve": industry_stable_core_flow_paper_sleeve,
             "turn_of_month_liquid_leadership_paper_sleeve": turn_of_month_liquid_leadership_paper_sleeve,
             "deep_drawdown_rebound_paper_sleeve": deep_drawdown_rebound_paper_sleeve,
@@ -5615,15 +5459,10 @@ def main():
             "sbc_burden_improvement_paper_sleeve": sbc_burden_improvement_paper_sleeve,
             "supplier_financing_debt_relief_paper_sleeve": supplier_financing_debt_relief_paper_sleeve,
             "revision_surprise_low_extension_paper_sleeve": revision_surprise_low_extension_paper_sleeve,
-            "accepted_helper_source_priority_allocator_paper_sleeve": accepted_helper_source_priority_allocator_paper_sleeve,
-            "ai_optical_paper_sleeve": ai_optical_paper_sleeve,
             "volatility_contraction_paper_sleeve": volatility_contraction_paper_sleeve,
             "volume_breadth_breakout_paper_sleeve": volume_breadth_breakout_paper_sleeve,
             "post_earnings_underpriced_drift_paper_sleeve": post_earnings_underpriced_drift_paper_sleeve,
             "pead_broad_universe_paper_sleeve": pead_broad_universe_paper_sleeve,
-            "alpha_score_market_regime_paper_sleeve": alpha_score_market_regime_paper_sleeve,
-            "accepted_source_consensus_paper_sleeve": accepted_source_consensus_paper_sleeve,
-            "free_data_cross_source_consensus_paper_sleeve": free_data_cross_source_consensus_paper_sleeve,
             "fundamental_growth_rs_paper_sleeve": fundamental_growth_rs_paper_sleeve,
             "finra_iwm_paper_sleeve": finra_iwm_paper_sleeve,
             "sec_ftd_finra_paper_sleeve": sec_ftd_finra_paper_sleeve,
@@ -5872,6 +5711,12 @@ def main():
 
     # ── Step 7: Quant report ──────────────────────────────────────────────────
     _print_section("STEP 7 — Quant report")
+    execution_attribution = _build_execution_attribution_snapshot(
+        as_of=today_iso, signals=signals, pilot_signals=pilot_signals,
+        addon_actions=addon_actions, bracket_orders=bracket_orders_plan,
+        refresh_status=_moomoo_refresh_status, capture_not_before=_broker_refresh_started_at,
+    )
+    broker_performance = _build_broker_performance_snapshot()
     report = generate_daily_report(
         signals          = signals,
         features_dict    = features_dict,
@@ -5928,6 +5773,8 @@ def main():
         non_ohlcv_snapshot = non_ohlcv_snapshot,
         crypto_sleeve = crypto_sleeve,
         bracket_orders = bracket_orders_plan,
+        broker_performance = broker_performance,
+        execution_attribution = execution_attribution,
     )
     print("\n" + report)
     saved_report_path = save_report(report)
@@ -5939,6 +5786,8 @@ def main():
 
     quant_signals_payload = {
         "generated_at":   datetime.now(timezone.utc).isoformat(),
+        "broker_performance": broker_performance,
+        "execution_attribution": execution_attribution,
         "market_regime":  market_regime,
         "portfolio_heat": portfolio_heat,
         "signals":        signals,

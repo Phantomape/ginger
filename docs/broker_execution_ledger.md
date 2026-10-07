@@ -5,6 +5,34 @@
 - 当前校验器会验证八条哈希链，并要求至少存在一条成功的 `collection_manifest`；它还没有逐行证明每个事实行的 `collection_id` 都属于一个已提交采集。若进程恰好在事实落盘后、manifest 提交前失败，下一次采集前仍可能留下 orphan collection 版本。后续修复应引入逐 collection 的 commit/visibility 校验，不能把“链有效”误解成“每次采集都完整提交”。
 - 现金流水日更只滚动抓取最近七个清算日。停机超过七天时，仍需要基于 manifest cursor 的限速补采；当前系统不声称更早的现金流水完整。
 
+## 前向决策与订单归因（2026-09-09）
+
+`quant/execution_attribution.py` 从今后的机器建议开始，冻结完整建议、策略标识、代码文件哈希、账户作用域和本地记录时间，
+保存到独立的 `data/live_pilot/execution_attribution/decisions.jsonl`。这个目录与券商原始账本一样不纳入 Git。
+同内容重复运行保留首次时间和备注码；内容或版本变化生成新身份，旧记录不覆盖。
+
+每日 Step 7 会在日报和 `quant_signals.execution_attribution` 提供 32 字节 `GNG-...` 备注码。
+它标识 **machine advice**，不是 LLM 批准、下单许可或已提交的 OrderIntent。
+若某条建议经独立批准并实际下单，可把对应码原样填入订单备注；已存在的挂单保持原码，不因新日报出现新码而重新下单。
+订单备注字段来自券商接口原始返回，参见 [Moomoo 历史订单合同](https://openapi.moomoo.com/moomoo-api-doc/en/trade/get-history-order-list.html)。
+本模块没有新增下单接口，也不会自动给既有订单补备注。
+
+归因只接受同一账户、证券、买卖方向、计划数量全部相符，且每个已提交订单版本都带着同一个已冻结备注码的订单。
+同码用于多单、后补备注、修改数量、缺失决策或采集证明，均不认领。只比较明确的 UTC **本地观察时间**，不伪造券商成交时区，
+也不据此声称测到了下单延迟或成交滑点。新增建议必须绑定本轮成功查询；刷新失败、数据超过 24 小时或未提交完整持仓时不生成追踪码。
+加仓与退出只继承完整、明确关联的开放成交路径，退出数量不得超过已核对的持仓；历史 `opened_by_strategy` 标签不能代替证明。
+
+`broker_performance.strategy_attribution` 在原有完整生命周期及订单费用检查通过后，再要求每个买卖订单都明确归属同一策略。
+混入人工单、其他策略或缺失任何一腿，整段不归因。收益仍只覆盖可核对的已平仓子集；不能据此推出完整策略收益率或因果 alpha。
+零覆盖时策略净收益为 `null`，而不是 0。券商存在本系统格式的备注却找不到决策时，全部策略收益汇总不可用，防止删掉亏损决策后只剩赢家。
+
+新采集的 `collection_manifest.surface_commit_anchors` 固定七张非 manifest 账本各自的提交行数与末尾哈希。
+读取、追加和重放都会检查已提交前缀，合法未提交尾部仍可恢复；删除订单修订或费用尾行不能悄悄回退到旧版本。
+旧 manifest 不倒填，继续明确标记 `legacy_unanchored`；新订单归因要求其观测版本具有提交证明。
+
+验证范围包括合成的完整买卖闭环、费用只扣一次、人工交易拒绝认领、尾部丢失、旧采集重放和真实只读采集。
+真实账户在启用前没有明确决策备注，历史策略覆盖仍为零；这项修复没有证明 Ginger 已经盈利。
+
 `data/live_pilot/broker_execution/` 是 Moomoo 实盘账户的券商权威事实面。它回答：
 真实发生了什么成交、属于哪个订单、券商报告了多少订单级费用、账户在采集时的现金与敞口是什么。
 它只做测量，不下单，也不改变策略、排序、仓位或退出规则。
@@ -114,3 +142,83 @@ v1 已满足 `docs/live_drift_reconciliation.md` 中“物化 deal history 且�
 - 用首个 contributing `deal_id` 加固 pending-action lifecycle；
 - 用真实订单库存区分“券商已挂单”和“人工指令”；
 - 将订单级费用按明确方法分摊到已平仓 P&L（仅派生层）。
+
+## 日报中的已平仓交易盈亏（exp-20260906-001）
+
+`quant/broker_performance.py.compute_broker_performance()` 现在只读投影本机账本，
+同一份 `broker_performance` 同时进入日常报告和 `quant_signals` JSON。缺失或损坏时
+显示 `unavailable` 与空值，不会显示成赚亏零元。原交易日记和 paper gate 指标分别保留，
+不会覆盖券商交易盈亏。此接线不改交易信号、排序、仓位、退出或权限。
+
+消费者先验证全部八条链，再仅允许有成功 manifest 的 `(account_key, collection_id)`
+进入最新版本投影。未提交采集中的事实和修订保持原字节，但对绩效不可见。
+每笔有效成交必须精确连接当前规则的最新生命周期链接，并通过输入前缀、零仓位起点、
+连续数量轨迹和完整平仓检查；只支持能按股数直接计算现金流的美元美股/ETF，期权等
+缺乘数合同的证券不参与。未知历史起点、跨零但无法拆分的成交、未平仓和过期链接均排除。
+
+`net_trading_pnl_after_order_fees` 是**同一批费用完整的闭环交易**的有符号成交现金流，
+减去最新券商订单费用。一个订单全部有效成交必须都在同一个可信生命周期内，且合计数量
+精确等于最新订单 `dealt_qty`；费用每单只扣一次，不分摊给跨生命周期订单。
+成交、订单和费用的币种必须明确为 USD。费用缺失、待定或币种未知时整个生命周期不计入
+该批毛额/净额，不能用零费用替代。各项排除原因可能重叠，不能把原因计数相加当成交数。
+
+这个数字不包括融资、借券、分红、未平仓盯市、换汇和资金进出，也没有决策到订单的策略
+归因，所以不能称为 Ginger 策略收益、整个账户回报率、Sharpe 或 replacement value。
+报告同时列明有效覆盖范围、排除原因、来源时间及哈希。`trade_enabled=false`。
+独立离线验证入口是
+`quant/experiments/exp_20260906_001_broker_performance_reporting.py`；冻结输入后运行两遍，
+核对汇总一致、源字节不变及真实输出语句接线，结果仅保留脱敏聚合。
+
+同实验 revision 2 补上反向完整性检查：每条最新已提交生命周期链接所指的成交版本，
+必须存在于全部可见成交版本中（包括旧版本及撤销版本）。链虽然合法，但尾部成交被整段
+截掉时，会返回 `unavailable` / `source_integrity_status=source_incomplete`；不能悄悄丢掉
+亏损闭环后继续公布剩余盈利。
+
+`latest_collection_attempt_at` 只表示最近提交采集尝试的时间。`query_coverage` 分别记录
+历史成交、历史订单、订单费用的最新查询状态及最后成功时间；error、partial、skipped
+和旧 schema 缺失状态都会明确降低覆盖，缺失写 unknown。`source_as_of` 取三项最后
+成功时间中的最早值，任一项无成功时间则为空，不再用一次失败刷新伪装经济数据已更新。
+修订前 artifact 和冻结合同保留；当前验证证据在
+`data/experiments/exp-20260906-001/revision_2/`。
+
+
+## Full history range paging (exp-20260906-008)
+
+The configured 730-day lookback is retained. The installed broker returned a
+360-day maximum query-span error; this limit is local response evidence, not a
+claim about wording in the public API documentation. SDK date arguments include
+both endpoint dates. Each request therefore covers at most 360 calendar dates
+(end = start + 359 days; next start = end + 1 day). Freeze UTC today once.
+
+History deals and orders each have a parent query result plus separate
+`history_deals:START..END` / `history_orders:START..END` child keys. All segments
+must succeed for the parent to be `ok`; mixed outcomes are `partial`, complete
+failure is `error`. Child keys preserve bounds and outcomes in the existing
+collection-manifest contract. Current observations remain last; order-fee
+batching, deduplication, cancellation and rate limits retain their contracts.
+
+An observed A -> B -> A version transition appends the final exact observed fact
+with a collection-specific `reobserved` identity when content deduplication would
+otherwise leave B current. This changes the observation version, never the
+economic deal identity or old ledger rows. A committed capture replay validates
+all snapshot conflicts before returning zero appended rows. If a manifest commit
+succeeded but state writing was interrupted, only the latest committed capture
+may rebuild the derived state, and all raw append plans must remain empty. An
+older capture cannot rebuild state from its stale position anchor.
+
+The real 2024-09-06 through 2026-09-06 window used 360/360/11 inclusive-day
+segments for each endpoint. All six succeeded. Only new rows were appended by
+the existing ledger API; all eight old JSONL prefixes remained byte-for-byte
+unchanged. Account identifiers and raw captures remain in gitignored local
+storage. The public experiment proof contains counts and aggregate PnL only.
+Repeat the frozen final-capture validation without new broker calls using:
+
+```powershell
+.\.venv\Scripts\python.exe -B quant\experiments\exp_20260906_008_broker_history_date_range_paging.py --verify-existing-capture
+```
+
+This is an engineering measurement repair. The evaluated 103-lifecycle subset
+still loses USD 14,712.8662 after order fees. Of 105 groups carrying a close event,
+two fail complete quantity-path validation and remain excluded. Open positions,
+unknown baselines and unsupported instruments remain outside this PnL; it does
+not establish Ginger strategy returns or total account returns.

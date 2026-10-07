@@ -116,6 +116,8 @@ def _surface_summary(
     status = "eligible_for_review" if passed else "blocked"
     if not active and not passed:
         status = "inactive"
+    if payload.get("retired") is True or payload.get("build_status") == "retired_default_off_paper_disabled":
+        status = "retired"
     return {
         "name": name,
         "label": label,
@@ -779,6 +781,7 @@ def build_default_off_alpha_attribution_report(
         ),
     ]
 
+    surfaces = [row for row in surfaces if row["status"] != "retired"]
     status_counts = Counter(row["status"] for row in surfaces)
     blocker_counts: Counter[str] = Counter()
     blocker_surfaces: dict[str, set[str]] = {}

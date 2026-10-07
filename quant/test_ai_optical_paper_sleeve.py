@@ -14,6 +14,16 @@ from quant.ai_optical_paper_sleeve import (
 )
 
 
+import pytest
+from quant import ai_optical_paper_sleeve as legacy_sleeve
+
+
+@pytest.fixture(autouse=True)
+def _enable_frozen_legacy_paper_rule(monkeypatch):
+    """These tests exercise the explicitly enabled historical rule."""
+    monkeypatch.setitem(legacy_sleeve.DEFAULT_CONFIG, "paper_enabled", True)
+
+
 def _rows(start_price: float, step: float, *, days: int = 65) -> list[dict]:
     start = date(2026, 1, 1)
     rows = []
@@ -175,6 +185,7 @@ def test_prep_runs_signal_chain_and_preserves_core_dropped_signals(monkeypatch):
     try:
         snapshot = aos.prep_and_build_ai_optical_paper_sleeve_snapshot(
             as_of="2026-05-22",
+            config={"paper_enabled": True},
             universe_governance_state=universe_state,
             universe_state_artifact_path="data/daily/universe/universe_state_20260522.json",
             core_universe={"CORE"},

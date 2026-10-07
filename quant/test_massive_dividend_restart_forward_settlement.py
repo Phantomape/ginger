@@ -225,7 +225,7 @@ class TestResolutionPolicy:
         assert summary["decision_count_total"] == 0
         assert summary["pending_declaration_date_count"] == 1
 
-    def test_top2_liquidity_dedup_membership_and_variant_filter(self, tmp_path):
+    def test_top2_liquidity_dedup_membership_and_roster_population(self, tmp_path):
         bars = {
             t: {s: (10.0, 10.0) for s in SESSIONS}
             for t in ("AAA", "BBB", "CCC", "DDD", "EEE")
@@ -258,15 +258,17 @@ class TestResolutionPolicy:
         assert summary["status"] == "ok"
         events = _events(root)
         decisions = [e for e in events if e["record_type"] == "decision"]
-        # DDD excluded by membership, EEE by variant; tie AAA/BBB broken by ticker.
-        assert [d["ticker"] for d in decisions] == ["AAA", "BBB"]
+        # DDD excluded by membership; EEE is no-prior but belongs to the frozen
+        # roster population and competes in the same liquidity pool.
+        assert [d["ticker"] for d in decisions] == ["EEE", "AAA"]
         assert [d["ordinal_within_declaration_date"] for d in decisions] == [1, 2]
         resolution = next(e for e in events if e["record_type"] == "date_resolution")
         assert resolution["membership_gate_failed_keys"] == ["DDD:2026-07-02"]
         assert resolution["selected_decision_keys"] == [
+            "EEE:2026-07-02",
             "AAA:2026-07-02",
-            "BBB:2026-07-02",
         ]
+        assert resolution["eligible_pool_size"] == 4
 
     def test_pending_until_calendar_reaches_entry_anchor(self, tmp_path):
         short_sessions = _weekday_sessions("2026-06-01", "2026-07-03")
@@ -459,8 +461,54 @@ class TestSettlementMath:
         assert settlement["qqq_value"] == round(4000.0 * (0.0 - 0.0035), 2)
         assert summary["reopen_progress"] == {
             "required": 30,
+            "settled_decisions": 1,
+            "counted_gap_variants": [
+                "restart_after_observed_gap",
+                "no_prior_positive_in_provider_history",
+            ],
+            "settled_decisions_by_gap_variant": {
+                "restart_after_observed_gap": 1,
+                "no_prior_positive_in_provider_history": 0,
+            },
             "settled_restart_decisions": 1,
         }
+
+    def test_reopen_progress_counts_both_gap_variants_with_legacy_restart_subcount(
+        self, tmp_path
+    ):
+        bars = {
+            t: {s: (10.0, 10.0) for s in SESSIONS}
+            for t in ("AAA", "BBB")
+        }
+        db = _bars_db(
+            tmp_path,
+            sessions=SESSIONS,
+            bars=bars,
+            common_stocks=["AAA", "BBB"],
+        )
+        root = _observer_dir(
+            tmp_path,
+            [
+                _candidate("AAA", "2026-07-02"),
+                _candidate(
+                    "BBB",
+                    "2026-07-02",
+                    gap_variant="no_prior_positive_in_provider_history",
+                ),
+                _gate("AAA", "2026-07-02", median_dollar_volume=2_000_000.0),
+                _gate("BBB", "2026-07-02", median_dollar_volume=9_000_000.0),
+            ],
+        )
+        core = _core_ledger(tmp_path, [])
+        summary = _run(root, db, core)
+        assert summary["settled_reopen_population_decision_count"] == 2
+        assert summary["settled_restart_decision_count"] == 1
+        assert summary["settled_decision_count_by_gap_variant"] == {
+            "restart_after_observed_gap": 1,
+            "no_prior_positive_in_provider_history": 1,
+        }
+        assert summary["reopen_progress"]["settled_decisions"] == 2
+        assert summary["reopen_progress"]["settled_restart_decisions"] == 1
 
     def test_core_slot_baseline_enters_replacement_value(self, tmp_path):
         db = _bars_db(

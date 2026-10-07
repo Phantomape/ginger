@@ -14,6 +14,16 @@ from quant.accepted_helper_source_priority_allocator_paper_sleeve import (
 )
 
 
+import pytest
+from quant import accepted_helper_source_priority_allocator_paper_sleeve as legacy_sleeve
+
+
+@pytest.fixture(autouse=True)
+def _enable_frozen_legacy_paper_rule(monkeypatch):
+    """These tests exercise the explicitly enabled historical rule."""
+    monkeypatch.setitem(legacy_sleeve.DEFAULT_CONFIG, "paper_enabled", True)
+
+
 def _business_dates(days: int) -> list[str]:
     current = date(2026, 1, 5)
     out: list[str] = []

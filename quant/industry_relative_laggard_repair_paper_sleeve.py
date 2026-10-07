@@ -76,7 +76,7 @@ EXCLUDED_TICKERS = {
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    "paper_enabled": False,
     "trade_enabled": False,
     "paper_notional_usd": 4_000.0,
     "daily_entry_slots": 1,
@@ -170,6 +170,9 @@ def empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
     reason: str,
 ) -> dict[str, Any]:
     return {
+        **({"retired": True, "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only"}
+           if not DEFAULT_CONFIG["paper_enabled"] else {}),
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
         "rule_version": RULE_VERSION,
@@ -218,27 +221,31 @@ def build_industry_relative_laggard_repair_paper_sleeve_snapshot(
     cfg = _config(config)
     as_of_date = _date10(as_of)
     rows_by_ticker = _normalise_ohlcv_by_ticker(ohlcv_by_ticker or {})
-    if not rows_by_ticker:
+    if cfg["paper_enabled"] and not rows_by_ticker:
         return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
             as_of_date,
             "missing_ohlcv",
         )
-    if "SPY" not in rows_by_ticker:
+    if cfg["paper_enabled"] and "SPY" not in rows_by_ticker:
         return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
             as_of_date,
             "missing_spy_ohlcv",
         )
 
-    sector_map = _resolve_sector_entries(
-        sector_entries=sector_entries,
-        candidate_universe=candidate_universe,
-        rows_by_ticker=rows_by_ticker,
-    )
-    if not sector_map:
-        return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
-            as_of_date,
-            "missing_sector_entries",
+    if cfg["paper_enabled"]:
+        sector_map = _resolve_sector_entries(
+            sector_entries=sector_entries,
+            candidate_universe=candidate_universe,
+            rows_by_ticker=rows_by_ticker,
         )
+        if not sector_map:
+            return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
+                as_of_date,
+                "missing_sector_entries",
+            )
+
+    else:
+        sector_map = {}
 
     working_state = deepcopy(
         state
@@ -246,27 +253,47 @@ def build_industry_relative_laggard_repair_paper_sleeve_snapshot(
         else load_industry_relative_laggard_repair_paper_state(state_path)
     )
     _normalise_state(working_state)
-    lifecycle = _advance_paper_state(
-        rows_by_ticker=rows_by_ticker,
-        state=working_state,
-        as_of_date=as_of_date,
-        config=cfg,
-    )
+    retired_skipped = []
+    if not cfg["paper_enabled"]:
+        for pending in working_state["pending_entries"]:
+            skipped = {**deepcopy(pending), "status": "skipped_retired",
+                       "skipped_asof": as_of_date, "reason": "owner_authorized_retirement"}
+            if "status" in pending:
+                skipped["prior_status"] = pending["status"]
+            if "reason" in pending:
+                skipped["prior_reason"] = pending["reason"]
+            working_state["skipped_entries"].append(skipped)
+            retired_skipped.append(skipped)
+        working_state["pending_entries"] = []
+    if cfg["paper_enabled"]:
+        lifecycle = _advance_paper_state(
+            rows_by_ticker=rows_by_ticker,
+            state=working_state,
+            as_of_date=as_of_date,
+            config=cfg,
+        )
 
-    candidates, contexts, scan = build_industry_relative_laggard_repair_candidate_rows(
-        ohlcv_by_ticker=rows_by_ticker,
-        dates=[as_of_date],
-        sector_entries=sector_map,
-        core_entries_by_date={as_of_date: list(core_entries or [])},
-        config=cfg,
-    )
-    selected, rejected = _select_candidates_for_paper(
-        rows_by_ticker=rows_by_ticker,
-        candidates=candidates,
-        state=working_state,
-        config=cfg,
-        create_trades=False,
-    )
+    else:
+        lifecycle = {"opened_this_run": [], "closed_this_run": _advance_open_positions(
+            working_state, rows_by_ticker, as_of_date, cfg), "skipped_this_run": retired_skipped}
+
+    if cfg["paper_enabled"]:
+        candidates, contexts, scan = build_industry_relative_laggard_repair_candidate_rows(
+            ohlcv_by_ticker=rows_by_ticker,
+            dates=[as_of_date],
+            sector_entries=sector_map,
+            core_entries_by_date={as_of_date: list(core_entries or [])},
+            config=cfg,
+        )
+        selected, rejected = _select_candidates_for_paper(
+            rows_by_ticker=rows_by_ticker,
+            candidates=candidates,
+            state=working_state,
+            config=cfg,
+            create_trades=False,
+        )
+    else:
+        candidates, contexts, selected, rejected, scan = [], [], [], [], {}
     pending = [_pending_entry_from_candidate(row, cfg) for row in selected]
     if cfg.get("paper_enabled", True):
         existing_ids = _decision_ids(working_state)
@@ -325,6 +352,11 @@ def build_industry_relative_laggard_repair_paper_sleeve_snapshot(
         "production_impact": _production_impact(),
         "next_action": "paper_observe_forward_outcomes_only_no_orders",
     }
+    if not cfg["paper_enabled"]:
+        snapshot.update(retired=True, build_status="retired_default_off_paper_disabled",
+                        next_action="settle_existing_positions_only")
+        snapshot["forward_paper_gate"].update(
+            passed=False, status="blocked", reasons=["retired_default_off_paper_disabled"])
     if persist:
         save_industry_relative_laggard_repair_paper_state(working_state, state_path)
         append_industry_relative_laggard_repair_paper_snapshot(snapshot, snapshot_log_path)
@@ -1131,7 +1163,7 @@ def prep_and_build_industry_relative_laggard_repair_paper_sleeve_snapshot(
     spy_ohlcv=None,
     core_entries=None,
 ):
-    if not broad_market_candidate_universe.get("tickers"):
+    if DEFAULT_CONFIG["paper_enabled"] and not broad_market_candidate_universe.get("tickers"):
         return empty_industry_relative_laggard_repair_paper_sleeve_snapshot(
             as_of, "broad_market_candidate_universe_unavailable")
     ohlcv = dict(broad_market_ohlcv)

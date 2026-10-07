@@ -1,7 +1,7 @@
 # Root V2 lineage (isolated)
 
 These three files are the V2 state docs that root maintained on
-`refs/heads/fix/alpha-score-sleeve-same-day-idempotency` (last updated 2026-09-01, d-0015).
+`refs/heads/fix/alpha-score-sleeve-same-day-idempotency` (first preserved at d-0015 on 2026-09-01; refreshed on 2026-10-06 with the root checkout's later local entries, d-0001..d-0028).
 They were added independently of the edge-v2 lineage that `main` carries at `docs/v2/`,
 and their decision IDs (d-0001..d-0015) collide with edge-v2's IDs while describing
 different decisions.

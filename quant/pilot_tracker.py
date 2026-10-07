@@ -21,9 +21,8 @@ Discipline kept from the retired heavy machinery (the real point of it):
   - graduate/kill rule is pre-committed below, evaluated automatically.
 
 Selection (owner): pilots are chosen by conviction x FIRE RATE, not in-sample EV.
-  - allocator_top1: accepted source-priority allocator, capped to max 1 concurrent
-    position ("top-1", owner does not want dispersion). ~18 picks/mo -> readable
-    in ~5-6 weeks.
+  - allocator_top1 was retired by owner decision on 2026-09-10; historical
+    scorecards remain available, but it no longer produces recommendations.
   - distribution_absorption: clean single-name sleeve, ~6/mo, drawdown ~0.
   - fundamental_growth_rs: the only sleeve currently firing live (already has
     closed/open rows), so it is the cheapest to take over as a manual pilot.
@@ -60,12 +59,6 @@ PAPER_VERDICT_SCOPE = "paper_shadow_risk_stop_and_graduation_only"
 PILOT_NOTIONAL_USD = 10_000.0
 
 PILOTS: list[dict[str, Any]] = [
-    {
-        "key": "allocator_top1",
-        "label": "Source-priority allocator (TOP-1 only)",
-        "sleeve": "accepted_helper_source_priority_allocator",
-        "max_concurrent": 1,  # owner: do not disperse; hold at most one
-    },
     {
         "key": "distribution_absorption",
         "label": "Distribution-day absorption leadership",

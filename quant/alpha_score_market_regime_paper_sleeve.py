@@ -103,7 +103,7 @@ EXCLUDED_TICKERS = {
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    "paper_enabled": False,
     "trade_enabled": False,
     "paper_notional_usd": 4_000.0,
     "baseline_paper_notional_usd": 10_000.0,
@@ -189,6 +189,9 @@ def empty_alpha_score_market_regime_paper_sleeve_snapshot(
     reason: str,
 ) -> dict[str, Any]:
     return {
+        **({"retired": True, "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only"}
+           if not DEFAULT_CONFIG["paper_enabled"] else {}),
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
         "rule_version": RULE_VERSION,
@@ -247,12 +250,12 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         str(ticker).upper(): _normalise_ohlcv_rows(rows)
         for ticker, rows in (ohlcv_by_ticker or {}).items()
     }
-    if not features_by_ticker:
+    if cfg["paper_enabled"] and not features_by_ticker:
         return empty_alpha_score_market_regime_paper_sleeve_snapshot(
             as_of_date,
             "missing_features",
         )
-    if not rows_by_ticker:
+    if cfg["paper_enabled"] and not rows_by_ticker:
         return empty_alpha_score_market_regime_paper_sleeve_snapshot(
             as_of_date,
             "missing_ohlcv",
@@ -264,6 +267,18 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         else load_alpha_score_market_regime_paper_state(state_path)
     )
     _normalise_state(working_state)
+    retired_skipped = []
+    if not cfg["paper_enabled"]:
+        for pending in working_state["pending_entries"]:
+            skipped = {**deepcopy(pending), "status": "skipped_retired",
+                       "skipped_asof": as_of_date, "reason": "owner_authorized_retirement"}
+            if "status" in pending:
+                skipped["prior_status"] = pending["status"]
+            if "reason" in pending:
+                skipped["prior_reason"] = pending["reason"]
+            working_state["skipped_entries"].append(skipped)
+            retired_skipped.append(skipped)
+        working_state["pending_entries"] = []
 
     current, opens = _exact_asof_price_maps(
         rows_by_ticker,
@@ -283,17 +298,19 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
             current_prices=current,
             config=cfg,
         )
-        filled_today, skipped_today = _fill_pending_entries(
-            working_state,
-            as_of=as_of_date,
-            open_prices=opens,
-            current_prices=current,
-            config=cfg,
-        )
+        filled_today, skipped_today = [], retired_skipped
+        if cfg["paper_enabled"]:
+            filled_today, skipped_today = _fill_pending_entries(
+                working_state,
+                as_of=as_of_date,
+                open_prices=opens,
+                current_prices=current,
+                config=cfg,
+            )
     else:
         closed_today = []
         filled_today = []
-        skipped_today = []
+        skipped_today = retired_skipped
 
     active_tickers = {
         str(row.get("ticker") or "").upper()
@@ -306,21 +323,26 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         if isinstance(row, dict)
     }
     universe = _normalise_candidate_universe(candidate_universe, rows_by_ticker)
-    source_consensus = build_alpha_score_source_consensus_map(
-        source_consensus_snapshots,
-        as_of=as_of_date,
-    )
-    candidates, rejected, ranking = build_alpha_score_market_regime_candidates(
-        as_of=as_of_date,
-        features_by_ticker=features_by_ticker,
-        ohlcv_by_ticker=rows_by_ticker,
-        candidate_universe=universe,
-        market_regime_context=market,
-        open_position_tickers=active_tickers,
-        pending_tickers=pending_tickers,
-        source_consensus_by_key=source_consensus,
-        config=cfg,
-    )
+    if cfg["paper_enabled"]:
+        source_consensus = build_alpha_score_source_consensus_map(
+            source_consensus_snapshots,
+            as_of=as_of_date,
+        )
+        candidates, rejected, ranking = build_alpha_score_market_regime_candidates(
+            as_of=as_of_date,
+            features_by_ticker=features_by_ticker,
+            ohlcv_by_ticker=rows_by_ticker,
+            candidate_universe=universe,
+            market_regime_context=market,
+            open_position_tickers=active_tickers,
+            pending_tickers=pending_tickers,
+            source_consensus_by_key=source_consensus,
+            config=cfg,
+        )
+
+    else:
+        source_consensus = {}
+        candidates, rejected, ranking = [], [], {}
 
     open_positions = working_state.get("open_positions") or []
     room = max(0, int(cfg["max_active_positions"]) - len(open_positions))
@@ -412,6 +434,11 @@ def build_alpha_score_market_regime_paper_sleeve_snapshot(
         "next_action": "paper_observe_forward_replacement_value_no_orders",
     }
 
+    if not cfg["paper_enabled"]:
+        snapshot.update(retired=True, build_status="retired_default_off_paper_disabled",
+                        next_action="settle_existing_positions_only")
+        snapshot["forward_paper_gate"].update(
+            passed=False, status="blocked", reasons=["retired_default_off_paper_disabled"])
     if persist:
         save_alpha_score_market_regime_paper_state(working_state, state_path)
         append_alpha_score_market_regime_paper_snapshot(snapshot, snapshot_log_path)
@@ -894,6 +921,9 @@ def _advance_open_positions(
     closed_today: list[dict[str, Any]] = []
     for position in state.get("open_positions") or []:
         if not isinstance(position, dict):
+            continue
+        if not config["paper_enabled"] and position.get("last_price_asof") == as_of:
+            still_open.append(position)
             continue
         ticker = str(position.get("ticker") or "").upper()
         current_price = current_prices.get(ticker)

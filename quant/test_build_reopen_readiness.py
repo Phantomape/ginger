@@ -186,6 +186,8 @@ def _write_massive_readiness_inputs(
     settlement_rows,
     *,
     summary_count,
+    reopen_population_count=None,
+    by_gap_variant=None,
     status="ok",
     alert=False,
 ):
@@ -210,6 +212,32 @@ def _write_massive_readiness_inputs(
             "settled_restart_decisions": summary_count,
         },
     }
+    if reopen_population_count is not None:
+        by_gap_variant = by_gap_variant or {
+            "restart_after_observed_gap": summary_count,
+            "no_prior_positive_in_provider_history": reopen_population_count
+            - summary_count,
+        }
+        summary.update(
+            {
+                "reopen_gap_variants": [
+                    "restart_after_observed_gap",
+                    "no_prior_positive_in_provider_history",
+                ],
+                "settled_reopen_population_decision_count": reopen_population_count,
+                "settled_decision_count_by_gap_variant": by_gap_variant,
+                "reopen_progress": {
+                    "required": 30,
+                    "settled_decisions": reopen_population_count,
+                    "counted_gap_variants": [
+                        "restart_after_observed_gap",
+                        "no_prior_positive_in_provider_history",
+                    ],
+                    "settled_decisions_by_gap_variant": by_gap_variant,
+                    "settled_restart_decisions": summary_count,
+                },
+            }
+        )
     (folder / "latest_settlement_summary.json").write_text(
         json.dumps(summary),
         encoding="utf-8",
@@ -1010,6 +1038,46 @@ def test_massive_dividend_restart_dedupes_and_requires_healthy_alignment(
     assert unhealthy["status"] == "not_ready"
 
 
+def test_massive_dividend_restart_uses_realigned_reopen_population(
+    monkeypatch,
+    tmp_path,
+):
+    settlements = [
+        _massive_settlement(f"restart-{index:02d}") for index in range(29)
+    ]
+    settlements.extend(
+        [
+            _massive_settlement(
+                "no-prior-00",
+                variant="no_prior_positive_in_provider_history",
+            ),
+            _massive_settlement(
+                "voided-no-prior",
+                settled=False,
+                variant="no_prior_positive_in_provider_history",
+            ),
+        ]
+    )
+    _write_massive_readiness_inputs(
+        tmp_path,
+        settlements,
+        summary_count=29,
+        reopen_population_count=30,
+        by_gap_variant={
+            "restart_after_observed_gap": 29,
+            "no_prior_positive_in_provider_history": 1,
+        },
+    )
+    monkeypatch.setattr(readiness, "REPO_ROOT", str(tmp_path))
+
+    lane = readiness.lane_massive_dividend_restart_forward()
+
+    assert lane["counters"]["settled_restart_decisions"] == 29
+    assert lane["counters"]["settled_reopen_population_decisions"] == 30
+    assert lane["counters"]["summary_reopen_progress_settled_decisions"] == 30
+    assert all(lane["checks"].values())
+    assert lane["status"] == "ready"
+
 def test_massive_dividend_restart_missing_inputs_fail_closed(monkeypatch, tmp_path):
     monkeypatch.setattr(readiness, "REPO_ROOT", str(tmp_path))
 
@@ -1019,3 +1087,4 @@ def test_massive_dividend_restart_missing_inputs_fail_closed(monkeypatch, tmp_pa
     assert lane["checks"]["settlement_ledger_exists"] is False
     assert lane["checks"]["settlement_summary_exists"] is False
     assert lane["status"] == "not_ready"
+

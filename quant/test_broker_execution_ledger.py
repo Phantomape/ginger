@@ -518,3 +518,201 @@ def test_atomic_write_failure_preserves_existing_prefix(tmp_path, monkeypatch):
     with pytest.raises(PermissionError):
         L.persist_broker_execution_capture(later, ledger_dir=tmp_path)
     assert path.read_bytes() == before
+
+
+def test_new_collection_reobserves_prior_fact_without_double_counting_deal(tmp_path):
+    first = _capture()
+    L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    changed = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    changed["deals"][0]["qty"] = 8
+    changed["orders"][0]["dealt_qty"] = 12
+    changed["order_fees"][0]["fee_amount"] = 2.5
+    changed["positions"][0]["qty"] = 12
+    L.persist_broker_execution_capture(changed, ledger_dir=tmp_path)
+    before = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    reverted = _capture(collection_id="capture-3", completed_at="2026-07-11T22:00:00Z")
+    result = L.persist_broker_execution_capture(reverted, ledger_dir=tmp_path)
+    for name in ("fills", "orders", "order_fees"):
+        assert result["ledgers"][name]["rows_appended"] == 1
+        rows = _jsonl(tmp_path / L.LEDGER_FILENAMES[name])
+        assert "|reobserved|capture-3" in rows[-1]["identity_key"]
+    assert result["state"]["deal_projection"]["effective_deal_count"] == 2
+    assert result["state"]["fill_order_reconciliation"]["status"] == "matched"
+    assert _jsonl(tmp_path / "fills.jsonl")[-1]["fact"]["qty"] == "6"
+    assert _jsonl(tmp_path / "order_snapshots.jsonl")[-1]["fact"]["dealt_qty"] == "10"
+    assert _jsonl(tmp_path / "order_fee_snapshots.jsonl")[-1]["fact"]["fee_amount"] == "1.25"
+    assert all((tmp_path / name).read_bytes().startswith(content) for name, content in before.items())
+    stable = {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+    for replay in (reverted, first, changed):
+        repeat = L.persist_broker_execution_capture(replay, ledger_dir=tmp_path)
+        assert all(row["rows_appended"] == 0 for row in repeat["ledgers"].values())
+        assert repeat["state"]["latest_collection_id"] == "capture-3"
+        assert stable == {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+
+
+def test_final_desired_version_only_is_reobserved_within_a_new_capture(tmp_path):
+    first = _capture()
+    L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    next_capture = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    original = dict(next_capture["deals"][0])
+    next_capture["deals"] = [dict(original, qty=8), original, next_capture["deals"][1]]
+    result = L.persist_broker_execution_capture(next_capture, ledger_dir=tmp_path)
+    effective, _, _ = L._economic_fill_projection(_jsonl(tmp_path / "fills.jsonl"))
+    assert sum(float(row["fact"]["qty"]) for row in effective) == 10
+    assert result["ledgers"]["fills"]["rows_appended"] == 2
+
+
+@pytest.mark.parametrize("existing_state", [False, True])
+def test_committed_capture_recovers_interrupted_state_write(tmp_path, monkeypatch, existing_state):
+    first = _capture()
+    if existing_state:
+        L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    latest = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    latest["positions"][0]["qty"] = 12
+    original_write = L.atomic_write_json
+
+    def fail_state_write(value, path, **kwargs):
+        if Path(path).name == "state.json":
+            raise PermissionError("simulated state write failure after manifest commit")
+        return original_write(value, path, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(L, "atomic_write_json", fail_state_write)
+        with pytest.raises(PermissionError, match="state write failure"):
+            L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+    raw = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    assert _jsonl(tmp_path / "collection_manifests.jsonl")[-1]["fact"]["collection_id"] == "capture-2"
+    if existing_state:
+        with pytest.raises(L.BrokerLedgerConflictError, match="latest committed capture"):
+            L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    result = L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+    assert result["state"]["latest_collection_id"] == "capture-2"
+    assert result["state"]["latest_position_snapshot"]["positions"][0]["qty"] == "12"
+    assert all(row["rows_appended"] == 0 for row in result["ledgers"].values())
+    assert raw == {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    stable = {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+    L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+    assert stable == {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+
+
+def test_missing_state_does_not_allow_old_capture_or_changed_snapshot(tmp_path):
+    first = _capture()
+    L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    latest = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+    (tmp_path / "state.json").unlink()
+    raw = {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+    with pytest.raises(L.BrokerLedgerConflictError, match="latest committed capture"):
+        L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    latest["accounts"][0]["cash"] = 999.0
+    with pytest.raises(L.BrokerLedgerConflictError):
+        L.persist_broker_execution_capture(latest, ledger_dir=tmp_path)
+    assert raw == {p.name: p.read_bytes() for p in tmp_path.iterdir() if p.is_file()}
+
+
+@pytest.mark.parametrize("surface", [name for name in L.LEDGER_FILENAMES if name != "collections"])
+def test_committed_surface_tail_truncation_blocks_reads_and_writes(tmp_path, surface):
+    first = _capture()
+    L.persist_broker_execution_capture(first, ledger_dir=tmp_path)
+    corrected = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    corrected["deals"][0]["qty"] = 7
+    corrected["orders"][0]["qty"] = 11
+    corrected["order_fees"][0]["fee_amount"] = 2.5
+    corrected["cashflows"][0]["cashflow_amount"] = 1105
+    L.persist_broker_execution_capture(corrected, ledger_dir=tmp_path)
+    path = tmp_path / L.LEDGER_FILENAMES[surface]
+    lines = path.read_bytes().splitlines(keepends=True)
+    path.write_bytes(b"".join(lines[:-1]))
+    L._strict_read_chain(path)  # The remaining prefix is still a valid chain.
+    before = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    with pytest.raises(L.BrokerLedgerCorruptionError, match=f"committed prefix truncated for {surface}"):
+        L.validate_broker_execution_ledger(tmp_path)
+    for capture in (first, corrected, _capture(collection_id="capture-3")):
+        with pytest.raises(L.BrokerLedgerCorruptionError, match="committed prefix truncated"):
+            L.persist_broker_execution_capture(capture, ledger_dir=tmp_path)
+        assert before == {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+
+
+def test_committed_head_mismatch_rejected_even_when_surface_chain_is_valid(tmp_path):
+    L.persist_broker_execution_capture(_capture(), ledger_dir=tmp_path)
+    path = tmp_path / "order_snapshots.jsonl"
+    rows = _jsonl(path)
+    rows[-1]["fact"]["qty"] = "11"
+    rows[-1]["fact_hash"] = L._sha256_json(rows[-1]["fact"])
+    rows[-1]["record_hash"] = L._sha256_json({k: v for k, v in rows[-1].items() if k != "record_hash"})
+    path.write_text("".join(L._canonical_json(row) + "\n" for row in rows), encoding="utf-8")
+    L._strict_read_chain(path)
+    with pytest.raises(L.BrokerLedgerCorruptionError, match="committed prefix head mismatch for orders"):
+        L.validate_broker_execution_ledger(tmp_path)
+
+
+def test_uncommitted_later_surface_suffix_allows_recovery(tmp_path, monkeypatch):
+    L.persist_broker_execution_capture(_capture(), ledger_dir=tmp_path)
+    before = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    later = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    later["deals"][0]["qty"] = 7
+    later["orders"][0]["qty"] = 11
+    later["order_fees"][0]["fee_amount"] = 2.5
+    original_write = L._write_plan
+
+    def interrupt_manifest(plan):
+        if plan.path.name == "collection_manifests.jsonl":
+            raise PermissionError("simulated interruption before manifest commit")
+        original_write(plan)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(L, "_write_plan", interrupt_manifest)
+        with pytest.raises(PermissionError, match="before manifest commit"):
+            L.persist_broker_execution_capture(later, ledger_dir=tmp_path)
+    check = L.validate_broker_execution_ledger(tmp_path)
+    assert check["commit_anchors"]["anchored_collection_count"] == 1
+    assert check["ledgers"]["orders"]["rows"] == 2
+    result = L.persist_broker_execution_capture(later, ledger_dir=tmp_path)
+    assert result["ledgers"]["collections"]["rows_appended"] == 1
+    assert all(row["rows_appended"] == 0 for name, row in result["ledgers"].items() if name != "collections")
+    assert all((tmp_path / name).read_bytes().startswith(raw) for name, raw in before.items())
+    manifest = _jsonl(tmp_path / "collection_manifests.jsonl")[-1]["fact"]
+    for name, anchor in manifest["surface_commit_anchors"].items():
+        rows = _jsonl(tmp_path / L.LEDGER_FILENAMES[name])
+        assert anchor == {"row_count": len(rows), "head_record_hash": rows[-1]["record_hash"] if rows else None}
+    assert L.validate_broker_execution_ledger(tmp_path)["commit_anchors"]["anchored_collection_count"] == 2
+
+
+@pytest.mark.parametrize("recover_state", [False, True])
+def test_legacy_unanchored_manifest_replay_preserves_bytes(tmp_path, recover_state):
+    first = _capture()
+    changed = _capture(collection_id="capture-2", completed_at="2026-07-11T21:00:00Z")
+    changed["deals"][0]["qty"] = 8
+    changed["orders"][0]["dealt_qty"] = 12
+    changed["order_fees"][0]["fee_amount"] = 2.5
+    reverted = _capture(collection_id="capture-3", completed_at="2026-07-11T22:00:00Z")
+    for capture in (first, changed, reverted):
+        L.persist_broker_execution_capture(capture, ledger_dir=tmp_path)
+    # Simulate the pre-anchor schema, including historical A -> B -> A facts.
+    path = tmp_path / "collection_manifests.jsonl"
+    rows = _jsonl(path)
+    previous = None
+    for row in rows:
+        del row["fact"]["surface_commit_anchors"]
+        row["fact_hash"] = L._sha256_json(row["fact"])
+        row["prev_record_hash"] = previous
+        row["record_hash"] = L._sha256_json({k: v for k, v in row.items() if k != "record_hash"})
+        previous = row["record_hash"]
+    path.write_text("".join(L._canonical_json(row) + "\n" for row in rows), encoding="utf-8")
+    before = {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    if recover_state:
+        (tmp_path / "state.json").unlink()
+    for capture in (reverted, first, changed):
+        replay = L.persist_broker_execution_capture(capture, ledger_dir=tmp_path)
+        assert all(row["rows_appended"] == 0 for row in replay["ledgers"].values())
+        assert replay["state"]["latest_collection_id"] == "capture-3"
+        assert before == {name: (tmp_path / name).read_bytes() for name in L.LEDGER_FILENAMES.values()}
+    assert L.validate_broker_execution_ledger(tmp_path)["commit_anchors"] == {
+        "status": "unanchored", "anchored_collection_count": 0,
+        "legacy_unanchored_collection_count": 3,
+    }
+    L.persist_broker_execution_capture(_capture(collection_id="capture-4"), ledger_dir=tmp_path)
+    check = L.validate_broker_execution_ledger(tmp_path)["commit_anchors"]
+    assert check == {"status": "partially_anchored", "anchored_collection_count": 1,
+                     "legacy_unanchored_collection_count": 3}
+    assert all((tmp_path / name).read_bytes().startswith(raw) for name, raw in before.items())

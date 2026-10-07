@@ -1,45 +1,43 @@
-# Pilot shadow tracker - as of 2026-08-30T04:13:00+00:00
+# Pilot shadow tracker - as of 2026-10-07T01:57:42+00:00
 
 Per-position shadow notional: $10,000. Read-only; no orders.
 Measurement basis: paper-sleeve outcomes scaled to the fixed pilot notional; not broker-confirmed fills.
 Paper verdicts retain the precommitted risk stop but are not eligible for live graduation/kill attribution.
-Broker current-ticker overlap: 2/5; ticker presence is not lot or strategy attribution.
+Broker current-ticker overlap: 1/6; ticker presence is not lot or strategy attribution.
 Graduate/kill rule (pre-committed): >= 20 closed AND sum rv_vs_SPY > 0 AND book DD < 15%.
 Paper stop overlay: flag a shadow row at -15%; verify broker execution before acting.
 
+## [!] Cross-pilot overlap (stacked exposure on one name)
+
+- **AMD**: shadow-held by 2 pilots (Distribution-day absorption leadership, Fundamental growth + RS) -> $20,000 modeled exposure
+  - Distribution-day absorption leadership: HOLD, verdict KILL, new entries blocked
+  - Fundamental growth + RS: HOLD, verdict KILL, new entries blocked
+
 ## [!] Cross-pilot shadow concentration (one theme, stacked models)
 
-- **Technology** (sector): 5 positions across 2 pilot(s) (CRDO, MU, NOW, PLTR, WDC) -> $50,000 (100% of actionable exposure)
+- **Technology** (sector): 5 positions across 2 pilot(s) (AMD, MU, NOW, PLTR) -> $50,000 (71% of actionable exposure)
+- **Semiconductors** (industry): 3 positions across 2 pilot(s) (AMD, MU) -> $30,000 (43% of actionable exposure)
 
 ## Paper-shadow scorecard
 
 | pilot | closed | hit | realized $ | rv_cash | rv_SPY | rv_QQQ | book DD | verdict |
 |---|--:|--:|--:|--:|--:|--:|--:|---|
-| Source-priority allocator (TOP-1 only) | 28 | 43% | $-10,766 | $-10,766 | $-12,407 | $-8,967 | 115.0% | **KILL** |
-| Distribution-day absorption leadership | 8 | 38% | $-1,648 | $-1,648 | $-3,732 | $-2,922 | 22.0% | **KILL** |
-| Fundamental growth + RS | 22 | 46% | $-4,021 | $-4,021 | $-3,208 | $-1,846 | 53.1% | **KILL** |
+| Distribution-day absorption leadership | 12 | 50% | $346 | $346 | $-1,633 | $-1,936 | 22.0% | **KILL** |
+| Fundamental growth + RS | 29 | 48% | $-4,693 | $-4,693 | $-3,539 | $-3,145 | 83.2% | **KILL** |
 
 ## Today's paper-shadow signals (verify broker execution before acting)
 
-### Source-priority allocator (TOP-1 only)  (`accepted_helper_source_priority_allocator`, max_concurrent=1)
-- _new entries blocked: KILL verdict_
-- **SHADOW SELL (EXIT_NEXT_SESSION; VERIFY BROKER)** WDC: hold elapsed (day 9/10); entry 503.75, last 462.00
-- _skip_ FNV (SKIP_concurrency_cap)
-- _skip_ AGI (SKIP_concurrency_cap)
-- _skip_ DINO (SKIP_concurrency_cap)
-- _skip_ HPQ (SKIP_concurrency_cap)
-- _skip_ DDOG (SKIP_concurrency_cap)
-- _skip_ EOG (SKIP_concurrency_cap)
-- _skip_ CDW (SKIP_pilot_kill_verdict)
-
 ### Distribution-day absorption leadership  (`distribution_day_absorption_leadership`, max_concurrent=None)
 - _new entries blocked: KILL verdict_
-- _no position / no signal today_
+- shadow hold BRKR: day 7/10 (3 left); entry 61.93, last 60.50 (-2.3%)
+- shadow hold AMD: day 6/10 (4 left); entry 547.64, last 649.42 (+18.6%)
 
 ### Fundamental growth + RS  (`fundamental_growth_rs`, max_concurrent=None)
 - _new entries blocked: KILL verdict_
-- **SHADOW SELL (EXIT_NEXT_SESSION; VERIFY BROKER)** MU: hold elapsed (day 9/10); entry 999.17, last 932.86
-- shadow hold PLTR: day 5/10 (5 left); entry 174.07, last 186.29 (+7.0%)
-- shadow hold NOW: day 4/10 (6 left); entry 128.12, last 144.71 (+13.0%)
-- shadow hold CRDO: day 0/10 (10 left); entry 239.78, last 232.75 (-2.9%)
+- shadow hold NOW: day 8/10 (2 left); entry 139.22, last 135.62 (-2.6%)
+- shadow hold META: day 6/10 (4 left); entry 682.78, last 751.66 (+10.1%)
+- shadow hold PLTR: day 1/10 (9 left); entry 189.29, last 189.67 (+0.2%)
+- shadow hold AMD: day 1/10 (9 left); entry 634.86, last 649.42 (+2.3%)
+- shadow hold MU: day 0/10 (10 left); entry 1065.01, last 1045.56 (-1.8%)
+- _skip_ NVDA (SKIP_pilot_kill_verdict)
 

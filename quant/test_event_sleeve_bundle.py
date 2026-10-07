@@ -45,7 +45,7 @@ def _sleeve(
 
 
 def test_event_sleeve_bundle_aggregates_sources_without_trade_authority() -> None:
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_sleeve=_sleeve(
             candidate_count=2,
@@ -99,7 +99,7 @@ def test_event_sleeve_bundle_aggregates_sources_without_trade_authority() -> Non
 
 def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -157,7 +157,7 @@ def test_event_sleeve_bundle_normalizes_candidates_and_dedupes_by_priority() -> 
 
 def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -256,7 +256,7 @@ def test_event_sleeve_bundle_marks_non_generic_state_surface_addon_without_order
 
 def test_event_sleeve_bundle_applies_front_rank_rotation_tilt_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-20",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -326,7 +326,7 @@ def test_event_sleeve_bundle_applies_front_rank_rotation_tilt_without_orders() -
 
 def test_event_sleeve_bundle_applies_broad_breadth_event_tilt_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-21",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -410,7 +410,7 @@ def test_event_sleeve_bundle_applies_broad_breadth_event_tilt_without_orders() -
 
 def test_event_sleeve_bundle_applies_governance_source_quality_tilt_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-21",
         sec_governance_event_queue={
             "rule_version": "sec_governance_rule",
@@ -507,7 +507,7 @@ def test_event_sleeve_bundle_applies_governance_source_quality_tilt_without_orde
 
 def test_event_sleeve_bundle_applies_negative_reaction_tilt_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-21",
         sec_negative_event_queue={
             "rule_version": "sec_negative_rule",
@@ -620,7 +620,7 @@ def test_event_sleeve_bundle_applies_negative_reaction_tilt_without_orders() -> 
 
 def test_event_sleeve_bundle_applies_governance_503_haircut_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-22",
         sec_governance_event_queue={
             "rule_version": "sec_governance_rule",
@@ -693,7 +693,7 @@ def test_event_sleeve_bundle_applies_governance_503_haircut_without_orders() -> 
 
 def test_event_sleeve_bundle_applies_non_narrow_state_context_without_orders() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-21",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -744,7 +744,7 @@ def test_event_sleeve_bundle_applies_non_narrow_state_context_without_orders() -
 
 def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -770,7 +770,7 @@ def test_event_bundle_trade_plan_stays_blocked_until_explicit_enablement() -> No
 
 def test_event_bundle_trade_plan_emits_same_gated_action_when_gate_passes() -> None:
     counterfactual = {"frozen": True, "alternatives": [{"type": "cash"}]}
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_queue={
             "rule_version": "form4_rule",
@@ -868,7 +868,7 @@ def test_event_bundle_kill_switch_trips_on_three_consecutive_losses() -> None:
 
 
 def test_event_sleeve_bundle_reports_missing_source_as_zero() -> None:
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_sleeve=_sleeve(candidate_count=1),
     )
@@ -881,7 +881,7 @@ def test_event_sleeve_bundle_reports_missing_source_as_zero() -> None:
 def test_report_generator_renders_event_sleeve_bundle_without_orders() -> None:
     from report_generator import generate_daily_report
 
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_sleeve=_sleeve(candidate_count=1, pending_count=1),
         sec_negative_event_sleeve=_sleeve(candidate_count=1, open_position_count=1),
@@ -903,7 +903,7 @@ def test_report_generator_renders_event_sleeve_bundle_without_orders() -> None:
 def test_report_generator_renders_event_state_surface_addon_attribution() -> None:
     from report_generator import generate_daily_report
 
-    snapshot = build_event_sleeve_bundle_snapshot(
+    snapshot = build_event_sleeve_bundle_snapshot(config={"state_surface_addon_paper_enabled": True},
         as_of="2026-05-04",
         form4_event_queue={
             "rule_version": "form4_rule",

@@ -1952,7 +1952,7 @@ def test_empty_space_catalyst_observation_slot_is_blocked_by_default():
 
 
 def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2187,7 +2187,7 @@ def test_space_catalyst_observation_slot_blocks_trade_plan_and_applies_policy():
 
 
 def test_space_catalyst_observation_slot_marks_iwm_peer_leader_trend():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2239,7 +2239,7 @@ def test_space_catalyst_observation_slot_marks_iwm_peer_leader_trend():
 
 
 def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2316,7 +2316,7 @@ def test_space_catalyst_observation_slot_marks_trend_high_close_bucket():
 
 
 def test_space_catalyst_observation_slot_marks_arkx_ufo_breakout_complement():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2436,7 +2436,7 @@ def test_space_catalyst_observation_slot_marks_arkx_ufo_breakout_complement():
 
 
 def test_space_catalyst_observation_slot_marks_source_diversity_peer_leader():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2511,7 +2511,7 @@ def test_space_catalyst_observation_slot_marks_source_diversity_peer_leader():
 
 
 def test_space_catalyst_observation_slot_marks_source_diversity_peer_iwm_leader():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2596,7 +2596,7 @@ def test_space_catalyst_observation_slot_marks_source_diversity_peer_iwm_leader(
 
 
 def test_space_catalyst_observation_slot_marks_forward_replacement_positive():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2644,7 +2644,7 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_positive():
 
 
 def test_space_catalyst_observation_slot_marks_benchmark_breadth_trend():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2698,7 +2698,7 @@ def test_space_catalyst_observation_slot_marks_benchmark_breadth_trend():
 
 
 def test_space_catalyst_observation_slot_marks_defense_budget_delayed_benchmark_trend():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2770,7 +2770,7 @@ def test_space_catalyst_observation_slot_marks_defense_budget_delayed_benchmark_
 
 
 def test_space_catalyst_observation_slot_marks_forward_replacement_trend_strength():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2820,7 +2820,7 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_trend_strengt
 
 
 def test_space_catalyst_observation_slot_marks_forward_replacement_iwm_leader_trend():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -2875,7 +2875,7 @@ def test_space_catalyst_observation_slot_marks_forward_replacement_iwm_leader_tr
 
 
 def test_space_catalyst_observation_slot_marks_forward_replacement_company_source_trend():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -3021,7 +3021,7 @@ def test_space_catalyst_defense_budget_delayed_benchmark_is_trend_only():
 
 
 def test_space_catalyst_observation_slot_marks_government_contract_peer_leader():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -3083,7 +3083,7 @@ def test_space_catalyst_observation_slot_marks_government_contract_peer_leader()
 
 
 def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -3139,7 +3139,7 @@ def test_space_catalyst_observation_slot_marks_financing_dilution_profile():
 
 
 def test_space_catalyst_observation_slot_marks_single_event_defense_profile():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -3198,7 +3198,7 @@ def test_space_catalyst_observation_slot_marks_single_event_defense_profile():
 
 
 def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -3252,7 +3252,7 @@ def test_space_catalyst_observation_slot_marks_watch_liquidity_tier():
 
 
 def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {
@@ -3309,7 +3309,7 @@ def test_space_catalyst_observation_slot_zeroes_peer_nonleader_breakout():
 
 
 def test_space_catalyst_observation_slot_persistence_dedupes_daily_plan(tmp_path):
-    snapshot = build_space_catalyst_observation_slot(
+    snapshot = build_space_catalyst_observation_slot(observation_enabled=True,
         as_of="2026-05-11",
         candidate_signals=[
             {

@@ -25,17 +25,23 @@ except ImportError:  # pragma: no cover - package-style import fallback
     from quant.us_market_calendar import is_us_equity_session
 
 
-RULE_VERSION = "sleeve_health_report_v4"
+RULE_VERSION = "sleeve_health_report_v5"
 HEALTH_LOG_RELPATH = Path("paper_sleeves") / "sleeve_health.jsonl"
 
 # Snapshot payload keys in the daily run that describe sleeve-like surfaces.
 PAYLOAD_KEY_SUFFIXES = ("_sleeve", "_paper_sleeve", "_overlay")
+SPACE_CATALYST_PAYLOAD_KEYS = (
+    "space_catalyst_shadow",
+    "space_catalyst_observation_slot",
+    "space_catalyst_event_ledger",
+)
 
 # A sleeve whose snapshots.jsonl has not gained a row for more than this many
 # completed US equity sessions is flagged stale.
 DEFAULT_STALE_SESSION_THRESHOLD = 3
 NON_FAILING_BUILD_STATUSES = {
     "non_us_equity_session",
+    "paper_snapshot_disabled",
     "retired_default_off_paper_disabled",
 }
 
@@ -131,6 +137,14 @@ def sessions_between(start: str, end: str) -> int:
 
 
 def _payload_status(payload: dict[str, Any]) -> str:
+    if payload.get("retired") is True or payload.get("build_status") == "retired_default_off_paper_disabled":
+        return "retired_default_off_paper_disabled"
+    execution_contract = payload.get("execution_sizing_contract") or {}
+    if (
+        payload.get("paper_enabled") is False
+        and "paper_snapshot_disabled" in (execution_contract.get("blockers") or [])
+    ):
+        return "paper_snapshot_disabled"
     error = payload.get("error")
     if error:
         return str(error)
@@ -340,9 +354,13 @@ def build_sleeve_health_report(
     for key, payload in (sleeve_payloads or {}).items():
         if not isinstance(payload, dict):
             continue
-        if not str(key).endswith(PAYLOAD_KEY_SUFFIXES):
+        status = _payload_status(payload)
+        if not str(key).endswith(PAYLOAD_KEY_SUFFIXES) and not (
+            key in SPACE_CATALYST_PAYLOAD_KEYS
+            and status == "retired_default_off_paper_disabled"
+        ):
             continue
-        build_status[str(key)] = _payload_status(payload)
+        build_status[str(key)] = status
 
     disk_status: dict[str, dict[str, Any]] = {}
     stalled: list[str] = []
@@ -354,6 +372,8 @@ def build_sleeve_health_report(
     for key, status in build_status.items():
         if status in NON_FAILING_BUILD_STATUSES:
             name = str(key)
+            if key in SPACE_CATALYST_PAYLOAD_KEYS:
+                retired_dirs.add("space_catalyst")
             for suffix in sorted(PAYLOAD_KEY_SUFFIXES, key=len, reverse=True):
                 if name.endswith(suffix):
                     name = name[: -len(suffix)]

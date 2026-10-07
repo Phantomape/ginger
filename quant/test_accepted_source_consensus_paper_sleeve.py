@@ -11,6 +11,16 @@ from quant.accepted_source_consensus_paper_sleeve import (
 from quant.default_off_alpha_attribution import build_default_off_alpha_attribution_report
 
 
+import pytest
+from quant import accepted_source_consensus_paper_sleeve as legacy_sleeve
+
+
+@pytest.fixture(autouse=True)
+def _enable_frozen_legacy_paper_rule(monkeypatch):
+    """These tests exercise the explicitly enabled historical rule."""
+    monkeypatch.setitem(legacy_sleeve.DEFAULT_CONFIG, "paper_enabled", True)
+
+
 def _rows(
     *,
     base: float = 50.0,

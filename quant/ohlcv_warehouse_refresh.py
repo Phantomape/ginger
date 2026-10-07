@@ -16,7 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from datetime import datetime, timezone
+from datetime import date as _date, datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -170,6 +170,36 @@ def plan_refresh(
     }
 
 
+def _completed_session(run_clock: datetime | None) -> _date:
+    try:
+        from us_market_calendar import latest_completed_us_equity_session
+    except ImportError:  # pragma: no cover
+        from quant.us_market_calendar import latest_completed_us_equity_session
+    clock = run_clock or datetime.now(timezone.utc)
+    return latest_completed_us_equity_session(clock)
+
+
+def _truncate_to_completed_session(
+    frames: dict[str, Any], completed_session: _date
+) -> tuple[dict[str, Any], int]:
+    """Drop bars dated after the last completed session (never write a
+    partial-session bar; frozen rows cannot be corrected later)."""
+    cutoff = pd.Timestamp(completed_session)
+    kept: dict[str, Any] = {}
+    dropped = 0
+    for ticker, frame in frames.items():
+        if frame is None or len(frame) == 0:
+            kept[ticker] = frame
+            continue
+        index = pd.DatetimeIndex(frame.index)
+        if index.tz is not None:
+            index = index.tz_localize(None)
+        mask = index.normalize() <= cutoff
+        dropped += int((~mask).sum())
+        kept[ticker] = frame[mask] if not mask.all() else frame
+    return kept, dropped
+
+
 def refresh_warehouse_ohlcv(
     *,
     db_path: str | Path = DEFAULT_WAREHOUSE_PATH,
@@ -183,8 +213,14 @@ def refresh_warehouse_ohlcv(
     dry_run: bool = False,
     repair_splits: bool = True,
     logger: Any = None,
+    run_clock: datetime | None = None,
 ) -> dict[str, Any]:
     """Incrementally refresh warehouse OHLCV for the broad universe.
+
+    exp-20260925-007: fetched frames are truncated to sessions completed at
+    ``run_clock`` (16:00 New York + buffer) before anything is written. A
+    mid-session run otherwise froze partial-session bars for the whole universe
+    (2026-09-15..09-21), because existing rows are never rewritten.
 
     Existing rows are never rewritten (``update_existing=False``); fetching a
     generous overlap is safe and only missing days insert.
@@ -200,6 +236,7 @@ def refresh_warehouse_ohlcv(
     """
     started = time.monotonic()
     fetcher = fetch_many or _default_fetch_many
+    completed_session = _completed_session(run_clock)
     plan = plan_refresh(
         db_path=db_path,
         tickers=tickers,
@@ -224,6 +261,8 @@ def refresh_warehouse_ohlcv(
         "unchanged": 0,
         "split_discontinuities": [],
         "errors": [],
+        "completed_session": completed_session.isoformat(),
+        "dropped_incomplete_session_rows": 0,
     }
     if dry_run:
         summary["duration_seconds"] = round(time.monotonic() - started, 3)
@@ -247,6 +286,8 @@ def refresh_warehouse_ohlcv(
                     {"bucket": bucket_text, "tickers": len(chunk), "error": str(fetch_error)}
                 )
                 continue
+            frames, dropped = _truncate_to_completed_session(frames, completed_session)
+            summary["dropped_incomplete_session_rows"] += dropped
             try:
                 split_events = check_frames_against_warehouse(
                     db_path, frames, repair=repair_splits
