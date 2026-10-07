@@ -1,392 +1,135 @@
-# Ginger V2 Quant Agent Protocol
+# Ginger 简化运行协议
 
-> `AGENTS.md` 管通用做事方式，本文件管 V2 量化研究、实验和系统建设。
-> 具体命令、阈值、当前状态和历史案例放在专项文档里，不在这里重复。
+当前工作模式由用户在 2026-09-09 明确要求：简化系统，停止代码膨胀，优先得到可信结论。
+用户随后明确：系统应能自主修复和学习；简化限制无依据的扩张，不限制有证据的改进。
+本文件替代旧版的日常工作安排；归档协议、历史 backlog 和旧启动器不能恢复强制研究节奏。
 
-## 1. 目标和边界
+## 1. 只保留两件事
 
-V2 要做的不是一张好看的回测图，而是一套能还原决策现场的研究系统。它必须说清：当时知道什么、
-看过哪些候选、为什么这样选、用了哪版数据和规则、承担了什么风险、实际执行了什么，以及后来学到了什么。
+- 日常：root 运行现有 `quant/run.py`，继续数据采集、报告和已有 observer 的到期结算。
+- 研究：每次推进一个可执行的问题；历史研究与独立验收分开，等待只暂停对应题目，不暂停整个 Edge V2。
+- 无可执行的在研工作时，优先用现有历史数据做固定结果诊断，或检验有经济依据、历史样本可用的新问题；不要求先有新外部数据。
+- 需要等待的家族在现有记录中保留触发条件和最早检查时间，转做其他无冲突问题；不得把所有研究绑在一个低频来源上。
+- 不因“几小时没有实验”造任务，不自动扩建研究平台；是否继续取决于下述学习闭环。
+- 新研究统一在 `D:/Github/ginger/.codex/worktrees/edge-v2` 的 `automation/edge-v2` 分支进行。
+  root 负责生产维护；其他历史 ref 只读，不迁移策略资格、股票名单、权重或收益结论。
+- 自动化启停以应用中的当前设置为准；本协议不自行切换开关，也不恢复旧版强制研究节奏。
+- 本协议不改变现有策略参数、生产信号或交易权限；V2 始终 `trade_enabled=false`。
 
-最重要的重置规则：
+## 2. 每次只读必要信息
 
-```text
-V2 可以复用 V1 的代码、数据和失败教训，
-但不能继承 V1 的股票名单、alpha 结论、策略资格、组合权重或晋级状态。
-```
+1. 读 `AGENTS.md`、本协议和 `git status`。
+2. 核对实际目录、分支和未完成 ticket 的身份、owner、状态、写域；有现成任务先处理它。
+3. 做研究时核对 `data/v2/execution_lane_authority.json`；只读相关 ticket 和最近相关 receipt。
+   记录实际 lane、HEAD、协议路径与哈希，不能用另一 worktree 的规则冒充本地规则。
+4. 再按任务读取相关代码和专项合同。状态摘要只作导航，不要求每轮扫描整份 backlog、历史或总日志。
+5. 准入查重只输出预先声明的身份和枚举状态字段。复盘可读取已消费的 discovery 结果；
+   由此修订的假设须标明受到旧结果启发，不冒充结果盲发现；新评估样本在方案冻结前保持盲。
 
-V1 是历史档案、代码仓库和回归对照，不是 V2 的无偏基准。V1 赢家进入 V2 时也只能是零权重、
-`trade_enabled=false` 的挑战者。V2 先与 V1 并行，经过独立审核后才讨论切换。
+跨 ref 身份使用 `(source_ref, experiment_uid)`。同 ID 不同 UID 保留并隔离，不覆盖或重编号。
+使用现有共享 registry 锁分配新 ID。并发写域冲突时只停相关范围，保留其他人的 dirty 文件。
 
-### 1.1 近期经济目标
+## 3. 一个问题的学习闭环
 
-V2 的近期目标不是增加实验数，而是缩短一条可信 alpha 从想法到可执行收益证据的时间。研究北极星是**扣除交易成本、
-借券/融资成本和机会成本后的 forward replacement value**；辅助指标是从候选冻结到首次结算、Gate 4、足量 forward
-结算和 activation review 的耗时。回测 PnL、Sharpe、命中率或 `expected_value_score` 只能解释证据，不能替代这条北极星。
+1. **写问题。** 一个机制、一个 treatment、一个主要持有期；说明收益可能来自什么约束、风险或信息差。
+   数据探索得到的模式可先标为经验线索；经济解释须有可观测的反证，不靠事后故事获得资格。
+2. **先冻结。** 在看收益前冻结来源授权、PIT 时钟、映射、完整候选/落选面、规则和输入哈希。
+   使用现有准入、reserve、claim 流程；不手写 ID，不跳过重复、污染、冻结家族或重开条件检查。
+3. **测冻结方案。** 实际读取必须匹配 claim 的内容快照。记录代码、输入和结果身份。
+   正式验证看过结果后，该窗口记为已使用；不得改阈值、换持有期或筛名单再把同一窗口当独立验证。
+4. **关单。** 用现有 close 流程保存完整记录，包括失败、样本不足和无效结果；不伪造已完成状态。
+5. **复盘并决定下一步。** 对照原预测解释样本和扣成本后的结果，区分实现/数据错误、执行成本、机制失效和仍不确定。
+   负结果是有效结论；无效和样本不足要如实保留，同时判断能否通过下面的路径解决。
 
-在用户批准真钱前，“产生实际收益”只能表述为 default-off paper / broker shadow 的已结算净 replacement value，不能把历史回测
-利润写成已赚到的钱。系统要尽快把通过严格验证的候选送到 `limited_production_ready` 审核材料，而不是自行打开交易。
+已消费历史数据可用于固定结果归因、成本/市场暴露/集中度诊断、实现检查和提出修订，不必等新行情。
+固定结果归因复用 `loss_attribution + analysis_only`，关联原实验、单独归因 family，只报告开发诊断，不能计作新 alpha。
+策略变体仍须走适用的 alpha 登记与准入；现有系统尚无独立的策略开发回放模式，不能改名 `analysis_only` 绕过守卫。
+独立验证可用未参与构思和筛选的历史样本，不必晚于今天；真正没有合格历史样本时，该题目才等待 forward。
 
-收益转化 SLA 分两级：数值/readiness gate 已开、但仍需 outcome-blind scope 选候选时记为
-`scope_debt`，下一个可执行工作单元必须跑该 scope；候选、输入和反证合同都已冻结、可直接实验时才记为
-`conversion_debt`，并在发现当轮直接 `reserve -> claim -> run/build`。shared-paper build 通过后，daily observer 必须在
-下一个合格决策窗口前就位；产生决策后按冻结 horizon 结算。错过任一节点都不能用报告、修复数量或 proposal 冲销。
+开工和续做时，在现有 card 的 Measurement plan 或 notes 中简短说明：**关键疑点、最便宜的区分检查、两种结果各怎么办、
+预计耗时/实验次数与外部费用上限**。先用可手算/合成的小例子排除实现错误；涉及收益的检查仍须按既有合同先冻结登记。
+回测与执行不一致时，先对齐同一信号的已知时点、价格口径、订单触发、成交与成本，再决定补哪份数据或改哪段代码。
+合成数据只验证行为，不证明盈利；不为检查小问题建设通用模拟平台或默认接入更细粒度行情。
 
-“下一个工作单元”还必须有墙钟约束。每笔可执行债务和每个冻结的 `next_alpha_action` 都记录 `action_due_at`：默认是下一个
-有执行权限的 alpha slot，且不得晚于 opened/frozen 后 24 小时；只依赖已冻结本地数据的 replay、密度检查和 falsification 不因
-周末或休市暂停。确实依赖新市场数据时才可顺延到下一个合格 session，并机器记录原因。逾期未启动是
-`economic_incident=missed_alpha_execution_slot`，管理/Reflection 单元只能上报，不能滚动或重置截止时间。
+- **实现错误：** 自主复现错误、做最小修复并用相关测试验证；验收是正确实现原冻结规则，不以收益改善判定修好。
+  不删除或重写 attempt.lock，不替换 claim 快照/承诺；same-ID 恢复只走原合同允许的状态恢复或 close 补写。
+  修改冻结 runner、输入或测量口径，须另走合法登记与冻结路径。旧数据重算仅作诊断，不算新增独立 alpha 证据。
+- **样本不足：** 先查可补的历史和未使用历史段，再考虑等待既定窗口结算；追加评估前冻结新增样本范围、
+  数量、唯一评估时点和停止条件，按既有合同登记；原规则不变，保留旧样本及查看记录。
+  不能边看收益边补到显著，也不能降低门槛或覆盖原无结论记录。
+- **假设有改进依据：** 可从已消费结果提出可证伪的新版本，写清改变原因和唯一变量，保留旧结论；
+  先利用开发诊断完善方案，定型后另立实验，在未参与修改方案的历史窗口或 forward 验证，计入多重检验。
+  新 ID 不豁免查重、重开或污染围栏；不要每次小修都消耗一个新的独立验证窗口。
+- **按信息与成本续做：** 不固定只许一次后续实验；每一步须能排除一个具体解释、补足关键证据或验证真正不同的预测，
+  并说明为何比等待或其他可行检查更值得。开工前自主确定最小足够的有限预算，在现有记录关联前后 ID，跨唤醒累计。
+  先关闭前一实验再启动下一实验；预算不能因结果不好而上调，也不能换 ID 或改名归零；直接修复只处理当前根因。
+- **何时停止：** 当前题目没有新增信息、需要等待、修复无进展或预算用尽时，只停止该题目，保留结论和重开条件。
+  本轮仍有预算且有其他可执行问题时继续；只有没有有价值的可执行工作或本轮预算用尽，才结束整轮。
+  开发诊断可由尚未检查、能区分具体解释的问题启动，无需等待新外部数据；须说明它不重复已有检查并沿用累计预算。
+  正式重新验证仍须满足原重开条件，在读取新增结果前说明依据和预算；不得靠重述旧结果或换名为同一试验链续期。
+  普通失败本身不是放弃理由，也不是无限重试的理由。预算是研究资源安排，不改变数据使用或付费权限。
 
-## 2. 每轮从哪里开始
+实验真相源是 `experiments/logs/<id>.json` 及其绑定 artifact/ticket/manifest。
+`docs/experiment_log.jsonl` 是派生视图，不手写。同一结论只保留一份，其他位置链接引用。
+例行结算和纯文档整理不申请新实验 ID；策略、测量口径或机器 guard 变化仍按现有实验合同登记。
+优先复用已有 hypothesis、falsifier、main_failure_modes/realized_failure_mode、post_run_reflection 与 next_retry_requires；
+只填写尚未冻结的适用记录。来源链接放普通说明，不代替 research_refs 准入证明；不加 schema、评分器或第二套研究账本。
+收尾用几句话说明：原判断、新证据、判断怎样改变、下一步及预算余量；把证据纠错与新增 alpha 分开。
 
-真实记录的优先级是：已提交代码和 schema、原始输入及哈希、实验 ticket/log shard/manifest/artifact、
-append-only ledger，高于任何摘要和报告。派生 snapshot、dashboard 和大模型总结只负责导航。
+## 4. 保留可信度，不提前建设整个平台
 
-每轮先读最小入口：
+- 数据必须有使用授权、来源身份/哈希、真实可得时钟、修订语义和当时有效映射。
+  哈希只能证明文件身份，不能证明历史上可得；已知未来泄漏只能归为 `not_pit`。
+- `research_pit` 的私有回放最高是 `observed_only` 线索；不能直接 accepted、paper 或晋级。
+- 小实验可使用预先定义的来源范围。保留每条来源行的 mapped/excluded/unmapped 及原因，
+  验证行数守恒、身份唯一、映射集合一致；收益实验必须在结果前冻结池内 research-only DecisionRecord。
+  `external_universe_coverage_status=unverified`、`paper_live_eligible=false`，不能声称覆盖全市场。
+- fast scout 的启动线仍为主要持有期预估至少 10 个可评估决策、一个非空对照、保守成本和反证。
+  不把全市场覆盖、Engine-0、daily adapter、runtime parity 或完整执行系统当成初次 scout 的前置。
+  选题先检查历史样本量和对照，优先能形成有效结论的题目；10–29 个样本只在能回答明确反证问题时启动，
+  不为已知只能再得一次“正向但不足”而反复分片。30 是正向证据门槛，不是开展历史诊断的门槛。
+- 正向但不足冻结样本门槛（默认至少 30）仍是无结论；不能下调门槛制造成功。
+  完整性通过的合格正向 lead 才可登记 `observed_only`；负向、样本不足、污染的 registry 状态为 `rejected`，
+  artifact 分别保留 `rejected`、`inconclusive_insufficient_sample`、`invalid_contaminated`，后者标记证据无效。
+- 准入封套、CAS、一次性执行、reservation/claim 身份、终态承诺和幂等 close 的现有机器校验全部保留。
+  历史原始文件不可回填或覆盖；纠错使用现有追加式、绑定哈希的纠错路径。
+- canonical validation 仍需真实 canonical PIT、未使用窗口、独立 V2 基线和共享 policy。
+  paper/晋级另需 daily parity、完整成本/现金/容量/风险、forward 和执行证据；本地 observer 需外部 append anchor。
+  既要证明自身扣成本后有价值，也要证明同资本替换组合后有增量；测试通过、回测赚钱不等于实盘赚钱。
+- V1 仅为可选兼容性参考，不作为 V2 无偏基线。AI 自由文本不能改订单、仓位或风险上限。
+  未获用户单独授权，不得开启 V2 交易、下单或改变真钱权限；晋级标签不代表交易授权。
 
-1. `AGENTS.md` 和本协议；
-2. `git status`、未完成实验、最近一次 V2 运行结果；
-3. `docs/v2/current_state.md`、`docs/v2/backlog.md`、`docs/v2/decision_log.jsonl` 和最近一份
-   `data/v2/hourly_runs/` receipt；这些文件尚未建立时，由 M0 建立；
-4. 当前任务直接涉及的专项文档、代码、schema 和证据文件。
+## 5. 对工程工作设边界
 
-不要每小时重读整个 V1 历史。查具体实验时读 `experiments/logs/<id>.json` 等分片，不要把 100MB 级派生总日志
-整份塞进上下文。
+- 可主动修当前日报故障或当前研究问题的直接障碍，开工前写明根因依据、文件范围与验证标准。
+- 跨模块修复本身不构成停止理由；每处改动须能消除具体故障或让当前实验可验证，避免借修复扩建无关平台。
+- 不为“以后可能用到”新增框架、抽象、schema、仪表盘、日报或审计层，不轮番修旧实验的旁支问题。
+- M0–M9、两小时/24 小时发现期限、自动 fallback 合成和持续收益转化 SLA 不再是工作指令。
+- 只跑改动相关检查；共享核心合同或发布边界变化时再按风险扩大测试。文档整理不跑全量量化回测。
+- 已有 ticket 的未完成工作要如实收尾或保留阻塞，不强制回滚其他 writer；必要修复按第 3 节自主完成。
+- 同一等待题目的输入和 blocker 未变时跳过，不重复审计或生成 no-op receipt；检查其他可执行问题后再决定整轮停止。
+- 数据准备、准入和审计是中间步骤；同轮可完成的实验应继续到结果与关单，不把它们反复拆成“下一轮再测”。
+- 只有结论、阻塞或操作边界实质变化才改导航；不要求同一段内容同步写进四份文档。
+- 不因旧 Chore 或历史启动器授权自动 commit/push；仅在当前任务明确要求时执行发布类动作。
 
-发生冲突时，按“用户和系统指令 → `AGENTS.md` → 本协议 → 专项文档 → 摘要/历史说明”处理。
-专项文档可以补细节，不能放宽 PIT、反泄漏、default-off 和真钱边界。
+## 6. 需要时再查
 
-## 3. 不能破的规则
+- 登记、claim、关闭和终态完整性：[实验合同](agent_experiment_protocol.md)。
+- 数据可得性：[PIT 合同](research_pit_policy.md)。
+- 正式验证：[回测合同](backtesting.md)、[生产一致性](production_backtest_parity.md)。
+- 晋级的多重检验与组合增量：[DSR](deflated_sharpe_protocol.md)、[组合贡献](portfolio_covariance_lane.md)。
+- 旧协议完整原文：[历史存档](archive/quant_agent_protocol_v2_before_simplification_20260910.md)。
+  存档用于查历史背景，不恢复旧调度或建设义务；专项合同的完整性和晋级门槛仍然有效。
 
-1. **不能事后挑名单。** `core` 是资金和风险政策，不是一张永久股票表。
-2. **不能倒填资格。** 数据、股票、映射、策略、模型和 Skill 结论只能在 `known_at`、`eligible_as_of` 之后参与决策。
-3. **不能只记赢家。** 结果出来前就冻结完整股票池、所有候选、入选和落选原因、被挤掉的替代项，以及 cash、SPY、QQQ 和 V1 对照。
-4. **选候选时不能看答案。** 未来收益、PnL、MFE/MAE、结算结果和赢家标签不能进入候选生成或选择。发现阶段查看含已结算结果的 ledger / 报告时，必须用只显示 schema 或掩码结果列的读取方式；把结果值打印进上下文即视为污染，本轮按 zero-ID containment 处理（2026-08-11、2026-08-18 两例）。
-5. **不能一边考试一边改答案。** discovery、锁定 validation 和干净 forward 要分开；用过的评估窗口不能再修改同一个候选。
-6. **数据接得上，不等于数据能用。** adapter、Skill 或官方来源都不能替代授权、时钟、修订和 PIT 审核。
-7. **一次只验证一个可归因的决策假设。** 同一假设所需的 helper、replay、daily、parity 和测试可以一起做；不相关的 alpha 不能打包。
-8. **换皮不算新证据。** 换阈值、字段、事件子类、表单编号、持有期或把旧源做 join，不能自动获得新实验。
-9. **回放和日常运行共用决策逻辑。** 不能保留只在 backtester 里赚钱的规则。
-10. **AI 自由文本不能直接交易。** AI 可以找线索、做语义判断和提假设，不能直接改订单、仓位、风险上限或可交易股票池。
-11. **默认永远是关着的。** 用户单独批准前，V2 必须保持 `trade_enabled=false`，不得下单或调整真钱权限。
-12. **没有好工作就不要硬做。** 做只读检查，记下 blocker 和定量重开条件，以 `no-op audit` 结束即可。
+## 7. 从业者方法来源
 
-## 4. V2 的核心合同
+以下一手材料核对于 2026-09-10。第 3 节是针对 Ginger 的改编，预算规则由本项目制定，不是作者原话或业内共识。
+这里只采用研究方法，不导入文章中的策略、参数、收益结论或当年的交易规则。
 
-### 4.1 数据和 PIT
-
-每条决策数据至少记录：来源、原始身份和哈希、真正参与决策的标准化内容、时区、`observed_at`、
-`published_at`、`known_at`、生效区间、修订版本、当时有效的 security 映射、使用授权和 schema 版本。
-
-新鲜度看“决策会用到的内容”是否变化，不能只看抓取时间或带随机字段的原始响应哈希。交易日归属锚定
-数据日历、冻结的 run date 或 broker session，不能拿进程壁钟日期代替。
-
-| PIT 等级 | 可以做什么 | 最高结论 |
-|---|---|---|
-| `not_pit` | 不声称收益证据的诊断 | 无效 / reject |
-| `research_pit` | outcome-blind 发现、冻结候选、private replay | `observed_only` lead |
-| `canonical_pit` | 正式 Gate、default-off paper、晋级评估 | 按 Gate 结果决定 |
-
-已知未来修订、幸存者名单、当前映射倒灌或未来复权进入决策输入时，必须标成 `not_pit`。本地哈希只能证明
-测了哪份文件，不能证明历史当时真的拿得到它。详细口径看 `docs/research_pit_policy.md`。
-
-### 4.2 股票池和策略
-
-V2 股票池必须按当时信息生成，并用 append-only `UniverseEvent` 记录发现、准入、状态变化、原因、规则版本和
-输入快照。系统要能回放任意一天的研究池、可交易池和 quarantine/retired 状态。没有可信历史 PIT 股票池时，
-诚实标成 research-only，并从干净的 forward T0 开始。
-
-所有环境共用一条决策链：
-
-```text
-EvidenceSnapshot -> CandidatePool -> RankedCandidate -> SignalDecision
--> RiskDecision -> OrderIntent -> Fill/Reject -> PositionState
--> SettledOutcome + ReplacementValue
-```
-
-每个策略提前冻结赚钱机制、数据面和 PIT 等级、entry/ranking/sizing/exit/cost 版本、持有期、容量、流动性、
-反事实对照、重叠和集中度、失败条件、kill switch 与晋级条件。
-
-### 4.3 AI Berkshire 和 Skill 路由
-
-AI Berkshire 负责找机会、做研究、提出反证和持续跟踪，不负责直接交易。按当前问题选择最小够用的 Skill 组合：
-
-| 任务 | 优先 Skill |
+| 来源 | 采用的做法与边界 |
 |---|---|
-| 行业漏斗、质量初筛、供应链瓶颈 | `industry-funnel`、`quality-screen`、`bottleneck-hunter` |
-| 公司、行业和管理层深研 | `investment-research`、`industry-research`、`management-deep-dive` |
-| 财报、新闻和股价异动归因 | `earnings-review`、`news-pulse` |
-| 组合复盘和买入后论文跟踪 | `portfolio-review`、`thesis-tracker`、`thesis-drift` |
-| 美股/港股行情、期权、FINRA、SEC、宏观和日历数据 | `global-stock-data` |
-| 财务数据获取和交叉验证 | `financial-data` |
-
-执行时遵守：
-
-- 不要把所有 Skill 都跑一遍；每轮最多一个**研究 Skill**，而且必须由当前 backlog 触发。
-- `global-stock-data` 和 `financial-data` 属于取数/核验工具，不占研究 Skill 名额；只在本轮证据确实需要时调用。
-- Skill 结论要落成结构化 `ResearchClaim`，至少包含来源、`as_of/known_at`、PIT 等级、置信度、反证条件、影响对象和下一步，不能只留散文。
-- `global-stock-data` 优先取官方或一手来源，并对关键数字交叉验证；它能帮助接入数据，但不能证明使用授权、`canonical_pit`、历史可得性或 replay/daily parity。
-- 当前行情不能倒填成历史证据，Skill 自带 adapter 也不能绕过候选冻结、novelty、Gate 或 default-off 边界。
-- 指定 Skill 不可用时，记录缺失和替代方案；不得假装已经运行或编造输出。
-
-发现阶段看不到候选结果；评估阶段可以解释已锁定结果，但不能改写实验或把赢家塞回同一候选池。
-
-### 4.4 验证、晋级和执行
-
-候选必须先登记、后看结果。冻结完整 trial panel，按时间分 discovery、validation 和未使用的 forward；
-计算完整成本、现金约束、每日 MTM、强平、容量和滑点；同日期、同资本比较 cash、SPY、QQQ、V1 和被挤掉的候选。
-同时检查集中度、beta/factor、相关性、回撤、expected shortfall、换手和机会成本。有完整选择面时计算 PSR/DSR，
-合适时检查 PBO；语义或事件信号要做 placebo、permutation 或 negative control。
-
-`expected_value_score = strategy_total_return_pct * abs(sharpe_daily)` 只保留为 V1 兼容指标。策略晋级前必须同时证明：
-
-1. 扣除成本后，策略自己有正价值；
-2. 资本不增加时，替换进组合后仍有增量价值。
-
-`docs/backtesting.md` 当前的 V1 baseline 只做回归和机会成本对照，不能直接成为 V2 Gate-1 晋级锚。M3 要在 V2 动态
-PIT 股票池和共享决策链上建立独立 Engine-0 baseline；在此之前，V2 候选最多停在 research/shadow。
-
-晋级标签是 `research -> shadow -> qualified_paper -> pilot_ready -> limited_production_ready -> core_policy_eligible`，
-旁路是 `quarantine / retired`。标签只表示证据成熟度，不会自动打开交易。
-
-买卖、过滤、排序、仓位和风险规则必须放在共享 policy/helper。研究建议、`OrderIntent`、已提交、成交、拒单、撤单和
-当前持仓分开记录。重复运行要幂等；字段缺失、价格过期、数据陈旧或非交易时段要 fail closed。监控至少覆盖数据/observer
-零产出、输入内容身份、现金预留、fill drift、position trajectory drift 和 replay/daily parity。
-
-## 5. 怎么选工作、怎么做实验
-
-先处理未完成、失败或冲突中的工作。V2 建设期按下面的依赖顺序推进：
-
-```text
-identity -> clock -> source contract -> universe -> shared policy
--> validation -> forward wiring -> allocator -> activation review
-```
-
-这条依赖链约束**单个候选的证据完整性**，不是要求全系统完成 M0-M5 后才允许研究 alpha。一个候选具备下面的
-“最小 alpha 内核”时，可以立即进入 `alpha_search`，其余通用建设并行补齐：
-
-1. 本轮输入的身份、授权、决策时钟、PIT 等级和哈希已冻结；
-2. 本轮股票池、security 映射和 eligibility 能按决策时点还原；
-3. 完整选择 panel、同口径 baseline、成本模型、资本约束和 replacement comparator 已冻结；
-4. 结果列在选择前不可见，replay / daily 边界和最高结论已写清；
-5. 实验记录、回滚路径和 `trade_enabled=false` 边界可执行。
-
-满足内核后，默认下一项工作就是 `alpha_search`，不得因为通用 schema、全市场 universe 或后续 allocator 仍未完工而等待。
-只有能点名所阻断候选、失败 Gate 和解除条件的 `measurement_repair` 可以插队；纯文档、泛化重构和“以后可能有用”的数据接入
-不能占用一条已经 ready 的收益路径。
-
-工作节奏遵守：
-
-- outcome-blind readiness preflight 最多占一个工作单元；通过后，下一个工作单元必须 reserve 并执行冻结测试，不能停在 proposal；
-- 连续两个已完成工作单元都不是 `alpha_search` 时，下一个单元必须做 outcome-blind alpha preflight 或 alpha 实验；只有对已登记
-  surfaces 逐一给出量化 blocker 和 reopen 条件后，才能继续建设工作；
-- forward 等待不独占研究 lane：不改变口径的 observer 后台积累时，主动切换到另一个 canonical-PIT 或可快速否证的 research-PIT
-  候选；
-- 同等因果质量下，优先 canonical-PIT、短结算周期、可共享 replay/daily、容量更高、执行摩擦更低的候选；需要真实 locate、
-  复杂期权权限、付费源或长期事件等待的候选必须用更强的预期增量价值补偿这些延迟。
-
-### 24 小时 alpha 脉冲和修复闭环
-
-每个新工作单元启动时，先从 ticket、Gate artifact 和 append-only ledger 计算严格滚动 24 小时脉冲：`alpha_trials`、
-`canonical_gate4_passes`、`forward_decisions`、`settled_outcomes`、`net_replacement_value`、`active_forward_sleeves`、
-`observer_stale_sleeves`、`eligible_unadmitted`、`due_unsettled`，以及每条 sleeve 的 `eta_first_settlement` 和
-`eta_contract_completion`。同时记录 `oldest_actionable_debt_age_hours`、`next_alpha_action_due_at` 和
-`missed_alpha_execution_slots`。`measurement_repair`、抓取行数、测试数、schema 数和文档数不能计入 alpha 或收益进展。
-
-若过去 24 小时 `alpha_trials=0` 且没有正在执行的冻结实验，本工作单元只能二选一：执行一个已通过 preflight 的 alpha 实验，
-或完成一次 outcome-blind preflight 并把下一工作单元锁定为具体冻结实验。若现有 lead 都被真实 locate、付费数据、新权限或长期等待阻断，
-默认切到已有 canonical-PIT、共享执行链和成本模型可覆盖的低摩擦候选；优先无需借券的 long-only / long-cash replacement，
-不能继续用修同一条受阻数据链代替 alpha 搜索。
-
-若 `settled_outcomes=0` 且最早预计结算仍超过 5 个交易日，或唯一 active sleeve 依赖尚未取得的 locate/权限，下一次 outcome-blind
-合成必须包含至少一条**快速结算 lane**：现有权限与成本模型可覆盖、无需借券、H1-H5、canonical-PIT 或可保守重建的
-long-only / long-cash replacement。它仍要过完整 falsifier 和 Gate，不能因“快”放宽标准；只有机器列出已登记 surface 及逐项 blocker
-后才可宣称无此候选。质量相当时，优先首次结算更早、capital-day 效率更高者。
-
-需要尚未获得的真实 locate、付费源或新权限的 paper sleeve 可以继续后台积累证据，但不能成为唯一 active monetization path。
-在这些 blocker 解除前，前台 alpha lane 必须优先推进一条用现有数据、权限和执行链即可到 activation review 的候选；默认选择
-无需借券的 long-only / long-cash replacement。这个优先级不改变 `trade_enabled=false`，也不替代最终用户批准。
-
-### Readiness 债务必须分类并立即消费
-
-readiness 检查不是独立成果。机器 artifact 只证明前置数值/能力 bar 通过、但冻结合同仍要求 outcome-blind scope
-和 source-contract 检查时，记为 `scope_debt`，不得宣称候选已就绪。下一个可执行工作单元必须运行冻结 scope：
-选出候选时，同一工作单元冻结其 falsifier 并直接 `reserve -> claim -> run/build`；未选出时，以机器可查的
-`no_candidate` artifact 关闭该债务，并把下一个工作单元锁定到已登记的低摩擦备用 surface。scope 本身不占 alpha ID；冻结
-runner/build 实际开始后 `alpha_trials` 才加一。
-
-scope 不能先选一个候选、再发现其反证对照结构性不可达后停到下一轮。每个 D0-D3 pass 候选必须在最终 selector 之前，用决策时点
-可见的身份/密度字段完成 `pre_reserve_reachability`；结果值仍不可见。只有 treatment、control/placebo、各 horizon 样本数和必要
-执行覆盖达到预声明下限的候选才能进入 selector，`execution_feasibility` 也只有此时才能记满分。scope manifest 同时冻结完整
-fallback policy；候选生成和 reachability 完成后、任何结果访问前，selection panel 再冻结候选 ID、哈希和 outcome-blind fallback
-顺序。若 primary 因选择前无法检查的机械 blocker 在 reserve 前失败，同一工作单元立即沿该顺序继续，
-直到启动一个正式实验，或以逐候选机器 blocker 关闭整个 panel；只要同一冻结 panel 仍有未检查的 D0-D3 pass 候选，就不得新开
-`scope_debt` 或以“下一轮复验”结束。
-
-候选、输入身份/PIT/授权和反证合同都已冻结、可执行时才是 `conversion_debt`。若本轮 artifact 让它从 closed 变为 open，
-本轮必须沿既有合同直接 `reserve -> claim -> run/build`；不得重做 preflight、重写 proposal、扩展 scope，或以更新 state / backlog /
-协议后结束。两类债务都优先于通用 M0-M5 建设和新的 measurement repair。只有输入身份/PIT/授权失效、冻结合同不可执行，或与
-无法隔离的现场改动冲突时才可停止；receipt 必须给出机器可查的 blocker 和 reopen 条件。
-
-receipt 对两类债务都至少记录 `debt_type`、`trigger_artifact`、内容哈希、`opened_at` 和冻结合同引用。`scope_debt`
-另记 `consumed_at`、`selected_candidate` 或 `no_candidate_artifact`；`conversion_debt` 另记 `consumed_by_experiment_id`。仅
-`measurement_ready`、scope 通过、reserve ID 或生成脚手架都不计 alpha。连续两个 24 小时脉冲都为零后，除非用户明确要求或发现新的
-机器 blocker，不得再用纯协议/报告优化占用下一个执行单元；协议编辑本身也不能延期已有债务。
-
-### 数值 bar 要可达，修约要预登记
-
-冻结 reopen / acceptance 合同时，每条数值 bar 必须结构可达：它应衡量测量装置在正常运行下确实能产生的能力证据，
-不能是与决策重合的罕见事件计数。冻结前对每条 bar 给出保守的期望到达路径；给不出的，改写成由持久化 artifact
-机器可查、fail-closed 的能力条件（先例：exp-20260721-002 冻结的 `actual_cash_conflicts>=10` 在 32 个 ok trace
-会话里只出现 1 次终身冲突、0 次决策重合，而其余 bar 全部 17-38 倍通过——冻结时做一次期望事件率检查即可避免）。
-
-已冻结 bar 只能通过**预登记的一次性 contract review ticket** 修约（exp-20260811-001 预登记 → exp-20260828-001 执行）：
-review 全程 outcome-blind、不读任何结果/PnL 值；其余 bar 字节不变；下游 readiness / reopen gate 在同一工作单元重跑并
-记录 before/after。数值 gate 打开后若仍需 scope 选候选，只产生 `scope_debt`；只有冻结候选已可执行时才产生
-`conversion_debt`。两者都不等于候选资格或 phase 重开。未预登记的 bar 修改一律
-按放宽验收门槛处理。
-
-### Observer 自动采证，真钱仍默认关闭
-
-shared-paper / broker-shadow build 通过后，只要该路径不生成 `SignalDecision`、`OrderIntent` 或订单，observer 就必须随既有日常任务
-自动运行；`trade_enabled=false` 保护的是资本和订单路径，不得被解释成关闭 paper 采证。每次合格运行必须按冻结规则依次完成：
-admit 全部 eligible 决策、settle 全部到期 basket、更新成本后 replacement value 和 cash/SPY/QQQ 对照、幂等追加 ledger 与健康摘要。
-
-`observer_stale_sleeves>0`、`eligible_unadmitted>0` 或 `due_unsettled>0` 任一成立，都记为 `economic_incident`；下一工作单元先恢复采证或
-结算，再开新实验。若只修复调度、持久化或结算故障且不改变冻结决策合同，不另占 alpha ID；若改变 signal、entry、exit、成本、
-候选准入或执行语义，则必须走实验流程。不得通过关闭 observer、漏记到期结果或放宽验收门槛来改善表面脉冲。
-
-每个 `measurement_repair` 必须在登记时写明 `blocked_downstream_check`、冻结输入和修复前 gate 值；修复后在同一工作单元重跑
-该下游检查，并记录修复后 gate 值。组件恢复但下游仍关闭时，可以技术上接受修复，但 receipt 必须写
-`economic_progress=false`，不得表述为恢复了 alpha 或收益路径。下一工作单元只有在剩余项是该候选最后一个量化 blocker、且没有更低摩擦的
-可测候选时，才允许继续修同一路径；否则立即 park 并换 surface。
-
-新 alpha 实验至少要有一条机器可查的新证据轴：真正独立的新数据源、真正不同的决策面/gate shape、达到已登记
-重开条件的新增 settled forward 决策，或未饱和来源上确实没用过的新字段。join、换阈值、换响应、换子类、同日刷新和
-重新讲旧机制都不算。
-
-先免费检查授权、PIT、映射、密度、真实候选触达和 reopen 计数；不够就 park，不要烧实验 ID。例行 append、结算和摘要
-刷新也不占新 ID；真正的管道故障修复才算 `measurement_repair`。纯文档整理不需要 ID；若同时改变机器 guard、测量口径
-或策略行为，改变合同的部分必须走实验流程。
-
-### 严谨与效率必须同时成立
-
-PIT 纪律不能退化成“所有实验都从零等待 forward”。默认按证据可还原程度走最快合法路径：
-
-1. 有 canonical PIT 历史快照、版本或可验证决策时钟的，立即做正式历史验证；
-2. 能从不可变日快照、内容哈希、最早提交/归档时间保守重建 `known_at` 的，先重建独立证据表再验证，不能改写原 ledger；
-3. 只有 research PIT 的，先用冻结的延迟、成本和缺失压力回放快速淘汰，结论上限保持 `observed_only`；
-4. 只有真正无法历史还原的字段，或历史验证后的最终确认，才依赖干净 forward；
-5. forward 采集优先建设共享证据总线，一批数据服务多个预登记假设，禁止每个实验重复造一条等待管线。
-
-效率不能降低晋级标准：保守重建和压力回放可以加速发现、排序和否证，但不能把 research PIT 冒充 canonical PIT，
-也不能绕过共享 policy、Gate、replacement value、执行现实和 `trade_enabled=false` 边界。目标是尽早杀掉坏想法、尽快把
-少数好想法送进严格验证，而不是用等待代替研究，或用速度代替证据。
-
-### Alpha 到收益的最短闭环
-
-每个 lead 在登记时必须写一条 `fastest_conversion_path`：当前证据级别、下一项能推翻它的独立证据、到 default-off paper 的
-缺口、到可执行 forward 的缺口、预计首次结算与合同样本充足时间，以及除最终用户批准外仍缺的 activation blocker。按下面的闭环推进：
-
-```text
-outcome-blind preflight -> frozen falsification -> canonical Gate 4
--> default-off daily observer -> settled net replacement value
--> Gate 5 / activation review -> 用户批准后才可能 limited production
-```
-
-- research-PIT 正结果应立即选择：补齐 canonical 证据，或用 unchanged observer 开始 forward；如果关键执行证据不可获得，就 park
-  并切换 surface，不能在同一历史样本上继续扫邻近规则。
-- canonical Gate 4 通过时，同一 full-stack 实验必须留下 default-off daily 输出、settlement 路径、parity 测试和 kill 条件；
-  “回测 accepted、以后再接 forward”不是完成态。
-- forward 结算必须报告净 PnL、replacement value、capital-day 效率、成本漂移、集中度和对 cash/SPY/QQQ/V1 的同资本比较；
-  observer 启动后持续滚动更新 activation review 骨架，不能等样本达标后再补执行、权限、kill switch 和容量材料。
-- 达到预登记的 Gate 5 与 forward 门槛后，下一工作单元优先生成 activation review 材料；协议本身不授权下单。
-
-### Alpha 实验顺序
-
-1. **Outcome-blind 合成：** 在同一 PIT 股票池比较机会成本；盘点 price、flow、derivatives、event、positioning、
-   portfolio exposure 和 research digest；生成 1-3 个有经济因果链的假设，再选一个。
-2. **写反证：** 给 lead 写 baseline、treatment、horizon、replacement comparator、PIT 等级、成功条件和 falsifier。
-3. **冻结和登记：** 先冻结完整候选池、选择面、规则、输入哈希和验收标准，再用 `scripts/experiment.py new` reserve ID。
-   不要手写 ID，也不要在 reserve 前创建 runner/artifact/实验 data。有并行工作时先 claim；疑似超时先查 open ticket，不能盲重试。
-4. **完整实现：** 能同时用于 replay 和 daily 的信号默认 shared-paper-first。private replay 只适合 `research_pit`、数据形态
-   不清楚或早期 scout；正向结果也只能是 lead。
-5. **过 Gate：** Gate 1 锁定 baseline；Gate 2 查真实运行时字段；Gate 3 查生成数、存活数和存活率；Gate 4 用相同输入和窗口
-   做 before/after。只有讨论 live eligibility 时才做 Gate 5。精确命令和阈值看 `docs/backtesting.md`。
-6. **收尾：** 记录输入/代码身份、before/after 或 observed-only artifact、PIT、production impact、parity、结论、prediction
-   calibration、禁止的近邻重试、定量重开条件、改动文件和复现命令。失败实验也要完整关闭。
-
-单元测试通过不等于 alpha 成立。策略未过 Gate 4，就回滚本实验的策略改动并保留失败记录。每个实验的
-`experiments/logs/<id>.json` 是真相源；`docs/experiment_log.jsonl` 是可重建派生视图，不能直接写。
-
-## 6. V1 迁移和 V2 建设顺序
-
-先做机器可读的 V1 资产清单，每项只能进一类：
-
-| 分类 | 处理方式 |
-|---|---|
-| `reuse_directly` | 复用可靠的 PIT ledger、哈希、现金/MTM/成本修复、实验历史、parity helper 和测试 |
-| `reuse_after_contract_upgrade` | 代码可用，但先补 V2 schema、授权、时钟、映射、失败语义或 parity |
-| `migrate_as_zero_weight_challenger` | V1 策略和 sleeve 以零权重、default-off 挑战者重新参赛 |
-| `legacy_diagnostic_only` | 静态股票池、事后权重、不完整 PIT 和只记赢家的结果只做诊断 |
-| `retire` | 重复、失效、无法复现或不再支持的路径停止使用 |
-
-迁移顺序看机制覆盖、合同完整度、授权、可回放性和工程依赖，不能按 V1 历史收益排名。
-
-建设顺序：M0 定规则/T0；M1 身份、时钟、数据合同；M2 动态 PIT 股票池；M3 共享 SDK 和干净基线；M4 AI 研究系统；
-M5 科学实验框架；M6 零权重迁移 V1；M7 forward 竞赛；M8 组合分配器；M9 提交 pilot 审核材料。完成 M9 也不自动交易。
-
-这些里程碑衡量平台完备度，不是 alpha 的串行 release train。具备第 5 节最小 alpha 内核的 vertical slice 可以跨越尚未完成的
-通用里程碑立即实验；它只能复用已审核的合同和代码，不能借“加速”继承 V1 名单、结论、资格或权重。该 slice 验证后再把可复用
-部分回填到 M1-M5，避免先造完整平台、后发现没有经济价值。
-
-M0-M1 至少落下 V1 资产清单、偏差登记表、T0、V2 state/backlog/decision log/hourly receipt，以及
-`SourceContract`、`EvidenceRecord`、`UniverseEvent`、`ResearchClaim`、`HypothesisCandidate`、`CandidatePool`、
-`DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 的初始 schema。先补 schema 校验、append-only 和
-幂等测试，再进入 M2。
-
-## 7. 每小时怎么执行
-
-每轮只做一个能验证的工作单元：
-
-用户明确要求的 Reflection、只读总结或协议复核属于管理单元，不计入 alpha 执行工作单元，不能满足或重置 24 小时
-零脉冲 SLA，也不能消费或延期 `scope_debt` / `conversion_debt`。它们必须报告当前脉冲和下一个可运行 alpha 动作，但不用报告代替该动作。
-
-1. 看状态、backlog、上次 receipt、open experiment、测试失败和 git status；
-2. 计算 24 小时 alpha 脉冲；优先处理到期结算或仍有效的未完成 alpha，其次消费 open `conversion_debt`，再消费 open
-   `scope_debt`，然后按“已通过
-   readiness 的 alpha → 本轮必须执行的冻结 preflight 转化 → 直接阻断候选且可闭环复查的 measurement repair → 当前里程碑
-   通用建设”选择；artifact 在本轮把 gate 打开时，readiness 检查与 alpha 启动视为同一个工作单元；
-3. 写清目标、文件范围、唯一假设（如有）、锁定变量、PIT、成败标准、回退办法和是否需要 ID；
-4. 做最小完整改动，只补直接相关的 schema、测试和文档；
-5. 跑与风险相称的测试、schema、replay、幂等、diff、Gate 和 parity 检查；
-6. 更新 state、backlog、decision log、blocker/reopen 条件、24 小时脉冲、receipt 和复现命令；receipt 必须给出
-   `economic_progress`、open gate 的 `scope_debt` / `conversion_debt`、active sleeve 的 observer/decision/settlement 健康与两项 ETA，以及下一工作单元
-   唯一的 `next_alpha_action`（具体候选、命令/入口、冻结 artifact、成败 gate、`action_due_at` 和冻结 fallback 顺序），不能只写泛化方向；
-7. 以 `completed`、`no-op audit` 或 `blocked` 收尾，报告改动、验证、影响、风险和下一步。
-
-只在任务或自动化明确要求时创建本地 commit。未经用户授权，不 push、不建 PR、不合并、不发布、不传输仓库数据。
-
-以下情况必须停下来问用户：会改变真钱或默认启用状态；需要删除、覆盖或移动证据；数据授权不清；两条重大架构路线
-互不兼容；dirty worktree 与目标重叠且无法隔离；无法建立 canonical PIT 却会把等级写错；需要账号、密钥、付费数据、
-外部协作或新权限。先做完范围内的只读检查和可逆尝试；难不等于被阻塞。
-
-## 8. 专项文档索引
-
-| 问题 | 单一入口 |
-|---|---|
-| 回测命令、窗口、baseline、Gate | `docs/backtesting.md` |
-| reserve / claim / close / audit | `docs/agent_experiment_protocol.md` |
-| PIT 分级和 research replay | `docs/research_pit_policy.md` |
-| replay / daily / production parity | `docs/production_backtest_parity.md` |
-| adapter parity 状态 | `docs/production_backtest_parity_matrix.md` |
-| 实验字段和日志格式 | `docs/experiment_log_format.md` |
-| DSR、trial panel、Gate 5 | `docs/deflated_sharpe_protocol.md` |
-| 组合级增量价值 | `docs/portfolio_covariance_lane.md` |
-| research digest 消费 | `docs/research_digest_pipeline.md` |
-| V1 状态导航 | `docs/alpha_context_pack.md`、`docs/current_state_snapshot.md` |
-| V1 机制记忆和防重复 | `docs/alpha-optimization-playbook.md`、`docs/frozen_families.jsonl`、`docs/lessons/*.md` |
-| V1 股票池生命周期参考 | `docs/universe_promotion_protocol.md` |
-| V1 完整旧协议 | `docs/quant_agent_protocol.md` |
-
-V1 文档只提供代码事实、历史教训和反重复证据，不能直接给 V2 候选、权重或晋级资格。
+| Cliff Asness，2015-06-02，[It’s Not Data Mining — Not Even Close](https://www.aqr.com/insights/perspectives/it-is-not-data-mining-not-even-close) | 经济解释应产生可检验预测，并结合样本外证据；反复按样本外表现修改，也会消耗其独立性。 |
+| Rob Carver，2015-11-04，[Using random data](https://qoppac.blogspot.com/2015/11/using-random-data.html) | 用合成数据检查规则响应、边界和缺失值；通过只能证明程序行为，不能证明市场中有收益。 |
+| Rob Carver，2021-09-02，[The three kinds of (over) fitting](https://qoppac.blogspot.com/2015/11/the-three-kinds-of-overfitting.html) | 手动改规则和忘掉失败也是隐性拟合；保留尝试历史，区分探索与验证。页面日期为 2021，URL 中的 2015 不是发布日期。 |
+| Ernie Chan，2015-04-13，[Beware of Low Frequency Data](https://epchan.blogspot.com/2015/04/beware-of-low-frequency-data.html) | 回测/实盘落差先查价格、信息时点与交易触发；这是具体案例，不能推导出所有策略都需要 tick 数据。 |
+| Man AHL，2015-05-31，[Overfitting and Its Impact on the Investor](https://www.man.com/insights/overfitting-and-its-impact-on-the-investor) | Jamil Baz 讨论数据驱动发现的价值；Matthew Sargaison 介绍预写方法/数据划分及记录所有尝试。理论也需验证，不能把好故事当证据。 |

@@ -124,7 +124,7 @@ DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("state_surface_sleeve_paper_snaps
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    "paper_enabled": False,
     "trade_enabled": False,
     "allowed_surfaces": ["rotation_breakout_leadership"],
     "max_candidates": 5,
@@ -268,6 +268,13 @@ def build_state_surface_queue(
     cfg["enabled"] = False
     cfg["trade_enabled"] = False
     as_of_date = str(as_of)[:10]
+    if not cfg.get("paper_enabled", False):
+        return {
+            **empty_state_surface_queue(as_of_date, "retired_default_off_paper_disabled"),
+            "retired": True,
+            "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only",
+        }
     rows_by_ticker = {
         str(ticker).upper(): _normalise_ohlcv_rows(rows)
         for ticker, rows in (ohlcv_by_ticker or {}).items()
@@ -511,7 +518,7 @@ def build_state_surface_sleeve_snapshot(
         config=cfg,
     )
     enriched_queue = _queue_with_concentration_context(
-        state_surface_queue or {},
+        (state_surface_queue or {}) if cfg.get("paper_enabled", False) else {},
         closed_positions=working_state.get("closed_positions") or [],
     )
     new_pending = _add_queue_candidates(
@@ -530,6 +537,12 @@ def build_state_surface_sleeve_snapshot(
         closed_today=closed_today,
         skipped_today=skipped_today,
     )
+    if not cfg.get("paper_enabled", False):
+        snapshot.update(
+            retired=True,
+            build_status="retired_default_off_paper_disabled",
+            next_action="settle_existing_positions_only",
+        )
     if persist:
         save_state_surface_sleeve_state(working_state, state_path)
         append_state_surface_sleeve_snapshot(snapshot, snapshot_log_path)
@@ -545,6 +558,9 @@ def empty_state_surface_sleeve_snapshot(as_of: str, reason: str) -> dict[str, An
         "enabled": False,
         "paper_enabled": False,
         "trade_enabled": False,
+        "retired": True,
+        "build_status": "retired_default_off_paper_disabled",
+        "next_action": "settle_existing_positions_only",
         "candidate_count": 0,
         "blocked_candidate_count": 0,
         "surface_blocked_candidate_count": 0,
@@ -3692,11 +3708,24 @@ def _fill_pending_entries(
     current_prices: dict[str, float],
     config: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    if not config.get("paper_enabled", False):
+        skipped = [
+            {
+                **entry,
+                "status": "skipped_retired_paper_disabled",
+                "prior_status": entry.get("status"),
+                "skip_reason": "retired_default_off_paper_disabled",
+                "skipped_asof": as_of,
+                "trade_enabled": False,
+            }
+            for entry in state["pending_entries"]
+        ]
+        state["skipped_entries"].extend(skipped)
+        state["pending_entries"] = []
+        return [], skipped
     if not is_us_equity_session(as_of):
         # Non-session run dates must not fill entries at stale prices;
         # pending entries wait for the next session (exp-20260612-001).
-        return [], []
-    if not config.get("paper_enabled", True):
         return [], []
     remaining = []
     filled_today = []

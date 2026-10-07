@@ -634,16 +634,17 @@ def lane_prediction_market_postfix():
 
 
 def lane_entity_theme_axis_c():
-    """Observed-only refresh exp-20260810-001 baseline: 114541 settled rows.
-    Axis-(c) requires >=+50% growth (>=171812) before a same-face re-probe.
-    Note: the entity_theme_news observed-only streak reached 3 consecutive
-    closes (exp-20260719-004, exp-20260729-006, exp-20260810-001), so a
-    fourth probe also needs an explicit observed-only override."""
+    """Observed-only refresh exp-20260914-001 baseline: 208492 settled rows.
+    Axis-(c) requires >=+50% growth (>=312738) before a same-face re-probe.
+    Note: the entity_theme_news observed-only streak reached 4 consecutive
+    closes (exp-20260719-004, exp-20260729-006, exp-20260810-001,
+    exp-20260914-001), so a fifth probe also needs an explicit observed-only
+    override."""
     path = os.path.join(
         REPO_ROOT, "data", "non_ohlcv", "entity_theme_news_observer", "latest_outcome_summary.json"
     )
     d = json.load(open(path, encoding="utf-8"))
-    baseline = 114541
+    baseline = 208492
     current = int(d.get("settled_count") or 0)
     counters = {
         "settled_count": current,
@@ -655,9 +656,9 @@ def lane_entity_theme_axis_c():
         "counters": counters,
         "thresholds": thresholds,
         "status": "ready" if current >= thresholds["settled_count"] else "not_ready",
-        "threshold_source": "AGENTS.md section 2.4 axis (c): >=+50% and >=+10 settled rows vs exp-20260810-001 baseline",
+        "threshold_source": "AGENTS.md section 2.4 axis (c): >=+50% and >=+10 settled rows vs exp-20260914-001 baseline",
         "counter_source": "data/non_ohlcv/entity_theme_news_observer/latest_outcome_summary.json",
-        "note": "observed-only streak at 3; fourth same-face probe needs --observed-only-override plus the >=171812 bar (exp-20260810-001: sole failed bar was 3/6 query groups vs SPY+QQQ, needed 4)",
+        "note": "observed-only streak at 4; fifth same-face probe needs --observed-only-override plus the >=312738 bar (exp-20260914-001 at 208492 rows: failed bars were QQQ row median negative and 3/6 query groups vs SPY+QQQ, needed 4; exp-20260810-001 at 114541 rows failed only the 3/6 breadth bar)",
     }
 
 
@@ -1379,15 +1380,30 @@ def lane_massive_dividend_restart_forward():
         if row.get("settled") is True
         and row.get("gap_variant") == "restart_after_observed_gap"
     ]
+    reopen_gap_variants = (
+        "restart_after_observed_gap",
+        "no_prior_positive_in_provider_history",
+    )
+    settled_reopen_population = [
+        row
+        for row in settlements_by_decision.values()
+        if row.get("settled") is True
+        and row.get("gap_variant") in reopen_gap_variants
+    ]
 
-    summary_count = summary.get("settled_restart_decision_count", 0)
+    summary_count_key = (
+        "settled_reopen_population_decision_count"
+        if "settled_reopen_population_decision_count" in summary
+        else "settled_restart_decision_count"
+    )
+    summary_count = summary.get(summary_count_key, 0)
     if (
         isinstance(summary_count, bool)
         or not isinstance(summary_count, int)
         or summary_count < 0
     ):
         raise ValueError(
-            "Massive dividend-restart summary settled_restart_decision_count "
+            f"Massive dividend-restart summary {summary_count_key} "
             "must be a non-negative integer"
         )
     if summary_exists:
@@ -1401,21 +1417,42 @@ def lane_massive_dividend_restart_forward():
             "required",
             source="massive_dividend_restart_summary.reopen_progress",
         )
+        progress_count_key = (
+            "settled_decisions"
+            if "settled_decisions" in reopen_progress
+            else "settled_restart_decisions"
+        )
         progress_count = _required_nonnegative_int(
             reopen_progress,
-            "settled_restart_decisions",
+            progress_count_key,
             source="massive_dividend_restart_summary.reopen_progress",
         )
     else:
+        reopen_progress = {}
         progress_required = 0
         progress_count = 0
+        progress_count_key = "settled_restart_decisions"
     expected_required = 30
+    summary_uses_reopen_population = (
+        summary_count_key == "settled_reopen_population_decision_count"
+        and progress_count_key == "settled_decisions"
+    )
+    expected_summary_count = (
+        len(settled_reopen_population)
+        if summary_uses_reopen_population
+        else len(settled_restart)
+    )
+    variant_identity_ok = (
+        summary.get("reopen_gap_variants") == list(reopen_gap_variants)
+        if summary_uses_reopen_population
+        else summary.get("target_gap_variant") == "restart_after_observed_gap"
+    )
     contract_identity_ok = (
         summary_exists
         and summary.get("scope")
         == "default_off_massive_dividend_restart_forward_settlement"
         and summary.get("source_experiment") == "exp-20260803-002"
-        and summary.get("target_gap_variant") == "restart_after_observed_gap"
+        and variant_identity_ok
         and summary.get("reopen_required_settled_decisions") == expected_required
         and progress_required == expected_required
         and summary.get("observer_only") is True
@@ -1428,27 +1465,38 @@ def lane_massive_dividend_restart_forward():
     )
     summary_ledger_aligned = (
         summary_exists
-        and summary_count == len(settled_restart)
-        and progress_count == len(settled_restart)
+        and summary_count == expected_summary_count
+        and progress_count == expected_summary_count
     )
 
     counters = {
         "unique_settlement_events": len(settlements_by_decision),
         "duplicate_settlement_events_excluded": duplicate_settlement_events,
+        "settled_reopen_population_decisions": len(settled_reopen_population),
         "settled_restart_decisions": len(settled_restart),
-        "summary_settled_restart_decisions": summary_count,
+        "summary_settled_reopen_population_decisions": summary.get(
+            "settled_reopen_population_decision_count", 0
+        ),
+        "summary_settled_restart_decisions": summary.get(
+            "settled_restart_decision_count", 0
+        ),
         "summary_reopen_progress_required": progress_required,
-        "summary_reopen_progress_settled_restart_decisions": progress_count,
+        "summary_reopen_progress_settled_decisions": progress_count,
+        "summary_reopen_progress_settled_restart_decisions": (
+            reopen_progress.get("settled_restart_decisions", 0)
+            if isinstance(reopen_progress, dict)
+            else 0
+        ),
     }
-    thresholds = {"settled_restart_decisions": expected_required}
+    thresholds = {"settled_reopen_population_decisions": expected_required}
     checks = {
         "settlement_ledger_exists": ledger_exists,
         "settlement_summary_exists": summary_exists,
         "producer_health_ok": producer_health_ok,
         "frozen_contract_identity_ok": contract_identity_ok,
         "summary_ledger_counts_aligned": summary_ledger_aligned,
-        "settled_restart_decisions_at_least_30": (
-            len(settled_restart) >= expected_required
+        "settled_reopen_population_decisions_at_least_30": (
+            len(settled_reopen_population) >= expected_required
         ),
     }
     missing = []

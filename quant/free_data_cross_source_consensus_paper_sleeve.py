@@ -92,7 +92,7 @@ SOURCE_SNAPSHOT_HISTORY_ARTIFACTS = {
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    "paper_enabled": False,
     "trade_enabled": False,
     "paper_notional_usd": 4_000.0,
     "baseline_paper_notional_usd": 10_000.0,
@@ -175,6 +175,9 @@ def empty_free_data_cross_source_consensus_paper_sleeve_snapshot(
     reason: str,
 ) -> dict[str, Any]:
     return {
+        **({"retired": True, "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only"}
+           if not DEFAULT_CONFIG["paper_enabled"] else {}),
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
         "rule_version": RULE_VERSION,
@@ -225,7 +228,7 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
 ) -> dict[str, Any]:
     cfg = _config(config)
     as_of_date = _date10(as_of)
-    if not source_snapshots:
+    if cfg["paper_enabled"] and not source_snapshots:
         return empty_free_data_cross_source_consensus_paper_sleeve_snapshot(
             as_of_date,
             "missing_source_snapshots",
@@ -235,7 +238,7 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         str(ticker).upper(): _normalise_ohlcv_rows(rows)
         for ticker, rows in (ohlcv_by_ticker or {}).items()
     }
-    if not rows_by_ticker:
+    if cfg["paper_enabled"] and not rows_by_ticker:
         return empty_free_data_cross_source_consensus_paper_sleeve_snapshot(
             as_of_date,
             "missing_ohlcv",
@@ -247,6 +250,18 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         else load_free_data_cross_source_consensus_paper_state(state_path)
     )
     _normalise_state(working_state)
+    retired_skipped = []
+    if not cfg["paper_enabled"]:
+        for pending in working_state["pending_entries"]:
+            skipped = {**deepcopy(pending), "status": "skipped_retired",
+                       "skipped_asof": as_of_date, "reason": "owner_authorized_retirement"}
+            if "status" in pending:
+                skipped["prior_status"] = pending["status"]
+            if "reason" in pending:
+                skipped["prior_reason"] = pending["reason"]
+            working_state["skipped_entries"].append(skipped)
+            retired_skipped.append(skipped)
+        working_state["pending_entries"] = []
 
     current, opens = _exact_asof_price_maps(
         rows_by_ticker,
@@ -260,13 +275,17 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         current_prices=current,
         config=cfg,
     )
-    filled_today, skipped_today = _fill_pending_entries(
-        working_state,
-        as_of=as_of_date,
-        open_prices=opens,
-        current_prices=current,
-        config=cfg,
-    )
+    if cfg["paper_enabled"]:
+        filled_today, skipped_today = _fill_pending_entries(
+            working_state,
+            as_of=as_of_date,
+            open_prices=opens,
+            current_prices=current,
+            config=cfg,
+        )
+
+    else:
+        filled_today, skipped_today = [], retired_skipped
 
     active_tickers = {
         str(row.get("ticker") or "").upper()
@@ -278,42 +297,48 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         for row in working_state.get("pending_entries") or []
         if isinstance(row, dict)
     }
-    trading_dates = _trading_dates_from_rows(rows_by_ticker, as_of_date)
-    history_signal_dates = _prior_confirmation_dates(
-        trading_dates,
-        as_of=as_of_date,
-        prior_trading_days=int(cfg["prior_confirmation_trading_days"]),
-    )
-    if source_snapshot_history is None and persist and cfg.get("source_history_enabled", True):
-        source_snapshot_history = load_free_data_cross_source_consensus_source_snapshot_history(
+    if cfg["paper_enabled"]:
+        trading_dates = _trading_dates_from_rows(rows_by_ticker, as_of_date)
+        history_signal_dates = _prior_confirmation_dates(
+            trading_dates,
             as_of=as_of_date,
-            trading_dates=trading_dates,
+            prior_trading_days=int(cfg["prior_confirmation_trading_days"]),
+        )
+        if source_snapshot_history is None and persist and cfg.get("source_history_enabled", True):
+            source_snapshot_history = load_free_data_cross_source_consensus_source_snapshot_history(
+                as_of=as_of_date,
+                trading_dates=trading_dates,
+                config=cfg,
+            )
+        current_source_rows_by_key = _source_rows_by_key(
+            source_snapshots,
+            as_of=as_of_date,
+            valid_signal_dates={as_of_date},
             config=cfg,
         )
-    current_source_rows_by_key = _source_rows_by_key(
-        source_snapshots,
-        as_of=as_of_date,
-        valid_signal_dates={as_of_date},
-        config=cfg,
-    )
-    history_source_rows_by_key = _source_rows_by_key(
-        [*(source_snapshot_history or []), *(source_snapshots or [])],
-        as_of=as_of_date,
-        valid_signal_dates=set(history_signal_dates),
-        config=cfg,
-    )
-    candidates, rejected, cooldown_summary = _consensus_candidates(
-        current_source_rows_by_key,
-        history_source_rows_by_key=history_source_rows_by_key,
-        history_signal_dates=history_signal_dates,
-        as_of=as_of_date,
-        active_tickers=active_tickers,
-        pending_tickers=pending_tickers,
-        state=working_state,
-        core_active_position_count=core_active_position_count,
-        max_core_positions=max_core_positions,
-        config=cfg,
-    )
+        history_source_rows_by_key = _source_rows_by_key(
+            [*(source_snapshot_history or []), *(source_snapshots or [])],
+            as_of=as_of_date,
+            valid_signal_dates=set(history_signal_dates),
+            config=cfg,
+        )
+        candidates, rejected, cooldown_summary = _consensus_candidates(
+            current_source_rows_by_key,
+            history_source_rows_by_key=history_source_rows_by_key,
+            history_signal_dates=history_signal_dates,
+            as_of=as_of_date,
+            active_tickers=active_tickers,
+            pending_tickers=pending_tickers,
+            state=working_state,
+            core_active_position_count=core_active_position_count,
+            max_core_positions=max_core_positions,
+            config=cfg,
+        )
+
+    else:
+        history_signal_dates = []
+        current_source_rows_by_key, history_source_rows_by_key = {}, {}
+        candidates, rejected, cooldown_summary = [], [], {}
 
     open_positions = working_state.get("open_positions") or []
     room = max(0, int(cfg["max_active_positions"]) - len(open_positions))
@@ -402,6 +427,11 @@ def build_free_data_cross_source_consensus_paper_sleeve_snapshot(
         "next_action": "paper_observe_forward_replacement_value_no_orders",
     }
 
+    if not cfg["paper_enabled"]:
+        snapshot.update(retired=True, build_status="retired_default_off_paper_disabled",
+                        next_action="settle_existing_positions_only")
+        snapshot["forward_paper_gate"].update(
+            passed=False, status="blocked", reasons=["retired_default_off_paper_disabled"])
     if persist:
         save_free_data_cross_source_consensus_paper_state(working_state, state_path)
         append_free_data_cross_source_consensus_paper_snapshot(snapshot, snapshot_log_path)
@@ -930,6 +960,9 @@ def _advance_open_positions(
     closed_today: list[dict[str, Any]] = []
     for position in state.get("open_positions") or []:
         if not isinstance(position, dict):
+            continue
+        if not config["paper_enabled"] and position.get("last_price_asof") == as_of:
+            still_open.append(position)
             continue
         ticker = str(position.get("ticker") or "").upper()
         current_price = current_prices.get(ticker)

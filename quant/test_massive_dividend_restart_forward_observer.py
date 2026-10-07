@@ -13,9 +13,11 @@ import pytest
 from massive_ohlcv_backfill import FetchedPayload, MassiveError
 import massive_dividend_restart_forward_observer as observer_module
 from massive_dividend_restart_forward_observer import (
+    canonical_ticker,
     detect_new_candidates,
     evaluate_pending_gates,
     fetch_dividend_page_chain,
+    load_instrument_master_tickers,
     persist_massive_dividend_restart_forward_observer,
 )
 
@@ -593,6 +595,164 @@ class TestPersist:
         assert (
             len([row for row in rows if row["record_type"] == "gate_evaluation"]) == 1
         )
+
+
+class TestSymbolVariantIdentity:
+    """exp-20260921-001: feed spelling switches must not masquerade as gaps."""
+
+    MASTER = {"UHAL.B", "DBRGpH", "GAP", "SPY"}
+
+    @staticmethod
+    def _quarterly(ticker: str, start: str, end: str, pid_prefix: str) -> list[dict]:
+        rows = []
+        day = dt.date.fromisoformat(start)
+        stop = dt.date.fromisoformat(end)
+        index = 0
+        while day <= stop:
+            rows.append(
+                {
+                    "provider_id": f"{pid_prefix}{index}",
+                    "ticker": ticker,
+                    "declaration_date": day.isoformat(),
+                    "cash_amount": "0.1",
+                }
+            )
+            index += 1
+            month = day.month + 3
+            day = dt.date(day.year + (month - 1) // 12, (month - 1) % 12 + 1, 3)
+        return rows
+
+    def _chain(self, rows: list[dict]) -> dict:
+        rows = [
+            *rows,
+            {"provider_id": "floor", "ticker": "FLOOR", "declaration_date": "2018-01-05", "cash_amount": "0.5"},
+        ]
+        return {
+            "rows": rows,
+            "max_declaration_date": max(row["declaration_date"] for row in rows),
+            "min_declaration_date": "2018-01-05",
+            "content_identity": "c" * 64,
+        }
+
+    def test_canonical_ticker_rules(self):
+        assert canonical_ticker("UHALB", self.MASTER) == "UHAL.B"
+        assert canonical_ticker("DBRGPRH", self.MASTER) == "DBRGpH"
+        assert canonical_ticker("GAP", self.MASTER) == "GAP"  # literal wins
+        assert canonical_ticker("ZZZZA", self.MASTER) == "ZZZZA"  # absent stays
+        assert canonical_ticker("UHALB", None) == "UHALB"  # no master
+        # A real distinct ticker whose literal spelling is in the master is
+        # never remapped even when a variant also exists.
+        assert canonical_ticker("UHALB", {"UHALB", "UHAL.B"}) == "UHALB"
+        # Ambiguous class/preferred variants stay literal (fail closed).
+        assert canonical_ticker("ABCPRD", {"ABCpD", "ABCPR.D"}) == "ABCPRD"
+
+    def test_class_share_spelling_switch_is_not_a_restart(self):
+        rows = [
+            {"provider_id": "u0", "ticker": "UHALB", "declaration_date": "2022-12-08", "cash_amount": "0.1"},
+            *self._quarterly("UHAL.B", "2023-03-03", "2026-06-03", "u"),
+        ]
+        chain = self._chain(rows)
+        before = detect_new_candidates(chain, set(), first_seen_at="2026-08-22T03:35:57Z")
+        assert [row["decision_key"] for row in before] == []
+        # Literal grouping only sees one UHAL.B history, so add the switch
+        # inside the recency window to reproduce the persisted defect.
+        rows.append({"provider_id": "u99", "ticker": "UHALB", "declaration_date": "2026-08-20", "cash_amount": "0.1"})
+        chain = self._chain(rows)
+        before = detect_new_candidates(chain, set(), first_seen_at="2026-08-22T03:35:57Z")
+        assert [row["decision_key"] for row in before] == ["UHALB:2026-08-20"]
+        assert before[0]["gap_variant"] == "restart_after_observed_gap"
+        after = detect_new_candidates(
+            chain, set(), first_seen_at="2026-08-22T03:35:57Z", master_tickers=self.MASTER
+        )
+        assert after == []
+
+    def test_preferred_spelling_switch_is_not_a_restart(self):
+        rows = [
+            *self._quarterly("DBRGPRH", "2017-02-28", "2021-02-25", "p"),
+            *self._quarterly("DBRGpH", "2021-05-06", "2026-04-24", "q"),
+            {"provider_id": "p99", "ticker": "DBRGPRH", "declaration_date": "2026-08-03", "cash_amount": "0.1"},
+        ]
+        chain = self._chain(rows)
+        before = detect_new_candidates(chain, set(), first_seen_at="2026-08-07T03:38:43Z")
+        assert [row["decision_key"] for row in before] == ["DBRGPRH:2026-08-03"]
+        after = detect_new_candidates(
+            chain, set(), first_seen_at="2026-08-07T03:38:43Z", master_tickers=self.MASTER
+        )
+        assert after == []
+
+    def test_literal_in_master_keeps_identity_and_records_spellings(self):
+        chain = TestDetection.CHAIN
+        before = detect_new_candidates(chain, set(), first_seen_at="2026-08-02T21:00:00Z")
+        after = detect_new_candidates(
+            chain, set(), first_seen_at="2026-08-02T21:00:00Z", master_tickers={"GAP", "NEW"}
+        )
+        assert [row["decision_key"] for row in after] == [
+            row["decision_key"] for row in before
+        ]
+        for old, new in zip(before, after):
+            assert new["feed_tickers"] == [new["ticker"]]
+            assert new["ticker_canonicalization"] == "literal"
+            stripped = {k: v for k, v in new.items() if k not in ("feed_tickers", "ticker_canonicalization")}
+            assert stripped == {k: v for k, v in old.items() if k not in ("feed_tickers", "ticker_canonicalization")}
+        assert before[0]["ticker_canonicalization"] == "instrument_master_unavailable"
+
+    def test_canonical_candidate_records_feed_spellings(self):
+        rows = [
+            {"provider_id": "a0", "ticker": "UHALB", "declaration_date": "2019-01-08", "cash_amount": "0.1"},
+            {"provider_id": "a1", "ticker": "UHAL.B", "declaration_date": "2026-08-20", "cash_amount": "0.1"},
+        ]
+        after = detect_new_candidates(
+            self._chain(rows), set(), first_seen_at="2026-08-22T03:35:57Z", master_tickers=self.MASTER
+        )
+        assert [row["decision_key"] for row in after] == ["UHAL.B:2026-08-20"]
+        assert after[0]["ticker"] == "UHAL.B"
+        assert after[0]["feed_tickers"] == ["UHAL.B", "UHALB"]
+        assert after[0]["ticker_canonicalization"] == observer_module.TICKER_CANONICALIZATION_KIND
+        assert after[0]["gap_variant"] == "restart_after_observed_gap"
+
+    def test_known_literal_key_suppresses_canonical_reemission(self):
+        rows = [
+            {"provider_id": "k0", "ticker": "PRIFPRD", "declaration_date": "2026-09-14", "cash_amount": "0.1"},
+        ]
+        master = {"PRIFpD"}
+        chain = self._chain(rows)
+        assert [
+            row["decision_key"]
+            for row in detect_new_candidates(chain, set(), first_seen_at="x", master_tickers=master)
+        ] == ["PRIFpD:2026-09-14"]
+        assert (
+            detect_new_candidates(
+                chain, {"PRIFPRD:2026-09-14"}, first_seen_at="x", master_tickers=master
+            )
+            == []
+        )
+
+    def test_master_loader_absent_table_or_db_is_none(self, tmp_path):
+        assert load_instrument_master_tickers(tmp_path / "missing.sqlite") is None
+        db = _bars_db(tmp_path, bars=[])
+        assert load_instrument_master_tickers(db) is None
+        conn = sqlite3.connect(str(db))
+        conn.execute("CREATE TABLE instrument_master (ticker TEXT, active INTEGER)")
+        conn.executemany(
+            "INSERT INTO instrument_master VALUES (?, ?)",
+            [("UHAL.B", 1), ("UHAL.B", 0), ("DBRGpH", 1)],
+        )
+        conn.commit()
+        conn.close()
+        assert load_instrument_master_tickers(db) == {"UHAL.B", "DBRGpH"}
+
+    def test_persist_records_master_availability(self, tmp_path):
+        summary = TestPersist()._run(tmp_path)
+        assert summary["status"] == "ok"
+        coverage = [
+            row for row in TestPersist()._ledger(tmp_path) if row["record_type"] == "coverage"
+        ][-1]
+        assert coverage["ticker_canonicalization_kind"] == "instrument_master_unavailable"
+        assert coverage["instrument_master_ticker_count"] is None
+        candidate = [
+            row for row in TestPersist()._ledger(tmp_path) if row["record_type"] == "forward_candidate"
+        ][0]
+        assert candidate["ticker_canonicalization"] == "instrument_master_unavailable"
 
 
 class TestPathGuard:

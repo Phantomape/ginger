@@ -33,6 +33,24 @@ LONG_POLARITY = "negative"
 SHORT_POLARITY = "positive"
 MAX_TICKER_ROW_WEIGHT = 0.40
 MAX_BORROW_AGE_CALENDAR_DAYS = 3
+# exp-20260923-004 borrow-coverage contract review: for batches first seen at
+# or after the effective timestamp a short-side ticker without valid PIT
+# borrow evidence is EXCLUDED and recorded (borrow_coverage.uncovered_tickers)
+# instead of blocking the whole batch; the batch blocks only when no
+# short-side ticker is covered.  Earlier batches keep the frozen v1
+# semantics byte-for-byte (same record_id, same blockers, no new keys).
+BORROW_COVERAGE_RULE_VERSION = "news_propagation_pair_borrow_coverage_v2"
+BORROW_COVERAGE_RULE_EFFECTIVE_AT = "2026-09-23T17:00:00+00:00"
+# exp-20260924-004 cross-side-overlap contract review: for batches first seen
+# at or after the effective timestamp a ticker present on BOTH sides (one
+# negative and one positive event of the same peer group in one batch) is
+# EXCLUDED from both sides for readiness evaluation and recorded
+# (overlap_exclusion) instead of blocking the whole batch; the concentration
+# cap and the borrow coverage are evaluated on the residual sides and the
+# batch blocks only when a side empties.  Earlier batches keep the frozen
+# blocker byte-for-byte (same record_id, same blockers, no new keys).
+OVERLAP_EXCLUSION_RULE_VERSION = "news_propagation_pair_cross_side_overlap_exclusion_v2"
+OVERLAP_EXCLUSION_RULE_EFFECTIVE_AT = "2026-09-24T17:00:00+00:00"
 NEW_YORK = ZoneInfo("America/New_York")
 
 
@@ -130,6 +148,26 @@ def _side_summary(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _residual_side(
+    side: Mapping[str, Any], excluded: Iterable[str]
+) -> dict[str, Any]:
+    """Side summary restricted to tickers outside ``excluded`` (exp-20260924-004)."""
+    dropped = set(excluded)
+    counts = {
+        ticker: count
+        for ticker, count in (side.get("ticker_row_counts") or {}).items()
+        if ticker not in dropped
+    }
+    row_count = sum(counts.values())
+    max_weight = max(counts.values(), default=0) / row_count if row_count else None
+    return {
+        "ticker_count": len(counts),
+        "row_count": row_count,
+        "tickers": sorted(counts),
+        "max_ticker_row_weight": round(max_weight, 6) if max_weight is not None else None,
+    }
+
+
 def build_readiness_records(
     exposure_rows: Iterable[Mapping[str, Any]],
     borrow_histories: Mapping[str, Mapping[str, Any]],
@@ -165,30 +203,75 @@ def build_readiness_records(
         if not short_side["row_count"]:
             blockers.append("missing_short_polarity")
         overlap = sorted(set(long_side["tickers"]) & set(short_side["tickers"]))
-        if overlap:
+        overlap_rule = first_seen >= _aware_datetime(
+            OVERLAP_EXCLUSION_RULE_EFFECTIVE_AT
+        )
+        # exp-20260924-004: post-effective batches evaluate concentration and
+        # borrow coverage on the residual sides (overlap tickers removed from
+        # BOTH sides); pre-effective batches keep the frozen whole-batch blocker.
+        long_eval: Mapping[str, Any] = long_side
+        short_eval: Mapping[str, Any] = short_side
+        overlap_exclusion: dict[str, Any] | None = None
+        if overlap_rule:
+            long_eval = _residual_side(long_side, overlap)
+            short_eval = _residual_side(short_side, overlap)
+            overlap_exclusion = {
+                "rule_version": OVERLAP_EXCLUSION_RULE_VERSION,
+                "excluded_tickers": overlap,
+                "long_side_residual": {
+                    key: long_eval[key]
+                    for key in ("ticker_count", "row_count", "max_ticker_row_weight")
+                },
+                "short_side_residual": {
+                    key: short_eval[key]
+                    for key in ("ticker_count", "row_count", "max_ticker_row_weight")
+                },
+            }
+            if long_side["row_count"] and not long_eval["row_count"]:
+                blockers.append("long_side_emptied_by_overlap")
+            if short_side["row_count"] and not short_eval["row_count"]:
+                blockers.append("short_side_emptied_by_overlap")
+        elif overlap:
             blockers.append("cross_side_ticker_overlap")
         if (
-            long_side["max_ticker_row_weight"] is not None
-            and long_side["max_ticker_row_weight"] > MAX_TICKER_ROW_WEIGHT
+            long_eval["max_ticker_row_weight"] is not None
+            and long_eval["max_ticker_row_weight"] > MAX_TICKER_ROW_WEIGHT
         ):
             blockers.append("long_side_concentration")
         if (
-            short_side["max_ticker_row_weight"] is not None
-            and short_side["max_ticker_row_weight"] > MAX_TICKER_ROW_WEIGHT
+            short_eval["max_ticker_row_weight"] is not None
+            and short_eval["max_ticker_row_weight"] > MAX_TICKER_ROW_WEIGHT
         ):
             blockers.append("short_side_concentration")
 
+        exclusion_rule = first_seen >= _aware_datetime(
+            BORROW_COVERAGE_RULE_EFFECTIVE_AT
+        )
         borrow_evidence = []
-        for ticker in short_side["tickers"]:
+        uncovered: list[dict[str, str]] = []
+        for ticker in short_eval["tickers"]:
             evidence, blocker = _borrow_as_of(ticker, first_seen, borrow_histories)
-            if blocker:
+            if blocker and exclusion_rule:
+                uncovered.append({"ticker": ticker, "blocker": blocker})
+            elif blocker:
                 blockers.append(f"{blocker}:{ticker}")
             else:
                 borrow_evidence.append(evidence)
+        if exclusion_rule and short_eval["row_count"] and not borrow_evidence:
+            blockers.append("short_side_no_borrow_coverage")
+        borrow_coverage: dict[str, Any] = {
+            "required_tickers": len(short_eval["tickers"]),
+            "covered_tickers": len(borrow_evidence),
+            "max_age_calendar_days": MAX_BORROW_AGE_CALENDAR_DAYS,
+            "evidence": borrow_evidence,
+            "is_broker_locate": False,
+        }
+        if exclusion_rule:
+            borrow_coverage["coverage_rule_version"] = BORROW_COVERAGE_RULE_VERSION
+            borrow_coverage["uncovered_tickers"] = uncovered
 
         record_id = "pair-ready-" + _stable_id(SCHEMA_VERSION, batch_id)[:24]
-        records.append(
-            {
+        record: dict[str, Any] = {
                 "schema_version": SCHEMA_VERSION,
                 "record_id": record_id,
                 "first_seen_batch_id": batch_id,
@@ -200,13 +283,7 @@ def build_readiness_records(
                 "long_side": long_side,
                 "short_side": short_side,
                 "cross_side_ticker_overlap": overlap,
-                "borrow_coverage": {
-                    "required_tickers": len(short_side["tickers"]),
-                    "covered_tickers": len(borrow_evidence),
-                    "max_age_calendar_days": MAX_BORROW_AGE_CALENDAR_DAYS,
-                    "evidence": borrow_evidence,
-                    "is_broker_locate": False,
-                },
+                "borrow_coverage": borrow_coverage,
                 "max_ticker_row_weight": MAX_TICKER_ROW_WEIGHT,
                 "pnl_measured": False,
                 "strategy_behavior_changed": False,
@@ -214,8 +291,10 @@ def build_readiness_records(
                 "signals": [],
                 "order_intents": [],
                 "orders": [],
-            }
-        )
+        }
+        if overlap_exclusion is not None:
+            record["overlap_exclusion"] = overlap_exclusion
+        records.append(record)
     return records
 
 

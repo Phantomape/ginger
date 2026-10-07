@@ -1,5 +1,49 @@
 # V2 Current State
 
+> 2026-10-06 root 生产维护（d-0028）：机器 09-26..10-06 停机 10 天（LastBootUpTime 10-06 17:35 local），codex 开机即启动 run.py catch-up（00:39Z，父子解释器非双写）。catch-up pass 中 pair sleeve 在 massive grouped:2026-09-25 落库前 39 秒结算，而 SPY 锚（core primary_batch）已到 10-06，`settle_pair_basket` 把 exp-20260913-007 宽限期量在锚日历上，首个可计数 basket 39644ff3（短腿 AIOT/INSG 只在 massive）被误终态 unsettleable。`exp-20261007-002 / expuid-9794c0252b834e45`（measurement_repair，accepted）：`load_pair_bars` 记 `__source_last_sessions__`，终态化需锚日历与 massive 都到 `calendar[exit_index+5]`；结算时刻状态 replay 由 unsettleable 变 missing_leg_bars blocker，全量 bar 为 settled（只读 status）；ledger/state 字节不变；误判行不改写（用户决定），验收计数从 basket f5b68e87（entry 09-24）重起。并发 codex `exp-20261007-001` 同小时在同模块落地准入侧 latest-session defer guard。d-0014 重开条件 (a) 的 outcome-blind 重计数脚本已建：数量早过 60，约束是 ≥10 entry dates（09-25 账本 h5 6 / h10 3），ETA ~10-09 夜批后。见 `data/v2/hourly_runs/20261007T0204Z_pair_sleeve_grace_clock_source_lag_repair_accepted.json`。
+>
+> 2026-09-24 root 生产维护（d-0026）：exp-20260923-004 故障恢复检查通过（09-24 夜批首条 v2 记录 measurement_ready、30/34 借券覆盖、sleeve 自动 admit basket 并把 BAO/DBIM/EVON/GST 记为 excluded_no_pit_borrow；exp-20260922-007 的 Form 4 折叠计数已可见 3 行=2 个经济决策）。身份字段普查发现 v2 规则下 cross_side_ticker_overlap 是 09-14 后 14 条 readiness 记录中 6 条的唯一剩余阻塞（终身 10/33），重叠内容是整组 sic_peer（半导体 23-33、汽车 17、中概/AI 软件 14-20 个 ticker）因同批同组一负一正事件被放到两侧；剔除重叠后两侧均非空、残余最大行权重 ≤0.087。`exp-20260924-004 / expuid-b986642a3afa4fac`（measurement_repair，accepted）：对 first_seen ≥ 2026-09-24T17:00Z 的 batch，重叠 ticker 从两侧/两腿剔除并记录（observer `overlap_exclusion`、sleeve 两腿 `excluded_cross_side_overlap`），40% 上限与 v2 借券覆盖按残余侧评估，仅在一侧被清空时阻塞；33/33 持久化记录字节一致重建；假设就绪 18/33→25/33（09-14 后 8/14→14/14）；验收合同、H10/45bp/$1000 不变；未读任何结果字段。下一单元：核对 09-25 夜批记录带 `overlap_exclusion.rule_version`。见 `data/v2/hourly_runs/20260924T1630Z_pair_readiness_cross_side_overlap_exclusion_accepted.json`。
+>
+> 2026-09-22 root 生产维护（d-0024）：exp-20260921-001 的故障恢复检查通过（09-21 夜间 coverage 行已带 `ticker_canonicalization_kind=instrument_master_variant_v1`）；其预登记的 reopen 计数人口修约由并发的 codex 会话以 `exp-20260922-006` 当轮执行并 accepted（本单元未碰其写域、未重算 readiness）。按身份字段排查其余 stalled lane 时发现第二个生产缺陷：候选决策训练账本以含日内价格的 observation_id 做幂等键，09-21 日内 18:13Z 一次 run.py 通过 + 夜间 03:06Z 通过把同一 META 计划入场写了两次；Form 4 sale-overhang 前瞻 lane 按决策行而非经济决策计数（7 行 = 5 个 ticker+入场日），冻结的 25 closed bar 会被重复行抬高。`exp-20260922-007 / expuid-d09b1ba2d1b94778`（measurement_repair，accepted）：追加时跳过已存在的 (as_of, ticker)，Form 4 进度先按 (ticker, entry_date) 折叠再计数并报告原始行数/剔除数；仅向前生效、不改写账本、gate/horizon/ID 派生不变；10+22+1 测试、lean-strict 绿。待用户决定：日内第二次 run.py 通过的来源（09-16..09-18 ~16:07Z、09-21 18:13Z，无 hook/计划任务可解释）；intraday triage 生产者自 08-04 停止。见 `data/v2/hourly_runs/20260922T1628Z_candidate_ledger_same_day_economic_identity_repair_accepted.json`。
+>
+> 2026-09-21 root 生产维护：accepted 的 dividend-restart 前瞻 lane 静默饥饿（7 周 status=ok、0 决策、54 次 date_resolution 全空池）
+> 已诊断：v1 分红 feed 同一工具两种拼写（`XXXA`/`XXX.A`、`XXXPRY`/`XXXpY`）被按字面分组当成 gap/首次派息，486 候选中 332 为伪像
+> （0 个 gate-eligible 受影响，历史 89 行 roster 不受影响）。`exp-20260921-001 / expuid-5392fc03d2784334`（measurement_repair，accepted）
+> 在 gap 检测前按 instrument_master 规范化拼写（歧义即字面、fail closed），账本不改、仅向前生效，69/69 测试、lean-strict 绿。
+> 伴随发现已预登记、未执行：reopen 计数只数 restart_after_observed_gap 的 CS 决策，历史速率约 5 个/17 个月、前瞻 7 周 0 个，
+> ≥30 结构性不可达；冻结的 review 规则=按 exp-20260801-004 roster 人口（两种 gap 变体）重对齐、bar 仍为 30；
+> 见 `data/v2/hourly_runs/20260921T1837Z_dividend_restart_observer_symbol_variant_identity_repair_accepted.json`、`d-0023`。
+>
+> 2026-09-09 导航校正：本文件以下正文保留 root 历史状态，不能作为当前 V2 alpha 调度入口。
+> 当前 alpha 操作权威是 `refs/heads/automation/edge-v2`，状态见
+> [Edge current_state](../../.codex/worktrees/edge-v2/docs/v2/current_state.md)，待办见
+> [Edge backlog](../../.codex/worktrees/edge-v2/docs/v2/backlog.md)。不要再次按下方旧 M0/T0 待办执行。
+> root 负责生产维护；本轮 `exp-20260909-002` / `expuid-1818c9a28a3342b6` 完成决策与订单归属修复，
+> 工程验收通过、无新增 alpha 或实盘权限。改动及 root 既有冻结观察队列见
+> [本轮记录](../../data/maintenance/ginger_followthrough_20260909.md)。跨 ref 仍按 source_ref 与 UID 分开记账。
+> 2026-09-12：root 固定验证队列项 2（d-0014 adjacent overshoot 干净 forward 反证）trigger 触发并当轮消费：
+> `exp-20260912-001 / expuid-afb826c754034d9f` **REJECTED**（B1/B2/B3/B5 失败，仅 B4 过；already_priced）。
+> 身份阻塞已解：污染围栏 1352 ID 从 freeze commit 5967838ae 字节一致重算，条件价格 2307 行已绑哈希；82 文件集合哈希按构造不可复现（仅文档性）。
+> 08-29 Phase-2 estimate-revision 注册池至此除 parked breadth 候选外全部终态；重开计数见 log。见 d-0018 与
+> `data/v2/hourly_runs/20260912T2100Z_d0014_adjacent_overshoot_clean_forward_falsification.json`。队列项 1（新闻配对）仍由 root 日常 run 结算。
+
+> 2026-09-13：root 生产缺陷当轮修复（d-0019，2 个 measurement_repair ID，均 accepted）：配对 sleeve 5/5 basket 结构性不可结算。
+> `exp-20260913-006`：仓库过期 100 行 frame（止于 2026-04-24）遮蔽 massive 回退 → 早于 SPY 锚最后一根 bar 的 frame 视为缺失、整只 ticker 回退 massive（缺腿 45→15，被遮蔽 31→0）。
+> `exp-20260913-007`（006 预登记的 contract review）：每个 basket 仍含无任何价格源的腿（sic_peer_index 的 OTC/未上市/已退市符号）→ 准入新增 outcome-blind 可定价条件（first_seen 当日及之前 5 个 session 全有 bar，排除记录在决策、权重重归一、空侧不准入），窗口结束后 5 个 session 仍缺腿的 basket 追加 `unsettleable` 终态且不计入验收；修约下 5/5 历史记录两侧非空且已知 session 全可定价。**forward 验收计数从修约后首个 admit 的 batch 重新开始**；5 个冻结旧 basket 不重写，~09-18/19 起由日常 run 终态化。
+> 负面侧 1508 再读 trigger 已触发（1609≥1508，身份重算；`data/reopen_readiness.json` 停在 09-01 的 1222）但本单元未消费——下一单元须先冻结与 exp-20260824-001 字节一致的再读合同（F1-F5+V1-V2）再读结果，或记录有理由的 park。sic_peer_index 符号卫生为独立管理项。回执 `data/v2/hourly_runs/20260913T1740Z_news_pair_settlement_repair_and_leg_priceability_contract_review.json`。
+
+> 2026-09-14：`data/reopen_readiness.json` 停更 13 天后重算（生成器无 run.py 接线，需手动跑），entity_theme_axis_c 越过 171812 bar（208492 settled，+82%）当轮消费为
+> `exp-20260914-001 / expuid-1bc1858ea5104249`（d-0020）：字节相同 exp-20260719-004 规则、`--observed-only-override`（streak 3）、正则身份抽取的结果盲 cohort 冻结、D0-D3/panel/promotion、reserve→claim→单次 run，**REJECTED**——
+> 三个 row mean 为正（cash/SPY/QQQ +48.44/+24.07/+20.87 USD per 4000-USD row）但 QQQ row median −1.50、且仍只有 3/6 query group 同时胜 SPY+QQQ（floor 4）；相对 08-10 读数是稀释而非收敛（cash median 16.83→8.01、QQQ median 13.30→−1.50、breadth 不变）。
+> 该面重停在 ≥312738（未变 manifest；按 ~2.7k 行/日约 10 月下旬）、家族 trials 7/accept 0、observed-only streak 4（第五次同面需再次 override）；builder/frozen families 已同步，lean-strict 绿。
+> 注意：runner 自动生成的 why_result 文本写成「QQQ mean 与 median 均为负」，准确表述是 mean 为正、median 为负（canonical 字节被 manifest 绑定不改，以回执为准）；本轮 scope 时间戳为模板标签、晚于实际 reserve 时钟（无泄漏，第 4 例壁钟教训）。
+> 负面侧 1508 再读 trigger（1609）记为有理由 park：pair build 存活且 09-13 已 admit 首个可计数 basket，家族证据路径是 forward 验收合同；只有 build 被 park/阻塞 ≥20 session 或 forward 合同失败需归因时才冻结 F1-F5+V1-V2 再读。回执 `data/v2/hourly_runs/20260914T1640Z_entity_theme_axis_c4_reopen_read_rejected.json`。
+> 下一单元候选：把 208492 cohort 按 08-10 读数前/后结算的行切分做 analysis_only 稀释诊断（零行情、1 ID、区分「源在衰退」与「仅被稀释」）；事件 trigger：pair 首个可计数结算 ~09-28、旧 basket ~09-18/19 终态化。
+
+> 2026-09-15：09-14 锁定的稀释诊断当轮执行为 `exp-20260915-005 / expuid-792d6de6037d4663`（d-0021，loss_attribution / analysis_only）：exp-20260914-001 的 208492 行 cohort 字节一致复现（六项 delta 全 0），按身份键切成 OLD（当前 20260810 ledger 文件中 exit_date ≤ 08-07 的 114566 行，近似已被当晚 run 覆盖的 08-10 读数 114541）与 NEW（93926 行）。冻结的 C0 复现检查七项中一项未过（QQQ 行中位数 11.73 vs 已消费 13.30，delta −1.57 > 1.00 USD；计数 +25、全部均值与 cash/SPY 中位数在容差内）→ 按合同 **observed_only / identity_mismatch，不报告稀释分类**。根因：outcome ledger 同日文件被当晚 daily run 重写且不入 git，08-10 字节不可恢复；25 行身份缺口即可移动重尾 11 万行序列的离散中位数。不在本 ID 或新 ID 下放宽容差（结果后改阈值禁止）。合法再问：以日期已过、字节稳定的 20260913 ledger（sha 1593fa03…）为精确锚，切「≤09-13 cohort vs 之后增量」，规则从 005 冻结计划原样继承、C0 改为精确复现；待增量 ≥~30000 行（~10 月中）或与 312738 第五次读数预登记合并。父 alpha 家族不变（trials 7 / accept 0 / streak 4 / reopen 312738）。回执 `data/v2/hourly_runs/20260915T1625Z_entity_theme_cohort_split_dilution_diagnostic_identity_mismatch.json`。
+> 2026-09-16：无在研可执行题目，按协议§1 做固定结果诊断 `exp-20260916-006 / expuid-c4d1e442ee054f27`（d-0022，loss_attribution / analysis_only）：exp-20260914-001 的 208492 行 cohort（字节一致复现）是「新闻条目 × ticker」行，按身份键折叠为 3490 个唯一 (ticker, entry, exit, horizon) 持仓（每持仓均 59.7 行，前十分位持仓占 40.7% 行）。C0 精确通过（九项 delta 全 0，持仓内取值零冲突）。等权持仓层：对 cash/SPY/QQQ 均值 +37.67/+9.31/+4.23 USD（行层 +48.44/+24.07/+20.87），中位数 +0.55/−12.65/−12.45（行层 8.01/3.12/−1.50），正向占比 ~0.48–0.50，Spearman(行数, 持仓值) ≈ 0 → **position_level_no_edge**：行层结论定性成立，但行加权把 ETF 相对均值放大 2.6–4.9×，有效样本是 289 个入场日 × 30 ticker 的 ~3.5k 持仓而非 20.8 万行；正均值是 AI capex 半导体（MU/CRDO/AMD）右尾，中位持仓 10 日跑输两 ETF ~0.31%。未保留任何持仓层/新闻强度 face，不改 312738 bar；仅建议第五次读数预登记同时报告等权持仓层统计与唯一持仓数（与 09-15 的增量切分建议并列）。父家族不变（trials 7 / accept 0 / streak 4 / reopen 312738）。回执 `data/v2/hourly_runs/20260916T1626Z_entity_theme_position_dedup_weighting_attribution_no_edge.json`。
+> 陷阱：同日 ledger 文件会被当日晚间 run 覆盖，日内读数绑定的字节晚上就不存在；中位数容差须按 rank 位移或更宽 USD 带冻结；`build_reopen_readiness.py` 无 --help，任何调用都会重算。事件 trigger 不变（旧 basket ~09-18/19、pair 首结算 ~09-28、axis-C 312738 ~10 月下旬）。
+
 > V2 状态导航入口。每轮结束时更新。真相源永远是 ticket / ledger / 已提交代码，本文件只负责导航。
 > 最后更新：2026-09-01T16:45Z（d-0015：moomoo capital-flow preflight 全轴机器关闭 + fallback prediction-market 同样关闭 → no_candidate close；本单元一例展示污染（第 3 例）已围栏零 ID；全部前台等事件 trigger，最早 ~09-08）
 
@@ -90,6 +134,13 @@
 - d-0014 recount（常数时间，与冻结合同字节对账 170/57/20/37）：h5 已结算 24/30（8 up/16 down）、h10 0/30，未触发；绑定 bar 是 h10，ETA ~09-08..09-11。
 - 事件 trigger 集中窗口：d-0014 bar ~09-08..09-11；negative-side 1508 re-read（1222/1508，~40/日）~09-08；pair sleeve 首结算 ~09-10；moomoo 干净 forward ~11 月中。**在任一 trigger 触发前，后续小时单元只做常数时间 recount，no-op suppressed 退出（不建文件、不 commit）。**
 - 备注：`daily_news_structured_event_observations_*.jsonl`（353 行全 pending_forward_close）无任何结算消费者，实际结算面在 entity_theme observers——退役/合并候选，留给未来管理单元；family-271 的 target_price 谓词在现行合同下结构性不可达（如需修约须预登记 contract review；当前无必要，因 exp-20260718-002 gate 独立失败）。
+
+## 最新可执行证据状态（2026-09-23）
+
+- **d-0025 / exp-20260923-004（measurement_repair，accepted）**：pair sleeve 自 09-14 起零准入的根因是 exp-20260826-001 readiness gate 对 short 腿**每一只**票要求 PIT 借券证据、任一缺失即整批阻塞，而实体映射持续吐出 iBorrowDesk 无页面的未上市/OTC sic_peer 符号（BAO/DBIM/EVON/HWEP/LILW/SBEV/BAGZ/BLTG/GRAY/MOT，预抓取当日已尝试、返回 not_found）——正是 exp-20260913-007 已在准入层排除的不可定价符号，因此该修约从未作用到任何新批次（09-14 后 13/13 blocked，7 条仅因借券，覆盖率 85–98%）。合同修约（forward-only，first_seen ≥ 2026-09-23T17:00:00Z）：无借券票记入 `borrow_coverage.uncovered_tickers` 并在准入时排除（`excluded_no_pit_borrow`，等权重归一化，腿空则不准入）；整批只因批级 blocker 或 `short_side_no_borrow_coverage` 阻塞。结果盲投影：冻结 6/32 ready → 假设 v2 17/32（09-14 后 1/13 → 7/13）；32 条历史记录被新代码逐字节复现；不追溯准入；H10/45bp/1000 美元/40%/≥20/≥10 不变。工件：`data/experiments/exp-20260923-004/`；receipt `data/v2/hourly_runs/20260923T1633Z_pair_readiness_borrow_coverage_exclusion_accepted.json`。
+- 启动核对：exp-20260922-007 计数器已随 09-23 夜批落盘（ledger `rows_skipped_same_day_economic_duplicate=0`；form4 `closed_forward_row_records_current=1`）；readiness 重算（09-23T16:12Z）无 lane 过 bar；分红 lane 已显示 codex 修约后的人群计数 0/30。
+- 零 ID 决定：成交滑点 parity 诊断不开（live_drift 已有告警；38 仓位 0 个 core 可归因；备注码 09-09 才启用）。
+- 下一单元：核对 09-24 夜批首个 post-effective readiness 记录带 `coverage_rule_version=news_propagation_pair_borrow_coverage_v2` 且 sleeve 追加 basket；每周复算 ready 节奏（预期 ~3–4/周 vs 之前 ~1）；form4 DE 08-24 20d 折叠核对；pair 首个可计数结算 ~09-29。
 
 ## 现场事实（2026-08-18）
 

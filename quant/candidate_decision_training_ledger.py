@@ -280,6 +280,10 @@ def _write_state(path: Path, state: Mapping[str, Any]) -> None:
     path.write_text(json.dumps(dict(state), indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _same_day_economic_key(row: Mapping[str, Any]) -> tuple[str | None, str]:
+    return (_date10(row.get("as_of")), str(row.get("ticker") or "").upper())
+
+
 def append_candidate_decision_training_snapshot(
     snapshot: Mapping[str, Any],
     ledger_path: str | Path | None = None,
@@ -288,14 +292,34 @@ def append_candidate_decision_training_snapshot(
     path = Path(ledger_path) if ledger_path is not None else DEFAULT_LEDGER_PATH
     state_path = path.with_name("state.json")
     path.parent.mkdir(parents=True, exist_ok=True)
-    existing = {
-        str(row.get("observation_id"))
+    persisted = [
+        row
         for row in _records(path)
         if row.get("record_type") == "candidate_decision_snapshot"
-        and row.get("observation_id")
+    ]
+    existing = {
+        str(row.get("observation_id"))
+        for row in persisted
+        if row.get("observation_id")
     }
+    # Same-day economic identity: one candidate_decision_snapshot per
+    # (as_of, ticker).  observation_id also hashes intraday-varying price
+    # fields, so a second run.py pass on the same decision day would otherwise
+    # append the same planned entry twice (exp-20260922-007).  Persisted rows
+    # are never rewritten; the first observation of a decision day wins.
+    existing_same_day = {_same_day_economic_key(row) for row in persisted}
     rows = [dict(row) for row in snapshot.get("rows") or [] if isinstance(row, Mapping)]
-    new_rows = [row for row in rows if str(row.get("observation_id") or "") not in existing]
+    new_rows: list[dict[str, Any]] = []
+    same_day_duplicates = 0
+    for row in rows:
+        if str(row.get("observation_id") or "") in existing:
+            continue
+        same_day_key = _same_day_economic_key(row)
+        if same_day_key in existing_same_day:
+            same_day_duplicates += 1
+            continue
+        existing_same_day.add(same_day_key)
+        new_rows.append(row)
     if new_rows:
         with path.open("a", encoding="utf-8") as handle:
             for row in new_rows:
@@ -317,6 +341,7 @@ def append_candidate_decision_training_snapshot(
         "rows_seen": len(rows),
         "rows_written": len(new_rows),
         "rows_skipped_duplicate": len(rows) - len(new_rows),
+        "rows_skipped_same_day_economic_duplicate": same_day_duplicates,
         "last_nonempty_as_of": last_nonempty_as_of,
         "ledger_path": str(path),
         "ledger_content_identity": _ledger_content_identity(path),
@@ -330,6 +355,7 @@ def append_candidate_decision_training_snapshot(
         "rows_seen": len(rows),
         "rows_written": len(new_rows),
         "rows_skipped_duplicate": len(rows) - len(new_rows),
+        "rows_skipped_same_day_economic_duplicate": same_day_duplicates,
         "state_written": True,
         "schema_version": SCHEMA_VERSION,
         "rule_version": RULE_VERSION,

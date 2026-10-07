@@ -134,6 +134,10 @@ def sweep_stale_artifacts(
     removed: list[dict] = []
     kept = 0
     for path in _iter_residue(repo_root):
+        # OS-lock waiters must keep the same inode, even after an owner releases it.
+        if path == repo_root / ".git" / "experiment_id_allocation.lock":
+            kept += 1
+            continue
         try:
             age = now - path.stat().st_mtime
         except OSError:

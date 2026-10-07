@@ -152,7 +152,7 @@ def test_state_surface_sleeve_ignores_stale_price_dates():
         open_price_dates={"AAA": "2026-05-18"},
         current_price_dates={"AAA": "2026-05-18"},
         state=state,
-        config={"hold_days": 1, "max_positions": 2},
+        config={"paper_enabled": True, **({"hold_days": 1, "max_positions": 2})},
         persist=False,
     )
 
@@ -232,7 +232,7 @@ def _ohlcv_flat_benchmarks_broad_rotation():
 
 
 def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
-    queue = build_state_surface_queue(
+    queue = build_state_surface_queue(config={"paper_enabled": True},
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
@@ -255,7 +255,7 @@ def test_state_surface_queue_is_default_off_and_excludes_core_candidates():
 
 
 def test_state_surface_queue_default_admits_top_five_rotation_candidates_only():
-    queue = build_state_surface_queue(
+    queue = build_state_surface_queue(config={"paper_enabled": True},
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
@@ -417,11 +417,11 @@ def test_state_surface_rank_depth_score_volume_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **LOW_EXTENSION_SUPPORT_DISABLED,
             "rank_notional_rank_depth_score_volume_score_min": 0.0,
             "rank_notional_rank_depth_score_volume_volume_min": 0.0,
-        },
+        })},
     )
 
     assert [
@@ -450,7 +450,7 @@ def test_state_surface_rank_depth_score_volume_persists_to_paper_ledger():
     ]
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -467,7 +467,7 @@ def test_state_surface_rank_depth_score_volume_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -490,10 +490,10 @@ def test_state_surface_rank3_near_high_support_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     rank3 = next(row for row in queue["candidates"] if row["queue_rank"] == 3)
@@ -510,7 +510,7 @@ def test_state_surface_rank3_near_high_support_persists_to_paper_ledger():
     } == {False}
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -525,7 +525,7 @@ def test_state_surface_rank3_near_high_support_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -549,11 +549,11 @@ def test_state_surface_rank3_volume_confirmation_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_rank3_volume_confirmation_min": 0.0,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     rank3 = next(row for row in queue["candidates"] if row["queue_rank"] == 3)
@@ -572,7 +572,7 @@ def test_state_surface_rank3_volume_confirmation_persists_to_paper_ledger():
     assert queue["rank_notional_profile"]["rank3_volume_confirmation_scalar"] == 1.5
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -587,7 +587,7 @@ def test_state_surface_rank3_volume_confirmation_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -611,11 +611,11 @@ def test_state_surface_rank2_volume_confirmation_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_rank2_volume_confirmation_min": 0.0,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     rank2 = next(row for row in queue["candidates"] if row["queue_rank"] == 2)
@@ -634,7 +634,7 @@ def test_state_surface_rank2_volume_confirmation_persists_to_paper_ledger():
     assert queue["rank_notional_profile"]["rank2_volume_confirmation_scalar"] == 1.1
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -649,7 +649,7 @@ def test_state_surface_rank2_volume_confirmation_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -673,10 +673,10 @@ def test_state_surface_rank2_near_high_support_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     rank2 = next(row for row in queue["candidates"] if row["queue_rank"] == 2)
@@ -693,7 +693,7 @@ def test_state_surface_rank2_near_high_support_persists_to_paper_ledger():
     } == {False}
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -708,7 +708,7 @@ def test_state_surface_rank2_near_high_support_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -728,7 +728,7 @@ def test_state_surface_rank2_near_high_support_persists_to_paper_ledger():
 
 
 def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
-    queue = build_state_surface_queue(
+    queue = build_state_surface_queue(config={"paper_enabled": True},
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
@@ -764,7 +764,7 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     ] == [True, True, True, False, False]
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -794,7 +794,7 @@ def test_state_surface_top3_ret5_followthrough_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     prices = {row["ticker"]: 100.0 for row in first["pending_entries"]}
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -828,7 +828,7 @@ def test_state_surface_low_extension_support_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
@@ -837,7 +837,7 @@ def test_state_surface_low_extension_support_persists_to_paper_ledger():
             "rank_notional_absolute_score_support_enabled": False,
             "rank_notional_rank_depth_score_volume_enabled": False,
             "rank_notional_low_extension_support_max_ret5": 1.0,
-        },
+        })},
     )
 
     candidate = queue["candidates"][0]
@@ -854,7 +854,7 @@ def test_state_surface_low_extension_support_persists_to_paper_ledger():
     assert queue["rank_notional_profile"]["low_extension_support_scalar"] == 1.05
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -868,7 +868,7 @@ def test_state_surface_low_extension_support_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = pending["ticker"]
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -889,12 +889,12 @@ def test_state_surface_broad_breadth_support_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
             **RANK_QUEUE_ALIGNMENT_DISABLED,
             **LOW_EXTENSION_SUPPORT_DISABLED,
-        },
+        })},
     )
 
     candidate = queue["candidates"][0]
@@ -909,7 +909,7 @@ def test_state_surface_broad_breadth_support_persists_to_paper_ledger():
     assert queue["rank_notional_profile"]["broad_breadth_support_scalar"] == 1.1
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -924,7 +924,7 @@ def test_state_surface_broad_breadth_support_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = pending["ticker"]
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -946,13 +946,13 @@ def test_state_surface_rank_queue_alignment_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
             **SLEEVE_CAPACITY_DISABLED,
             **LOW_EXTENSION_SUPPORT_DISABLED,
-        },
+        })},
     )
 
     candidate = queue["candidates"][0]
@@ -972,7 +972,7 @@ def test_state_surface_rank_queue_alignment_persists_to_paper_ledger():
     )
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -987,7 +987,7 @@ def test_state_surface_rank_queue_alignment_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = pending["ticker"]
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -1009,13 +1009,13 @@ def test_state_surface_sleeve_capacity_persists_to_paper_ledger():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
             "rank_notional_rank_queue_alignment_enabled": False,
             **LOW_EXTENSION_SUPPORT_DISABLED,
-        },
+        })},
     )
 
     candidate = queue["candidates"][0]
@@ -1032,7 +1032,7 @@ def test_state_surface_sleeve_capacity_persists_to_paper_ledger():
     )
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -1047,7 +1047,7 @@ def test_state_surface_sleeve_capacity_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = pending["ticker"]
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -1070,13 +1070,13 @@ def test_state_surface_queue_lag_support_persists_to_paper_ledger():
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
         core_signals=[{"ticker": "AAA"}],
-        config={
+        config={"paper_enabled": True, **({
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
             "rank_notional_broad_breadth_support_enabled": False,
             "rank_notional_rank_queue_alignment_enabled": False,
             **LOW_EXTENSION_SUPPORT_DISABLED,
-        },
+        })},
     )
 
     candidate = queue["candidates"][0]
@@ -1098,7 +1098,7 @@ def test_state_surface_queue_lag_support_persists_to_paper_ledger():
     )
 
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -1113,7 +1113,7 @@ def test_state_surface_queue_lag_support_persists_to_paper_ledger():
     next_state = empty_state_surface_sleeve_state()
     next_state["pending_entries"] = first["pending_entries"]
     ticker = pending["ticker"]
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -1135,7 +1135,7 @@ def test_state_surface_queue_can_disable_regime_rank_notional_profile():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_regime_profiles_enabled": False,
             "rank_notional_candidate_breadth_profiles_enabled": False,
@@ -1143,7 +1143,7 @@ def test_state_surface_queue_can_disable_regime_rank_notional_profile():
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["market_regime"]["regime"] == "chop"
@@ -1166,14 +1166,14 @@ def test_state_surface_queue_can_disable_candidate_breadth_rank_notional_profile
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_candidate_breadth_profiles_enabled": False,
             "rank_notional_score_expansion_profiles_enabled": False,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["market_regime"]["regime"] == "chop"
@@ -1196,13 +1196,13 @@ def test_state_surface_queue_applies_score_compression_rank_notional_profile():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_score_compression_max_top3_spread": 2.0,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1243,13 +1243,13 @@ def test_state_surface_queue_applies_rank1_score_isolation_before_expansion():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation_many(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_rank1_score_isolation_min_score_gap": 0.0,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1297,14 +1297,14 @@ def test_state_surface_queue_applies_rank2_ret20_lead_profile_before_score_compr
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank2_ret20_lead(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_score_compression_max_top3_spread": 2.0,
             "rank_notional_rank2_ret20_score_gap_profiles_enabled": False,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1340,13 +1340,13 @@ def test_state_surface_queue_applies_rank2_ret20_score_gap_profile_before_rank2_
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank2_ret20_lead(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_score_compression_max_top3_spread": 2.0,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1383,14 +1383,14 @@ def test_state_surface_queue_applies_top2_tech_cohesion_before_rank2_score_gap()
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_top2_tech_cohesion(),
         universe=["PLTR", "CRDO", "GOOG", "XOM", "CVX", "DIS"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_rank1_ret60_residual_min": 0.0,
             "rank_notional_rank2_ret20_score_gap_min": 0.0,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1439,13 +1439,13 @@ def test_state_surface_queue_applies_rank1_ret60_residual_after_top2_priority():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank1_ret60_overheat(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_rank2_ret20_score_gap_min": 0.0,
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1486,7 +1486,7 @@ def test_state_surface_queue_applies_rank1_ret20_dominance_profile_before_compre
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_rank1_ret20_dominance(),
         universe=["AAA", "BBB", "CCC", "DDD", "EEE", "FFF"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "rank_notional_rank1_ret20_dominance_lead_min": 0.0,
             "rank_notional_rank1_ret20_dominance_score_gap_min": 0.0,
@@ -1494,7 +1494,7 @@ def test_state_surface_queue_applies_rank1_ret20_dominance_profile_before_compre
             "rank_notional_rank3_near_high_support_enabled": False,
             "rank_notional_rank2_near_high_support_enabled": False,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
 
     assert queue["enabled"] is False
@@ -1536,7 +1536,7 @@ def test_state_surface_queue_applies_rank1_ret20_dominance_profile_before_compre
 
 
 def test_state_surface_queue_defaults_to_rotation_surface_candidates_only():
-    queue = build_state_surface_queue(
+    queue = build_state_surface_queue(config={"paper_enabled": True},
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv(),
         universe=["AAA", "BBB", "CCC"],
@@ -1556,7 +1556,7 @@ def test_state_surface_benchmark_momentum_gate_blocks_paper_candidates_without_o
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_flat_benchmarks_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={"max_candidates": 2},
+        config={"paper_enabled": True, **({"max_candidates": 2})},
     )
 
     assert queue["enabled"] is False
@@ -1570,7 +1570,7 @@ def test_state_surface_benchmark_momentum_gate_blocks_paper_candidates_without_o
     assert queue["benchmark_momentum_gate"]["trade_enabled_after_gate"] is False
     assert queue["production_impact"]["alters_orders"] is False
 
-    snapshot = build_state_surface_sleeve_snapshot(
+    snapshot = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=empty_state_surface_sleeve_state(),
@@ -1590,7 +1590,7 @@ def test_state_surface_ret20_excess_spy_gate_blocks_weak_relative_candidates():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={"max_candidates": 3, "ret20_excess_spy_min": 0.03},
+        config={"paper_enabled": True, **({"max_candidates": 3, "ret20_excess_spy_min": 0.03})},
     )
 
     assert queue["enabled"] is False
@@ -1619,14 +1619,14 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
     state = empty_state_surface_sleeve_state()
-    first = build_state_surface_sleeve_snapshot(
+    first = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -1641,7 +1641,7 @@ def test_state_surface_sleeve_tracks_paper_entries_without_orders():
     next_state["pending_entries"] = first["pending_entries"]
     ticker = first["pending_entries"][0]["ticker"]
 
-    second = build_state_surface_sleeve_snapshot(
+    second = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-05",
         state=next_state,
@@ -1668,11 +1668,11 @@ def test_state_surface_sleeve_scales_recent_ticker_repeat_without_orders():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             **BROAD_BREADTH_DISABLED,
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
     state = empty_state_surface_sleeve_state()
     state["closed_positions"] = [
@@ -1685,7 +1685,7 @@ def test_state_surface_sleeve_scales_recent_ticker_repeat_without_orders():
         }
     ]
 
-    snapshot = build_state_surface_sleeve_snapshot(
+    snapshot = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=state,
@@ -1725,7 +1725,7 @@ def test_state_surface_forward_gate_includes_tail_failure_after_sample_matures()
     state["closed_positions"] = [{"pnl": 100.0} for _ in range(5)]
     state["closed_positions"].extend({"pnl": 1.0} for _ in range(15))
 
-    snapshot = build_state_surface_sleeve_snapshot(
+    snapshot = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue={"candidates": [], "candidate_count": 0},
         as_of="2026-05-20",
         state=state,
@@ -1744,12 +1744,12 @@ def test_report_generator_renders_state_surface_without_orders():
         as_of="2026-05-04",
         ohlcv_by_ticker=_ohlcv_broad_rotation(),
         universe=["AAA", "BBB", "CCC"],
-        config={
+        config={"paper_enabled": True, **({
             "max_candidates": 1,
             "rank_notional_top3_ret5_followthrough_enabled": False,
-        },
+        })},
     )
-    snapshot = build_state_surface_sleeve_snapshot(
+    snapshot = build_state_surface_sleeve_snapshot(config={"paper_enabled": True},
         state_surface_queue=queue,
         as_of="2026-05-04",
         state=empty_state_surface_sleeve_state(),

@@ -551,6 +551,56 @@ def _plan_append(path: Path, candidates: Iterable[dict[str, Any]]) -> _AppendPla
     return _AppendPlan(path, existing_text, existing, new_rows)
 
 
+def validate_collection_commit_anchors(
+    rows_by_name: Mapping[str, list[dict[str, Any]]],
+) -> dict[str, Any]:
+    """Verify committed prefixes of already hash-chain-validated surface rows.
+
+    A valid hash chain alone cannot detect deletion of its tail. New collection
+    manifests pin every surface's committed head; a later uncommitted suffix is
+    allowed. Legacy manifests remain explicitly unanchored, never backfilled.
+    """
+    surfaces = set(LEDGER_FILENAMES) - {"collections"}
+    anchored = legacy = 0
+    for manifest in rows_by_name["collections"]:
+        fact = manifest["fact"]
+        if "surface_commit_anchors" not in fact:
+            legacy += 1
+            continue
+        anchors = fact["surface_commit_anchors"]
+        collection_id = fact.get("collection_id")
+        if not isinstance(anchors, Mapping) or set(anchors) != surfaces:
+            raise BrokerLedgerCorruptionError(
+                f"invalid surface commit anchors in collection {collection_id}"
+            )
+        for name, anchor in anchors.items():
+            count = anchor.get("row_count") if isinstance(anchor, Mapping) else None
+            head = anchor.get("head_record_hash") if isinstance(anchor, Mapping) else None
+            if (type(count) is not int or count < 0
+                    or (count == 0 and head is not None)
+                    or (count > 0 and not isinstance(head, str))):
+                raise BrokerLedgerCorruptionError(
+                    f"invalid commit anchor for {name} in collection {collection_id}"
+                )
+            rows = rows_by_name[name]
+            if count > len(rows):
+                raise BrokerLedgerCorruptionError(
+                    f"committed prefix truncated for {name} in collection {collection_id}"
+                )
+            if count and rows[count - 1]["record_hash"] != head:
+                raise BrokerLedgerCorruptionError(
+                    f"committed prefix head mismatch for {name} in collection {collection_id}"
+                )
+        anchored += 1
+    return {
+        "status": "partially_anchored" if anchored and legacy else (
+            "anchored" if anchored else "unanchored"
+        ),
+        "anchored_collection_count": anchored,
+        "legacy_unanchored_collection_count": legacy,
+    }
+
+
 def _write_plan(plan: _AppendPlan) -> None:
     if not plan.new_rows:
         return
@@ -1367,8 +1417,25 @@ def persist_broker_execution_capture(
             "cashflows": _plan_append(paths["cashflows"], cash_candidates),
             "accounts": _plan_append(paths["accounts"], account_candidates),
             "positions": _plan_append(paths["positions"], position_candidates),
-            "collections": _plan_append(paths["collections"], collection_candidates),
+            "lifecycle_links": _plan_append(paths["lifecycle_links"], []),
+            "collections": _plan_append(paths["collections"], []),
         }
+        # Check existing committed prefixes before candidates could recreate a
+        # missing correction and silently hide a valid-chain tail truncation.
+        validate_collection_commit_anchors({
+            name: plan.existing_rows for name, plan in plans.items()
+        })
+        prior_collection = next((
+            row for row in plans["collections"].existing_rows
+            if row["identity_key"] == collection_candidates[0]["identity_key"]
+        ), None)
+        if prior_collection and "surface_commit_anchors" in prior_collection["fact"]:
+            # Exact historical replays use their original commit heads, even
+            # after later collections have appended to these same surfaces.
+            collection_fact["surface_commit_anchors"] = prior_collection["fact"]["surface_commit_anchors"]
+            collection_candidates[0]["fact"] = collection_fact
+            collection_candidates[0]["fact_hash"] = _sha256_json(collection_fact)
+        plans["collections"] = _plan_append(paths["collections"], collection_candidates)
         established_account_keys = {
             str((row.get("fact") or {}).get("account_key"))
             for plan in plans.values()
@@ -1383,6 +1450,49 @@ def persist_broker_execution_capture(
                 "broker ledger directory is account-scoped; established="
                 f"{sorted(established_account_keys)!r}, capture={capture_account_key!r}"
             )
+        committed_replay = not plans["collections"].new_rows
+        if committed_replay:
+            # Replaying a committed capture must not restore its old economic
+            # facts, position anchor or state after a newer collection exists.
+            if any(plan.new_rows for plan in plans.values()):
+                raise BrokerLedgerConflictError("committed capture changed its facts")
+            state_path = root / "state.json"
+            state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else None
+            latest_collection_id = plans["collections"].existing_rows[-1]["fact"]["collection_id"]
+            if state and state.get("latest_collection_id") == latest_collection_id:
+                counts = {name: {
+                    "rows_before": len(plan.existing_rows), "rows_appended": 0,
+                    "rows_total": len(plan.existing_rows),
+                    "head_record_hash": plan.existing_rows[-1]["record_hash"] if plan.existing_rows else None,
+                } for name, plan in plans.items()}
+                return {"status": state["status"], "ledger_dir": str(root),
+                        "state_path": str(state_path), "collection_id": collection_id,
+                        "ledgers": counts, "state": state}
+            if collection_id != latest_collection_id:
+                raise BrokerLedgerConflictError(
+                    "derived state recovery requires the latest committed capture"
+                )
+            # Manifest commit can precede an interrupted state write. Only this
+            # latest capture has the current position anchor needed to rebuild.
+
+        for name, candidates in (("fills", fill_candidates), ("orders", order_candidates),
+                                 ("order_fees", fee_candidates)):
+            key = _deal_key if name == "fills" else lambda fact: (fact.get("account_key"), fact.get("order_id"))
+            desired = {key(row["fact"]): row for row in candidates}
+            latest = {key(row["fact"]): row for row in plans[name].final_rows}
+            reobserved = []
+            for entity, candidate in desired.items():
+                if latest[entity]["fact_hash"] == candidate["fact_hash"]:
+                    continue
+                # A -> B -> A is a new observation of an old fact, not a new
+                # economic deal. Retain every old identity and append only the
+                # capture's final desired version with a collection identity.
+                row = dict(candidate)
+                row["reobserved_base_identity_key"] = row["identity_key"]
+                row["identity_key"] += f"|reobserved|{collection_id}"
+                reobserved.append(row)
+            if reobserved:
+                plans[name] = _plan_append(paths[name], [*candidates, *reobserved])
         effective_fill_rows, excluded_deal_rows, deal_projection = _economic_fill_projection(
             plans["fills"].final_rows
         )
@@ -1410,6 +1520,21 @@ def persist_broker_execution_capture(
         plans["lifecycle_links"] = _plan_append(
             paths["lifecycle_links"], lifecycle_candidates
         )
+
+        if committed_replay and any(plan.new_rows for plan in plans.values()):
+            raise BrokerLedgerConflictError("committed capture recovery would change raw ledgers")
+
+        if not committed_replay:
+            collection_fact["surface_commit_anchors"] = {
+                name: {
+                    "row_count": len(plan.final_rows),
+                    "head_record_hash": plan.final_rows[-1]["record_hash"] if plan.final_rows else None,
+                }
+                for name, plan in plans.items() if name != "collections"
+            }
+            collection_candidates[0]["fact"] = collection_fact
+            collection_candidates[0]["fact_hash"] = _sha256_json(collection_fact)
+            plans["collections"] = _plan_append(paths["collections"], collection_candidates)
 
         # All validation passed.  Cross-file atomicity is intentionally obtained
         # through idempotent recovery: if a later file write fails, the next run
@@ -1588,8 +1713,10 @@ def validate_broker_execution_ledger(
     """Strictly validate every canonical JSONL chain without writing."""
     root = Path(ledger_dir)
     result = {}
+    rows_by_name = {}
     for name, filename in LEDGER_FILENAMES.items():
         _, rows = _strict_read_chain(root / filename)
+        rows_by_name[name] = rows
         result[name] = {
             "rows": len(rows),
             "head_record_hash": rows[-1].get("record_hash") if rows else None,
@@ -1601,7 +1728,8 @@ def validate_broker_execution_ledger(
         raise BrokerLedgerCorruptionError(
             "non-empty broker ledgers have no committed collection manifest"
         )
-    return {"status": "valid", "ledgers": result}
+    anchors = validate_collection_commit_anchors(rows_by_name)
+    return {"status": "valid", "ledgers": result, "commit_anchors": anchors}
 
 
 def write_broker_ledger_health(

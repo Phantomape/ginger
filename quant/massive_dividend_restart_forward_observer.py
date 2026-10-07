@@ -40,11 +40,12 @@ from __future__ import annotations
 import datetime as dt
 import hashlib
 import json
+import re
 import sqlite3
 import statistics
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Collection, Mapping
 
 try:
     from massive_ohlcv_backfill import (
@@ -89,6 +90,67 @@ ENTRY_RULE = (
     "first_regular_session_0930_america_new_york_open_strictly_after_first_seen_at"
 )
 EXPECTED_CADENCE = "at_least_one_coverage_row_per_trading_day_zero_candidates_normal"
+# exp-20260921-001: the v1 dividends feed emits the same instrument under two
+# spellings over time (class shares ``XXXA`` vs ``XXX.A``; preferreds
+# ``XXXPRY`` vs ``XXXpY``). Gap detection groups by the instrument_master
+# canonical spelling so a spelling switch cannot masquerade as a >=GAP_DAYS
+# dividend gap or a no-prior first positive declaration.
+TICKER_CANONICALIZATION_KIND = "instrument_master_variant_v1"
+_PREFERRED_FEED_RE = re.compile(r"^([A-Z]+)PR([A-Z])$")
+_CLASS_FEED_RE = re.compile(r"^([A-Z]{2,})([A-Z])$")
+
+
+def canonical_ticker(ticker: str, master_tickers: Collection[str] | None) -> str:
+    """Map a feed spelling to its instrument_master spelling, fail closed.
+
+    A spelling already present in the master (or any spelling when no master
+    is available) is returned unchanged. Otherwise exactly one class
+    (``XXXA`` -> ``XXX.A``) or preferred (``XXXPRY`` -> ``XXXpY``) variant that
+    is present in the master is returned; zero or several matches keep the
+    literal spelling so an ambiguous mapping can never merge two instruments.
+    """
+
+    literal = str(ticker)
+    if not master_tickers or literal in master_tickers:
+        return literal
+    variants: list[str] = []
+    match = _PREFERRED_FEED_RE.match(literal)
+    if match:
+        variants.append(f"{match.group(1)}p{match.group(2)}")
+    match = _CLASS_FEED_RE.match(literal)
+    if match:
+        variants.append(f"{match.group(1)}.{match.group(2)}")
+    hits = [variant for variant in variants if variant in master_tickers]
+    if len(hits) == 1:
+        return hits[0]
+    return literal
+
+
+def load_instrument_master_tickers(
+    bars_database: Path | str,
+) -> set[str] | None:
+    """Return the distinct instrument_master spellings, or None when absent."""
+
+    database = Path(bars_database)
+    if not database.is_file():
+        return None
+    try:
+        with sqlite3.connect(
+            f"file:{database.as_posix()}?mode=ro", uri=True
+        ) as conn:
+            rows = conn.execute(
+                "SELECT DISTINCT ticker FROM instrument_master"
+            ).fetchall()
+    except sqlite3.Error:
+        return None
+    return {str(row[0]) for row in rows if row[0]}
+
+
+def _canonical_decision_key(decision_key: str, master_tickers) -> str:
+    ticker, sep, declaration_date = str(decision_key).rpartition(":")
+    if not sep:
+        return str(decision_key)
+    return f"{canonical_ticker(ticker, master_tickers)}:{declaration_date}"
 
 
 def _utc_now() -> dt.datetime:
@@ -259,6 +321,7 @@ def detect_new_candidates(
     gap_days: int = GAP_DAYS,
     recent_window_days: int = RECENT_WINDOW_DAYS,
     first_seen_at: str,
+    master_tickers: Collection[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Detect first-positive-USD declarations after a >=gap_days gap.
 
@@ -277,11 +340,23 @@ def detect_new_candidates(
     coverage_floor = dt.date.fromisoformat(min_decl)
     cutoff = (anchor - dt.timedelta(days=int(recent_window_days))).isoformat()
 
+    # exp-20260921-001: group by the instrument_master-canonical spelling so a
+    # provider spelling switch cannot masquerade as a dividend gap; a literal
+    # key recorded before the repair stays known under its canonical form.
+    canonicalization = (
+        "instrument_master_unavailable" if master_tickers is None else None
+    )
     by_ticker: dict[str, dict[str, list[dict[str, Any]]]] = defaultdict(
         lambda: defaultdict(list)
     )
+    feed_spellings: dict[str, set[str]] = defaultdict(set)
     for row in chain.get("rows", []):
-        by_ticker[row["ticker"]][row["declaration_date"]].append(row)
+        canonical = canonical_ticker(row["ticker"], master_tickers)
+        by_ticker[canonical][row["declaration_date"]].append(row)
+        feed_spellings[canonical].add(str(row["ticker"]))
+    known = set(known_decision_keys) | {
+        _canonical_decision_key(key, master_tickers) for key in known_decision_keys
+    }
 
     candidates: list[dict[str, Any]] = []
     for ticker, per_date in by_ticker.items():
@@ -290,7 +365,7 @@ def detect_new_candidates(
             if declaration_date < cutoff:
                 continue
             decision_key = f"{ticker}:{declaration_date}"
-            if decision_key in known_decision_keys:
+            if decision_key in known:
                 continue
             decl = dt.date.fromisoformat(declaration_date)
             prior = dates[index - 1] if index > 0 else None
@@ -314,6 +389,13 @@ def detect_new_candidates(
                     "record_type": "forward_candidate",
                     "decision_key": decision_key,
                     "ticker": ticker,
+                    "feed_tickers": sorted(feed_spellings[ticker]),
+                    "ticker_canonicalization": canonicalization
+                    or (
+                        "literal"
+                        if feed_spellings[ticker] == {ticker}
+                        else TICKER_CANONICALIZATION_KIND
+                    ),
                     "declaration_date": declaration_date,
                     "prior_positive_declaration_date": prior,
                     "gap_days": gap,
@@ -569,10 +651,12 @@ def persist_massive_dividend_restart_forward_observer(
 
     ledger_rows = _load_ledger(ledger_path)
     candidates_by_key, evaluations_by_key = _ledger_views(ledger_rows)
+    master_tickers = load_instrument_master_tickers(bars_database)
     new_candidates = detect_new_candidates(
         chain,
         set(candidates_by_key),
         first_seen_at=fetched_at,
+        master_tickers=master_tickers,
     )
     for row in new_candidates:
         candidates_by_key[row["decision_key"]] = row
@@ -614,6 +698,14 @@ def persist_massive_dividend_restart_forward_observer(
         "positive_usd_row_count": chain["positive_usd_row_count"],
         "max_declaration_date": chain["max_declaration_date"],
         "new_candidate_count": len(new_candidates),
+        "ticker_canonicalization_kind": (
+            "instrument_master_unavailable"
+            if master_tickers is None
+            else TICKER_CANONICALIZATION_KIND
+        ),
+        "instrument_master_ticker_count": (
+            None if master_tickers is None else len(master_tickers)
+        ),
         "new_gate_evaluation_count": len(new_evaluations),
         "pending_gate_count": len(candidates_by_key) - len(evaluations_by_key),
         "consecutive_unchanged_content_sessions": unchanged_sessions,

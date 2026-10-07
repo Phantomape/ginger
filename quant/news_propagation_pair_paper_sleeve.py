@@ -54,6 +54,10 @@ HOLD_SESSIONS = 10
 ROUND_TRIP_COST_RATE_PER_LEG = 0.0045
 SESSION_ANCHOR_TICKER = "SPY"
 COMPARATOR_TICKERS = ("SPY", "QQQ")
+# exp-20260913-007 leg priceability contract (outcome-blind: bar EXISTENCE only).
+PRICEABILITY_RULE_VERSION = "news_propagation_pair_leg_priceability_v1"
+PRICEABILITY_LOOKBACK_SESSIONS = 5
+UNSETTLEABLE_GRACE_SESSIONS = 5
 NEW_YORK = ZoneInfo("America/New_York")
 
 # Frozen at build time (exp-20260827-001).  The sleeve is accepted or rejected
@@ -99,19 +103,112 @@ def _production_impact() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def _side_weights(side: Mapping[str, Any]) -> dict[str, float]:
+def _side_weights(
+    side: Mapping[str, Any], keep: set[str] | None = None
+) -> dict[str, float]:
     counts = dict(side.get("ticker_row_counts") or {})
+    if keep is not None:
+        counts = {ticker: count for ticker, count in counts.items() if ticker in keep}
     total = sum(counts.values())
     if total <= 0:
         return {}
     return {ticker: counts[ticker] / total for ticker in sorted(counts)}
 
 
-def build_pair_basket_decision(record: Mapping[str, Any]) -> dict[str, Any] | None:
+def _has_bar(bars: Mapping[str, Any], ticker: str, session: str) -> bool:
+    row = (bars.get(ticker) or {}).get(session) or {}
+    return float(row.get("open") or 0.0) > 0 and float(row.get("close") or 0.0) > 0
+
+
+def _pre_entry_sessions(first_seen_at: str, calendar: list[str]) -> list[str] | None:
+    """The PRICEABILITY_LOOKBACK_SESSIONS anchor sessions at or before the
+    first_seen New York date, i.e. strictly before the entry session.  None
+    (fail closed) when the calendar does not reach back far enough."""
+    observed = _aware_datetime(first_seen_at)
+    if observed is None:
+        return None
+    local_date = observed.astimezone(NEW_YORK).date().isoformat()
+    prior = [session for session in calendar if session <= local_date]
+    if len(prior) < PRICEABILITY_LOOKBACK_SESSIONS:
+        return None
+    return prior[-PRICEABILITY_LOOKBACK_SESSIONS:]
+
+
+def _priceable_tickers(
+    side: Mapping[str, Any], bars: Mapping[str, Any], sessions: list[str] | None
+) -> set[str]:
+    if sessions is None:
+        return set()
+    return {
+        ticker
+        for ticker in (side.get("ticker_row_counts") or {})
+        if all(_has_bar(bars, ticker, session) for session in sessions)
+    }
+
+
+def _has_latest_session_lag(
+    side: Mapping[str, Any],
+    bars: Mapping[str, Any],
+    sessions: list[str] | None,
+    first_seen_at: str,
+) -> bool:
+    if not sessions or len(sessions) < 2:
+        return False
+    observed = _aware_datetime(first_seen_at)
+    if observed is None:
+        return False
+    latest = sessions[-1]
+    if latest != observed.astimezone(NEW_YORK).date().isoformat():
+        return False
+    prior = sessions[:-1]
+    prior_complete = [
+        ticker
+        for ticker in (side.get("ticker_row_counts") or {})
+        if all(_has_bar(bars, ticker, session) for session in prior)
+    ]
+    if not prior_complete:
+        return False
+    missing_latest = [
+        ticker for ticker in prior_complete if not _has_bar(bars, ticker, latest)
+    ]
+    return len(missing_latest) / len(prior_complete) > 0.5
+
+
+def _leg(
+    polarity: str,
+    weights: dict[str, float],
+    side: Mapping[str, Any],
+    keep: set[str] | None,
+    no_borrow: list[str] | None = None,
+    overlap: list[str] | None = None,
+) -> dict[str, Any]:
+    leg: dict[str, Any] = {"polarity": polarity, "weights": weights}
+    if keep is not None:
+        leg["excluded_unpriceable"] = sorted(
+            set(side.get("ticker_row_counts") or {}) - keep
+        )
+    if no_borrow is not None:
+        # exp-20260923-004: short tickers the readiness record lists as
+        # lacking valid PIT borrow evidence, labelled apart from priceability.
+        leg["excluded_no_pit_borrow"] = list(no_borrow)
+    if overlap is not None:
+        # exp-20260924-004: tickers the readiness record lists on BOTH sides
+        # of the batch, removed from both legs (independent label).
+        leg["excluded_cross_side_overlap"] = list(overlap)
+    return leg
+
+
+def build_pair_basket_decision(
+    record: Mapping[str, Any], bars: Mapping[str, Any] | None = None
+) -> dict[str, Any] | None:
     """One immutable basket decision from one measurement_ready record.
 
     Uses ONLY admission-time fields; settled outcomes never appear in the
-    readiness schema, so admission cannot condition on results.
+    readiness schema, so admission cannot condition on results.  When
+    ``bars`` is given (exp-20260913-007), a side ticker is admitted only if a
+    bar EXISTS on every pre-entry lookback session (outcome-blind capability
+    condition); excluded tickers are recorded and the side's equal-row weights
+    are renormalized over the remaining tickers.
     """
     if record.get("schema_version") != READINESS_SCHEMA_VERSION:
         return None
@@ -121,11 +218,82 @@ def build_pair_basket_decision(record: Mapping[str, Any]) -> dict[str, Any] | No
     first_seen = _aware_datetime(record.get("first_seen_at"))
     if not batch_id or first_seen is None:
         return None
-    long_weights = _side_weights(record.get("long_side") or {})
-    short_weights = _side_weights(record.get("short_side") or {})
+    long_side = record.get("long_side") or {}
+    short_side = record.get("short_side") or {}
+    long_keep = short_keep = None
+    priceability = None
+    if bars is not None:
+        calendar = sorted((bars.get(SESSION_ANCHOR_TICKER) or {}).keys())
+        sessions = _pre_entry_sessions(str(record.get("first_seen_at")), calendar)
+        if _has_latest_session_lag(
+            long_side, bars, sessions, str(record.get("first_seen_at"))
+        ) or _has_latest_session_lag(
+            short_side, bars, sessions, str(record.get("first_seen_at"))
+        ):
+            return None
+        long_keep = _priceable_tickers(long_side, bars, sessions)
+        short_keep = _priceable_tickers(short_side, bars, sessions)
+        priceability = {
+            "rule_version": PRICEABILITY_RULE_VERSION,
+            "rule": (
+                "ticker admitted only if a bar (open>0, close>0) exists in "
+                "warehouse-or-massive on every pre-entry lookback session"
+            ),
+            "lookback_sessions": PRICEABILITY_LOOKBACK_SESSIONS,
+            "sessions": sessions,
+        }
+    borrow = record.get("borrow_coverage") or {}
+    # exp-20260923-004: a v2 readiness record lists short tickers without
+    # valid PIT borrow evidence; they are excluded from the short leg
+    # (recorded separately from priceability) and the equal row weights
+    # renormalize over the kept tickers.  Records without the key are
+    # unchanged byte-for-byte.
+    uncovered = {
+        str(item.get("ticker")).upper()
+        for item in (borrow.get("uncovered_tickers") or [])
+        if isinstance(item, Mapping) and item.get("ticker")
+    }
+    short_admit = short_keep
+    short_no_borrow = None
+    if uncovered:
+        short_tickers = set(short_side.get("ticker_row_counts") or {})
+        short_no_borrow = sorted(uncovered & short_tickers)
+        short_admit = (short_keep if short_keep is not None else short_tickers) - uncovered
+    # exp-20260924-004: a readiness record carrying overlap_exclusion lists the
+    # tickers present on both sides; they are removed from BOTH legs (recorded
+    # per leg as excluded_cross_side_overlap) and the equal row weights
+    # renormalize over the kept tickers.  Records without the key are
+    # unchanged byte-for-byte.
+    long_admit = long_keep
+    long_overlap = short_overlap = None
+    overlap_info = record.get("overlap_exclusion")
+    if isinstance(overlap_info, Mapping) and "excluded_tickers" in overlap_info:
+        overlap_excluded = {
+            str(ticker).upper()
+            for ticker in (overlap_info.get("excluded_tickers") or [])
+            if ticker
+        }
+        long_tickers = set(long_side.get("ticker_row_counts") or {})
+        short_tickers = set(short_side.get("ticker_row_counts") or {})
+        long_overlap = sorted(overlap_excluded & long_tickers)
+        short_overlap = sorted(overlap_excluded & short_tickers)
+        long_admit = (long_keep if long_keep is not None else long_tickers) - overlap_excluded
+        short_admit = (
+            short_admit if short_admit is not None else short_tickers
+        ) - overlap_excluded
+    long_weights = _side_weights(long_side, long_admit)
+    short_weights = _side_weights(short_side, short_admit)
     if not long_weights or not short_weights:
         return None
-    borrow = record.get("borrow_coverage") or {}
+    borrow_evidence = {
+        "required_tickers": borrow.get("required_tickers"),
+        "covered_tickers": borrow.get("covered_tickers"),
+        "is_broker_locate": False,
+        "source": "iborrowdesk_indicative_not_broker_locate",
+    }
+    if "coverage_rule_version" in borrow:
+        borrow_evidence["coverage_rule_version"] = borrow.get("coverage_rule_version")
+        borrow_evidence["uncovered_tickers"] = len(borrow.get("uncovered_tickers") or [])
     decision = {
         "record_type": "basket_decision",
         "record_id": f"decision:{batch_id}",
@@ -140,34 +308,39 @@ def build_pair_basket_decision(record: Mapping[str, Any]) -> dict[str, Any] | No
         "hold_sessions": HOLD_SESSIONS,
         "leg_notional_usd": LEG_NOTIONAL_USD,
         "round_trip_cost_rate_per_leg": ROUND_TRIP_COST_RATE_PER_LEG,
-        "long_leg": {
-            "polarity": LONG_POLARITY,
-            "weights": long_weights,
-        },
-        "short_leg": {
-            "polarity": SHORT_POLARITY,
-            "weights": short_weights,
-        },
-        "borrow_evidence": {
-            "required_tickers": borrow.get("required_tickers"),
-            "covered_tickers": borrow.get("covered_tickers"),
-            "is_broker_locate": False,
-            "source": "iborrowdesk_indicative_not_broker_locate",
-        },
+        "long_leg": _leg(
+            LONG_POLARITY, long_weights, long_side, long_keep, None, long_overlap
+        ),
+        "short_leg": _leg(
+            SHORT_POLARITY,
+            short_weights,
+            short_side,
+            short_keep,
+            short_no_borrow,
+            short_overlap,
+        ),
+        "admission_priceability": priceability,
+        "borrow_evidence": borrow_evidence,
         "outcome_status": "pending",
         **_production_impact(),
     }
+    if long_overlap is not None:
+        decision["overlap_exclusion"] = {
+            "rule_version": overlap_info.get("rule_version"),
+            "excluded_tickers": len(overlap_info.get("excluded_tickers") or []),
+        }
     return decision
 
 
 def build_news_propagation_pair_baskets(
     readiness_records: Iterable[Mapping[str, Any]],
+    bars: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Deterministic basket decisions for every measurement_ready record."""
     decisions = []
     seen: set[str] = set()
     for record in readiness_records:
-        decision = build_pair_basket_decision(record)
+        decision = build_pair_basket_decision(record, bars)
         if decision is None or decision["basket_id"] in seen:
             continue
         seen.add(decision["basket_id"])
@@ -199,6 +372,13 @@ def load_pair_bars(
     except ModuleNotFoundError:  # package-style import
         from quant.news_event_exposure_observer import load_frames
     frames = load_frames(set(wanted))
+    anchor_frame = frames.get(SESSION_ANCHOR_TICKER)
+    anchor_last = (
+        str(anchor_frame.index.max().date())
+        if anchor_frame is not None and len(anchor_frame)
+        else None
+    )
+    stale_warehouse_rows: dict[str, dict[str, dict[str, float]]] = {}
     for ticker, frame in frames.items():
         rows = {}
         for index, row in frame.iterrows():
@@ -206,8 +386,19 @@ def load_pair_bars(
                 "open": float(row["Open"]),
                 "close": float(row["Close"]),
             }
-        if rows:
-            bars[ticker] = rows
+        if not rows:
+            continue
+        # exp-20260913-006: a warehouse frame that stops before the session
+        # anchor's last warehouse bar cannot price the exit session, so the
+        # ticker is treated as absent and falls through whole to massive.
+        if (
+            anchor_last is not None
+            and ticker != SESSION_ANCHOR_TICKER
+            and max(rows) < anchor_last
+        ):
+            stale_warehouse_rows[ticker] = rows
+            continue
+        bars[ticker] = rows
     missing = [t for t in wanted if t not in bars]
     splits: dict[str, list[tuple[str, float]]] = {}
     db_path = Path(massive_db) if massive_db else MASSIVE_DB
@@ -224,7 +415,11 @@ def load_pair_bars(
                     if r[1] and r[2]
                 }
                 if rows:
-                    bars[ticker] = rows
+                    warehouse_rows = stale_warehouse_rows.get(ticker)
+                    if warehouse_rows and max(warehouse_rows) >= max(rows):
+                        bars[ticker] = warehouse_rows
+                    else:
+                        bars[ticker] = rows
                     split_rows = []
                     for execution_date, split_from, split_to in conn.execute(
                         "SELECT execution_date, split_from, split_to "
@@ -239,7 +434,21 @@ def load_pair_bars(
                             continue
                     if split_rows:
                         splits[ticker] = split_rows
+                elif ticker in stale_warehouse_rows:
+                    bars[ticker] = stale_warehouse_rows[ticker]
     bars["__splits__"] = splits
+    # exp-20261007-002: expose how far each authorized price source has been
+    # published so settlement can measure the unsettleable grace period on the
+    # sources themselves, not only on the session anchor's calendar.
+    massive_last = None
+    if db_path.exists():
+        with sqlite3.connect(str(db_path)) as conn:
+            row = conn.execute("SELECT MAX(trade_date) FROM daily_bars").fetchone()
+            massive_last = str(row[0]) if row and row[0] else None
+    bars["__source_last_sessions__"] = {
+        "warehouse_anchor": anchor_last,
+        "massive": massive_last,
+    }
     return bars
 
 
@@ -314,6 +523,7 @@ def settle_pair_basket(
         return None, "holding_window_not_complete"
     entry_session, exit_session = sessions
     leg_results: dict[str, Any] = {}
+    missing_by_leg: dict[str, list[str]] = {}
     for leg_name, sign in (("long_leg", 1.0), ("short_leg", -1.0)):
         weights = (decision.get(leg_name) or {}).get("weights") or {}
         missing = []
@@ -329,13 +539,55 @@ def settle_pair_basket(
                 sign * weight * leg_ret * float(decision["leg_notional_usd"]), 6
             )
         if missing:
-            # Fail-closed missing-leg contract: never settle partially.
-            return None, "missing_leg_bars:" + ",".join(sorted(missing))
+            missing_by_leg[leg_name] = sorted(missing)
+            continue
         leg_results[leg_name] = {
             "weighted_return": weighted_return,
             "gross_pnl_usd": sign * weighted_return * float(decision["leg_notional_usd"]),
             "ticker_gross_contributions_usd": contributions,
         }
+    if missing_by_leg:
+        # Fail-closed missing-leg contract: never settle partially.  After the
+        # grace period (exp-20260913-007) the basket is terminalized as
+        # unsettleable with no PnL; it never counts toward the acceptance bar.
+        exit_index = calendar.index(exit_session)
+        grace_elapsed = len(calendar) - 1 - exit_index >= UNSETTLEABLE_GRACE_SESSIONS
+        if grace_elapsed:
+            # exp-20261007-002: "missing in every authorized price source
+            # through the grace period" requires the sources to have published
+            # the grace window.  The session anchor (core refresh) can run
+            # sessions ahead of massive_history after an outage, so a leg is
+            # terminalized only once massive has also reached the grace
+            # session; until then the ordinary missing-leg blocker stands.
+            # Bars without __source_last_sessions__ keep the anchor-only rule.
+            source_last = bars.get("__source_last_sessions__") or {}
+            massive_last = source_last.get("massive")
+            grace_session = calendar[exit_index + UNSETTLEABLE_GRACE_SESSIONS]
+            if massive_last is not None and str(massive_last) < grace_session:
+                grace_elapsed = False
+        if grace_elapsed:
+            return {
+                "record_type": "basket_outcome",
+                "record_id": f"outcome:{decision['basket_id']}:{decision['hold_sessions']}",
+                "schema_version": RULE_VERSION,
+                "rule_version": RULE_VERSION,
+                "priceability_rule_version": PRICEABILITY_RULE_VERSION,
+                "basket_id": decision["basket_id"],
+                "decision_date": decision.get("decision_date"),
+                "entry_session": entry_session,
+                "exit_session": exit_session,
+                "outcome_status": "unsettleable",
+                "unpriceable_legs": missing_by_leg,
+                "grace_sessions_after_exit": UNSETTLEABLE_GRACE_SESSIONS,
+                "reason": (
+                    "leg bar missing in every authorized price source through "
+                    "the grace period; no PnL measured; excluded from the "
+                    "acceptance contract"
+                ),
+                **_production_impact(),
+            }, None
+        missing_all = sorted({t for legs in missing_by_leg.values() for t in legs})
+        return None, "missing_leg_bars:" + ",".join(missing_all)
     notional = float(decision["leg_notional_usd"])
     cost_usd = 2.0 * float(decision["round_trip_cost_rate_per_leg"]) * notional
     gross_pnl = (
@@ -433,6 +685,19 @@ def load_readiness_records(readiness_dir: Path | str | None = None) -> list[dict
     return records
 
 
+def _count_status(outcomes: Iterable[Mapping[str, Any]], status: str) -> int:
+    return sum(1 for row in outcomes if row.get("outcome_status") == status)
+
+
+def _decision_tickers(decisions: Iterable[Mapping[str, Any]]) -> set[str]:
+    return {
+        ticker
+        for decision in decisions
+        for leg in ("long_leg", "short_leg")
+        for ticker in (decision.get(leg) or {}).get("weights") or {}
+    }
+
+
 def _load_ledger(path: Path) -> list[dict[str, Any]]:
     rows = []
     if path.exists():
@@ -447,7 +712,7 @@ def build_news_propagation_pair_historical_trades(
     bars: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Replay path: same admission + settlement code as the daily path."""
-    decisions = build_news_propagation_pair_baskets(readiness_records)
+    decisions = build_news_propagation_pair_baskets(readiness_records, bars)
     outcomes = []
     blockers = {}
     for decision in decisions:
@@ -458,8 +723,11 @@ def build_news_propagation_pair_historical_trades(
             blockers[decision["basket_id"]] = blocker
     return {
         "rule_version": RULE_VERSION,
+        "priceability_rule_version": PRICEABILITY_RULE_VERSION,
         "decisions": decisions,
         "outcomes": outcomes,
+        "settled_baskets": _count_status(outcomes, "settled"),
+        "unsettleable_baskets": _count_status(outcomes, "unsettleable"),
         "settlement_blockers": blockers,
         "acceptance_progress": acceptance_progress(outcomes),
         **_production_impact(),
@@ -497,8 +765,26 @@ def run(
         if row.get("record_type") == "basket_decision"
     }
 
+    # Bars are needed BEFORE admission (exp-20260913-007 priceability
+    # condition) for the new candidates and for settling pending baskets.
+    prior_decisions = [r for r in ledger if r.get("record_type") == "basket_decision"]
+    prior_outcomes = [r for r in ledger if r.get("record_type") == "basket_outcome"]
+    prior_settled_ids = {str(r.get("basket_id")) for r in prior_outcomes}
+    candidate_records = [
+        record
+        for record in records
+        if str(record.get("first_seen_batch_id") or "") not in seen_baskets
+    ]
+    if bars is None:
+        tickers = _decision_tickers(
+            build_news_propagation_pair_baskets(candidate_records)
+        ) | _decision_tickers(
+            d for d in prior_decisions if d["basket_id"] not in prior_settled_ids
+        )
+        bars = load_pair_bars(tickers) if tickers else {"__splits__": {}}
+
     appended: list[dict[str, Any]] = []
-    for decision in build_news_propagation_pair_baskets(records):
+    for decision in build_news_propagation_pair_baskets(candidate_records, bars):
         if (
             decision["basket_id"] in seen_baskets
             or decision["record_id"] in existing_record_ids
@@ -516,14 +802,6 @@ def run(
 
     settlement_blockers: dict[str, str] = {}
     if pending:
-        if bars is None:
-            tickers = {
-                ticker
-                for decision in pending
-                for leg in ("long_leg", "short_leg")
-                for ticker in (decision.get(leg) or {}).get("weights") or {}
-            }
-            bars = load_pair_bars(tickers)
         for decision in pending:
             outcome, blocker = settle_pair_basket(decision, bars)
             if outcome is None:
@@ -546,8 +824,10 @@ def run(
         "schema_version": RULE_VERSION,
         "rule_version": RULE_VERSION,
         "as_of": now_utc or datetime.now(tz=NEW_YORK).astimezone().isoformat(),
+        "priceability_rule_version": PRICEABILITY_RULE_VERSION,
         "decisions": len(decisions),
-        "settled_baskets": len(outcomes),
+        "settled_baskets": _count_status(outcomes, "settled"),
+        "unsettleable_baskets": _count_status(outcomes, "unsettleable"),
         "pending_baskets": len(decisions) - len(outcomes),
         "appended_this_run": len(appended),
         "settlement_blockers": settlement_blockers,

@@ -12,9 +12,14 @@ import sys
 import tempfile
 import time
 import uuid
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
 from pathlib import Path
+
+try:
+    from .experiment_lane_identity import collect_lane_experiment_id_sources, git_common_dir
+except ImportError:
+    from experiment_lane_identity import collect_lane_experiment_id_sources, git_common_dir
 
 if os.name == "nt":
     import msvcrt
@@ -1014,6 +1019,8 @@ def collect_experiment_id_sources(registry=None, *, root=None):
                     f"runner:path:{_repo_relative(path)}",
                 )
 
+    for experiment_id, lane_sources in collect_lane_experiment_id_sources(root).items():
+        sources.setdefault(experiment_id, set()).update(lane_sources)
     return {experiment_id: sorted(values) for experiment_id, values in sources.items()}
 
 
@@ -1872,18 +1879,30 @@ def _file_backed_registry_context(registry_path):
 
 def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SECONDS,
                        max_attempts=64, **ticket_kwargs):
-    """Reserve an experiment WITHOUT holding the global registry lock across the
-    heavy id-collision scan (registry-decontention step 1).
+    """Serialize cross-lane allocation through ticket durability, then refresh cache.
 
-    The ticket file is the atomic source of truth: ``create_ticket`` allocates an
-    id (lock-free filesystem scan) and writes the ticket via O_EXCL (step 0), so
-    two concurrent reservers cannot take the same id -- the loser gets a
-    FileExistsError-derived ValueError and retries the next sequence number.
-    ``docs/experiment_registry.json`` is then refreshed best-effort under a brief
-    lock (index entry only, NOT the scan), keeping it a current-but-non-
-    authoritative cache for legacy readers. A contended/missed cache refresh
-    never fails an already-durable reservation.
+    The OS lock lives in the common Git directory and releases on process exit.
+    Tickets remain the reservation authority; the local registry cache has its
+    own brief lock outside this critical section. Non-Git fixtures stay local.
     """
+    context = _file_backed_registry_context(registry_path)
+    common = git_common_dir(context["_repo_root"])
+    allocation_lock = (
+        # Real checkout scans can exceed 30 seconds; keep the cache lock short.
+        file_lock(common / "experiment_id_allocation", timeout_seconds=max(120, timeout_seconds))
+        if common is not None else nullcontext()
+    )
+    with allocation_lock:
+        ticket = _reserve_experiment_ticket(
+            registry_path, timeout_seconds=timeout_seconds,
+            max_attempts=max_attempts, **ticket_kwargs,
+        )
+    _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
+    return ticket
+
+
+def _reserve_experiment_ticket(registry_path, *, timeout_seconds, max_attempts,
+                               **ticket_kwargs):
     explicit = ticket_kwargs.get("experiment_id") is not None
     intent = None if explicit else reservation_intent_for(ticket_kwargs)
     last_exc = None
@@ -1895,7 +1914,6 @@ def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SE
             existing = _open_ticket_for_reservation_intent(context, intent)
             if existing:
                 save_reservation_intent(context, intent, existing)
-                _best_effort_cache_upsert(registry_path, existing, timeout_seconds)
                 return existing
             ticket_kwargs = {**ticket_kwargs, "reservation_intent": intent}
 
@@ -1911,7 +1929,6 @@ def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SE
                     last_exc = exc
                     continue
                 save_reservation_intent(context, intent, ticket)
-                _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
                 return ticket
         raise last_exc or RuntimeError("failed to reserve an available experiment id")
 
@@ -1924,7 +1941,6 @@ def reserve_experiment(registry_path, *, timeout_seconds=DEFAULT_LOCK_TIMEOUT_SE
                 raise
             last_exc = exc
             continue
-        _best_effort_cache_upsert(registry_path, ticket, timeout_seconds)
         return ticket
     raise last_exc or RuntimeError("failed to reserve an available experiment id")
 

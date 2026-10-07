@@ -96,7 +96,7 @@ def test_report_accepts_as_of_snapshot_key(tmp_path):
         persist=False,
     )
     entry = report["disk_status"]["core_risk_intensity_forward_observation"]
-    assert report["rule_version"] == "sleeve_health_report_v4"
+    assert report["rule_version"] == "sleeve_health_report_v5"
     assert entry["last_snapshot"] == "2026-06-26"
     assert entry["status"] == "fresh"
     assert "core_risk_intensity_forward_observation" not in report["stalled_sleeves"]
@@ -148,6 +148,30 @@ def test_report_excludes_retired_sleeves_from_stalled(tmp_path):
     assert "finra_iwm" not in report["stalled_sleeves"]
     assert report["disk_status"]["finra_iwm"]["retired"] is True
     assert report["failing_builds"] == []
+
+
+def test_report_excludes_execution_disabled_paper_snapshots_from_failing(tmp_path):
+    root = tmp_path / "paper_sleeves"
+    _mk_sleeve(root, "sec_ftd_finra", "2026-06-15")
+    payloads = {
+        "sec_ftd_finra_paper_sleeve": {
+            "paper_enabled": False,
+            "error": "missing_spy_asof",
+            "execution_sizing_contract": {
+                "blockers": ["paper_snapshot_disabled", "forward_paper_gate_blocked"],
+            },
+        }
+    }
+    report = sh.build_sleeve_health_report(
+        "2026-07-16",
+        payloads,
+        sleeves_root=root,
+        health_log_path=tmp_path / "health.jsonl",
+        persist=False,
+    )
+    assert report["failing_builds"] == []
+    assert "sec_ftd_finra" not in report["stalled_sleeves"]
+    assert report["disk_status"]["sec_ftd_finra"]["retired"] is True
 
 
 def test_report_still_flags_dateless_state_only_surface(tmp_path):

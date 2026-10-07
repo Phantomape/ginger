@@ -62,6 +62,14 @@ def _format_price(value):
     return f"${value:.2f}" if isinstance(value, (int, float)) else "n/a"
 
 
+def _paper_retired(snapshot):
+    payload = snapshot or {}
+    return (
+        payload.get("retired") is True
+        or payload.get("build_status") == "retired_default_off_paper_disabled"
+    )
+
+
 def _addon_price_guardrail(estimated_price, effective_stop=None):
     if not isinstance(estimated_price, (int, float)):
         return None
@@ -123,7 +131,9 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                            sec_10k_forward_watch=None,
                            non_ohlcv_snapshot=None,
                            crypto_sleeve=None,
-                           bracket_orders=None):
+                           bracket_orders=None,
+                           broker_performance=None,
+                           execution_attribution=None):
     """
     Build a human-readable daily trade report string.
 
@@ -185,6 +195,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
     Returns:
         str: Formatted report
     """
+    diary_metrics = metrics
     lines = []
     now   = datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -509,7 +520,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 "(observe only)"
             )
 
-    if space_catalyst_shadow and space_catalyst_shadow.get("candidate_count", 0) > 0:
+    if space_catalyst_shadow and not _paper_retired(space_catalyst_shadow) and space_catalyst_shadow.get("candidate_count", 0) > 0:
         lines.append("\n" + "-" * 60)
         lines.append("SPACE CATALYST SHADOW UNIVERSE")
         lines.append("-" * 60)
@@ -930,7 +941,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{gates.get('minimum_closed_decisions', 'n/a')} closed decisions, "
                 "positive direct and replacement value"
             )
-    if space_catalyst_observation_slot and (
+    if space_catalyst_observation_slot and not _paper_retired(space_catalyst_observation_slot) and (
         space_catalyst_observation_slot.get("candidate_count", 0) > 0
         or space_catalyst_observation_slot.get("selected_count", 0) > 0
     ):
@@ -1215,7 +1226,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"{peer_nonleader_breakout_text} "
                 f"({plan.get('blocked_reason', 'observe_only')})"
             )
-    if space_catalyst_event_ledger and (
+    if space_catalyst_event_ledger and not _paper_retired(space_catalyst_event_ledger) and (
         space_catalyst_event_ledger.get("active_event_count", 0) > 0
         or space_catalyst_event_ledger.get("event_row_count", 0) > 0
     ):
@@ -1783,7 +1794,9 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             f"Unrealized: ${event_sleeve_bundle.get('unrealized_pnl', 0.0):,.2f}"
         )
         state_surface_addon = event_sleeve_bundle.get("state_surface_addon") or {}
-        if state_surface_addon:
+        if state_surface_addon and not (
+            _paper_retired(state_surface_sleeve) or _paper_retired(state_surface_addon)
+        ):
             eligible_surfaces = state_surface_addon.get("eligible_surfaces") or []
             surface_text = ", ".join(str(surface) for surface in eligible_surfaces)
             if not surface_text:
@@ -1839,7 +1852,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"realized=${summary.get('realized_pnl_to_date', 0.0):,.2f}"
             )
 
-    if state_surface_sleeve and (
+    if state_surface_sleeve and not _paper_retired(state_surface_sleeve) and (
         state_surface_sleeve.get("candidate_count", 0) > 0
         or state_surface_sleeve.get("pending_count", 0) > 0
         or state_surface_sleeve.get("open_position_count", 0) > 0
@@ -2297,7 +2310,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"notional={notional_text} (paper only)"
             )
 
-    if industry_relative_laggard_repair_paper_sleeve and (
+    if industry_relative_laggard_repair_paper_sleeve and not _paper_retired(industry_relative_laggard_repair_paper_sleeve) and (
         industry_relative_laggard_repair_paper_sleeve.get("candidate_count", 0) > 0
         or industry_relative_laggard_repair_paper_sleeve.get("pending_count", 0) > 0
         or industry_relative_laggard_repair_paper_sleeve.get("open_position_count", 0) > 0
@@ -2424,7 +2437,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"notional={notional_text} (paper only)"
             )
 
-    if accepted_helper_source_priority_allocator_paper_sleeve and (
+    if accepted_helper_source_priority_allocator_paper_sleeve and not _paper_retired(accepted_helper_source_priority_allocator_paper_sleeve) and (
         accepted_helper_source_priority_allocator_paper_sleeve.get("candidate_count", 0) > 0
         or accepted_helper_source_priority_allocator_paper_sleeve.get("pending_count", 0) > 0
         or accepted_helper_source_priority_allocator_paper_sleeve.get("open_position_count", 0) > 0
@@ -2510,7 +2523,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"notional={notional_text} (paper only)"
             )
 
-    if ai_optical_paper_sleeve and (
+    if ai_optical_paper_sleeve and not _paper_retired(ai_optical_paper_sleeve) and (
         ai_optical_paper_sleeve.get("candidate_count", 0) > 0
         or ai_optical_paper_sleeve.get("pending_count", 0) > 0
         or ai_optical_paper_sleeve.get("open_position_count", 0) > 0
@@ -2817,7 +2830,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"notional={notional_text} (paper only)"
             )
 
-    if alpha_score_market_regime_paper_sleeve and (
+    if alpha_score_market_regime_paper_sleeve and not _paper_retired(alpha_score_market_regime_paper_sleeve) and (
         alpha_score_market_regime_paper_sleeve.get("candidate_count", 0) > 0
         or alpha_score_market_regime_paper_sleeve.get("pending_count", 0) > 0
         or alpha_score_market_regime_paper_sleeve.get("open_position_count", 0) > 0
@@ -2922,7 +2935,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                     f"notional={p_notional_text} (paper only)"
                 )
 
-    if accepted_source_consensus_paper_sleeve and (
+    if accepted_source_consensus_paper_sleeve and not _paper_retired(accepted_source_consensus_paper_sleeve) and (
         accepted_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
         or accepted_source_consensus_paper_sleeve.get("pending_count", 0) > 0
         or accepted_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
@@ -2991,7 +3004,7 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
                 f"notional={notional_text} (paper only)"
             )
 
-    if free_data_cross_source_consensus_paper_sleeve and (
+    if free_data_cross_source_consensus_paper_sleeve and not _paper_retired(free_data_cross_source_consensus_paper_sleeve) and (
         free_data_cross_source_consensus_paper_sleeve.get("candidate_count", 0) > 0
         or free_data_cross_source_consensus_paper_sleeve.get("pending_count", 0) > 0
         or free_data_cross_source_consensus_paper_sleeve.get("open_position_count", 0) > 0
@@ -3377,6 +3390,59 @@ def generate_daily_report(signals, features_dict=None, portfolio_heat=None,
             lines.append(a)
 
     # ── Performance metrics ─────────────────────────────────────────────────
+    if broker_performance is not None:
+        lines.append("\n" + "-" * 60)
+        lines.append("BROKER TRADING P&L  (covered closed lifecycles)")
+        lines.append("-" * 60)
+        counts = broker_performance.get("counts") or {}
+        lines.append(
+            f"  Status: {broker_performance.get('status', 'unavailable')}  "
+            f"Source as of: {broker_performance.get('source_as_of') or 'unavailable'}"
+        )
+        lines.append(
+            f"  Evaluated: {counts.get('evaluated_lifecycle_count', 0)}  "
+            f"Excluded closed: {counts.get('excluded_lifecycle_count', 0)}  "
+            f"Unlinked fills: {counts.get('unlinked_fill_count', 0)}"
+        )
+        usd = (broker_performance.get("pnl_by_currency") or {}).get("USD") or {}
+        net = usd.get("net_trading_pnl_after_order_fees")
+        if net is not None:
+            lines.append(f"  Gross trading P&L: ${usd['gross_trading_pnl_before_order_fees']:,.2f}")
+            lines.append(f"  Reported order fees: ${usd['order_fee_total']:,.2f}")
+            lines.append(f"  Net trading P&L after order fees: ${net:,.2f}")
+        else:
+            lines.append("  Net trading P&L: unavailable (not zero)")
+        reasons = broker_performance.get("coverage_reasons") or {}
+        if reasons:
+            lines.append("  Coverage: " + "; ".join(f"{key}={value}" for key, value in sorted(reasons.items())))
+        lines.append("  Excludes open-position MTM, dividends, financing and borrow costs.")
+        attribution = broker_performance.get("strategy_attribution") or {}
+        by_strategy = attribution.get("by_strategy") or {}
+        if by_strategy:
+            lines.append("  EXPLICITLY TAGGED MACHINE-ADVICE TRADES (covered subset)")
+            for strategy, values in sorted(by_strategy.items()):
+                lines.append(f"    {strategy}: {values['evaluated_lifecycle_count']} closed; "
+                             f"net after order fees ${values['net_trading_pnl_after_order_fees']:,.2f}")
+            lines.append(f"  Unattributed closed lifecycles: {attribution.get('unattributed_lifecycle_count', 0)}")
+            lines.append("  Broker remark linkage verifies association, not causal alpha or LLM approval.")
+        else:
+            lines.append("  Account-wide trading sample; strategy attribution unavailable.")
+        lines.append("  This is not total account return or strategy alpha.")
+
+    if execution_attribution is not None:
+        lines.append("\nMACHINE ADVICE TRACKING (no orders submitted)")
+        lines.append(f"  Status: {execution_attribution.get('status', 'unavailable')}")
+        lines.append("  If independently approved and placed, copy the exact remark to the broker order.")
+        lines.append("  An existing order or a different quantity cannot reuse this tracking identity.")
+        lines.append("  Existing resting orders keep their original identity; this section does not request replacement orders.")
+        for snapshot in execution_attribution.get("decisions", []):
+            decision = snapshot["decision"]
+            lines.append(f"  {decision['code']} {decision['side']} {decision['quantity']} "
+                         f"[{decision['action_kind']}] {decision['strategy_id']} "
+                         f"remark={snapshot['broker_remark']}")
+        lines.append("  Missing explicit links remain unattributed; historical position labels are not proof.")
+
+    metrics = diary_metrics
     if metrics and metrics.get("total_trades", 0) > 0:
         lines.append("\n" + "-" * 60)
         lines.append("PERFORMANCE METRICS  (realized P&L)")

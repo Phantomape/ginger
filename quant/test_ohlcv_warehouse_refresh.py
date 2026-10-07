@@ -168,3 +168,48 @@ def test_refresh_records_fetch_errors_per_chunk(tmp_path) -> None:
     assert summary["status"] == "partial_failed"
     assert summary["errors"] and "vendor down" in summary["errors"][0]["error"]
     assert summary["inserted"] == 0
+
+
+def test_refresh_never_writes_a_bar_for_an_incomplete_session(tmp_path) -> None:
+    """exp-20260925-007: a mid-session run must not freeze a partial bar."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    db = tmp_path / "warehouse.sqlite"
+    hot = tmp_path / "warehouse_hot.sqlite"
+    run_date = "2026-09-17"  # Thursday, regular session
+    _seed(db, {"AAA": _frame("2026-09-02", 5)})  # cold tier: older history
+    _seed(hot, {"AAA": _frame("2026-09-16", 10)})  # hot tier: recent sessions
+
+    def fetcher(tickers, lookback_days):
+        # 11 business days ending on the run date: the 10 seeded sessions plus
+        # the still-open run-date bar.
+        return {t: _frame(run_date, 11) for t in tickers}
+
+    mid_session = datetime(2026, 9, 17, 10, 0, tzinfo=ZoneInfo("America/New_York"))
+    summary = refresh_warehouse_ohlcv(
+        db_path=db,
+        tickers=["AAA"],
+        as_of=run_date,
+        fetch_many=fetcher,
+        repair_splits=False,
+        run_clock=mid_session,
+    )
+    assert summary["completed_session"] == "2026-09-16"
+    assert summary["dropped_incomplete_session_rows"] == 1
+    assert summary["inserted"] == 0
+    assert warehouse_last_dates(hot, ["AAA"]) == {"AAA": "2026-09-16"}
+
+    after_close = datetime(2026, 9, 17, 16, 30, tzinfo=ZoneInfo("America/New_York"))
+    summary = refresh_warehouse_ohlcv(
+        db_path=db,
+        tickers=["AAA"],
+        as_of=run_date,
+        fetch_many=fetcher,
+        repair_splits=False,
+        run_clock=after_close,
+    )
+    assert summary["completed_session"] == run_date
+    assert summary["dropped_incomplete_session_rows"] == 0
+    assert summary["inserted"] == 1
+    assert warehouse_last_dates(hot, ["AAA"]) == {"AAA": run_date}

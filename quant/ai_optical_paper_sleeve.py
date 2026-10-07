@@ -35,7 +35,7 @@ DEFAULT_SNAPSHOT_LOG_PATH = data_artifact_path("ai_optical_paper_snapshots")
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    "paper_enabled": False,
     "trade_enabled": False,
     "target_theme": "ai_optical_connectivity",
     "target_segment": "optical_connectivity",
@@ -112,6 +112,9 @@ def append_ai_optical_paper_snapshot(
 
 def empty_ai_optical_paper_sleeve_snapshot(as_of: str, reason: str) -> dict[str, Any]:
     return {
+        **({"retired": True, "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only"}
+           if not DEFAULT_CONFIG["paper_enabled"] else {}),
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
         "rule_version": RULE_VERSION,
@@ -233,6 +236,18 @@ def build_ai_optical_paper_sleeve_snapshot(
         state if state is not None else load_ai_optical_paper_state(state_path)
     )
     _normalise_state(working_state)
+    retired_skipped = []
+    if not cfg["paper_enabled"]:
+        for pending in working_state["pending_entries"]:
+            skipped = {**deepcopy(pending), "status": "skipped_retired",
+                       "skipped_asof": as_of_date, "reason": "owner_authorized_retirement"}
+            if "status" in pending:
+                skipped["prior_status"] = pending["status"]
+            if "reason" in pending:
+                skipped["prior_reason"] = pending["reason"]
+            working_state["skipped_entries"].append(skipped)
+            retired_skipped.append(skipped)
+        working_state["pending_entries"] = []
 
     rows_by_ticker = {
         str(ticker).upper(): _normalise_ohlcv_rows(rows)
@@ -256,34 +271,40 @@ def build_ai_optical_paper_sleeve_snapshot(
             current_prices=current,
             config=cfg,
         )
-        filled_today, skipped_today = _fill_pending_entries(
-            working_state,
-            as_of=as_of_date,
-            open_prices=opens,
-            current_prices=current,
-            config=cfg,
-        )
+        filled_today, skipped_today = [], retired_skipped
+        if cfg["paper_enabled"]:
+            filled_today, skipped_today = _fill_pending_entries(
+                working_state,
+                as_of=as_of_date,
+                open_prices=opens,
+                current_prices=current,
+                config=cfg,
+            )
     else:
         closed_today = []
         filled_today = []
-        skipped_today = []
+        skipped_today = retired_skipped
 
-    candidates, rejected_candidates, market_confirmation = _build_ai_optical_candidates(
-        as_of=as_of_date,
-        candidate_signals=candidate_signals or [],
-        ohlcv_by_ticker=rows_by_ticker,
-        candidate_tickers=loaded_universe["tickers"],
-        ticker_metadata=loaded_universe["records"],
-        open_position_tickers={
-            str(row.get("ticker") or "").upper()
-            for row in working_state.get("open_positions") or []
-        },
-        pending_tickers={
-            str(row.get("ticker") or "").upper()
-            for row in working_state.get("pending_entries") or []
-        },
-        config=cfg,
-    )
+    if cfg["paper_enabled"]:
+        candidates, rejected_candidates, market_confirmation = _build_ai_optical_candidates(
+            as_of=as_of_date,
+            candidate_signals=candidate_signals or [],
+            ohlcv_by_ticker=rows_by_ticker,
+            candidate_tickers=loaded_universe["tickers"],
+            ticker_metadata=loaded_universe["records"],
+            open_position_tickers={
+                str(row.get("ticker") or "").upper()
+                for row in working_state.get("open_positions") or []
+            },
+            pending_tickers={
+                str(row.get("ticker") or "").upper()
+                for row in working_state.get("pending_entries") or []
+            },
+            config=cfg,
+        )
+    else:
+        candidates, rejected_candidates = [], []
+        market_confirmation = {"passed": False, "status": "retired_default_off_paper_disabled"}
     new_pending = _add_candidates(
         working_state,
         candidates,
@@ -304,6 +325,11 @@ def build_ai_optical_paper_sleeve_snapshot(
         closed_today=closed_today,
         skipped_today=skipped_today,
     )
+    if not cfg["paper_enabled"]:
+        snapshot.update(retired=True, build_status="retired_default_off_paper_disabled",
+                        next_action="settle_existing_positions_only")
+        snapshot["forward_paper_gate"].update(
+            passed=False, status="blocked", reasons=["retired_default_off_paper_disabled"])
     if persist:
         save_ai_optical_paper_state(working_state, state_path)
         append_ai_optical_paper_snapshot(snapshot, snapshot_log_path)
@@ -642,6 +668,9 @@ def _advance_open_positions(
     closed_today: list[dict[str, Any]] = []
     for position in state.get("open_positions") or []:
         if not isinstance(position, dict):
+            continue
+        if not config["paper_enabled"] and position.get("last_price_asof") == as_of:
+            still_open.append(position)
             continue
         ticker = str(position.get("ticker") or "").upper()
         current_price = current_prices.get(ticker)
@@ -1278,6 +1307,7 @@ def prep_and_build_ai_optical_paper_sleeve_snapshot(
     open_prices: dict[str, Any] | None = None,
     current_prices: dict[str, Any] | None = None,
     logger: Any = None,
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the AI-optical candidate universe, run the core signal chain over
     it, then build the paper-sleeve snapshot.
@@ -1290,6 +1320,30 @@ def prep_and_build_ai_optical_paper_sleeve_snapshot(
     sleeve-local enrichment so the enrichment audit is unaffected.
     """
     import logging
+
+    cfg = _config(config)
+    if not cfg["paper_enabled"]:
+        state = load_ai_optical_paper_state()
+        tickers = {str(row.get("ticker") or "").upper()
+                   for row in state.get("open_positions") or [] if row.get("ticker")}
+        ohlcv = {}
+        for ticker in sorted(tickers | {"SPY"}):
+            frame = (ohlcv_dict or {}).get(ticker)
+            if frame is None and ticker == "SPY":
+                frame = spy_ohlcv
+            if frame is None and cached_ohlcv_fn is not None:
+                try:
+                    frame = cached_ohlcv_fn(ticker)
+                except Exception as error:
+                    (logger or logging.getLogger(__name__)).warning(
+                        "AI optical retirement price unavailable for %s: %s", ticker, error)
+            if frame is not None:
+                ohlcv[ticker] = frame
+        return build_ai_optical_paper_sleeve_snapshot(
+            as_of=as_of, candidate_signals=[], ohlcv_by_ticker=ohlcv,
+            open_prices=open_prices, current_prices=current_prices,
+            state=state, config=cfg,
+        )
 
     try:
         from signal_engine import generate_signals, rank_signals_for_allocation
@@ -1424,6 +1478,7 @@ def prep_and_build_ai_optical_paper_sleeve_snapshot(
         candidate_signals=candidate_signals,
         ohlcv_by_ticker=ohlcv,
         candidate_universe=candidate_universe,
+        config=cfg,
         open_prices=sleeve_open_prices,
         current_prices=sleeve_current_prices,
     )

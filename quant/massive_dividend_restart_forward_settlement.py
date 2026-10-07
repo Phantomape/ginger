@@ -2,15 +2,15 @@
 
 Observer first-build ID 2 of 2 (AGENTS.md section 2.4 observer first-build
 budget): the settlement layer for the exp-20260802-003 forward observer. It
-turns eligible ``restart_after_observed_gap`` candidate rows into settled
-forward H10 decisions so the exp-20260801-004 reopen contract (>= 30 settled
-restart decisions) accrues machine-checkably.
+turns eligible dividend-restart roster candidate rows into settled forward H10
+decisions so the exp-20260801-004 reopen contract (>= 30 settled roster
+decisions) accrues machine-checkably.
 
 Frozen policy (ports exp-20260801-004 replay semantics; do not retune here):
 - entry: first regular session whose 09:30 America/New_York open is strictly
   after ``first_seen_at``, resolved against the SPY session calendar inside
   the massive warehouse (data calendar, never the process wall clock);
-- selection: within one declaration date, eligible restart rows that pass the
+- selection: within one declaration date, eligible roster rows that pass the
   policy-level PIT membership gate (active common stock in the massive
   instrument master) are ordered by (median 20-bar pre-declaration dollar
   volume descending, ticker ascending) and at most the top 2 become
@@ -88,6 +88,10 @@ NOTIONAL = 4000.0
 COST = 0.0035
 DOUBLE_COST = 0.0070
 TARGET_GAP_VARIANT = "restart_after_observed_gap"
+REOPEN_GAP_VARIANTS = (
+    "restart_after_observed_gap",
+    "no_prior_positive_in_provider_history",
+)
 REOPEN_REQUIRED_SETTLED_DECISIONS = 30
 COMPARATOR_RULE = (
     "first_ordinal_may_consume_one_same_entry_session_live_core_bucket_slot_"
@@ -367,6 +371,7 @@ def persist_massive_dividend_restart_forward_settlement(
         "run_label": None if today is None else str(today),
         "run_started_at": run_started_at,
         "target_gap_variant": TARGET_GAP_VARIANT,
+        "reopen_gap_variants": list(REOPEN_GAP_VARIANTS),
         "hold_sessions_after_entry": HOLD_SESSIONS_AFTER_ENTRY,
         "top_per_declaration_date": TOP_PER_DECLARATION_DATE,
         "comparator_rule": COMPARATOR_RULE,
@@ -481,7 +486,7 @@ def persist_massive_dividend_restart_forward_settlement(
                 pool = []
                 membership_failures = []
                 for row in members:
-                    if row.get("gap_variant") != TARGET_GAP_VARIANT:
+                    if row.get("gap_variant") not in REOPEN_GAP_VARIANTS:
                         continue
                     evaluation = evaluations_by_key[str(row["decision_key"])]
                     if evaluation.get("eligible") is not True:
@@ -686,6 +691,20 @@ def persist_massive_dividend_restart_forward_settlement(
         if row.get("settled") is True
         and row.get("gap_variant") == TARGET_GAP_VARIANT
     ]
+    settled_reopen_population = [
+        row
+        for row in settlements_by_key.values()
+        if row.get("settled") is True
+        and row.get("gap_variant") in REOPEN_GAP_VARIANTS
+    ]
+    settled_by_gap_variant = {
+        variant: sum(
+            1
+            for row in settled_reopen_population
+            if row.get("gap_variant") == variant
+        )
+        for variant in REOPEN_GAP_VARIANTS
+    }
     voided = [
         row for row in settlements_by_key.values() if row.get("settled") is False
     ]
@@ -731,6 +750,10 @@ def persist_massive_dividend_restart_forward_settlement(
                 if row.get("settled") is True
             ),
             "settled_restart_decision_count": len(settled_restart),
+            "settled_reopen_population_decision_count": len(
+                settled_reopen_population
+            ),
+            "settled_decision_count_by_gap_variant": settled_by_gap_variant,
             "voided_decision_count": len(voided),
             "pending_settlement_count": len(decisions_by_key)
             - len(settlements_by_key),
@@ -742,6 +765,9 @@ def persist_massive_dividend_restart_forward_settlement(
             ),
             "reopen_progress": {
                 "required": REOPEN_REQUIRED_SETTLED_DECISIONS,
+                "settled_decisions": len(settled_reopen_population),
+                "counted_gap_variants": list(REOPEN_GAP_VARIANTS),
+                "settled_decisions_by_gap_variant": settled_by_gap_variant,
                 "settled_restart_decisions": len(settled_restart),
             },
         }

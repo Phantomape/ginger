@@ -129,6 +129,56 @@ def test_append_snapshot_is_duplicate_safe_and_writes_state(tmp_path):
     assert len(state["ledger_content_identity"]["sha256"]) == 64
 
 
+def test_append_snapshot_skips_same_day_economic_duplicate_with_different_prices(tmp_path):
+    ledger = tmp_path / "rows.jsonl"
+    first = build_candidate_decision_training_snapshot(
+        as_of="2026-07-02",
+        entry_candidate_review=_review([_candidate("AAA")]),
+    )
+    repriced = _candidate("AAA")
+    repriced["entry_price"] = 101.5
+    repriced["stop_price"] = 96.0
+    second = build_candidate_decision_training_snapshot(
+        as_of="2026-07-02",
+        entry_candidate_review=_review([repriced]),
+    )
+    assert first["rows"][0]["observation_id"] != second["rows"][0]["observation_id"]
+
+    first_result = append_candidate_decision_training_snapshot(first, ledger)
+    second_result = append_candidate_decision_training_snapshot(second, ledger)
+
+    assert first_result["rows_written"] == 1
+    assert first_result["rows_skipped_same_day_economic_duplicate"] == 0
+    assert second_result["rows_written"] == 0
+    assert second_result["rows_skipped_duplicate"] == 1
+    assert second_result["rows_skipped_same_day_economic_duplicate"] == 1
+    records = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()]
+    assert [row["observation_id"] for row in records] == [first["rows"][0]["observation_id"]]
+    state = json.loads((tmp_path / "state.json").read_text(encoding="utf-8"))
+    assert state["rows_skipped_same_day_economic_duplicate"] == 1
+
+    # An identical re-append is still an observation_id duplicate, not a same-day one.
+    replay = append_candidate_decision_training_snapshot(first, ledger)
+    assert replay["rows_skipped_duplicate"] == 1
+    assert replay["rows_skipped_same_day_economic_duplicate"] == 0
+
+    # Within one batch the same ticker is written once.
+    batch = build_candidate_decision_training_snapshot(
+        as_of="2026-07-06",
+        entry_candidate_review=_review([_candidate("AAA"), _candidate("AAA", rank=2)]),
+    )
+    batch_result = append_candidate_decision_training_snapshot(batch, ledger)
+    assert batch_result["rows_written"] == 1
+    assert batch_result["rows_skipped_same_day_economic_duplicate"] == 1
+
+    # A different decision day for the same ticker is a new observation.
+    later = build_candidate_decision_training_snapshot(
+        as_of="2026-07-07",
+        entry_candidate_review=_review([_candidate("AAA")]),
+    )
+    assert append_candidate_decision_training_snapshot(later, ledger)["rows_written"] == 1
+
+
 def test_settlement_appends_fixed_horizon_outcomes_once(tmp_path):
     ledger = tmp_path / "rows.jsonl"
     snapshot = build_candidate_decision_training_snapshot(

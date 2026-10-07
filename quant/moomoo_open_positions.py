@@ -31,7 +31,7 @@ import os
 import socket
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -67,6 +67,7 @@ DEFAULT_HOST = os.environ.get("FUTU_OPEND_HOST", "127.0.0.1")
 DEFAULT_PORT = int(os.environ.get("FUTU_OPEND_PORT", "11111"))
 DEFAULT_SDK_APPDATA = REPO_ROOT / "data" / "runtime" / "moomoo_sdk_appdata"
 FILLS_LOOKBACK_DAYS = 730  # ~2 years for entry-date reconstruction
+HISTORY_QUERY_MAX_DAYS = 360  # broker-enforced maximum, including both date endpoints
 CASHFLOW_LOOKBACK_DAYS = 7  # per-clearing-date endpoint; stays below 20/30s limit
 ORDER_FEE_BATCH_SIZE = 400  # documented SDK request maximum
 ORDER_FEE_REQUESTS_PER_WINDOW = 9  # stay below 10 requests / 30 seconds
@@ -350,6 +351,15 @@ def _restore_moomoo_sdk_appdata(previous: str | None) -> None:
     os.environ["APPDATA"] = previous
 
 
+def _history_date_ranges(start: str, end: str):
+    """SDK dates expand to 00:00:00 / 23:59:59; every date belongs to one query."""
+    cursor, last = date.fromisoformat(start), date.fromisoformat(end)
+    while cursor <= last:
+        chunk_end = min(cursor + timedelta(days=HISTORY_QUERY_MAX_DAYS - 1), last)
+        yield cursor.isoformat(), chunk_end.isoformat()
+        cursor = chunk_end + timedelta(days=1)
+
+
 def fetch_moomoo_state(
     *,
     acc_id: int = DEFAULT_ACCOUNT_ID,
@@ -443,6 +453,29 @@ def fetch_moomoo_state(
         }
         return [row for row in records if isinstance(row, dict)]
 
+    def query_history(name: str, call, start: str, end: str) -> list[dict[str, Any]]:
+        records, segments = [], []
+        for left, right in _history_date_ranges(start, end):
+            # Independent keys survive the ledger's narrow query-manifest
+            # projection, retaining each segment's bounds and failure status.
+            segment_name = f"{name}:{left}..{right}"
+            records.extend(query_records(
+                segment_name,
+                lambda: call(trd_env=TrdEnv.REAL, acc_id=acc_id, start=left, end=right),
+            ))
+            segments.append({"start": left, "end": right, **queries[segment_name]})
+        successes = sum(segment["status"] == "ok" for segment in segments)
+        errors = [f"{row['start']}..{row['end']}: {row['error']}"
+                  for row in segments if row["status"] != "ok"]
+        queries[name] = {
+            "status": "ok" if successes == len(segments) else ("partial" if successes else "error"),
+            "row_count": len(records),
+            "observed_at_utc": utc_now_iso(),
+            "error": "; ".join(errors)[:500] if errors else None,
+            "start": start, "end": end, "segments": segments,
+        }
+        return records
+
     def dedupe_by_id(rows: list[dict[str, Any]], field: str) -> list[dict[str, Any]]:
         keyed: dict[str, dict[str, Any]] = {}
         fallback: dict[str, dict[str, Any]] = {}
@@ -460,6 +493,7 @@ def fetch_moomoo_state(
         unique: dict[str, dict[str, Any]] = {}
         for row in rows:
             canonical = json.dumps(row, ensure_ascii=True, sort_keys=True, default=str)
+            unique.pop(canonical, None)  # retain the last observation's ordering
             unique[canonical] = row
         return list(unique.values())
 
@@ -491,13 +525,11 @@ def fetch_moomoo_state(
                 "market_val": rec.get("market_val"),
             }
 
-        start = (datetime.now(timezone.utc).date() - timedelta(days=fills_lookback_days)).isoformat()
-        end = datetime.now(timezone.utc).date().isoformat()
-        history_deals = query_records(
-            "history_deals",
-            lambda: ctx.history_deal_list_query(
-                trd_env=TrdEnv.REAL, acc_id=acc_id, start=start, end=end
-            ),
+        today = datetime.now(timezone.utc).date()
+        start = (today - timedelta(days=fills_lookback_days)).isoformat()
+        end = today.isoformat()
+        history_deals = query_history(
+            "history_deals", ctx.history_deal_list_query, start, end,
         )
         current_deals = query_records(
             "current_deals",
@@ -529,11 +561,8 @@ def fetch_moomoo_state(
             )
         )
 
-        history_orders = query_records(
-            "history_orders",
-            lambda: ctx.history_order_list_query(
-                trd_env=TrdEnv.REAL, acc_id=acc_id, start=start, end=end
-            ),
+        history_orders = query_history(
+            "history_orders", ctx.history_order_list_query, start, end,
         )
         current_orders = query_records(
             "current_orders",
@@ -541,14 +570,14 @@ def fetch_moomoo_state(
                 trd_env=TrdEnv.REAL, acc_id=acc_id, refresh_cache=True
             ),
         )
-        orders = dedupe_versions(history_orders + current_orders)
-        orders.sort(
+        history_orders.sort(
             key=lambda row: (
                 str(row.get("create_time") or ""),
                 str(row.get("updated_time") or ""),
                 str(row.get("order_id") or ""),
             )
         )
+        orders = dedupe_versions(history_orders + current_orders)
 
         order_ids = sorted(
             {
@@ -610,7 +639,6 @@ def fetch_moomoo_state(
         cashflow_errors: list[str] = []
         cashflow_observed_at = utc_now_iso()
         lookback = max(1, min(int(cashflow_lookback_days), 19))
-        today = datetime.now(timezone.utc).date()
         for days_ago in range(lookback):
             clearing_date = (today - timedelta(days=days_ago)).isoformat()
             try:

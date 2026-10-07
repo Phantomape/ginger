@@ -1218,7 +1218,24 @@ def summarize_forward_reopen_progress(
 ) -> dict[str, Any]:
     """Report settled-row progress toward the Form4 alpha reopen gate."""
 
-    closed_rows = [row for row in rows if truthy(row.get("closed_forward_row"))]
+    closed_row_records = [row for row in rows if truthy(row.get("closed_forward_row"))]
+    # One economic decision per (ticker, entry_date): duplicate decision rows for
+    # the same planned entry session (same-day re-runs, weekend re-selections)
+    # settle to identical outcomes and must not advance the gate more than once
+    # (exp-20260922-007).  Rows without an entry_date never collapse; the first
+    # row in chronological order represents the decision.
+    closed_rows: list[dict[str, Any]] = []
+    seen_economic_keys: set[tuple[str, str]] = set()
+    for row in closed_row_records:
+        entry_date = str(row.get("entry_date") or "")
+        if not entry_date:
+            closed_rows.append(row)
+            continue
+        economic_key = (str(row.get("ticker") or "").upper(), entry_date)
+        if economic_key in seen_economic_keys:
+            continue
+        seen_economic_keys.add(economic_key)
+        closed_rows.append(row)
     high_context_rows = [row for row in rows if truthy(row.get("form4_high_sale_overhang"))]
     high_closed_rows = [
         row for row in closed_rows if truthy(row.get("form4_high_sale_overhang"))
@@ -1255,6 +1272,11 @@ def summarize_forward_reopen_progress(
         "context_rows_current": len(rows),
         "high_sale_overhang_context_rows_current": len(high_context_rows),
         "closed_forward_rows_current": len(closed_rows),
+        "closed_forward_row_records_current": len(closed_row_records),
+        "duplicate_economic_closed_rows_excluded": (
+            len(closed_row_records) - len(closed_rows)
+        ),
+        "economic_decision_key": "ticker+entry_date",
         "high_sale_overhang_closed_forward_rows_current": len(high_closed_rows),
         "replacement_value_complete_closed_rows_current": len(complete_closed_rows),
         "closed_forward_rows_without_required_replacement_values": (

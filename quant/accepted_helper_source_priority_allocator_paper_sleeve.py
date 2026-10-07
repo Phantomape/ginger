@@ -102,7 +102,7 @@ SAME_TICKER_COOLDOWN_DAYS = 12
 
 DEFAULT_CONFIG = {
     "enabled": False,
-    "paper_enabled": True,
+    "paper_enabled": False,
     "trade_enabled": False,
     "paper_notional_usd": BASE_NOTIONAL_USD,
     "daily_entry_slots": MAX_PAPER_TRADES_PER_DAY,
@@ -271,6 +271,9 @@ def empty_accepted_helper_source_priority_allocator_snapshot(
     reason: str,
 ) -> dict[str, Any]:
     return {
+        **({"retired": True, "build_status": "retired_default_off_paper_disabled",
+            "next_action": "settle_existing_positions_only"}
+           if not DEFAULT_CONFIG["paper_enabled"] else {}),
         "schema_version": STATE_SCHEMA_VERSION,
         "sleeve": SLEEVE_NAME,
         "rule_version": RULE_VERSION,
@@ -349,7 +352,7 @@ def build_accepted_helper_source_priority_allocator_snapshot(
     cfg = _config(config)
     as_of_date = leader._date10(as_of)
     rows_by_ticker = leader._normalise_ohlcv_by_ticker(ohlcv_by_ticker)
-    if not rows_by_ticker:
+    if cfg["paper_enabled"] and not rows_by_ticker:
         return empty_accepted_helper_source_priority_allocator_snapshot(
             as_of_date,
             "missing_ohlcv",
@@ -361,29 +364,46 @@ def build_accepted_helper_source_priority_allocator_snapshot(
         else load_accepted_helper_source_priority_allocator_state(state_path)
     )
     _normalise_state(working_state)
-    filled_today = leader._fill_pending_entries(
-        working_state,
-        rows_by_ticker,
-        as_of_date,
-        cfg,
-    )
+    if not cfg["paper_enabled"]:
+        for pending in working_state["pending_entries"]:
+            skipped = {**deepcopy(pending), "status": "skipped_retired",
+                       "skipped_asof": as_of_date, "reason": "owner_authorized_retirement"}
+            if "status" in pending:
+                skipped["prior_status"] = pending["status"]
+            if "reason" in pending:
+                skipped["prior_reason"] = pending["reason"]
+            working_state["skipped_days"].append(skipped)
+        working_state["pending_entries"] = []
+    if cfg["paper_enabled"]:
+        filled_today = leader._fill_pending_entries(
+            working_state,
+            rows_by_ticker,
+            as_of_date,
+            cfg,
+        )
+    else:
+        filled_today = []
     closed_today = leader._advance_open_positions(
         working_state,
         rows_by_ticker,
         as_of_date,
         cfg,
     )
-    source_rows, source_coverage = source_rows_from_snapshots(
-        source_snapshots or {},
-        as_of=as_of_date,
-    )
-    selected, rejected, priority_audit = select_accepted_helper_source_priority_rows(
-        source_rows=source_rows,
-        trading_dates=_trading_dates(rows_by_ticker),
-        existing_state=working_state,
-        config=cfg,
-        create_trades=False,
-    )
+    if cfg["paper_enabled"]:
+        source_rows, source_coverage = source_rows_from_snapshots(
+            source_snapshots or {},
+            as_of=as_of_date,
+        )
+        selected, rejected, priority_audit = select_accepted_helper_source_priority_rows(
+            source_rows=source_rows,
+            trading_dates=_trading_dates(rows_by_ticker),
+            existing_state=working_state,
+            config=cfg,
+            create_trades=False,
+        )
+    else:
+        source_rows, selected, rejected, priority_audit = [], [], [], {}
+        source_coverage = {}
     if len(working_state.get("pending_entries") or []) + len(
         working_state.get("open_positions") or []
     ) >= int(cfg["max_active_positions"]):
@@ -401,9 +421,9 @@ def build_accepted_helper_source_priority_allocator_snapshot(
                 working_state["pending_entries"].append(pending)
                 new_pending_entries.append(pending)
 
-    if not selected and not source_rows:
+    if cfg["paper_enabled"] and not selected and not source_rows:
         _append_skip_once(working_state, _skip_payload(as_of_date, "no_source_candidates"))
-    elif not selected and source_rows:
+    elif cfg["paper_enabled"] and not selected and source_rows:
         _append_skip_once(working_state, _skip_payload(as_of_date, "source_candidates_filtered"))
 
     snapshot = _snapshot_payload(
@@ -420,6 +440,11 @@ def build_accepted_helper_source_priority_allocator_snapshot(
         rows_by_ticker=rows_by_ticker,
         config=cfg,
     )
+    if not cfg["paper_enabled"]:
+        snapshot.update(retired=True, build_status="retired_default_off_paper_disabled",
+                        next_action="settle_existing_positions_only")
+        snapshot["forward_paper_gate"].update(
+            passed=False, status="blocked", reasons=["retired_default_off_paper_disabled"])
     if persist:
         save_accepted_helper_source_priority_allocator_state(working_state, state_path)
         append_accepted_helper_source_priority_allocator_snapshot(snapshot, snapshot_log_path)

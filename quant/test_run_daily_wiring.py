@@ -16,6 +16,7 @@ if str(QUANT_DIR) not in sys.path:
     sys.path.insert(0, str(QUANT_DIR))
 
 import run as run_module  # noqa: E402
+from paper_sleeve_execution_contract import apply_execution_sizing_contracts  # noqa: E402
 from fundamental_growth_rs_paper_sleeve import (  # noqa: E402
     prep_and_build_fundamental_growth_rs_paper_sleeve_snapshot,
 )
@@ -79,6 +80,55 @@ def test_core_slot_ticker_set_only_includes_positive_core_slots():
     assert _core_slot_ticker_set(payload) == {"AMZN", "MRVL"}
 
 
+def test_daily_execution_contract_excludes_retired_sleeves_with_stale_pending():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    call = next(
+        node for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and getattr(node.func, "id", None) == "apply_execution_sizing_contracts"
+    )
+    retired = {
+        "state_surface_sleeve",
+        "industry_relative_laggard_repair_paper_sleeve",
+        "accepted_helper_source_priority_allocator_paper_sleeve",
+        "ai_optical_paper_sleeve",
+        "alpha_score_market_regime_paper_sleeve",
+        "accepted_source_consensus_paper_sleeve",
+        "free_data_cross_source_consensus_paper_sleeve",
+    }
+    names = {node.id for node in ast.walk(call.args[0]) if isinstance(node, ast.Name)}
+    snapshots = {
+        name: {
+            "paper_enabled": True,
+            "pending_count": 1,
+            "pending_entries": [{"ticker": "OLD", "paper_notional_usd": 1000}],
+        }
+        for name in names | retired
+    }
+    surfaces = eval(compile(ast.Expression(call.args[0]), "<daily surfaces>", "eval"), snapshots)
+    result = apply_execution_sizing_contracts(surfaces)
+    assert not retired.intersection(row["surface"] for row in result["surfaces"])
+    assert result["surface_count"] == 34
+    assert "fundamental_growth_rs_paper_sleeve" in surfaces
+    assert "event_sleeve_bundle" in surfaces
+    assert result["pending_action_count"] == 34
+    assert all("execution_sizing_contract" not in snapshots[name] for name in retired)
+
+
+def test_daily_space_path_only_settles_retired_events():
+    tree = ast.parse(textwrap.dedent(inspect.getsource(main)))
+    calls = {
+        getattr(node.func, "id", None)
+        for node in ast.walk(tree) if isinstance(node, ast.Call)
+    }
+    assert "retired_space_catalyst_observation_slot" in calls
+    assert "retired_space_catalyst_event_tickers" in calls
+    assert "build_retired_space_catalyst_event_ledger_snapshot" in calls
+    assert "_build_space_catalyst_observation_step" not in calls
+    assert "build_space_catalyst_shadow_snapshot" not in calls
+    assert "build_space_catalyst_event_ledger_snapshot" not in calls
+
+
 def test_core_drawdown_flow_put_observer_is_wired_default_off_daily():
     source = inspect.getsource(main)
     assert "prep_and_build_core_drawdown_flow_put_snapshot" in source
@@ -123,6 +173,35 @@ def test_options_forward_inputs_use_completed_session_not_latest_partial_row():
         "SPY": "2026-07-31",
         "QQQ": "2026-07-31",
     }
+
+
+def test_options_forward_inputs_lag_same_date_late_evening_for_provider_readiness():
+    observed = datetime.fromisoformat("2026-09-10T23:03:00-04:00")
+
+    def frame(prior_close, same_day_close):
+        return pd.DataFrame(
+            {"Close": [prior_close, same_day_close]},
+            index=pd.to_datetime(["2026-09-09", "2026-09-10"]),
+        )
+
+    resolved = _resolve_options_forward_inputs(
+        _market_run_clock(observed),
+        {
+            "SPY": frame(750.0, 757.8),
+            "QQQ": frame(700.0, 708.7),
+            "AAPL": frame(320.0, 326.6),
+        },
+        ["SPY", "QQQ", "AAPL"],
+    )
+
+    assert resolved["quote_date"] == "2026-09-09"
+    assert resolved["underlying_prices"] == {
+        "AAPL": 320.0,
+        "QQQ": 700.0,
+        "SPY": 750.0,
+    }
+    assert resolved["health"]["raw_completed_session_date"] == "2026-09-10"
+    assert resolved["health"]["provider_readiness_lag_applied"] is True
 
 
 def test_options_forward_inputs_fail_closed_without_exact_canonical_anchors():

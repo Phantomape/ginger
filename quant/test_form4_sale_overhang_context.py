@@ -236,6 +236,54 @@ def test_form4_reopen_progress_requires_closed_complete_replacement_rows():
     assert ready["not_ready_reasons"] == []
 
 
+def test_form4_reopen_progress_collapses_duplicate_economic_decisions():
+    gate = {
+        "closed_forward_rows_min": 2,
+        "high_sale_overhang_forward_rows_min": 1,
+        "single_ticker_share_max": 0.5,
+        "required_replacement_values": ["cash", "SPY", "QQQ"],
+    }
+
+    def _closed(ticker, entry_date, *, high=False, observation="obs"):
+        return {
+            "ticker": ticker,
+            "entry_date": entry_date,
+            "source_observation_id": observation,
+            "form4_high_sale_overhang": high,
+            "closed_forward_row": True,
+            "cash_replacement_value_10d": 0.01,
+            "spy_replacement_value_10d": 0.02,
+            "qqq_replacement_value_10d": 0.03,
+        }
+
+    rows = [
+        _closed("DE", "2026-08-24", high=True, observation="a"),
+        _closed("DE", "2026-08-24", observation="b"),
+        _closed("META", "2026-09-22", observation="c"),
+        _closed("META", "2026-09-22", observation="d"),
+    ]
+
+    progress = summarize_forward_reopen_progress(rows, gate=gate)
+
+    assert progress["closed_forward_row_records_current"] == 4
+    assert progress["closed_forward_rows_current"] == 2
+    assert progress["duplicate_economic_closed_rows_excluded"] == 2
+    assert progress["economic_decision_key"] == "ticker+entry_date"
+    assert progress["high_sale_overhang_closed_forward_rows_current"] == 1
+    assert progress["replacement_value_complete_closed_rows_current"] == 2
+    assert progress["unique_tickers_closed_forward_rows"] == 2
+    assert progress["max_single_ticker_closed_forward_row_share"] == 0.5
+    assert progress["gate_ready"] is True
+
+    legacy = [
+        _closed("AAA", None, observation="e"),
+        _closed("AAA", None, observation="f"),
+    ]
+    legacy_progress = summarize_forward_reopen_progress(legacy, gate=gate)
+    assert legacy_progress["closed_forward_rows_current"] == 2
+    assert legacy_progress["duplicate_economic_closed_rows_excluded"] == 0
+
+
 def test_forward_ledger_is_prospective_pit_settled_and_idempotent(tmp_path):
     data_dir = tmp_path / "non_ohlcv"
     data_dir.mkdir()
