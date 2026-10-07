@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T10:34:10Z",
+  "run_finished_at": "2026-08-21T11:21:35Z",
+  "milestone": "M2",
+  "work_unit": "m2_external_coverage_row_clock_contract",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "954a0137ead66f83e2b074d3a38e2d9dcc1a82f2",
+  "selection_rationale": {
+    "scout_lane": "Outcome-blind committed-source audit found no admission-ready scout and did not retry the rejected SEC contract-relation family; no outcome values were opened and no experiment ID was reserved.",
+    "chosen_unit": "A fresh official SEC preflight had nonzero row reach, but the existing generic coverage contract could not causally bind each source row's availability clock. The earliest safe blocker was therefore the row-clock contract rather than a prematurely asserted real coverage instance.",
+    "scope_boundary": "Promotion-only schema and validation work; no source instance, production writer, CandidatePool, hypothesis, scout admission, experiment registry, runtime, broker, order, position, allocation, or permission path."
+  },
+  "source_readiness_preflight": {
+    "status": "usable_nonzero_not_materialized",
+    "outcome_blind": true,
+    "results_accessed": false,
+    "observed_at": "2026-08-21T11:09:40Z",
+    "sources": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/daily-index/2026/QTR3/form.20260820.idx",
+        "sha256": "c8239dac18c7db462df2eb41a6f89fa9746a29a47c4821f828b621193c6cefd3",
+        "bytes": 814980,
+        "reported_rows": 4183,
+        "exact_8_k_rows": 219,
+        "unique_8_k_ciks": 208
+      },
+      {
+        "url": "https://www.sec.gov/files/company_tickers_exchange.json",
+        "sha256": "dc94346047679508512cc7384caa89b5a5309d7aa80309e8bb1eb22e82c6bedd",
+        "bytes": 520956,
+        "rows": 10387
+      },
+      {
+        "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data",
+        "sha256": "8d6378b888c1de4708d36b0b808a053fe2cfe2fa6c43d3b9f1c7be5eb87278d8",
+        "bytes": 79786,
+        "use": "official access and fair-access instructions observed, but not yet frozen as a V2 SourceContract authorization artifact"
+      }
+    ],
+    "conservative_dispositions": {
+      "rule": "Accept only an exact CIK with one association and exchange NYSE or Nasdaq; retain every 8-K source row.",
+      "mapped": 116,
+      "missing_mapping": 42,
+      "ambiguous_mapping": 49,
+      "unsupported_exchange": 12,
+      "conserved_total": 219,
+      "unique_mapped_ciks": 111
+    },
+    "materialization_blockers": [
+      "No immutable source-input bundle or production coverage writer exists.",
+      "The SEC access evidence, raw artifacts, retrieval headers, source-row clock derivation, and mapping policy are not yet hash-bound in V2 SourceContract/EvidenceRecord instances.",
+      "No actual evidence-bound session clock, universe ledger, or target manifest instance exists for this source frame."
+    ]
+  },
+  "implementation": {
+    "schema": "ExternalUniverseCoverageRow and ExternalUniverseCoverageSnapshot now require schema_version=2; every row requires timezone-aware known_at.",
+    "population_binding": "row_snapshot_sha256 and coverage EvidenceRecord decision_content.source_rows both bind source_row_id, source_row_sha256, and normalized known_at; snapshot semantic and record hashes transitively bind the full row.",
+    "chronology": "Every row known_at must be no later than data_cutoff and coverage evidence known_at. Mapping and mapping-evidence known_at must be no later than the bound row clock; prior cutoff, freeze, effective-interval, hash, and manifest guards remain in force.",
+    "migration": "Repository search found no persisted coverage v1 instance or external production constructor, so the fail-closed schema-v2 cutover needs no in-repository migration.",
+    "fixed_ceiling": "external_universe_coverage_status=unverified, pit_tier=research_pit, result_ceiling=observed_only, paper_live_eligible=false, parity_status=contract_only_unwired, trade_enabled=false"
+  },
+  "review": {
+    "final_verdict": "Independent final review reported P0=0 and P1=0.",
+    "residual_risks": [
+      "The generic contract proves that a declared known_at is consistently hash/evidence-bound; the first source-specific materializer must still derive it deterministically from immutable raw artifacts and source rules.",
+      "Any unobserved repository-external v1 consumer would need an explicit migration; no such consumer or persisted instance was found."
+    ]
+  },
+  "verification": [
+    "18 external coverage contract tests passed.",
+    "48 focused external coverage plus universe-ledger tests passed.",
+    "236 complete quant/test_v2*.py tests passed in 17.00s across 10 files.",
+    "Target production and test modules compiled successfully under the repository Python virtual environment.",
+    "scripts/experiment.py audit --lean-strict passed with lean_strict_passed=true.",
+    "Production V2 default-on scan passed; trade_enabled remains false.",
+    "git diff --check passed with only LF-to-CRLF working-copy warnings."
+  ],
+  "changed_files": [
+    "quant/v2_universe_coverage.py",
+    "quant/test_v2_universe_coverage_contracts.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1120Z_m2_external_coverage_row_clock_contract.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive: every enumerated source row now has a causal availability clock that is normalized, population-hashed, evidence-bound, and constrained against coverage and mapping clocks. Late rows or mappings cannot be relabeled as PIT merely by resealing one object.",
+  "parity_impact": "Positive contract-only foundation; no runtime adapter or invocation changed, so daily/replay and production/backtest parity remain explicitly unwired and unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "No real authorized, immutable source-bound coverage snapshot, coverage EvidenceRecord, production universe ledger, or target manifest instance exists yet.",
+    "Source-specific row-clock derivation and an atomic persistence path remain required before the SEC preflight can become evidence.",
+    "Shared runtime adapter, deterministic daily/replay parity, scale optimization, and an external append anchor remain open before canonical/paper/promotion use."
+  ],
+  "next_step": "Freeze the observed SEC access evidence, daily index, company/exchange association snapshot, retrieval metadata, row-clock derivation, and conservative disposition policy into one immutable forward-only source input bundle; implement the minimal atomic materializer/writer that emits and cross-validates the first real coverage EvidenceRecord, snapshot, universe ledger, and manifest. Then wire the shared runtime adapter.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T22:00:43.195Z",
+  "run_started_at_basis": "Inferred from the recorded 2026-08-21T21:00:43.195Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T22:33:58Z",
+  "milestone": "M2",
+  "work_unit": "m2_cold_lineage_structural_regression",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "b900848bef3569855f66f23fdd4e2540b161fd85",
+  "selection_rationale": {
+    "priority": "No V2 experiment was open, no committed candidate-source input changed after the prior outcome-blind rejection, and the earliest unchecked M2 handoff was the cold rotation/deep-lineage structural guard.",
+    "chosen_unit": "Eliminate duplicate checkpoint reads inside one standalone exact lineage pass and freeze paired-depth physical-read, byte, logical-view, and conservative peak-allocation regressions.",
+    "scope_boundary": "Opt-in research-only segmented storage. No source population, universe instance, CandidatePool, hypothesis, outcome, signal, strategy, runtime backend, scheduler, broker, order, allocation, evidence tier, parity authority, cadence, or trading permission changed."
+  },
+  "outcome_access_containment": {
+    "status": "contained_zero_id",
+    "detail": "One read-only protocol reviewer used an overbroad documentation search and crossed from the intended V2 preamble into archived V1 result rows. No values were relayed to the implementation or this receipt.",
+    "containment": "The engineering unit was fixed by the committed backlog before the reviewer search. No V2 outcome, candidate, treatment, experiment, or promotion was selected; no experiment ID was reserved; the reviewer stopped and its result values were discarded."
+  },
+  "implementation": {
+    "single_read_exact_pass": "The exact loader now walks current-to-oldest generations once through the existing strict generation validator. It keeps only SHA-256 summaries of compact base events/head-manifest/identity state plus output-bearing tail segment rows, then reconstructs oldest-to-current and runs the complete canonical legacy validator.",
+    "memory_shape": "The loader does not cache all decoded checkpoints. Retained compact summaries are constant-size apart from tail rows that belong to the returned exact history; checkpoint event populations and identity capsules are released generation by generation.",
+    "semantic_preservation": "Checkpoint cycles, HEAD/checkpoint/segment bindings, storage markers, damage taxonomy, compact base identities, generation counts/tips, final event/manifest conservation, research-only ceilings, and default-off validation remain fail closed.",
+    "paired_fixture": "The regression persists the same deterministic five-manifest logical history and final compact zero-tail tip with rotation depths 1, 2, and 4. Only rotation placement and derived retained archive bytes vary.",
+    "honest_ceiling": "The guard freezes physical record visits and an affine tracemalloc envelope for a small deterministic fixture. It does not prove real market-scale memory, RSS, latency, cadence, or SLO. Whole rotation still performs separate pre-commit and post-commit validation phases and remains explicit and unscheduled."
+  },
+  "scale_telemetry": [
+    {
+      "lineage_depth": 1,
+      "hot_read_count": 2,
+      "hot_read_bytes": 30964,
+      "hot_output_bytes": 20582,
+      "hot_peak_bytes": 283903,
+      "exact_read_count": 7,
+      "exact_read_bytes": 81933,
+      "exact_output_bytes": 40232,
+      "exact_peak_bytes": 723800
+    },
+    {
+      "lineage_depth": 2,
+      "hot_read_count": 2,
+      "hot_read_bytes": 30972,
+      "hot_output_bytes": 20582,
+      "hot_peak_bytes": 284179,
+      "exact_read_count": 8,
+      "exact_read_bytes": 111086,
+      "exact_output_bytes": 40232,
+      "exact_peak_bytes": 694124
+    },
+    {
+      "lineage_depth": 4,
+      "hot_read_count": 2,
+      "hot_read_bytes": 30972,
+      "hot_output_bytes": 20582,
+      "hot_peak_bytes": 283992,
+      "exact_read_count": 10,
+      "exact_read_bytes": 169530,
+      "exact_output_bytes": 40232,
+      "exact_peak_bytes": 689937
+    }
+  ],
+  "telemetry_notes": {
+    "read_invariant": "Hot reads exactly HEAD plus current checkpoint once. Exact reads HEAD plus every reachable checkpoint and segment once; observed bytes equal the unique reachable file-size sum.",
+    "memory_guard": "Peak must not exceed 4 MiB interpreter allowance plus 32 times the sum of read bytes and canonical output bytes. This is a conservative regression tripwire, not a capacity promise.",
+    "elapsed": "Elapsed milliseconds were emitted by V2_SEGMENT_SCALE for diagnostics only and have no pass threshold.",
+    "external_tracer": "If tracemalloc is already owned by the interpreter or a plugin, the test preserves it, emits peak_bytes=null, and skips only the allocator-specific peak assertion; record/byte/logical guards still run."
+  },
+  "review_findings": {
+    "closed_findings": [
+      "Removed the old two-pass checkpoint file read without replacing it with an all-checkpoint decoded cache.",
+      "Preserved an externally owned tracemalloc session instead of resetting or stopping it, and moved path stat/resolve work outside the traced read wrapper.",
+      "Kept market-scale, whole-rotation-single-pass, latency, and cadence claims explicitly out of scope."
+    ],
+    "final_review": "Independent code and claim reviews reported P0=0, P1=0, and P2=0. The final tracemalloc correction re-review also reported P0=0, P1=0, and P2=0."
+  },
+  "verification": [
+    "The three paired depth 1/2/4 structural cases passed and emitted machine-readable V2_SEGMENT_SCALE telemetry.",
+    "All 57 segmented-ledger tests passed in 88.50s before the telemetry-only simplification; the final three changed cases passed again in 10.51s.",
+    "All 338 quant/test_v2*.py tests passed on the final code and test diff in 109.41s.",
+    "One depth-1 case passed under python -X tracemalloc=1 without stopping the external tracer.",
+    "Target modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "All V2 receipt JSON and decision-log JSONL rows parsed, default-off scans passed, and git diff whitespace validation passed with line-ending warnings only."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger_segments.py",
+    "quant/test_v2_universe_ledger_segments.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "data/v2/hourly_runs/20260821T2231Z_m2_cold_lineage_structural_regression.json"
+  ],
+  "decision_log_change": "none_measurement_guard_only_no_new_policy_or_capability_decision",
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but engineering-scoped: exact lineage recovery now has machine-checked one-read physical I/O, byte conservation, logical identity preservation, and a conservative allocation tripwire across paired archive depths. No alpha or outcome evidence was created.",
+  "parity_impact": "None in authority: storage remains contract_only_unwired. The existing source-bounded daily/replay aliases are unchanged, and Engine-0, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Wire one explicit segmented-hot backend into the source-bounded runtime using a single hot-tip state load, with no backend auto-detection, cold traversal, or silent legacy fallback.",
+    "Use real population, churn, retention, and SLO evidence before choosing any automatic rotation cadence or absolute scale limit.",
+    "Establish a repository-external append anchor before any canonical eligibility claim.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline."
+  ],
+  "next_step": "Wire the explicit segmented-hot state backend into the source-bounded runtime and prove manifest/as-of daily/replay equivalence while keeping rotation unscheduled and trade_enabled=false.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

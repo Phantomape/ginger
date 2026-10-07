@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_v1_asset_inventory",
+  "inventory_id": "v2-m0-v1-assets-20260819",
+  "created_at": "2026-08-19T05:55:00Z",
+  "source_repository": {
+    "commit": "7c4a7a9f119f072f248bfc3c6e20c6e840fff2db",
+    "commit_time": "2026-08-15T09:37:08-07:00",
+    "branch": "automation/edge-v2",
+    "scope": "Committed V1 functional asset groups available in the dedicated V2 worktree. Newer uncommitted files observed in the source checkout are excluded."
+  },
+  "classification_enum": [
+    "reuse_directly",
+    "reuse_after_contract_upgrade",
+    "migrate_as_zero_weight_challenger",
+    "legacy_diagnostic_only",
+    "retire"
+  ],
+  "classification_definitions": {
+    "reuse_directly": "Reuse the engineering primitive or immutable historical evidence without importing V1 universe, alpha, weight, qualification, or promotion state.",
+    "reuse_after_contract_upgrade": "Keep the implementation or data shape, but do not use it in V2 decisions until V2 identity, clock, source, PIT, authorization, mapping, schema, and failure contracts pass.",
+    "migrate_as_zero_weight_challenger": "Re-register the V1 decision mechanism as a new default-off V2 challenger with zero weight and fresh evidence.",
+    "legacy_diagnostic_only": "Retain for history, regression, opportunity-cost, or anti-repeat navigation; never use it to establish V2 eligibility or Gate results.",
+    "retire": "Preserve referenced historical bytes, but stop new V2 reads or writes through this path after its canonical replacement is verified."
+  },
+  "global_constraints": {
+    "trade_enabled": false,
+    "inherits_v1_universe": false,
+    "inherits_v1_alpha_conclusions": false,
+    "inherits_v1_weights": false,
+    "inherits_v1_qualification_or_promotion": false,
+    "t0_confirmed": false,
+    "v2_forward_evidence_ceiling": "research_only_until_t0_confirmation_and_contract_gates"
+  },
+  "startup_audit": {
+    "command": "python scripts/experiment.py audit",
+    "checked_at": "2026-08-19T05:47:59Z",
+    "command_exit_code": 0,
+    "audit_passed": false,
+    "tickets_checked": 2481,
+    "logs_checked": 2667,
+    "invalid_alpha_promotion_count": 10,
+    "research_result_ceiling_violation_count": 1,
+    "latest_committed_ticket": "exp-20260815-001",
+    "latest_committed_ticket_status": "rejected",
+    "interpretation": "Historical audit gaps prevent treating V1 aggregate status as V2 evidence; canonical shards remain useful immutable history and anti-repeat evidence."
+  },
+  "assets": [
+    {
+      "asset_id": "v1-experiment-truth-shards",
+      "name": "Experiment identity tooling and canonical per-ID shards",
+      "classification": "reuse_directly",
+      "anchors": ["scripts/experiment.py", "scripts/experiment_registry.py", "experiments/tickets", "experiments/logs"],
+      "evidence": "Reservation is atomic and tickets/logs are the canonical per-ID history; the V2 protocol explicitly ranks these shards above aggregate summaries.",
+      "v2_action": "Reuse IDs, immutable history, and anti-repeat evidence only; V1 outcomes and promotion labels confer no V2 status.",
+      "pit_assessment": "not_applicable_engineering_and_history",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-atomic-persistence-primitives",
+      "name": "Atomic file persistence and recovery primitives",
+      "classification": "reuse_directly",
+      "anchors": ["quant/data_paths.py", "quant/test_atomic_write_recovery.py"],
+      "evidence": "Same-directory temporary writes, fsync, bounded Windows rename retries, cleanup, and recovery tests are independent of V1 investment conclusions.",
+      "v2_action": "Reuse as low-level persistence plumbing; record schemas and append-only semantics remain V2-specific.",
+      "pit_assessment": "not_applicable_engineering",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-cash-fill-accounting-primitives",
+      "name": "Cash ledger, fill model, and conservation tests",
+      "classification": "reuse_directly",
+      "anchors": ["quant/backtest_cash_ledger.py", "quant/fill_model.py", "quant/test_backtest_cash_ledger.py"],
+      "evidence": "The implementation provides deterministic event ordering, explicit negative-cash accounting, conservation checks, and gap/slippage mechanics.",
+      "v2_action": "Reuse algorithms and tests while freezing new V2 cost and fill versions separately.",
+      "pit_assessment": "not_applicable_engineering",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-experiment-manifest-lifecycle",
+      "name": "Reservation-time experiment manifests and lifecycle enforcement",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["experiments/manifests", "scripts/experiment_registry.py"],
+      "evidence": "Current manifests are reservation-time records and the startup audit reports historical promotion and result-ceiling violations.",
+      "v2_action": "Add final code, raw-input, artifact, V2 schema, PIT, and production-impact identities before V2 experiments use the lifecycle.",
+      "pit_assessment": "contract_incomplete",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-ledger-patterns",
+      "name": "Hash-bound append, locking, conflict, and idempotency patterns",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/alpha_search_ledger.py", "quant/entry_universe_ledger.py", "quant/broker_execution_ledger.py"],
+      "evidence": "These writers contain useful hash, lock, conflict, full-panel, and idempotency patterns, but their record models are V1-specific.",
+      "v2_action": "Port the patterns into V2 EvidenceRecord, CandidatePool, UniverseEvent, and execution records; remove collection-clock wall-time fallbacks.",
+      "pit_assessment": "contract_incomplete",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-session-clock-asof-guards",
+      "name": "US session calendar and price as-of guards",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/us_market_calendar.py", "quant/price_asof_guard.py", "quant/test_market_calendar.py"],
+      "evidence": "Timezone-aware completed-session and fail-closed tests are useful, but special closures are incomplete and undated price maps can still be accepted.",
+      "v2_action": "Create one canonical effective session service, cover special sessions, require dated prices, and forbid process-wall-clock trade-date inference.",
+      "pit_assessment": "clock_contract_incomplete",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-parity-execution-contract-shell",
+      "name": "Replay/daily parity contract and tests",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["docs/production_backtest_parity.md", "quant/production_parity.py", "quant/test_production_parity.py"],
+      "evidence": "The shared-policy and replay/daily invariants are reusable, while the helper also embeds V1 entry, sizing, slot, add-on, and exit rules.",
+      "v2_action": "Retain parity assertions but remap them onto the V2 decision chain and Engine-0; migrate embedded V1 rules only through challenger registration.",
+      "pit_assessment": "contract_incomplete",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-massive-ohlcv-ingestion",
+      "name": "Massive OHLCV ingestion and source-contract evidence",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/massive_ohlcv_backfill.py", "experiments/artifacts/exp-20260728-002_massive_source_contract.md"],
+      "evidence": "The pipeline records raw hashes, retrieval UTC, unadjusted data, secret hygiene, transactional normalization, and research-only authorization.",
+      "v2_action": "Add effective-dated security identity, vendor correction/vintage proof, durable entitlement evidence, and a canonical V2 SourceContract.",
+      "pit_assessment": "research_pit_at_most_until_upgrade",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-official-event-observers",
+      "name": "Prospective official-source event observers",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/usaspending_obligation_observer.py", "quant/drugsfda_approval_observer.py", "quant/sec_corporate_event_stream.py"],
+      "evidence": "First-seen and idempotent observer designs are useful, but first local observation does not prove first public availability and historical current snapshots are retrospective seeds.",
+      "v2_action": "Require observed_at, published_at, known_at, raw identity/hash, authorization, effective mappings, and explicit forward T0 before use.",
+      "pit_assessment": "research_pit_at_most_until_upgrade",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-vendor-broker-adapters",
+      "name": "Vendor and broker data adapters",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/moomoo_capital_flow_sidecar.py", "quant/ortex_data_sidecar.py", "quant/options_onclickmedia.py"],
+      "evidence": "Adapter code is reusable, but historical rows lack machine-bound entitlement, downstream-use authorization, raw evidence hashes, and reliable known_at clocks.",
+      "v2_action": "Bind entitlement and source contracts, use fetch time conservatively as known_at, version raw payloads, and fail closed on missing clocks.",
+      "pit_assessment": "not_pit_until_upgrade",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-price-estimate-warehouse",
+      "name": "Price warehouse and estimate-revision data layer",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/data_layer.py", "quant/ohlcv_warehouse.py", "quant/estimate_revision_ledger.py"],
+      "evidence": "Versioning and quarantine logic exist, but authorization, adjustment/revision vintages, event identity, and current-time defaults are incomplete.",
+      "v2_action": "Freeze adjustment/vintage semantics, source authorization, security mapping, and decision clocks before V2 evidence use.",
+      "pit_assessment": "research_pit_at_most_until_upgrade",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-research-digest-and-ai-validators",
+      "name": "Research digest consumption state and AI output validators",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["scripts/build_research_digest.py", "data/research_digest/ledger.jsonl", "quant/alpha_mechanism_generator.py", "quant/investment_team_research_card.py"],
+      "evidence": "Stable IDs, hashes, append-only dispositions, outcome-field rejection, and permission guards are reusable; digest entries remain derived navigation and lack complete source authorization.",
+      "v2_action": "Map accepted content into sourced V2 ResearchClaim and HypothesisCandidate records; generated candidates and recommendations do not carry forward.",
+      "pit_assessment": "navigation_only_until_upgrade",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-paper-sleeve-runner-shell",
+      "name": "Paper sleeve runner and execution-contract shell",
+      "classification": "reuse_after_contract_upgrade",
+      "anchors": ["quant/paper_sleeve_runner.py", "quant/paper_sleeve_execution_contract.py", "quant/test_paper_sleeve_execution_contract.py"],
+      "evidence": "The shell provides default-off paper execution and layout checks, but its records do not implement the complete V2 decision chain.",
+      "v2_action": "Upgrade the shell to V2 DecisionRecord, OrderIntent, Fill/Reject, PositionState, SettledOutcome, and ReplacementValue contracts before wiring challengers.",
+      "pit_assessment": "contract_incomplete",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-strategy-sleeves",
+      "name": "V1 strategy and paper-sleeve mechanisms",
+      "classification": "migrate_as_zero_weight_challenger",
+      "anchors": ["quant/signal_engine.py", "quant/feature_layer.py", "quant/regime_engine.py", "quant/risk_engine.py", "quant/broad_market_paper_sleeve.py", "quant/ai_optical_paper_sleeve.py", "quant/accepted_source_consensus_paper_sleeve.py"],
+      "scope_patterns": ["quant/*_paper_sleeve.py"],
+      "evidence": "These modules encode V1 stock selection, entry, ranking, sizing, and exit hypotheses; historical results cannot establish V2 qualification.",
+      "v2_action": "Select migrations by mechanism coverage and contract readiness, then re-register each with fresh V2 evidence and an independent forward window.",
+      "pit_assessment": "no_v2_evidence_inherited",
+      "eligible_for_v2_decisions": false,
+      "initial_weight": 0,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-allocator-policy-stack",
+      "name": "V1 allocator and portfolio policy mechanisms",
+      "classification": "migrate_as_zero_weight_challenger",
+      "anchors": ["quant/allocation_engine.py", "quant/accepted_helper_source_priority_allocator_paper_sleeve.py", "quant/portfolio_engine.py", "quant/test_allocator_execution_envelope.py"],
+      "evidence": "Allocator code embeds V1 source priority, capital, concentration, and opportunity-cost choices, including historical promotion state.",
+      "v2_action": "Rebuild only after Engine-0 and challenger evidence exist; start at zero weight and prove incremental portfolio value with fixed capital.",
+      "pit_assessment": "no_v2_evidence_inherited",
+      "eligible_for_v2_decisions": false,
+      "initial_weight": 0,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-embedded-decision-rules",
+      "name": "V1 decision rules embedded in parity and backtest code",
+      "classification": "migrate_as_zero_weight_challenger",
+      "anchors": ["quant/production_parity.py", "quant/backtester.py", "docs/production_backtest_parity_matrix.md"],
+      "evidence": "The paths encode entry, slot, sizing, add-on, exit, and adapter-promotion behavior beyond generic parity infrastructure.",
+      "v2_action": "Extract only explicitly selected mechanisms into shared V2 policies; do not inherit parity-matrix status or Gate claims.",
+      "pit_assessment": "no_v2_evidence_inherited",
+      "eligible_for_v2_decisions": false,
+      "initial_weight": 0,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-static-universe-membership",
+      "name": "V1 universe snapshots, memberships, and current-map discovery",
+      "classification": "legacy_diagnostic_only",
+      "anchors": ["data/state/broad_market_paper/universe.json", "data/state/broad_market_paper/universe_membership.jsonl", "quant/broad_market_universe_feed.py"],
+      "evidence": "Membership generation can use current sector/security caches, source hashes can be null, and wall-clock defaults can assign dates; historical delisted coverage is incomplete.",
+      "v2_action": "Use only to diagnose V1 behavior; V2 M2 must generate an effective-dated append-only universe without seeding from these members.",
+      "pit_assessment": "not_pit",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-baseline-artifacts",
+      "name": "V1 backtester and cash-feasible baseline artifacts",
+      "classification": "legacy_diagnostic_only",
+      "anchors": ["quant/backtester.py", "docs/backtesting.md", "data/backtests/backtest_results_warehouse_snapshot_standard_windows_cash_feasible_20260715.json"],
+      "evidence": "The V2 protocol permits V1 baselines only for regression and opportunity-cost comparison, not as the independent V2 Gate-1 anchor.",
+      "v2_action": "Retain frozen references for comparison; build Engine-0 on the V2 PIT universe and shared decision chain in M3.",
+      "pit_assessment": "legacy_comparator_only",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-forward-derived-ledgers",
+      "name": "Candidate training, live-drift, and replacement-value derived ledgers",
+      "classification": "legacy_diagnostic_only",
+      "anchors": ["data/paper_sleeves/candidate_decision_training_ledger/rows.jsonl", "data/live_pilot/live_drift/ledger.jsonl", "data/paper_sleeves/forward_replacement_value.jsonl"],
+      "evidence": "These rows are useful diagnostics, but include plain append paths, malformed-row tolerance, or replacement values rebuilt from mutable current state.",
+      "v2_action": "Use for gap discovery only; do not import rows into V2 forward or settlement ledgers.",
+      "pit_assessment": "legacy_diagnostic_only",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-ai-outputs-and-llm-trade-gate",
+      "name": "V1 AI syntheses, free-text advice, replay, and trade gating",
+      "classification": "legacy_diagnostic_only",
+      "anchors": ["data/alpha_search", "quant/llm_advisor.py", "quant/llm_replay.py", "data/daily/llm"],
+      "evidence": "Historical AI outputs can be outcome-aware, and the V1 advisor parses free text into pending actions that can alter approved trades, conflicting with the V2 AI boundary.",
+      "v2_action": "Retain for anti-repeat and regression analysis only; V2 AI output must terminate in sourced ResearchClaim or hypothesis records with no trading authority.",
+      "pit_assessment": "not_pit_or_navigation_only",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-live-capable-and-unflagged-sleeves",
+      "name": "V1 live-capable or unflagged sleeve paths",
+      "classification": "legacy_diagnostic_only",
+      "anchors": ["quant/pilot_sleeve.py", "quant/event_sleeve_bundle.py", "quant/chop_mean_reversion_sleeve.py", "quant/chop_pairs_spread_sleeve.py", "quant/crypto_sleeve.py"],
+      "evidence": "Static inspection found live-capable boolean paths in the pilot/event helpers and three sleeves without an explicit trade-enabled flag.",
+      "v2_action": "Do not import or execute these paths in V2; require an explicit fail-closed wrapper, zero-weight challenger registration, and activation review before reconsideration.",
+      "pit_assessment": "legacy_execution_boundary",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-derived-experiment-navigation",
+      "name": "Aggregate registry and experiment dashboards",
+      "classification": "legacy_diagnostic_only",
+      "anchors": ["docs/experiment_registry.json", "experiments/dashboard"],
+      "evidence": "These large aggregate products are rebuildable navigation views; canonical per-ID shards outrank them and the startup audit reports historical inconsistencies.",
+      "v2_action": "Use only to navigate toward canonical tickets, logs, manifests, and artifacts; never cite aggregates as V2 truth.",
+      "pit_assessment": "not_applicable_derived_navigation",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-legacy-ticket-mirror-and-direct-append",
+      "name": "Legacy mirrored tickets and direct aggregate-log append path",
+      "classification": "retire",
+      "anchors": ["docs/experiments/tickets", "scripts/append_experiment_log.py"],
+      "evidence": "The mirror overlaps canonical tickets and contains divergent copies; direct aggregate writes bypass the canonical per-ID shard model.",
+      "v2_action": "Stop new reads and writes after references are mapped; preserve historical bytes and use experiments/tickets plus experiment.py instead.",
+      "pit_assessment": "not_applicable_legacy_path",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-retired-strategy-runners",
+      "name": "Superseded strategy runner and executable legacy experiment paths",
+      "classification": "retire",
+      "anchors": ["quant/finra_iwm_paper_sleeve.py", "quant/experiments/legacy"],
+      "evidence": "These paths are superseded or intentionally segregated from current registered execution and can bypass newer experiment and contract routing.",
+      "v2_action": "Stop new V2 execution and references; preserve artifacts solely for provenance until archival mapping is complete.",
+      "pit_assessment": "not_applicable_legacy_path",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "asset_id": "v1-duplicate-clock-and-legacy-loop",
+      "name": "Duplicate market calendar and legacy automation loop",
+      "classification": "retire",
+      "anchors": ["quant/market_calendar.py", "scripts/legacy/loop.ps1"],
+      "evidence": "Two independent market-session implementations invite clock drift, while the old loop predates V2 milestone, receipt, and default-off contracts.",
+      "v2_action": "Stop V2 use; migrate callers to the upgraded canonical session service and the V2 hourly launcher before archival cleanup.",
+      "pit_assessment": "not_applicable_legacy_path",
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    }
+  ],
+  "summary": {
+    "total_assets": 25,
+    "classification_counts": {
+      "reuse_directly": 3,
+      "reuse_after_contract_upgrade": 10,
+      "migrate_as_zero_weight_challenger": 3,
+      "legacy_diagnostic_only": 6,
+      "retire": 3
+    },
+    "experiment_id_consumed": false,
+    "production_impact": "none",
+    "parity_impact": "classification_only_no_runtime_or_policy_change"
+  }
+}

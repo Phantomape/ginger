@@ -1,0 +1,406 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_repository_external_append_anchor_decision_packet",
+  "packet_status": "ready_for_user_selection",
+  "prepared_at": "2026-08-22T00:07:35Z",
+  "milestone": "M2",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "current_boundary": {
+    "external_append_anchor_status": "absent",
+    "canonical_eligibility": false,
+    "paper_live_eligible": false,
+    "research_scout_precondition": false,
+    "production_impact": "none",
+    "rollback_gap": "A valid historical repository-local HEAD.json can replace the current HEAD without violating its self-hash."
+  },
+  "threat_model": {
+    "detects": [
+      "repository-local rollback to an older valid HEAD after a newer HEAD was externally anchored",
+      "missing or divergent external anchor sequence entries",
+      "repository-local HEAD bytes that disagree with the latest external anchor"
+    ],
+    "does_not_claim": [
+      "protection from compromise of the external anchor writer and retention administrator together",
+      "source authorization or canonical PIT provenance",
+      "market-universe completeness",
+      "scheduler, Engine-0, execution, paper, live, or trading parity"
+    ]
+  },
+  "hash_recipe": {
+    "recipe_id": "v2_canonical_json_sha256_v1",
+    "implementation_reference": "quant.v2_contracts.canonical_json",
+    "json_rules": "recursive plain JSON; object keys sorted; separators comma and colon with no spaces; ensure_ascii=true; allow_nan=false",
+    "encoding": "UTF-8",
+    "semantic_hash_terminator": "none",
+    "exact_record_terminator": "one LF byte 0x0A",
+    "semantic_hash_rule": "SHA-256 over canonical_json(payload_without_its_hash_field).encode(UTF-8), with no LF",
+    "exact_record_hash_rule": "SHA-256 over canonical_json(full_record_with_semantic_hash).encode(UTF-8) followed by one LF"
+  },
+  "anchor_record_contract": {
+    "schema_version": 1,
+    "record_type": "v2_universe_external_head_anchor",
+    "scope": "one approved anchor-genesis cutover followed by every successful segmented HEAD.json append, zero-event manifest, and rotation transition before another HEAD transition or any canonical consumption",
+    "canonical_encoding": "v2_canonical_json_sha256_v1 full-record bytes with exactly one LF termination",
+    "required_fields": [
+      "schema_version",
+      "record_type",
+      "environment",
+      "store_id",
+      "ledger_stream_id",
+      "anchor_sequence",
+      "previous_anchor_record_sha256",
+      "previous_head_hash",
+      "head_exact_sha256",
+      "head_hash",
+      "storage_contract",
+      "checkpoint_hash",
+      "tail_segment_hash",
+      "head_manifest_id",
+      "head_manifest_hash",
+      "event_count",
+      "manifest_count",
+      "transition_kind",
+      "idempotency_key",
+      "submitted_at",
+      "writer_principal_id",
+      "anchor_record_sha256"
+    ],
+    "identity_rules": [
+      "head_exact_sha256 hashes the exact committed HEAD.json bytes, including the LF terminator",
+      "head_hash and all copied HEAD identities must equal the validated local HEAD",
+      "anchor_sequence starts at 1 and increases by exactly one",
+      "previous_anchor_record_sha256 is null only for the approved sequence-1 anchor genesis and otherwise binds the preceding immutable anchor",
+      "environment, store_id, and ledger_stream_id prevent cross-environment or cross-root replay",
+      "previous_head_hash is null only for the approved anchor genesis and otherwise equals the preceding anchor head_hash",
+      "anchor_record_sha256 uses v2_canonical_json_sha256_v1 semantic_hash_rule over the anchor payload without anchor_record_sha256"
+    ]
+  },
+  "external_receipt_contract": {
+    "required_fields": [
+      "anchor_contract_id",
+      "anchor_contract_version",
+      "anchor_contract_sha256",
+      "provider_target_id",
+      "immutable_locator",
+      "immutable_version_or_offset",
+      "service_committed_at",
+      "retention_mode",
+      "retain_until",
+      "retention_policy_version",
+      "anchor_record_sha256",
+      "anchor_object_exact_sha256",
+      "provider_receipt_raw_locator",
+      "provider_receipt_sha256"
+    ],
+    "provider_receipt_sha256_rule": "SHA-256 over the exact raw provider response bytes preserved at provider_receipt_raw_locator; no decoding, normalization, LF insertion, or self field is involved",
+    "anchor_object_exact_sha256_rule": "v2_canonical_json_sha256_v1 exact_record_hash_rule over the full immutable anchor record",
+    "provider_signature": "required only when the selected target contract uses signed receipts"
+  },
+  "target_requirements": [
+    {
+      "capability_id": "repository_external_administrative_boundary",
+      "requirement": "The anchor namespace and retention control are outside the repository and local ledger host boundary."
+    },
+    {
+      "capability_id": "immutable_create_only_records",
+      "requirement": "The runtime writer can create a new record but cannot overwrite, delete, shorten retention, or alter an existing record."
+    },
+    {
+      "capability_id": "locked_retention",
+      "requirement": "Retention is locked for at least the full lifetime of every canonical claim that depends on the anchor."
+    },
+    {
+      "capability_id": "strong_latest_read",
+      "requirement": "A reader can strongly and deterministically discover the latest committed sequence and read it back immediately after append."
+    },
+    {
+      "capability_id": "conditional_create_and_idempotency",
+      "requirement": "Exact retry returns the same immutable record; the same sequence or object identity with different bytes fails."
+    },
+    {
+      "capability_id": "ordered_append_or_compare_and_append",
+      "requirement": "The target enforces a single monotonic stream through an ordered offset or atomic predecessor compare-and-append; WORM storage without a trustworthy monotonic latest record is insufficient."
+    },
+    {
+      "capability_id": "independent_service_receipt",
+      "requirement": "The target returns an externally generated immutable object identity, commit time, and content identity that can be audited."
+    },
+    {
+      "capability_id": "separated_principals",
+      "requirement": "Append, read, and retention-administration IAM principal IDs are distinct least-privilege non-secret identity references with named owners."
+    }
+  ],
+  "target_options": [
+    {
+      "option_id": "managed_compliance_worm_object_store",
+      "disposition": "recommended",
+      "condition": "Use only with locked retention, create-only writer credentials, strong enumeration/read-after-write, a separate administrative boundary, and a machine-proved monotonic latest protocol."
+    },
+    {
+      "option_id": "managed_append_only_ledger",
+      "disposition": "acceptable",
+      "condition": "Use only if the service enforces predecessor/sequence ordering, immutable retention, idempotent append, and strongly consistent latest reads."
+    },
+    {
+      "option_id": "independent_self_hosted_append_log",
+      "disposition": "conditional",
+      "condition": "Requires a separate host/account, documented backup and retention operations, independent ownership, and the same acceptance tests as a managed target."
+    }
+  ],
+  "rejected_substitutes": [
+    "the same Git repository or a Git remote alone",
+    "the same host filesystem or a mutable database row",
+    "ordinary object versioning without locked retention and restricted delete permissions",
+    "a locally signed file when the signing key is available to the ledger writer"
+  ],
+  "publication_protocol": [
+    "Before cutover, freeze one immutable selected contract with authorization, target, retention, principals, requested window, and the existing research-only HEAD exact identity; this is not ledger bootstrap and grants no retroactive eligibility.",
+    "Publish sequence-1 transition_kind=anchor_genesis bound to that pre-cutover selected-contract hash.",
+    "Validate and publish immutable local records, then atomically publish HEAD.json under the existing writer lock.",
+    "Before external append, validate the transition-specific successor proof against the latest verified external anchor; sequence continuity alone is insufficient.",
+    "Before another HEAD transition, atomically compare-and-append the exact HEAD identity to the selected external stream with the next sequence and predecessor anchor hash.",
+    "Read the external record back through the read principal and verify its bytes, selected-contract identity, retention receipt, sequence, predecessor, successor proof, and copied HEAD identities.",
+    "After sequence-1 read-back, publish a separate immutable anchor-genesis activation receipt that binds the selected contract, external receipt, generated clocks, absent canonical-forward start, and default-off boundary.",
+    "Treat the local head as anchored only after read-back verification; a lost acknowledgement is resolved by exact idempotent retry.",
+    "If anchoring fails after local HEAD publication, keep the store research-only and block the next HEAD transition until the current head is anchored or the root is quarantined."
+  ],
+  "successor_validation": {
+    "allowed_transition_kinds": [
+      "anchor_genesis",
+      "append",
+      "zero_event_manifest",
+      "rotation"
+    ],
+    "anchor_genesis": [
+      "anchor_sequence is 1 and both predecessor hashes are null",
+      "environment, store_id, ledger_stream_id, head_exact_sha256, and head_hash equal the approved cutover contract",
+      "a post-cutover activation receipt binds the pre-cutover selected contract and sequence-1 external receipt",
+      "activation-receipt cutover_verified_at is no earlier than both the sequence-1 service commit and independent read-back verification",
+      "activation-receipt anchor_gate_eligibility_started_at is no earlier than cutover_verified_at and cannot upgrade evidence created before it",
+      "activation-receipt canonical_forward_eligibility_started_at remains null until a separate canonical review"
+    ],
+    "append": [
+      "the new checkpoint_hash equals the preceding anchor checkpoint_hash and the validated new tail chain strictly extends the preceding anchored tail",
+      "manifest_count increases by exactly one, event_count increases, and the new tip manifest previous id/hash equals the preceding anchor tip",
+      "the new local predecessor state used to build the segment exactly equals the preceding external anchor HEAD identity"
+    ],
+    "zero_event_manifest": [
+      "the new checkpoint_hash equals the preceding anchor checkpoint_hash and the validated new tail chain strictly extends the preceding anchored tail",
+      "manifest_count increases by exactly one, event_count remains unchanged, and the new tip manifest previous id/hash equals the preceding anchor tip",
+      "the new local predecessor state used to build the zero-event segment exactly equals the preceding external anchor HEAD identity"
+    ],
+    "rotation": [
+      "the new compact checkpoint compacted_from_head.head_hash equals previous_head_hash",
+      "event_count, manifest_count, and tip manifest id/hash equal the preceding anchor while checkpoint/head exact identities change and tail_segment_hash is null"
+    ],
+    "reset_policy": "No reset or lineage fork is allowed inside a stream. A new genesis requires a separately approved ledger_stream_id and cutover contract."
+  },
+  "canonical_read_protocol": [
+    "Strictly validate the local segmented store and exact HEAD.json bytes.",
+    "Query the external target directly; a repository-local cache or receipt cannot substitute for this query.",
+    "Validate the contiguous external sequence and latest anchor record identity; one-behind, one-ahead, or ambiguous latest state all fail closed.",
+    "Require the latest external head_exact_sha256 and copied HEAD fields to equal the current local HEAD.",
+    "Require the external receipt to bind the approved pre-cutover selected contract and target, require the activation receipt for sequence 1, and require locked retention to cover the full canonical claim lifetime.",
+    "Fail closed on target outage, missing sequence, divergent record, invalid successor, local rollback, expired retention, wrong target contract, or identity mismatch."
+  ],
+  "acceptance_tests": [
+    {
+      "test_id": "A1_create_only_collision",
+      "expected": "same identity and same bytes is idempotent; different bytes at the same identity fail"
+    },
+    {
+      "test_id": "A2_writer_cannot_mutate_or_delete",
+      "expected": "writer cannot overwrite, delete, shorten retention, or change retention policy"
+    },
+    {
+      "test_id": "A3_strong_read_after_append",
+      "expected": "the independent approved read principal returns the appended record as the unique latest sequence and freezes raw read evidence plus the exact anchor-object hash"
+    },
+    {
+      "test_id": "A4_lost_ack_retry",
+      "expected": "retry after a committed append with a lost response returns the same immutable identity"
+    },
+    {
+      "test_id": "A5_local_old_head_rollback",
+      "expected": "replacing local HEAD with an older valid HEAD blocks canonical consumption against the newer external anchor"
+    },
+    {
+      "test_id": "A6_sequence_gap_or_fork",
+      "expected": "a missing, repeated, or divergent predecessor sequence fails closed"
+    },
+    {
+      "test_id": "A7_target_outage",
+      "expected": "canonical reads and subsequent HEAD transitions fail closed; trade_enabled remains false"
+    },
+    {
+      "test_id": "A8_principal_separation",
+      "expected": "selected-contract writer, reader, and retention-admin principal IDs are distinct; reader cannot append, writer cannot administer retention, and runtime principals cannot delete"
+    },
+    {
+      "test_id": "A9_rotation_same_manifest_counts",
+      "expected": "a compact rotation with unchanged manifest/event counts still creates a new sequence bound to the new exact HEAD"
+    },
+    {
+      "test_id": "A10_cross_stream_or_environment_replay",
+      "expected": "an otherwise valid anchor from a different environment, store, or ledger stream fails closed"
+    },
+    {
+      "test_id": "A11_remote_one_behind_or_ahead",
+      "expected": "a remote latest record behind or ahead of the validated local HEAD is quarantined rather than auto-adopted"
+    },
+    {
+      "test_id": "A12_rollback_then_append_branch",
+      "expected": "rolling back to an older valid HEAD and then appending a new valid local branch fails successor validation against the latest external anchor"
+    },
+    {
+      "test_id": "A13_anchor_genesis_cutover",
+      "expected": "sequence 1 binds the immutable pre-cutover selected contract; a separate activation receipt binds service commit, independently evidenced exact read-back, and ordered verified/anchor-gate times while canonical forward start remains null"
+    },
+    {
+      "test_id": "A14_wrong_target_or_retention_receipt",
+      "expected": "a receipt from an unapproved target contract or weaker/expired retention policy fails closed"
+    }
+  ],
+  "selected_contract_policy": {
+    "decision_packet_is_immutable": true,
+    "fill_decision_packet_in_place_allowed": false,
+    "selected_contract_record_type": "v2_repository_external_append_anchor_selected_contract",
+    "selected_contract_artifact_policy": "create a new content-addressed append-only artifact after explicit authorization and before sequence-1 external append",
+    "decision_packet_binding_field": "decision_packet_contract_sha256",
+    "selected_contract_hash_field": "anchor_contract_sha256",
+    "selected_contract_hash_rule": "v2_canonical_json_sha256_v1 semantic_hash_rule over the selected contract without anchor_contract_sha256"
+  },
+  "activation_receipt_contract": {
+    "schema_version": 1,
+    "record_type": "v2_repository_external_append_anchor_genesis_activation_receipt",
+    "artifact_policy": "create a separate content-addressed append-only artifact only after sequence-1 external commit and independent read-back",
+    "required_fields": [
+      "schema_version",
+      "record_type",
+      "decision_packet_contract_sha256",
+      "anchor_contract_id",
+      "anchor_contract_version",
+      "anchor_contract_sha256",
+      "environment",
+      "store_id",
+      "ledger_stream_id",
+      "anchor_sequence",
+      "anchor_record_sha256",
+      "anchor_object_exact_sha256",
+      "provider_receipt_sha256",
+      "reader_principal_id",
+      "readback_provider_target_id",
+      "readback_immutable_locator",
+      "readback_raw_locator",
+      "readback_raw_sha256",
+      "readback_anchor_object_exact_sha256",
+      "independent_readback_evidence_sha256",
+      "sequence_one_service_committed_at",
+      "sequence_one_readback_verified_at",
+      "cutover_verified_at",
+      "anchor_gate_eligibility_started_at",
+      "canonical_forward_eligibility_started_at",
+      "external_append_anchor_status",
+      "trade_enabled",
+      "activation_receipt_sha256"
+    ],
+    "time_rules": [
+      "cutover_verified_at is no earlier than sequence_one_service_committed_at and sequence_one_readback_verified_at",
+      "sequence_one_readback_verified_at is no earlier than sequence_one_service_committed_at",
+      "anchor_gate_eligibility_started_at is no earlier than cutover_verified_at",
+      "canonical_forward_eligibility_started_at is null until a separate canonical review"
+    ],
+    "readback_rules": [
+      "reader_principal_id equals the approved selected-contract read principal and differs from writer_principal_id",
+      "readback_provider_target_id and readback_immutable_locator equal the approved target and sequence-1 immutable object",
+      "readback_raw_sha256 hashes the exact preserved provider read response bytes at readback_raw_locator",
+      "readback_anchor_object_exact_sha256 equals the sequence-1 anchor_object_exact_sha256",
+      "independent_readback_evidence_sha256 binds the reader, target, locator, raw response identity, exact anchor object identity, and verified time"
+    ],
+    "boundary_rules": [
+      "external_append_anchor_status may become verified only for the exact selected stream and sequence-1 identities",
+      "trade_enabled remains false and no existing evidence is retroactively upgraded"
+    ],
+    "hash_rule": "v2_canonical_json_sha256_v1 semantic_hash_rule over the activation receipt without activation_receipt_sha256"
+  },
+  "user_selection": {
+    "template_only": true,
+    "status": "required",
+    "decision_packet_contract_sha256": null,
+    "implementation_authorization_status": "not_authorized",
+    "implementation_authorization_reference": null,
+    "implementation_approved_by": null,
+    "implementation_approved_at": null,
+    "anchor_contract_id": null,
+    "anchor_contract_version": null,
+    "anchor_contract_sha256": null,
+    "environment": null,
+    "store_id": null,
+    "ledger_stream_id": null,
+    "selected_option_id": null,
+    "provider_product": null,
+    "account_or_tenant": null,
+    "namespace": null,
+    "retention_mode": null,
+    "retention_period": null,
+    "consistency_evidence": null,
+    "writer_topology": null,
+    "threat_model_approved": null,
+    "writer_principal_id": null,
+    "writer_principal_owner": null,
+    "reader_principal_id": null,
+    "reader_principal_owner": null,
+    "retention_admin_principal_id": null,
+    "retention_admin_owner": null,
+    "deployment_owner": null,
+    "secret_store_reference": null,
+    "requested_cutover_window": null,
+    "cutover_head_exact_sha256": null,
+    "cutover_head_hash": null,
+    "network_egress_approved": null,
+    "cost_approved": null
+  },
+  "secrets_policy": {
+    "tracked_values_are_references_only": true,
+    "secret_bytes_allowed_in_repository": false,
+    "forbidden_values": [
+      "access tokens",
+      "private keys",
+      "client secrets",
+      "passwords",
+      "raw credential material"
+    ]
+  },
+  "activation_gate": {
+    "implementation_authorized": false,
+    "target_acceptance_tests_passed": false,
+    "external_append_anchor_status": "absent",
+    "canonical_reads_allowed": false,
+    "canonical_forward_eligibility_started_at": null,
+    "research_scout_blocked": false,
+    "retroactive_evidence_upgrade_allowed": false,
+    "trade_enabled": false
+  },
+  "contract_hash_scope": [
+    "current_boundary",
+    "threat_model",
+    "hash_recipe",
+    "anchor_record_contract",
+    "external_receipt_contract",
+    "target_requirements",
+    "target_options",
+    "rejected_substitutes",
+    "publication_protocol",
+    "successor_validation",
+    "canonical_read_protocol",
+    "acceptance_tests",
+    "selected_contract_policy",
+    "activation_receipt_contract",
+    "user_selection",
+    "secrets_policy",
+    "activation_gate"
+  ],
+  "packet_contract_sha256": "76c8c20e28fddbf167d12202332907ead7a95dd5f7c4352507aeacb6a4dce2ed",
+  "next_action": "After the user selects and authorizes the target, create a new selected-contract artifact bound to this immutable packet; do not edit this decision packet in place."
+}

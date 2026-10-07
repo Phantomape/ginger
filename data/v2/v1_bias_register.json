@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_v1_bias_register",
+  "register_id": "v2-m0-v1-biases-20260819",
+  "created_at": "2026-08-19T16:08:00Z",
+  "source_repository": {
+    "commit": "2c0980680974ed1d8e0cb01ba1e0b80de1fbaedb",
+    "branch": "automation/edge-v2",
+    "scope": "Known V1 biases that must remain blocked from V2 evidence, qualification, allocation, or execution until every listed release condition has machine-verifiable evidence."
+  },
+  "severity_enum": [
+    "critical",
+    "high"
+  ],
+  "status_enum": [
+    "open",
+    "released"
+  ],
+  "release_operator_enum": [
+    "eq",
+    "gte",
+    "lte"
+  ],
+  "global_constraints": {
+    "trade_enabled": false,
+    "eligible_for_v2_decisions": false,
+    "inherits_v1_universe": false,
+    "inherits_v1_weights": false,
+    "inherits_v1_qualification_or_promotion": false,
+    "t0_confirmed": false,
+    "release_requires_all_conditions_met": true,
+    "bias_release_does_not_enable_trading": true
+  },
+  "startup_audit": {
+    "command": "python scripts/experiment.py audit",
+    "checked_at": "2026-08-19T16:02:48Z",
+    "command_exit_code": 0,
+    "audit_passed": false,
+    "tickets_checked": 2481,
+    "logs_checked": 2667,
+    "invalid_alpha_promotion_count": 10,
+    "research_result_ceiling_violation_count": 1,
+    "disposition": "V1 aggregate status remains navigation only. No V1 eligibility, promotion, result ceiling, or weight transfers to V2; canonical per-ID shards remain history and anti-repeat evidence."
+  },
+  "biases": [
+    {
+      "bias_id": "v1-static-survivorship-universe",
+      "name": "Static and current-roster survivorship universe",
+      "category": "universe_selection",
+      "severity": "critical",
+      "status": "open",
+      "evidence_anchors": [
+        "quant/backtester.py",
+        "quant/broad_market_universe_feed.py",
+        "docs/universe_promotion_protocol.md",
+        "experiments/logs/exp-20260717-003.json"
+      ],
+      "related_inventory_asset_ids": [
+        "v1-static-universe-membership",
+        "v1-baseline-artifacts"
+      ],
+      "evidence": "V1 explicitly reports a survivor-biased current security master. Its broad universe feed can derive membership from current sector-cache and available warehouse rows, and historical audits found static members that were not eligible under then-effective manifests.",
+      "pit_assessment": "not_pit",
+      "blocked_scopes": [
+        "v2_universe_eligibility",
+        "canonical_return_evidence",
+        "strategy_qualification",
+        "allocator_input",
+        "activation_review"
+      ],
+      "v2_mitigation": "Build M2 UniverseEvent history from effective-dated, hash-bound source snapshots and security mappings. Do not seed V2 membership from V1 rosters; retain static V1 results only as diagnostics and opportunity-cost references.",
+      "release_conditions": [
+        {
+          "condition_id": "universe-event-coverage",
+          "metric": "v2_decision_rows_with_effective_universe_event_and_snapshot_hash_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "M2 universe replay coverage artifact over the claimed evaluation window",
+          "met": false
+        },
+        {
+          "condition_id": "no-pre-eligible-or-current-roster-fallback",
+          "metric": "pre_eligible_or_current_roster_fallback_uses",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Fail-closed universe replay test and dated decision audit",
+          "met": false
+        },
+        {
+          "condition_id": "complete-universe-identity",
+          "metric": "universe_events_missing_source_hash_or_effective_security_mapping",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "UniverseEvent schema validation and mapping interval audit",
+          "met": false
+        }
+      ],
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "bias_id": "v1-performance-derived-weight-transfer",
+      "name": "Outcome-derived and post-hoc weight transfer",
+      "category": "capital_allocation",
+      "severity": "critical",
+      "status": "open",
+      "evidence_anchors": [
+        "quant/allocation_engine.py",
+        "quant/accepted_helper_source_priority_allocator_paper_sleeve.py",
+        "docs/portfolio_covariance_lane.md",
+        "data/v2/v1_asset_inventory.json"
+      ],
+      "related_inventory_asset_ids": [
+        "v1-allocator-policy-stack"
+      ],
+      "evidence": "V1 allocator paths convert realized performance metrics and historical promotion state into capital weights. Those formulas may remain challenger mechanisms, but their weights cannot be imported as independent V2 evidence.",
+      "pit_assessment": "no_v2_evidence_inherited",
+      "blocked_scopes": [
+        "v2_capital_weights",
+        "risk_allocation",
+        "strategy_promotion",
+        "production_activation"
+      ],
+      "v2_mitigation": "Start every migrated sleeve at zero weight. Freeze allocator policy, inputs, fixed capital, comparators, and acceptance criteria before an independent V2 forward window; require both standalone and incremental portfolio value.",
+      "release_conditions": [
+        {
+          "condition_id": "allocator-policy-frozen-before-outcomes",
+          "metric": "allocator_decisions_with_policy_and_input_hash_frozen_before_outcomes_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "Hash-bound allocator decision ledger and preregistered validation manifest",
+          "met": false
+        },
+        {
+          "condition_id": "no-same-window-outcome-input",
+          "metric": "allocator_inputs_derived_from_same_evaluation_window_outcomes",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Allocator input lineage audit",
+          "met": false
+        },
+        {
+          "condition_id": "zero-weight-unqualified-challengers",
+          "metric": "unqualified_v2_challengers_with_nonzero_weight",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Allocator state validation and challenger registry audit",
+          "met": false
+        }
+      ],
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "bias_id": "v1-incomplete-winner-only-selection-panel",
+      "name": "Incomplete or winner-only selection panel",
+      "category": "selection_bias",
+      "severity": "critical",
+      "status": "open",
+      "evidence_anchors": [
+        "docs/alpha_search_architecture.md",
+        "docs/deflated_sharpe_protocol.md",
+        "experiments/logs/exp-20260709-023.json",
+        "quant/alpha_search_ledger.py"
+      ],
+      "related_inventory_asset_ids": [
+        "v1-experiment-truth-shards",
+        "v1-derived-experiment-navigation"
+      ],
+      "evidence": "The V1 architecture records that candidates were often generated and tested one at a time without freezing the full pool. A canonical historical audit also found selected-trade outcomes without a complete skipped or rejected outcome panel.",
+      "pit_assessment": "selection_surface_incomplete",
+      "blocked_scopes": [
+        "alpha_selection_claims",
+        "deflated_sharpe_gate",
+        "strategy_qualification",
+        "strategy_promotion"
+      ],
+      "v2_mitigation": "Freeze each complete CandidatePool and SelectionPanel before reading outcomes, including winners, losers, rejected alternatives, displaced candidates, cash, SPY, QQQ, and V1 comparators. Treat unreconstructable V1 panels as not_computable.",
+      "release_conditions": [
+        {
+          "condition_id": "complete-selection-scope-coverage",
+          "metric": "selection_scopes_with_frozen_complete_winner_and_loser_panel_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "Preregistered selection manifests and panel hashes",
+          "met": false
+        },
+        {
+          "condition_id": "no-selected-only-scopes",
+          "metric": "selected_only_or_survivor_only_selection_scopes",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Selection panel validation report",
+          "met": false
+        },
+        {
+          "condition_id": "panel-identity-consistent",
+          "metric": "selection_panels_with_count_hash_or_duplicate_id_errors",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Panel count, ID, date alignment, and hash recomputation tests",
+          "met": false
+        }
+      ],
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "bias_id": "v1-mutable-current-state-replacement-value",
+      "name": "Replacement value rebuilt from mutable current state",
+      "category": "outcome_measurement",
+      "severity": "high",
+      "status": "open",
+      "evidence_anchors": [
+        "quant/forward_replacement_value.py",
+        "data/paper_sleeves/forward_replacement_value.jsonl",
+        "data/paper_sleeves/candidate_decision_training_ledger/rows.jsonl",
+        "data/v2/v1_asset_inventory.json"
+      ],
+      "related_inventory_asset_ids": [
+        "v1-forward-derived-ledgers"
+      ],
+      "evidence": "The shared V1 replacement-value artifact is explicitly rebuilt from current sleeve state and may omit rows no longer present there. Malformed JSONL rows can also be skipped, so the current artifact is not an immutable forward settlement truth source.",
+      "pit_assessment": "legacy_diagnostic_only",
+      "blocked_scopes": [
+        "forward_gate_evidence",
+        "replacement_value_claims",
+        "allocator_training",
+        "strategy_qualification"
+      ],
+      "v2_mitigation": "Create append-only SettledOutcome and ReplacementValue records linked to frozen DecisionRecord, fill, position, comparator, cost, and input identities. Corrections must append a new version and never rewrite or drop prior evidence.",
+      "release_conditions": [
+        {
+          "condition_id": "immutable-decision-linkage",
+          "metric": "settled_outcomes_linked_to_frozen_decision_and_comparator_ids_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "V2 settlement lineage audit over the claimed evaluation window",
+          "met": false
+        },
+        {
+          "condition_id": "no-outcome-overwrite-or-deletion",
+          "metric": "settled_outcome_or_replacement_value_overwrites_or_deletions",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Append-only hash-chain and idempotency tests",
+          "met": false
+        },
+        {
+          "condition_id": "complete-replacement-comparators",
+          "metric": "eligible_settled_outcomes_with_cash_spy_qqq_comparator_coverage_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "ReplacementValue coverage report with fail-closed missing-bar rows",
+          "met": false
+        }
+      ],
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "bias_id": "v1-process-wall-clock-decision-dates",
+      "name": "Process wall-clock decision and session dates",
+      "category": "clock_and_identity",
+      "severity": "critical",
+      "status": "open",
+      "evidence_anchors": [
+        "quant/broad_market_universe_feed.py",
+        "quant/entry_universe_ledger.py",
+        "quant/us_market_calendar.py",
+        "quant/market_calendar.py"
+      ],
+      "related_inventory_asset_ids": [
+        "v1-session-clock-asof-guards",
+        "v1-static-universe-membership",
+        "v1-duplicate-clock-and-legacy-loop"
+      ],
+      "evidence": "V1 decision-support paths can infer as-of dates from datetime.now and fall back to collection time. Duplicate session implementations also permit the same input to be assigned to different trading dates.",
+      "pit_assessment": "clock_contract_incomplete",
+      "blocked_scopes": [
+        "effective_date_assignment",
+        "universe_replay",
+        "daily_replay_parity",
+        "canonical_pit_evidence"
+      ],
+      "v2_mitigation": "M1 must require an explicit frozen run_date and one canonical data-calendar session identity for every decision record. Missing, ambiguous, non-session, or stale clocks fail closed; process time remains collection metadata only.",
+      "release_conditions": [
+        {
+          "condition_id": "frozen-run-date-and-session-coverage",
+          "metric": "v2_decision_rows_with_frozen_run_date_and_calendar_session_id_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "DecisionRecord schema coverage and session-resolution audit",
+          "met": false
+        },
+        {
+          "condition_id": "no-wall-clock-trade-date-fallback",
+          "metric": "process_wall_clock_trade_date_fallback_uses",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Static guard plus missing-clock fail-closed tests",
+          "met": false
+        },
+        {
+          "condition_id": "deterministic-session-replay",
+          "metric": "same_input_replays_with_decision_date_or_session_identity_mismatch",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "Two-run replay idempotency and special-session test report",
+          "met": false
+        }
+      ],
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    },
+    {
+      "bias_id": "v1-ai-free-text-execution-authority",
+      "name": "AI free-text advice connected to execution memory",
+      "category": "ai_authority",
+      "severity": "critical",
+      "status": "open",
+      "evidence_anchors": [
+        "quant/llm_advisor.py",
+        "quant/llm_replay.py",
+        "quant/pending_actions.py",
+        "data/v2/v1_asset_inventory.json"
+      ],
+      "related_inventory_asset_ids": [
+        "v1-ai-outputs-and-llm-trade-gate",
+        "v1-research-digest-and-ai-validators"
+      ],
+      "evidence": "V1 parses generated advice, reconciles it with positions, and persists pending execution actions. Historical AI output can also be outcome-aware, so neither its recommendations nor action memory can become V2 trading or qualification evidence.",
+      "pit_assessment": "not_pit_or_navigation_only",
+      "blocked_scopes": [
+        "universe_mutation",
+        "candidate_ranking",
+        "position_sizing",
+        "risk_limit_changes",
+        "order_intent_creation",
+        "execution_actions"
+      ],
+      "v2_mitigation": "Terminate AI work in sourced ResearchClaim or HypothesisCandidate records. Deterministic reviewed policy owns ranking, risk, sizing, and OrderIntent; V2 must have no import or data route from AI free text to pending actions or orders.",
+      "release_conditions": [
+        {
+          "condition_id": "no-direct-ai-execution-routes",
+          "metric": "direct_ai_to_universe_rank_risk_size_or_order_intent_routes",
+          "operator": "eq",
+          "threshold": 0,
+          "unit": "count",
+          "evidence_required": "V2 dependency scan and end-to-end authority tests",
+          "met": false
+        },
+        {
+          "condition_id": "structured-ai-output-coverage",
+          "metric": "consumed_ai_outputs_materialized_as_research_claim_or_hypothesis_candidate_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "ResearchClaim and HypothesisCandidate ledger coverage report",
+          "met": false
+        },
+        {
+          "condition_id": "complete-ai-evidence-contract",
+          "metric": "consumed_ai_records_with_source_asof_known_at_pit_confidence_and_falsifier_pct",
+          "operator": "gte",
+          "threshold": 100,
+          "unit": "percent",
+          "evidence_required": "AI research schema validation report",
+          "met": false
+        }
+      ],
+      "eligible_for_v2_decisions": false,
+      "trade_enabled": false
+    }
+  ],
+  "summary": {
+    "total_biases": 6,
+    "open_biases": 6,
+    "severity_counts": {
+      "critical": 5,
+      "high": 1
+    },
+    "experiment_id_consumed": false,
+    "production_impact": "none",
+    "parity_impact": "classification_only_no_runtime_or_policy_change"
+  }
+}

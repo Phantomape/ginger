@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T13:58:00Z",
+  "run_finished_at": "2026-08-21T14:05:51Z",
+  "milestone": "M2",
+  "work_unit": "m2_sec_8k_runtime_adapter",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "ca456e918f911b6ea7db0ec1c54fea6a4bf0a582",
+  "selection_rationale": {
+    "scout_lane_audit": "The committed SEC 8-K materialization now satisfies source authorization, row-level causal clocks, effective mappings, and nonzero source-native reach for a bounded research surface, but the current machine-ready axis is still a coarse exact-8-K discovery surface without item/text semantics or a shared runtime consumer. No outcome values were read and no experiment ID was reserved.",
+    "chosen_unit": "The earliest directly useful M2 task was to connect the first real SEC 8-K coverage instance to a read-only runtime adapter and prove deterministic daily/replay consumer behavior from the same manifest/as_of identity.",
+    "scope_boundary": "One source-bounded SEC 8-K runtime adapter fixture; no CandidatePool, HypothesisCandidate, DecisionRecord, returns, PnL, ranking, strategy logic, broker, order, allocation, production scheduler, paper/live permission, or canonical parity claim."
+  },
+  "implementation": {
+    "adapter_module": "quant/v2_sec_8k_runtime_adapter.py",
+    "adapter_contract": "v2_sec_8k_runtime_universe_adapter_v1",
+    "source_frame": "sec_edgar_8k",
+    "materialization_verified_before_read": true,
+    "daily_replay_reader": "same manifest_id/as_of path through read_v2_daily_universe and read_v2_replay_universe",
+    "boundary": {
+      "external_universe_coverage_status": "unverified",
+      "pit_tier": "research_pit",
+      "result_ceiling": "observed_only",
+      "paper_live_eligible": false,
+      "parity_status": "contract_only_unwired",
+      "authority": "research_only",
+      "trade_enabled": false
+    },
+    "fail_closed_guards": [
+      "materialization envelope tamper",
+      "manifest or coverage hash drift",
+      "daily/replay snapshot drift",
+      "research-only boundary escalation",
+      "trade_enabled=true"
+    ]
+  },
+  "verification": [
+    "15 SEC materializer/runtime-adapter tests passed in 3.11s.",
+    "251 complete quant/test_v2*.py tests passed in 19.78s.",
+    "Target modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "Default-off scan passed; no non-test V2 trade_enabled=true assignment was found."
+  ],
+  "changed_files": [
+    "quant/v2_sec_8k_runtime_adapter.py",
+    "quant/test_v2_sec_8k_universe.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1405Z_m2_sec_8k_runtime_adapter.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive: the first real SEC 8-K source surface now has a verified runtime consumption path that rejects materialization drift and daily/replay divergence before any scout or Engine-0 consumer can depend on it.",
+  "parity_impact": "Positive but bounded: source-bounded daily/replay consumer parity is proven for the SEC 8-K manifest/as_of graph. Production/backtest parity, Engine-0 parity, canonical PIT, and paper/live eligibility remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Connect the adapter to the next Engine-0/default-off observation harness.",
+    "Add item/text/semantic SEC evidence or another registered source axis before burning a scout ID on more than coarse exact-8-K discovery.",
+    "Optimize O(n^2) full-history population validation before market-scale use.",
+    "Establish a repository-external append anchor before canonical eligibility."
+  ],
+  "next_step": "Connect the SEC 8-K runtime adapter to the Engine-0/default-off observation harness, still default-off and research-only; if a richer SEC item/text or other source axis becomes admission-ready first, run the bounded scout preflight before reservation.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

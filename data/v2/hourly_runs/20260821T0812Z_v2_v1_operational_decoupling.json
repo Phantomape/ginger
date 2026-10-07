@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T08:09:57Z",
+  "run_finished_at": "2026-08-21T08:17:23Z",
+  "milestone": "protocol",
+  "work_unit": "v2_v1_operational_decoupling",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "0427d2c16d40ed5740813dda6ce1c2694d6d900d",
+  "changed_files": [
+    "docs/quant_agent_protocol_v2.md",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/t0.json",
+    "data/v2/hourly_runs/20260821T0812Z_v2_v1_operational_decoupling.json"
+  ],
+  "protocol_changes": {
+    "operational_scope": "V2 no longer manages, waits for, stops, schedules, or requests user decisions about V1 automation; shared-registry identity and duplicate-write conflicts remain V2 integrity guards.",
+    "evidence_scope": "V2 research, forward, and promotion decisions depend only on V2 evidence and V2 readiness.",
+    "historical_reuse": "V1 remains an optional read-only historical or compatibility reference only when an explicit V2 task elects to reuse an old asset.",
+    "comparison_scope": "V1 data and results are optional; the current schema may retain an explicit unavailable compatibility placeholder without reading or running V1, while applicable cash, SPY, QQQ, and replacement-value comparisons remain required."
+  },
+  "verification": [
+    "scripts/experiment.py audit --lean-strict exited 0 with lean_strict_passed=true.",
+    "quant/test_v2_t0_declaration.py -> 2 passed.",
+    "The decision log parsed as 13 rows with 13 unique ids ending at d-0013.",
+    "The active V2 protocol, state, backlog, and T0 declaration contained no stale V1 operational-dependency phrases.",
+    "Production-scope scans found no enabled V2 trading assignment.",
+    "Independent final review found P0=0 and P1=0 after preserving shared-registry integrity guards and the current unavailable V1 compatibility placeholder.",
+    "git diff --check passed with only repository line-ending warnings."
+  ],
+  "scientific_credibility_impact": "Positive operational clarification: removing an unrelated V1 gate lets V2 run its registered scout lane without weakening point-in-time integrity, source-scope completeness, trial accounting, evidence ceilings, or promotion gates.",
+  "parity_impact": "none; V2 replay/daily parity requirements are unchanged and no V1 runtime is required for V2 parity",
+  "production_impact": "none",
+  "containment": "Documentation and audit metadata only. No outcome values were accessed, no experiment id was reserved, no strategy or runtime code changed, and no broker, order, position, allocation, or trading permission was touched.",
+  "unrelated_untracked_files_preserved": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json"
+  ],
+  "next_step": "Immediately run the at-most-20-minute first V2 scout preflight and reserve the first private_replay_scout in the same work unit if its authorization, PIT-clock, effective-mapping, source-reach, novelty, and concurrency checks pass.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}
