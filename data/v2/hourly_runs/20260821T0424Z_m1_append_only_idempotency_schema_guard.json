@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": null,
+  "run_started_at_basis": "The task start instant was not captured; no process-wall-clock value was inferred retroactively.",
+  "run_finished_at": "2026-08-21T04:24:09Z",
+  "milestone": "M1",
+  "work_unit": "m1_append_only_idempotency_schema_guard",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "2eb820aa9a93adfdd54f91dafc2f3ee26c122f1e",
+  "changed_files": [
+    "quant/v2_contracts.py",
+    "quant/test_v2_append_only_contracts.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T0424Z_m1_append_only_idempotency_schema_guard.json"
+  ],
+  "contract_scope": {
+    "records": [
+      "DecisionRecord",
+      "OrderIntent",
+      "SettledOutcome",
+      "ReplacementValue"
+    ],
+    "pure_schema_api": "validate_append_only_append",
+    "dispositions": [
+      "append",
+      "duplicate",
+      "correction"
+    ],
+    "immutable_stable_keys": {
+      "DecisionRecord": "decision_id",
+      "OrderIntent": "order_intent_id"
+    },
+    "revisioned_stable_keys": {
+      "SettledOutcome": "stable_key(order_intent_id, horizon)",
+      "ReplacementValue": "stable_key(settled_outcome_stable_key, comparator_role)"
+    },
+    "semantic_retry_ignores_recorded_at_only": true,
+    "physical_id_reuse_rejected": true,
+    "existing_population_damage_rejected": true,
+    "revision_gaps_and_stale_forks_rejected": true,
+    "exact_previous_record_hash_required": true,
+    "status_and_recorded_at_monotonicity_required": true,
+    "cross_input_validation_still_required": true,
+    "file_or_database_persistence": false,
+    "atomic_locking": false,
+    "runtime_wiring": false,
+    "maximum_downstream_result_ceiling": "observed_only",
+    "canonical_forward_eligibility_started_at": null
+  },
+  "verification": [
+    ".venv/Scripts/python.exe -m pytest quant/test_v2_append_only_contracts.py quant/test_v2_decision_outcome_contracts.py -q -> 39 passed in 2.85s",
+    ".venv/Scripts/python.exe -m pytest quant/test_v2_contracts.py quant/test_v2_research_contracts.py quant/test_v2_decision_outcome_contracts.py quant/test_v2_append_only_contracts.py quant/test_v2_t0_declaration.py quant/test_v2_bias_register.py quant/test_v2_asset_inventory.py -q -> 154 passed in 4.89s",
+    "quant/v2_contracts.py and quant/test_v2_append_only_contracts.py compiled successfully",
+    "docs/v2/decision_log.jsonl parsed line-by-line: 9 records",
+    "all data/v2 JSON and JSONL parsed: 12 records before this receipt",
+    "default-off scans found no trade_enabled=true in data/v2 or docs/v2 and no trade_enabled=True in quant/v2_contracts.py",
+    "scripts/experiment.py audit --lean-strict exited 0 with lean_strict_passed=true",
+    "git diff --check passed with only repository line-ending warnings",
+    "independent adversarial review found no actionable P0/P1/P2"
+  ],
+  "scientific_credibility_impact": "Positive: repeated decisions and intents can no longer be silently double-counted under the same immutable identity, while outcome and comparator corrections must extend one exact monotonic predecessor chain. Same-key semantic drift, damaged existing populations, revision gaps, stale forks, physical-id reuse, result-erasing status regression, and recorded-at rollback fail closed. This prevents retry noise or correction races from masquerading as additional independent observations at the schema boundary.",
+  "parity_impact": "Positive schema foundation only: replay and daily writers can share one append/duplicate/correction classification and the same predecessor guards. No writer, lock, JSONL/database ledger, replay, daily, runtime, broker, fill, position, or order path was implemented, so persistence and execution parity remain unproven.",
+  "production_impact": "none",
+  "bias_register_impact": "No V1 bias blocker was closed. The classifier protects stable identities and revision populations but does not prove full universe membership, authoritative persistence, decision-context PIT, execution-state contracts, or canonical forward eligibility.",
+  "containment": "The first read-only status check targeted the noisy V1 root checkout before the dedicated V2 worktree was located, and a later metadata-only ticket audit printed historical status labels. The run therefore remained zero-ID, schema-only, and outcome-independent: no alpha hypothesis, candidate selection, experiment, policy change, or settled-value analysis was performed.",
+  "pre_existing_untracked_files_preserved": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json"
+  ],
+  "next_step": "Finish M1 with the canonical session-clock contract: anchor run-date ownership to an explicit data calendar, frozen run date, or broker session and reject process-wall-clock fallback.",
+  "user_decisions_needed": [
+    "choose whether V1 hourly alpha continues in parallel or freezes to settlement/read-only mode before V2 forward competition"
+  ]
+}

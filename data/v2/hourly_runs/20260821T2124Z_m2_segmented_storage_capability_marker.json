@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T21:00:12.294Z",
+  "run_started_at_basis": "Hourly wake inferred from the recorded 2026-08-21T20:00:12.294Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T21:24:02Z",
+  "milestone": "M2",
+  "work_unit": "m2_segmented_storage_capability_marker",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "f7fd4aa4fcf4c2c90a5d24b5f24e7f430e93f28c",
+  "selection_rationale": {
+    "priority": "No V2 experiment was open and a bounded outcome-blind audit found no admission-ready new evidence axis. The earliest committed M2 handoff required an aggregate compact-store capability marker and rollback contract before runtime wiring.",
+    "chosen_unit": "Add one minimal complete storage-capability unit: distinguish full and compact HEAD formats, bind the marker to checkpoint type, expose legacy-reader compatibility in hot state, and freeze reader-first one-way deployment semantics.",
+    "scope_boundary": "Opt-in research-only segmented storage. No universe source, CandidatePool, hypothesis, signal, outcome, portfolio, scheduler, broker, order, allocation, runtime backend, evidence tier, canonical eligibility, or trading permission changed. Cold-scale cadence remains a separate next unit."
+  },
+  "outcome_access_containment": {
+    "status": "contained_zero_id",
+    "detail": "Reading the complete production/backtest parity matrix instead of only its V2 row exposed archived V1 outcome values; a later read-only reviewer independently repeated the same overbroad read.",
+    "containment": "The engineering unit was already fixed by the committed M2 backlog and prior handoff. No V2 outcome was opened, no alpha candidate, treatment, experiment, or promotion was selected from the exposed values, no experiment ID was reserved, and the values were not used in implementation or verification."
+  },
+  "implementation": {
+    "aggregate_head_marker": "Full-checkpoint HEADs retain v2_universe_checkpoint_segment_sidecar_v1; compact HEADs use v2_universe_checkpoint_segment_sidecar_compact_v1. Only HEAD changes capability marker; checkpoint, compact-checkpoint, and segment record contracts remain unchanged and existing immutable objects are never rewritten.",
+    "fail_closed_binding": "HEAD validation accepts only the two known markers. Hot and exact loads require the marker to match the referenced full or compact checkpoint type before consuming any segment. Unknown future markers fail before checkpoint access; a resealed known-marker/type mismatch fails with a stable error.",
+    "state_and_retry": "Hot state exposes storage_contract and legacy_full_reader_compatible. Compact append, second rotation, pre-HEAD failure, and post-commit uncertainty keep the capability transition consistent with immutable-first, HEAD-last publication and existing idempotent retry semantics.",
+    "deployment_and_rollback": "Deployment is reader-first: compact-capable readers must be deployed and old processes quiesced before rotation. Once a compact marker is committed, in-place HEAD rewind and rollback to a full-only binary are prohibited. Any future older-reader cutback would require a stopped-writer, exact-load, new-root full-v1 export and exact identity verification; no such runtime cutback is wired in this unit.",
+    "honest_ceiling": "The marker is self-hash-bound inside HEAD, not authenticated and not a repository-external append anchor. Rotation remains explicit and unscheduled. Cold lineage bytes, record visits, peak memory, elapsed time, workload/SLO, and cadence limits remain unproven; runtime readers remain unwired."
+  },
+  "review_findings": {
+    "closed_findings": [
+      "Added the required durable decision and hourly receipt after one protocol review identified their absence during the pre-closeout diff.",
+      "Clarified that immutable record contracts and existing full-v1 objects remain unchanged rather than claiming every future compact checkpoint hash is invariant.",
+      "Clarified that HEAD hash binding is a self-hash and does not authenticate storage or detect valid old-HEAD rollback."
+    ],
+    "final_review": "Two independent final code/adversarial reviews reported P0=0 and P1=0. One review reran all 54 segmented tests; a separate combined ledger/segmented run passed 88 tests. Remaining P2 is that the prior full-only binary was not executed as a subprocess; compatibility rejection is established by its exact HEAD storage-contract allowlist and the new marker regression."
+  },
+  "verification": [
+    "12 focused capability, rotation, append, retry, and state tests passed.",
+    "All 54 segmented-ledger tests passed in 78.58s on the implementation run; an independent review repeated all 54 successfully.",
+    "All 335 quant/test_v2*.py tests passed in 109.42s.",
+    "Unknown future markers failed before checkpoint access; resealed full/compact marker-type mismatches failed closed.",
+    "Full-v1 build/load remained legacy-reader-compatible; compact append, second rotation, pre-HEAD failure, and post-commit uncertainty preserved the compact marker and logical history.",
+    "Target production and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "Production default-off scan found no enabled V2 assignment.",
+    "Working diff whitespace validation passed with CRLF conversion warnings only.",
+    "Independent final reviews reported P0=0 and P1=0."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger_segments.py",
+    "quant/test_v2_universe_ledger_segments.py",
+    "docs/production_backtest_parity_matrix.md",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T2124Z_m2_segmented_storage_capability_marker.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but engineering-scoped: the selected store format is now explicit at the atomic commit authority, and unknown or contradictory capability claims fail closed before storage is consumed. This reduces deployment-time misreading of the exact universe history; it creates no alpha, outcome evidence, canonical PIT upgrade, or market-scale storage claim.",
+  "parity_impact": "Positive only for storage capability containment. Full and compact stores retain the same logical universe identities and existing source-bounded daily/replay claims, but no runtime reader switched, so Engine-0, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Build a parameterized cold rotation/deep-lineage regression that measures structural record visits, bytes, peak memory, and elapsed time before selecting cadence from a real population/churn/retention/SLO envelope.",
+    "Wire one explicit segmented-hot backend into the source-bounded runtime using one hot-tip state load, with no auto-detection, cold traversal, or silent legacy fallback.",
+    "Establish a repository-external append anchor before any canonical eligibility claim; a valid historical local HEAD rollback remains undetectable in-repository.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline."
+  ],
+  "next_step": "Add the parameterized cold rotation/deep-lineage scale regression and freeze structural complexity bounds; keep rotation unscheduled and trade_enabled=false.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T19:02:09.205Z",
+  "run_started_at_basis": "Hourly wake inferred from the recorded 2026-08-21T18:02:09.205Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T20:18:07Z",
+  "milestone": "M2",
+  "work_unit": "m2_compact_universe_checkpoint_rotation",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "f15fdd377fc11d419ae9819f51846cc260fd584d",
+  "selection_rationale": {
+    "priority": "No V2 experiment was open and the earliest committed M2 blocker was the segmented sidecar's missing compact rotation. This storage unit was already backlog-locked, required no outcome access, and could be completed without reserving an experiment ID.",
+    "chosen_unit": "Add one minimal complete compact checkpoint rotation unit: deterministic hot-state compaction, exact immutable archival lineage, archive-free state/fresh/retry paths, snapshot-consistent audit, and crash/concurrency/containment verification.",
+    "scope_boundary": "Opt-in research-only storage. No universe source data, CandidatePool, signal, outcome, portfolio, scheduler, broker, order, allocation, evidence tier, runtime reader, production parity status, or trading permission changed."
+  },
+  "outcome_access_containment": {
+    "status": "contained_zero_id",
+    "detail": "An overbroad startup text search surfaced archived V1 performance values before implementation.",
+    "containment": "The compact-rotation work unit had already been selected from the committed M2 backlog; no V2 candidate, scout, experiment, treatment, or promotion was selected or reserved, the surfaced values were not used in design or verification, and experiment_id remains null."
+  },
+  "implementation": {
+    "compact_hot_checkpoint": "Rotation stores the exact current event rows once in the active checkpoint, one exact tip manifest, O(manifest-history) semantic/hash/batch/clock/input identity facts, current membership and pending-future state, and the predecessor HEAD. It removes cumulative manifests from the active checkpoint but does not claim constant total store size.",
+    "exact_archival_lineage": "Exact legacy replay iteratively follows predecessor HEADs to one full checkpoint, preserves physical event order and every manifest, and cross-checks each compact capsule against the reconstructed archival base. Old objects remain immutable and lineage-reachable; successful rotation never deletes them.",
+    "hot_state_and_writer": "Current state load and fresh append read only the active checkpoint plus current-generation tail. Historical, checkpoint-head, and tail retries use the active identity capsule and reconstructed predecessor registries to preserve legacy duplicate/conflict, clock, input, event, manifest, batch, and error-order semantics without archive traversal.",
+    "rotation_publication": "Rotation shares HEAD.json.lock with append, validates exact pre-state, create-only publishes and re-reads the deterministic compact checkpoint, verifies logical counts/tip/boundaries, and atomically switches HEAD last after predecessor-byte recheck. Concurrent rotations commit once; pre-HEAD failures leave only unreachable orphans, and post-commit uncertainty retries return already_compact.",
+    "audit_and_containment": "Audit holds the shared lock across hot/exact snapshots and enumeration, separates superseded from true orphan objects, and never adopts or deletes. Storage directory links/junctions/non-directories, referenced record links, immutable collision links/special files, and lock links/multiple hard links fail closed before external reads or writes.",
+    "honest_ceiling": "Exact replay, rotation, and audit remain low-frequency cold paths whose cost follows immutable archival volume. The new reader can read prior full-v1 stores, but an old binary cannot forward-read the new compact record type under the same umbrella v1 contract. Runtime wiring, rollback/capability strategy, market-scale cadence, external append anchor, canonical evidence, and production authority remain unclaimed."
+  },
+  "review_findings": {
+    "closed_findings": [
+      "Preserved valid cross-batch physical event order instead of replacing it with global effective-time order.",
+      "Bound compact historical identity and clock capsules to exact archival history and rejected historical manifest/batch reuse in hot tails.",
+      "Moved exact/noisy historical, checkpoint-head, and tail retries to archive-free capsule classification while preserving legacy supplied-clock, predecessor-registry, event, batch, conflict, and error-order semantics.",
+      "Made orphan/superseded audit one lock-consistent snapshot and rejected file or directory symlink/junction/non-directory escape surfaces.",
+      "Rejected lock-path links and immutable collision links before shared-lock or record target access; external targets and HEAD remain unchanged in regressions."
+    ],
+    "final_review": "Two independent final reviews on the stable diff reported P0=0 and P1=0. Remaining P2 items are the documented umbrella storage capability/rollback marker and cold-path market-scale cadence tests."
+  },
+  "verification": [
+    "85 focused legacy-ledger and segmented rotation tests passed in 83.90s.",
+    "332 complete quant/test_v2*.py tests passed in 100.24s.",
+    "The checked-in 111-event SEC ledger retained exact events, manifests, memberships, and logical history through compact rotation.",
+    "Multi-generation exact replay, valid physical event ordering, pending-future activation, archive-free state/fresh/history retry, clock/input/event/batch taxonomy, concurrent append/rotation/audit, crash uncertainty, collision, and identity-tamper regressions passed.",
+    "Storage-directory symlink/junction/non-directory, referenced-record symlink, immutable collision no-follow, and lock-link external-target containment regressions passed.",
+    "Target production and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "Working diff whitespace validation passed with CRLF conversion warnings only.",
+    "Two independent final reviews reported P0=0 and P1=0."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger.py",
+    "quant/v2_universe_ledger_segments.py",
+    "quant/test_v2_universe_ledger_segments.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T2018Z_m2_compact_universe_checkpoint_rotation.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but engineering-scoped: the same exact universe decision history now survives bounded hot-state rotation with deterministic lineage, idempotent retry, physical-order conservation, clock/input identity checks, and fail-closed crash/containment semantics. This reduces the chance that partial, rolled, duplicated, or escaped storage is mistaken for a valid research history; it creates no alpha, outcome evidence, validation result, or canonical PIT upgrade.",
+  "parity_impact": "Positive only for opt-in physical-storage logical identity: compact and full sidecars reconstruct the same legacy events/manifests and preserve existing source-bounded daily/replay identities. No runtime reader switched, so Engine-0, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Before runtime wiring, define an aggregate storage capability/format marker and deployment rollback strategy because old v1 binaries cannot forward-read compact checkpoints.",
+    "Establish cold rotation cadence and deep-lineage/market-scale peak-I/O and memory regressions; the immutable store repeats full event populations across generations.",
+    "Wire the segmented hot-state reader into the explicit source-bounded runtime path and prove applicable daily/replay parity without upgrading source ceilings.",
+    "Establish a repository-external append anchor before any canonical eligibility claim; a valid historical local HEAD rollback remains undetectable in-repository.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline."
+  ],
+  "next_step": "Define segmented storage capability/rollback and cold-rotation cadence limits, then wire the hot-state reader into the explicit source-bounded runtime path and prove daily/replay parity; keep the external append anchor as a separate canonical blocker.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

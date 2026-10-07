@@ -1,0 +1,90 @@
+{
+  "acceptance_rule": "observed-only lead iff usable>=60, mean and median net returns positive, positive-name share>0.5, and mean excess versus SPY and QQQ positive",
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-d30469a04f82fbe89a06",
+    "paper_live_eligible": false,
+    "promotion_hash": "02b9014cbf8b12353c19661199b524cf08e127a91a274382d11c12e26192a289",
+    "result_ceiling": "observed_only",
+    "selection_scope_id": "scope-470ad9d6b6c520d29fd48c99"
+  },
+  "artifact": "data/experiments/exp-20260822-001/exp_20260822_001_sec_8k_event_drift_h1.json",
+  "artifact_sha256": "ec828033d5319edeafd818a4981957008455270b7ab45c4f4098802d3eb33c0c",
+  "changed_variable": "presence_in_complete_prior_day_exact_8k_frame",
+  "completed_at": "2026-08-22T02:06:23.562283+00:00",
+  "decision": "rejected",
+  "evaluation": {
+    "acceptance_checks": {
+      "mean_after_cost_return_positive": true,
+      "mean_excess_vs_qqq_positive": true,
+      "mean_excess_vs_spy_positive": true,
+      "median_after_cost_return_positive": false,
+      "positive_name_share_gt_half": false,
+      "usable_security_count_gte_60": true
+    },
+    "accepted": false,
+    "benchmark_open_to_close_returns": {
+      "QQQ": -0.002502691441913729,
+      "SPY": -0.0004307812805951494
+    },
+    "candidate_count": 111,
+    "decision": "rejected",
+    "mean_after_cost_return": 0.003060817971089958,
+    "mean_excess_vs_qqq": 0.005563509413003687,
+    "mean_excess_vs_spy": 0.0034915992516851074,
+    "median_after_cost_return": -0.001925069380203536,
+    "missing_or_error_count": 0,
+    "positive_name_share": 0.42342342342342343,
+    "round_trip_cost_bps": 10.0,
+    "usable_security_count": 111
+  },
+  "experiment_id": "exp-20260822-001",
+  "frozen_at": "2026-08-22T01:58:09Z",
+  "frozen_input_identities": {
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/candidate_pool.json": "8819ade6b6e5d3e55de83b5d83ad5429b638650e6f4f8764059903c9faabaf0c",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821/market_data_recipe.json": "4be0e073c9e16755d07cc1298c21f4768e3cf1a02be3b2862e943142c796d5f4"
+  },
+  "hypothesis": "Within the complete frozen 2026-08-20 SEC exact-8-K source frame, an equal-weight basket of every mapped issuer bought at the 2026-08-21 regular-session open and sold at that session close has positive after-cost return and positive excess return versus SPY and QQQ because heterogeneous material-event filings are underreacted to between the prior close and the next regular session.",
+  "lane": "alpha_search",
+  "lean_quality_passed": true,
+  "post_run_reflection": {
+    "forbidden_near_neighbor_retry": "Do not sweep costs, holding minutes, subsets, item codes, or event-sign labels on the same 2026-08-20 frame after seeing this result.",
+    "new_evidence_required": "A retry requires a separately frozen later complete SEC frame or an independent pre-outcome event-sign source, not threshold tuning.",
+    "why_result_happened": "The complete exact-8-K frame mixes event signs; the frozen basket tests whether aggregate underreaction survives that heterogeneity."
+  },
+  "production_impact": {
+    "exit_levels_changed": false,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "research_only": true,
+    "shared_policy_changed": false,
+    "sizing_changed": false,
+    "trade_enabled": false
+  },
+  "raw_query_artifact": "data/experiments/exp-20260822-001/moomoo_rth_daily_query_results.json",
+  "raw_query_artifact_sha256": "491e2aa833c3af410b005229035ade529ddc37fd66f0c0f007b04571a87f3a32",
+  "raw_result_identity": "9c08356b7909e16a02d0b0d5c30a594a4dc671dca872fc5317184803adcf325f",
+  "record_type": "v2_private_replay_scout_result",
+  "relaxed_scout_scope": {
+    "not_relaxed": [
+      "outcome-blind freeze",
+      "complete source disposition",
+      "hash-bound inputs",
+      "default-off trading"
+    ],
+    "relaxed_dimensions": [
+      "single cross-section allowed",
+      "weak fixed zero-excess prior allowed",
+      "Engine 0 and market-wide coverage not required"
+    ],
+    "user_directed": true
+  },
+  "reproduction_commands": [
+    ".\\.venv\\Scripts\\python.exe -B -m py_compile quant\\experiments\\exp_20260822_001_sec_8k_event_drift_h1.py",
+    ".\\.venv\\Scripts\\python.exe -B quant\\experiments\\exp_20260822_001_sec_8k_event_drift_h1.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  ],
+  "schema_version": 1,
+  "single_causal_variable": "all_mapped_sec_8k_h1_equal_weight_drift",
+  "status": "rejected"
+}

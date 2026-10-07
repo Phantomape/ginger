@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T08:47:00Z",
+  "run_finished_at": "2026-08-21T09:05:02Z",
+  "milestone": "research_scout_lane",
+  "work_unit": "v2_scout_zero_id_sec_contract_relation_preflight",
+  "outcome": "no-op audit",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "557c0803929461045bc28181cb254cafeaabb25c",
+  "source_surface_examined": "data/non_ohlcv/sec_contract_relation_provenance",
+  "candidate_considered": {
+    "status": "rejected_before_reservation",
+    "candidate_id": null,
+    "description": "SEC Item 1.01 contract-relation counterparty-quality continuation scout using source-native accepted_at and usable_trade_date rows",
+    "single_treatment": "prefer source rows with stronger counterparty-quality or contract-relation specificity over generic issuer-self relation rows",
+    "primary_horizon": "H10",
+    "result_ceiling_if_later_admitted": "observed_only",
+    "paper_live_eligible": false
+  },
+  "outcome_blind_audit": {
+    "outcome_blind": true,
+    "outcome_values_accessed": false,
+    "result_files_opened": false,
+    "allowed_inputs_used": [
+      "source manifest",
+      "source rows metadata and decision timestamps",
+      "source row counts and distinct ticker/accession counts",
+      "frozen-family novelty metadata",
+      "experiment registry metadata",
+      "open ticket status metadata"
+    ],
+    "forbidden_inputs_not_used": [
+      "forward returns",
+      "PnL",
+      "MFE/MAE",
+      "settled outcome rows",
+      "winner labels",
+      "Gate metrics"
+    ]
+  },
+  "preflight_stats": {
+    "row_count": 294,
+    "unique_ticker_count": 30,
+    "unique_accession_count": 155,
+    "usable_trade_date_count": 294,
+    "accepted_at_timezone_count": 0,
+    "production_behavior_flags_true": 0,
+    "relation_bucket_counts": {
+      "credit_or_financing_agreement": 89,
+      "purchase_or_sales_agreement": 73,
+      "customer_or_revenue_contract": 66,
+      "lease_or_real_estate_agreement": 21,
+      "supplier_or_supply_contract": 20,
+      "general_material_agreement": 15,
+      "license_or_collaboration_agreement": 10
+    }
+  },
+  "gates": {
+    "D0_source_pit_readiness": {
+      "status": "reject",
+      "passed_predicates": [
+        "nonzero source-native reach: 294 rows, 30 tickers, 155 accessions",
+        "source rows are marked observer_only with trade_enabled=false",
+        "usable_trade_date is present on 294/294 rows"
+      ],
+      "failed_predicates": [
+        "no V2 SourceContract/EvidenceRecord instance binds this source surface for scout admission",
+        "row-level accepted_at timestamps are timezone-naive: 0/294 rows include Z or an explicit UTC offset",
+        "research_pit_basis is only a row caveat from the V1-era observer artifact, not a V2 evidence-bound clock",
+        "no V2 effective-dated SecurityMappingSnapshot was found for the 30 ticker mappings"
+      ]
+    },
+    "D1_market_expectation_identifiability": {
+      "status": "park",
+      "failed_predicates": [
+        "counterparty-quality prior is not machine-defined or calibrated in a V2 ResearchClaim",
+        "observable expectation proxy for contract importance is not frozen"
+      ]
+    },
+    "D2_mechanism_executability": {
+      "status": "park",
+      "passed_predicates": [
+        "economic mechanism is plausible: material contract relationships may proxy future revenue visibility or financing stress relief"
+      ],
+      "failed_predicates": [
+        "current rows mostly carry relation phrases and sparse economics; only one row has amount_or_duration evidence",
+        "normalized counterparty identity and revenue exposure are not present"
+      ]
+    },
+    "D3_search_integrity": {
+      "status": "reject",
+      "passed_predicates": [
+        "ad hoc novelty check inferred data_source=sec_contract_relation and found no strong near-neighbor at threshold 0.55; nearest score was 0.544",
+        "no recent exact in-flight conflict on this proposed scope was found before any reservation"
+      ],
+      "failed_predicates": [
+        "frozen-family metadata already contains SEC Item 1.01 contract-relation issuer-self, peer-target, and economic-terms attempts",
+        "existing reopen conditions require true counterparty identity, contract value/duration/revenue exposure, a different non-SEC-text source, or prospectively accumulated rows; this input satisfies none of those new-axis conditions"
+      ]
+    }
+  },
+  "decision": "reject_before_reservation",
+  "experiment_reservation": "not_attempted",
+  "failed_predicates": [
+    "authorization_source_contract_missing",
+    "v2_evidence_record_missing",
+    "row_level_timezone_missing",
+    "effective_security_mapping_missing",
+    "reopen_condition_not_met_for_sec_contract_relation_family"
+  ],
+  "quantitative_reopen_trigger": "Reopen this SEC contract-relation scout only after a V2-bound source contract/evidence record exists, 100% of rows carry explicit timezone-aware accepted_at or equivalent evidence-bound known_at, effective-dated CIK/ticker mapping covers the mapped candidate set, and either >=50 mapped rows contain normalized counterparty identity plus contract value/duration/revenue-exposure evidence or new prospectively accumulated daily rows after 2026-08-21 satisfy the already-registered contract-relation reopen conditions under the unchanged policy.",
+  "input_hashes": {
+    "data/non_ohlcv/sec_contract_relation_provenance/manifest.json": "AD06383E6A5CF423078CAE2F995EF0777EEE7C914CFBB1CA2D2DC20ED7CF01F1",
+    "data/non_ohlcv/sec_contract_relation_provenance/rows.jsonl": "DE0B47357453ACCA989D0A45661A0C61B2518BEE9D3A3312E1EC5CE4813AA27F",
+    "docs/frozen_families.jsonl": "590CCA04217F0F77A35D0E6A746A8CAB92960B4D4F40FEA79AED36E05C79A2E4",
+    "docs/experiment_registry.json": "CD04DF3BCD3BEB6D8F9E1B389EA12A1E7352EF0D5AF96CC74D77D53D14BA2BC8",
+    "docs/v2/current_state.md": "1BAC648AC594CCF4B9D124042C28A8D66DF2485B326638CAE68115E1B0CAB319",
+    "docs/v2/backlog.md": "48BC879A9507F27CF74AC3E7998F59268665FF199D3ABE84C27D64E0B2740B3A",
+    "data/v2/hourly_runs/20260821T0812Z_v2_v1_operational_decoupling.json": "5C65866F293EB05504AA8F7D80260A1B8662391E03DFD64C88B8ABF23CF5F7A9"
+  },
+  "verification": [
+    "scripts/check_experiment_novelty.py returned ok/no strong near-neighbor for the proposed description, nearest known family score 0.544, but frozen reopen predicates still failed.",
+    "scripts/experiment.py audit --lean-strict exited 0 with lean_strict_passed=true.",
+    "HEAD and origin/automation/edge-v2 both resolved to 557c0803929461045bc28181cb254cafeaabb25c before closeout.",
+    "Production behavior scan found no enabled V2 trading assignment outside explicit negative tests and prior receipts."
+  ],
+  "changed_files": [
+    "data/v2/hourly_runs/20260821T0905Z_v2_scout_zero_id_sec_contract_relation_preflight.json"
+  ],
+  "scientific_credibility_impact": "Positive containment: the first scout lane was exercised without consuming an ID, reading outcomes, or relaxing V2 evidence clocks; a tempting but previously explored SEC relation source was rejected before trial accounting pollution.",
+  "parity_impact": "none; no replay, daily adapter, shared policy, runtime path, or promotion parity claim was added",
+  "production_impact": "none",
+  "next_step": "Continue first-scout admission search with a different source-native axis, or first build the direct V2 source/evidence/mapping blocker for a source that also has a genuinely new reopen-satisfying alpha mechanism.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

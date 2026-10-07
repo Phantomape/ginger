@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": null,
+  "run_started_at_basis": "The task start instant was not captured; no process-wall-clock value was inferred retroactively.",
+  "run_finished_at": "2026-08-20T17:02:00Z",
+  "milestone": "M1",
+  "work_unit": "m1_decision_order_outcome_replacement_contracts",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "82ffb992669f2da4f4eabb1020e86b56b4c2fe11",
+  "changed_files": [
+    "quant/v2_contracts.py",
+    "quant/test_v2_decision_outcome_contracts.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260820T1702Z_m1_decision_order_outcome_replacement_contracts.json"
+  ],
+  "contract_scope": {
+    "records": [
+      "DecisionItem",
+      "DecisionRecord",
+      "OrderIntent",
+      "SettledOutcome",
+      "ReplacementValue"
+    ],
+    "cross_validation_chain": "validated CandidatePool -> complete DecisionRecord panel -> selected and risk-approved non-submitted OrderIntent -> SettledOutcome -> exact cash/SPY/QQQ/V1 ReplacementValue panel",
+    "complete_decision_surface_required": true,
+    "zero_candidate_decision_supported": true,
+    "direction_and_xor_size_frozen_before_intent": true,
+    "execution_cost_and_comparison_rules_frozen_before_results": true,
+    "causal_record_hashes_bound_downstream": true,
+    "unavailable_measurement_rows_preserved": true,
+    "revision_status_monotonic": true,
+    "broker_submission_supported": false,
+    "runtime_wiring": false,
+    "append_ledger_implemented": false,
+    "decision_context_clock_pit_contract_implemented": false,
+    "fill_reject_position_state_contracts_implemented": false,
+    "maximum_downstream_result_ceiling": "observed_only",
+    "canonical_forward_eligibility_started_at": null
+  },
+  "verification": [
+    ".venv/Scripts/python.exe -m pytest quant/test_v2_contracts.py quant/test_v2_research_contracts.py quant/test_v2_decision_outcome_contracts.py quant/test_v2_t0_declaration.py quant/test_v2_bias_register.py quant/test_v2_asset_inventory.py -q -> 139 passed in 3.68s",
+    "quant/v2_contracts.py and quant/test_v2_decision_outcome_contracts.py compiled successfully",
+    "docs/v2/decision_log.jsonl parsed line-by-line: 8 records",
+    "all pre-receipt data/v2 JSON files and rows parsed without errors",
+    "default-off JSON scan found no trade_enabled=true in data/v2 or docs/v2; production Python scan found no trade_enabled=True",
+    "git diff --check passed with only the repository line-ending warning",
+    "scripts/experiment.py audit exited 0 with repository_contracts_passed=true; overall passed=false reflects pre-existing historical experiment findings and no experiment ID was opened",
+    "independent adversarial review found no remaining P0/P1 after direction, session, security mapping, comparator identity, rule-freeze, causal record-hash, revision, horizon, capital-basis, and PIT-ceiling fixes"
+  ],
+  "scientific_credibility_impact": "Positive: the complete candidate surface now produces an explicit outcome-blind decision panel, only frozen selected and risk-approved decisions may create non-submitted intents, measurement rows preserve unavailable outcomes, revisions cannot erase settled evidence, and exact cash/SPY/QQQ/V1 comparisons bind the same outcome, capital basis, currency, rule identities, evidence clocks, security mappings, and causal record hashes. Opaque decision context and fill/position snapshots deliberately cap downstream conclusions at research_pit/observed_only.",
+  "parity_impact": "Positive contract foundation only: replay and daily adapters can share stable decision, intent, outcome, and comparator identities with exact execution/cost/comparison rule hashes and explicit execution sessions. No adapter, policy, replay, daily, broker, fill, position, or runtime path was wired in this unit.",
+  "production_impact": "none",
+  "bias_register_impact": "No V1 bias blocker was closed. The schemas provide complete-panel and immutable-revision primitives, but authoritative append-only ledgers, decision-context PIT, Fill/Reject/PositionState contracts, and runtime parity remain required release evidence.",
+  "containment": "An initial read-only check accidentally targeted the noisy V1 root checkout before the dedicated worktree was located and exposed historical outcome-like text. This round therefore remained zero-ID and schema-only; no alpha hypothesis, candidate selection, experiment, or result-dependent policy judgment was made.",
+  "pre_existing_untracked_files_preserved": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json"
+  ],
+  "next_step": "Continue M1 with append-only and idempotency schema-layer tests for decision, intent, outcome, and replacement stable keys, duplicates, conflicts, and correction chains.",
+  "user_decisions_needed": [
+    "choose whether V1 hourly alpha continues in parallel or freezes to settlement/read-only mode before V2 forward competition"
+  ]
+}

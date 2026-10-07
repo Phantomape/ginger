@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": null,
+  "run_started_at_basis": "The task start instant was not captured; no process-wall-clock value was inferred retroactively.",
+  "run_finished_at": "2026-08-21T05:57:20Z",
+  "milestone": "M1",
+  "work_unit": "m1_evidence_bound_session_clock_contract",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "1f99b38b78ab0531d65293c4a4dcf16e1318f0f4",
+  "changed_files": [
+    "quant/v2_contracts.py",
+    "quant/test_v2_contracts.py",
+    "quant/test_v2_research_contracts.py",
+    "quant/test_v2_decision_outcome_contracts.py",
+    "quant/test_v2_session_clock_contracts.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T0557Z_m1_evidence_bound_session_clock_contract.json"
+  ],
+  "contract_scope": {
+    "records": [
+      "SessionClock",
+      "UniverseEvent",
+      "CandidatePool",
+      "DecisionRecord",
+      "OrderIntent"
+    ],
+    "authoritative_anchor_enabled": "data_calendar",
+    "unsupported_anchor_kinds_fail_closed": [
+      "frozen_run_date",
+      "broker_session"
+    ],
+    "calendar_evidence_chain_required": "SourceContract -> EvidenceRecord -> SessionClock",
+    "bounded_complete_calendar_required": true,
+    "calendar_evidence_id_content_and_record_hash_bound": true,
+    "assignment_cutoff_and_session_open_inside_evidence_interval": true,
+    "calendar_pit_tier_frozen_and_propagated": true,
+    "process_wall_clock_fallback_forbidden": true,
+    "run_use_local_date_containment": true,
+    "universe_run_and_effective_roles_jointly_required": true,
+    "effective_session_cannot_precede_run": true,
+    "effective_at_session_containment": true,
+    "order_intent_execution_window_containment": true,
+    "multisession_gtc_supported": false,
+    "clock_append_only_identity": "session_clock_id",
+    "clock_bound_record_schema_version": 2,
+    "persisted_clock_bound_v1_instances_found": false,
+    "file_or_database_persistence": false,
+    "daily_or_replay_wiring": false,
+    "broker_or_execution_wiring": false,
+    "maximum_downstream_result_ceiling": "observed_only",
+    "canonical_forward_eligibility_started_at": null
+  },
+  "verification": [
+    ".venv/Scripts/python.exe -m pytest quant/test_v2_session_clock_contracts.py -q -> 29 passed in 0.53s",
+    ".venv/Scripts/python.exe -m pytest all eight V2 state/contract modules -q -> 183 passed in 5.82s",
+    "quant/v2_contracts.py and all five affected synthetic test modules compiled successfully",
+    "full quant suite diagnostic -> 3594 passed and 8 failed in untouched non-V2 modules; failures were outside this work unit and no related files were changed",
+    "docs/v2/decision_log.jsonl parsed line-by-line: 10 records",
+    "all pre-receipt data/v2 JSON and JSONL parsed: 13 JSON files and 0 JSONL rows",
+    "process-wall-clock scan found no datetime.now/date.today/utcnow/time.time use in quant/v2_contracts.py",
+    "default-off scans found no trade_enabled=true in data/v2 or docs/v2 and no trade_enabled=True in quant/v2_contracts.py",
+    "no persisted UniverseEvent/CandidatePool/DecisionRecord/OrderIntent JSON instances were found under data/v2 or docs/v2",
+    "scripts/experiment.py audit --lean-strict exited 0 with lean_strict_passed=true",
+    "git diff --check passed with only repository line-ending warnings",
+    "two independent adversarial re-reviews found no remaining actionable P0/P1/P2"
+  ],
+  "scientific_credibility_impact": "Positive schema foundation: trading-day ownership can no longer be supplied as a self-consistent pair of arbitrary labels. A clock now binds one authorized, complete, bounded calendar artifact and its causal evidence record; expired or late evidence, omitted or fabricated sessions, wrong early-close/DST bounds, research-to-canonical PIT inflation, cross-day clock reuse, backward effective sessions, single-role universe validation, exact-record substitution, and semantic ID drift fail closed. This makes the time axis and weakest-evidence ceiling auditable before outcomes exist.",
+  "parity_impact": "Positive contract foundation only: future daily and replay paths can share one normalized calendar hash, exact clock identity, run/effective/execution session semantics, and append-only retry rule. No ledger writer, runtime adapter, shared daily/replay reader, deterministic replay audit, broker session, fill/position state, exit clock, or order path was implemented, so runtime and execution parity remain unproved.",
+  "production_impact": "none",
+  "bias_register_impact": "No V1 bias blocker was closed. The process-wall-clock blocker remains open until every decision-bearing runtime path is migrated to this contract and replay/daily coverage is audited; survivor-universe, outcome-selection, winner-panel, replacement-value, and AI-authority blockers are unchanged.",
+  "containment": "This was a zero-ID, schema-only work unit. No alpha hypothesis, candidate selection, policy change, settled-value comparison, production state mutation, broker call, order, or trading-permission change occurred.",
+  "pre_existing_untracked_files_preserved": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json"
+  ],
+  "next_step": "Start M2 with one dynamic-PIT-universe vertical slice: persist complete membership, append-only event chains, and a manifest to a shared research ledger, then prove deterministic daily/replay parity.",
+  "user_decisions_needed": [
+    "choose whether V1 hourly alpha continues in parallel or freezes to settlement/read-only mode before V2 forward competition"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T10:00:30Z",
+  "run_finished_at": "2026-08-21T10:32:24Z",
+  "milestone": "M2",
+  "work_unit": "m2_external_universe_coverage_contract_core",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "290468da26b5688a74861100099147b3b5318ab6",
+  "selection_rationale": {
+    "scout_lane": "No admission-ready committed source remained after the prior SEC contract-relation rejection and this run's outcome-blind source audit; failed inputs were not retried and no experiment ID was reserved.",
+    "chosen_unit": "The next safe promotion-construction slice was a typed external source-population coverage contract and immutable universe-manifest reconciliation guard.",
+    "scope_boundary": "Promotion-only contract work; no CandidatePool, Hypothesis, promotion request, scout admission, experiment registry, persistence, runtime, broker, order, position, allocation, or permission path."
+  },
+  "implementation": {
+    "coverage_contract": "Freezes universe/scope/manifest identities, exact coverage SourceContract/EvidenceRecord identities, complete stable source-row id/hash population, mapped/unmapped/excluded dispositions, effective mapping evidence, chronology, counts, and research-only default-off ceilings.",
+    "evidence_binding": "Coverage EvidenceRecord decision_content must match enumeration_complete=true, reported row count, scope identity/hash, and the complete sorted row id/hash surface; mapping and mapping evidence must be known by data_cutoff, recorded by freeze, and cover membership_as_of.",
+    "ledger_binding": "The read-only ledger cross-validator composes full source/evidence validation and requires the deduplicated mapped (security_id, listing_id, mapping_sha256) set to equal every non-retired membership in the exact target manifest; evidence-backed known-empty requires empty active membership.",
+    "fixed_ceiling": "external_universe_coverage_status=unverified, pit_tier=research_pit, result_ceiling=observed_only, paper_live_eligible=false, parity_status=contract_only_unwired, trade_enabled=false"
+  },
+  "review": {
+    "initial_findings": [
+      "P1: manifest reconciliation could be called without source/evidence input validation",
+      "P1: mapping EvidenceRecord known_at was not explicitly constrained to data_cutoff"
+    ],
+    "fixes": [
+      "Made the ledger cross-validator require and internally compose the exact coverage/mapping input validators, and bound input_binding_sha256 into its output hash.",
+      "Required mapping evidence known_at <= data_cutoff and added an adversarial late-evidence regression case."
+    ],
+    "final_verdict": "Independent re-review found both P1 findings closed and no remaining P0/P1."
+  },
+  "verification": [
+    "14 external coverage adversarial tests passed.",
+    "44 focused external coverage plus universe-ledger tests passed.",
+    "232 complete quant/test_v2*.py tests passed in 17.52s.",
+    "Target production and test modules compiled successfully under the repository Python 3.11 virtual environment.",
+    "scripts/experiment.py audit --lean-strict passed with lean_strict_passed=true.",
+    "git diff --check passed with only existing LF-to-CRLF working-copy warnings."
+  ],
+  "changed_files": [
+    "quant/v2_universe_coverage.py",
+    "quant/v2_universe_ledger.py",
+    "quant/test_v2_universe_coverage_contracts.py",
+    "docs/v2/current_state.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1032Z_m2_external_universe_coverage_contract_core.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive: external coverage completeness and known-empty claims now require exact source evidence, conservation of every source row, causal effective mapping evidence, and exact reconciliation with committed active universe membership. Current mappings and self-reported empty surfaces cannot silently become PIT coverage.",
+  "parity_impact": "Positive contract-only foundation; no runtime adapter was added and existing daily/replay readers remain explicitly external-coverage unverified.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "No real authorized source-bound coverage snapshot or production universe ledger instance exists yet.",
+    "No admission-ready scout source currently satisfies authorization, row-level clock, effective mapping, nonzero reach, novelty, and reopen conditions together.",
+    "Shared runtime adapter, deterministic daily/replay parity, scale optimization, and external append anchor remain open before canonical/paper/promotion use."
+  ],
+  "next_step": "Materialize the first real forward-only source-bound coverage snapshot with a hashed authorization/source contract, row-level known_at, evidence-backed complete enumeration, and effective mapping; cross-check it against an actual universe manifest, then wire the shared runtime adapter. Return immediately to the bounded scout lane if a genuinely new admission-ready source axis appears.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

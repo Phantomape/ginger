@@ -1,0 +1,396 @@
+{
+  "acceptance_rule": "observed-only lead iff usable>=60, mean and median net returns positive, positive-name share>0.5, and mean excess versus SPY and QQQ positive",
+  "allowed_write_scope": [
+    "quant/experiments",
+    "data/experiments",
+    "experiments/tickets",
+    "experiments/cards",
+    "experiments/manifests",
+    "experiments/logs",
+    "docs/experiment_registry.json",
+    "data/v2/scouts/sec_8k_event_drift_h1_20260821",
+    "data/v2/hourly_runs",
+    "docs/v2"
+  ],
+  "alpha_promotion": {
+    "admission_class": "research_replay",
+    "candidate_id": "cand-d30469a04f82fbe89a06",
+    "candidate_snapshot_hash": "e99dfaa2d39cc23732d2f939935dd8233feef8a9e301ded25bd5afeb6170f862",
+    "panel_hash": "b55cd06c7cc3862df29177f811ee462f22ad650834d8d2642707dc24029b4715",
+    "panel_path": "data/v2/scouts/sec_8k_event_drift_h1_20260821/selection_panel.json",
+    "panel_sha256": "4b78e2bb1fb80b1225af58f12281d0b0215998263b972396be6d4385dc27bbfd",
+    "paper_live_eligible": false,
+    "preflight_hash": "232483818e9ea54e48a9d88aa9c4509c7ce26807231ddb78e3dfbf848338544f",
+    "promotion_hash": "02b9014cbf8b12353c19661199b524cf08e127a91a274382d11c12e26192a289",
+    "promotion_request_path": "data/v2/scouts/sec_8k_event_drift_h1_20260821/promotion_request.json",
+    "promotion_request_sha256": "34e90b09bf8c8cf461ed247af062b0094865c664fd2bc62b3d1bd724cbdf58e7",
+    "research_refs": [],
+    "result_ceiling": "observed_only",
+    "selected_evidence_grade": "lead",
+    "selection_scope_id": "scope-470ad9d6b6c520d29fd48c99",
+    "source_readiness_bindings": [
+      {
+        "pit_status": "canonical_pit",
+        "readiness_hash": "f1cbaaabe39e8b2c7ef2c4a61992a7dc29a94ae738eedeb9b4a4ded2db549e6d",
+        "source_contract_hash": "1b78b290885a0b9f695ef8d78ed5da799ba4c32739f6958070eb6ba96b02efed",
+        "surface_id": "fixed_zero_excess_prior_v1"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "3a807704b78ccaabcfe0428d007a064fd1b91bc48fe11b7823e746e67834e6ad",
+        "source_contract_hash": "dc91a65d88dff2c24d397c14ce958d716332f08335fd8f38a6d7ec9b25da583b",
+        "surface_id": "moomoo_rth_daily_evaluation_recipe_20260821"
+      },
+      {
+        "pit_status": "research_pit",
+        "readiness_hash": "af23c1f4805525a5975e831129e5f985bdf94169cb14fac61aded635aaa99c16",
+        "source_contract_hash": "e02c4c8c68ba5f59bd1aaf5fc30a4a1e972d7a01932e48f659c86d0f9e1364a0",
+        "surface_id": "v2_sec_edgar_8k_daily_index_20260820"
+      }
+    ]
+  },
+  "baseline_result_file": "data/backtests/backtest_results_warehouse_snapshot_standard_windows_post_mtm_20260712.json",
+  "card_file": "experiments/cards/exp-20260822-001.md",
+  "causal_components": [
+    "complete 219-row source disposition",
+    "111-security mapped deduplicated candidate pool",
+    "equal-weight all-candidate treatment",
+    "2026-08-21 RTH open-to-close horizon",
+    "10 bps round-trip cost",
+    "cash/SPY/QQQ comparators",
+    "observed-only ceiling"
+  ],
+  "change_type": "private_replay_scout",
+  "changed_variable": "presence_in_complete_prior_day_exact_8k_frame",
+  "claimed_at": "2026-08-22T02:01:48.081310+00:00",
+  "completed_at": "2026-08-22T02:06:23+00:00",
+  "created_at": "2026-08-22T02:00:49+00:00",
+  "evaluation_windows": [
+    {
+      "end": "2026-08-21",
+      "start": "2026-08-21"
+    }
+  ],
+  "experiment_id": "exp-20260822-001",
+  "experiment_uid": "expuid-eae39dc48b0743b6",
+  "hub_identity": {
+    "namespace": "ginger/experiments",
+    "repo_id": "ginger/experiments/exp-20260822-001",
+    "reservation_rule": "Reserve the ticket (atomic O_EXCL create) before writing runners, artifacts, data, or logs. Existing IDs are rejected across registry, JSONL, tickets, logs, artifacts, data, and runners.",
+    "reserved_at": "2026-08-22T02:00:49+00:00",
+    "scheme": "hf_hub_local_v1",
+    "slug": "sec_8k_event_drift_h1"
+  },
+  "hypothesis": "Within the complete frozen 2026-08-20 SEC exact-8-K source frame, an equal-weight basket of every mapped issuer bought at the 2026-08-21 regular-session open and sold at that session close has positive after-cost return and positive excess return versus SPY and QQQ because heterogeneous material-event filings are underreacted to between the prior close and the next regular session.",
+  "lane": "alpha_search",
+  "locked_variables": [
+    "candidate pool",
+    "2026-08-21 session",
+    "equal weights",
+    "10 bps cost",
+    "cash/SPY/QQQ comparators",
+    "H1 horizon"
+  ],
+  "mechanism_family": "complete_sec_8k_frame_next_session_underreaction",
+  "multiple_testing_risk_bucket": "minimal",
+  "must_not_touch": [
+    "quant/shared policy",
+    "orders",
+    "live configuration"
+  ],
+  "nearby_prior_experiments": [],
+  "new_evidence_type": "not_declared",
+  "novelty": {
+    "blocking_matches": [],
+    "data_source_unclassified": false,
+    "enforced": false,
+    "fingerprint": {
+      "data_source": "sec_text_event",
+      "field_tags": [
+        "8k",
+        "after",
+        "all",
+        "an",
+        "are",
+        "at",
+        "basket",
+        "because",
+        "between",
+        "bought",
+        "close",
+        "complete",
+        "cost",
+        "drift",
+        "equal",
+        "event",
+        "every",
+        "exact",
+        "excess",
+        "filings",
+        "frame",
+        "frozen",
+        "h1",
+        "has",
+        "heterogeneous",
+        "issuer",
+        "k",
+        "mapped",
+        "material",
+        "of",
+        "positive",
+        "prior",
+        "qqq",
+        "regular",
+        "return",
+        "session",
+        "sold",
+        "spy",
+        "that",
+        "to",
+        "underreacted",
+        "underreaction",
+        "versus",
+        "weight",
+        "within"
+      ],
+      "gate_shape": "other"
+    },
+    "in_flight_duplicate_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §7 并发重复 reserve: the novelty gate cannot see in-flight tickets, so reservation re-checks open proposed/claimed/running tickets from the last 7 days and blocks fingerprint near-duplicates (score >= 0.65). Coordinate via scripts/list_experiments.py and scripts/agent_mailbox.py instead of racing.",
+      "threshold": 0.65,
+      "window_days": 7
+    },
+    "nearest": [
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_after_hours_operational_8k_candidate_pool",
+        "reopen_condition": null,
+        "score": 0.474,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_fd_other_8k_positive_reaction_candidate_pool",
+        "reopen_condition": "Forward replacement-value rows or a materially sharper structured SEC event-quality field such as official-customer source, contract value, or disclosure-quality provenance.",
+        "score": 0.4667,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "issuer_8k_public_counterparty_relation_candidate_pool",
+        "reopen_condition": "A retry needs materially stronger relation identity evidence, such as CIK-level counterparty extraction from exhibits, a customer/supplier graph, deal target/holder role labels, or closed forward replacement rows. Do not sweep public-name alias lists, relation phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.4663,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "sec_item801_adverse_drift_inverse_candidate_pool",
+        "reopen_condition": "Do not activate inverse/short behavior without borrow, locate, gap-risk, and forward replacement-value evidence. If rejected, do not retry nearby Item 8.01 reaction thresholds on these windows without filing-body subtype data.",
+        "score": 0.4663,
+        "status": "single_attempt",
+        "trials": 1
+      },
+      {
+        "accept_rate": 0.0,
+        "data_source": "sec_text_event",
+        "family_key": "issuer_8k_governance_resolution_text_candidate_pool",
+        "reopen_condition": "A retry needs materially richer evidence, such as parsed counterparty/holder identity, board-seat count, ownership threshold, explicit standstill duration, evidence spans, or closed forward replacement rows. Do not sweep phrase lists, item codes, RS/close/volume guards, top-N, hold, cooldown, or notional on these frozen windows.",
+        "score": 0.466,
+        "status": "single_attempt",
+        "trials": 1
+      }
+    ],
+    "new_evidence_axis": null,
+    "observed_only_streak_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_probes": 3,
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 forward-row attribution: after 3 consecutive observed-only closes on one data_source population, a further observed-only probe needs materially more settled rows, a new data source, or a new gate shape.",
+      "source": "sec_text_event",
+      "streak": 0,
+      "streak_experiments": []
+    },
+    "override": false,
+    "recipe_lane_guard": {
+      "applicable": false,
+      "batch_exit_detected": false,
+      "blocked": false,
+      "matches": [],
+      "override_accepted": false,
+      "rule": "AGENTS.md §2.4 排名/枚举清单消费: consuming a ranked list or finite taxonomy with one fixed evaluation recipe, one item per ID, is loop unrolling — not new evidence. After the lane triggers, only a single pooled batch (once) or park is legal. Curated lanes: docs/recipe_lanes.jsonl."
+    },
+    "reopen_condition_guard": {
+      "applicable": true,
+      "blocked": false,
+      "matched_conditions": [],
+      "new_evidence_axis": {
+        "axis": null,
+        "categories": [],
+        "invalid_same_source_field_only": false,
+        "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+        "valid": false
+      },
+      "override_accepted": false,
+      "rule": "If a parked surface has a quantitative reopen_condition, alpha-lane reservations that target that surface are blocked until the numeric reopen checks pass, unless the ticket names a genuinely new data source or a new gate shape."
+    },
+    "routine_materialization_guard": {
+      "applicable": false,
+      "blocked": false,
+      "max_ids": 3,
+      "override_accepted": false,
+      "per_source_count": 0,
+      "recent_cross_surface_count": 0,
+      "recent_experiments": [],
+      "rule": "AGENTS.md §2.4 routine delta materialization: after 3 routine forward-ledger materialization IDs (one concrete surface, or same-shape across surfaces within 7 days), wire the materialization into run.py / the settlement pipeline once instead of reserving further manual IDs. Fault recovery is exempt.",
+      "window_days": 7
+    },
+    "saturated_source_axis": {
+      "axis": null,
+      "categories": [],
+      "invalid_same_source_field_only": false,
+      "rule": "For saturated (gate_shape, data_source) cells, legal override axes are limited to a new data source, a new gate shape, or materially more closed/settled forward rows. Same-source new fields/tags do not qualify.",
+      "valid": false
+    },
+    "saturated_source_override": false,
+    "source_saturation": {
+      "accept_rate": 0.0,
+      "accepts": 0,
+      "applicable": false,
+      "gate_shape": "other",
+      "max_accept_rate": 0.05,
+      "min_trials": 12,
+      "saturated": false,
+      "source": "sec_text_event",
+      "trials": 0
+    },
+    "warn": false,
+    "warn_threshold": 0.55
+  },
+  "owner": "codex-edge-v2-experiment",
+  "prediction": {
+    "success_probability": 0.2,
+    "expected_ev_delta": null,
+    "expected_pnl_delta": null,
+    "main_failure_modes": [
+      "benchmark_not_beaten",
+      "missing_price_rows",
+      "mixed_event_sign_cancels",
+      "same_day_reversal"
+    ],
+    "confidence_reason": "Material-event underreaction is plausible and the complete frame has 111 mapped issuers, but the event signs are intentionally unclassified and only one cross-section is consumed, so a positive all-name basket is unlikely.",
+    "recorded_at": "2026-08-22T02:00:29+00:00"
+  },
+  "prior_trial_count": 0,
+  "research_refs": [],
+  "reservation_intent": {
+    "key": "bbdd4c76c5b80a9634ca686fe308c33ba3ae7737cee8fd3f32d4ed5822fcab25",
+    "payload_hash": "bbdd4c76c5b80a9634ca686fe308c33ba3ae7737cee8fd3f32d4ed5822fcab25",
+    "schema_version": 1
+  },
+  "result": {
+    "decision": "rejected",
+    "artifact": "data/experiments/exp-20260822-001/exp_20260822_001_sec_8k_event_drift_h1.json",
+    "artifact_sha256": "ec828033d5319edeafd818a4981957008455270b7ab45c4f4098802d3eb33c0c",
+    "summary": {
+      "candidate_count": 111,
+      "usable_security_count": 111,
+      "missing_or_error_count": 0,
+      "round_trip_cost_bps": 10.0,
+      "mean_after_cost_return": 0.003060817971089958,
+      "median_after_cost_return": -0.001925069380203536,
+      "positive_name_share": 0.42342342342342343,
+      "benchmark_open_to_close_returns": {
+        "SPY": -0.0004307812805951494,
+        "QQQ": -0.002502691441913729
+      },
+      "mean_excess_vs_spy": 0.0034915992516851074,
+      "mean_excess_vs_qqq": 0.005563509413003687,
+      "acceptance_checks": {
+        "usable_security_count_gte_60": true,
+        "mean_after_cost_return_positive": true,
+        "median_after_cost_return_positive": false,
+        "positive_name_share_gt_half": false,
+        "mean_excess_vs_spy_positive": true,
+        "mean_excess_vs_qqq_positive": true
+      },
+      "accepted": false,
+      "decision": "rejected"
+    },
+    "result_ceiling": "observed_only",
+    "paper_live_eligible": false,
+    "admission_class": "research_replay",
+    "selected_evidence_grade": "lead"
+  },
+  "revision_manifest_file": "experiments/manifests/exp-20260822-001.json",
+  "single_causal_variable": "all_mapped_sec_8k_h1_equal_weight_drift",
+  "status": "rejected",
+  "ticket_file": "experiments/tickets/exp-20260822-001.json",
+  "trial_family": "v2_sec_8k_complete_frame_h1_scout",
+  "trial_variant_id": "exp-20260822-001",
+  "alpha_promotion_claim_receipt": {
+    "schema_version": 1,
+    "record_type": "alpha_promotion_claim_receipt",
+    "experiment_id": "exp-20260822-001",
+    "experiment_uid": "expuid-eae39dc48b0743b6",
+    "promotion_hash": "02b9014cbf8b12353c19661199b524cf08e127a91a274382d11c12e26192a289",
+    "promotion_request_sha256": "34e90b09bf8c8cf461ed247af062b0094865c664fd2bc62b3d1bd724cbdf58e7",
+    "claimed_validation_at": "2026-08-22T02:01:48.081310+00:00",
+    "research_artifact_snapshots": [
+      {
+        "locator": "data/v2/scouts/sec_8k_event_drift_h1_20260821/candidate_pool.json",
+        "sha256": "8819ade6b6e5d3e55de83b5d83ad5429b638650e6f4f8764059903c9faabaf0c",
+        "snapshot_path": "data/alpha_search/promotion_artifact_snapshots/8819ade6b6e5d3e55de83b5d83ad5429b638650e6f4f8764059903c9faabaf0c"
+      },
+      {
+        "locator": "data/v2/scouts/sec_8k_event_drift_h1_20260821/decision_record.json",
+        "sha256": "7285082e229bfd75ae7ade1af3165e94a0705e29a5e4a6cc1523462047e35146",
+        "snapshot_path": "data/alpha_search/promotion_artifact_snapshots/7285082e229bfd75ae7ade1af3165e94a0705e29a5e4a6cc1523462047e35146"
+      },
+      {
+        "locator": "data/v2/scouts/sec_8k_event_drift_h1_20260821/market_data_recipe.json",
+        "sha256": "4be0e073c9e16755d07cc1298c21f4768e3cf1a02be3b2862e943142c796d5f4",
+        "snapshot_path": "data/alpha_search/promotion_artifact_snapshots/4be0e073c9e16755d07cc1298c21f4768e3cf1a02be3b2862e943142c796d5f4"
+      },
+      {
+        "locator": "data/v2/scouts/sec_8k_event_drift_h1_20260821/source_disposition_manifest.json",
+        "sha256": "9d9c95bd810edcc25fb05adcfbff6c24688f024e3218ebd8ca0db143c80fd80f",
+        "snapshot_path": "data/alpha_search/promotion_artifact_snapshots/9d9c95bd810edcc25fb05adcfbff6c24688f024e3218ebd8ca0db143c80fd80f"
+      },
+      {
+        "locator": "data/v2/source_bundles/sec_edgar_8k/20260820/20260821T125627Z/bundle.json",
+        "sha256": "bca07f689e60823825119301126141050d2ccfc6d23ad7ee639c55bb9ad00d88",
+        "snapshot_path": "data/alpha_search/promotion_artifact_snapshots/bca07f689e60823825119301126141050d2ccfc6d23ad7ee639c55bb9ad00d88"
+      },
+      {
+        "locator": "data/v2/universe/sec_edgar_8k/20260820/20260821T125627Z/materialization.json",
+        "sha256": "20dd08b550564ca6c84666128dca0e8ce54257c3de4d061cc87dcd30822305a4",
+        "snapshot_path": "data/alpha_search/promotion_artifact_snapshots/20dd08b550564ca6c84666128dca0e8ce54257c3de4d061cc87dcd30822305a4"
+      }
+    ],
+    "receipt_hash": "b0e67298fe1f9e129b0cbe707c499eb3651f5e6cf3824edb10bae6f9ce997e1f"
+  },
+  "decision": "rejected",
+  "artifact": "data/experiments/exp-20260822-001/exp_20260822_001_sec_8k_event_drift_h1.json",
+  "production_impact": {
+    "research_only": true,
+    "orders_changed": false,
+    "ranking_changed": false,
+    "sizing_changed": false,
+    "exit_levels_changed": false,
+    "shared_policy_changed": false,
+    "trade_enabled": false
+  },
+  "updated_at": "2026-08-22T02:06:23+00:00"
+}

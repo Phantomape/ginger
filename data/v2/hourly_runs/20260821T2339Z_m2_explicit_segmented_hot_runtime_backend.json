@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T23:00:44.120Z",
+  "run_started_at_basis": "Inferred from the recorded 2026-08-21T22:00:44.120Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T23:48:40Z",
+  "milestone": "M2",
+  "work_unit": "m2_explicit_segmented_hot_runtime_backend",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "dc86311026c11d01c8dcddecb9b79273f16321d6",
+  "selection_rationale": {
+    "priority": "No V2 experiment was open or reserved, no admission-ready source axis had changed after the prior outcome-blind rejection, and the earliest safe unchecked M2 handoff was the explicit segmented-hot runtime backend.",
+    "chosen_unit": "Wire the existing strictly validated segmented hot-tip reader into the source-bounded SEC runtime and observation aliases, then prove exact legacy/segmented membership parity without opening cold lineage or a fallback path.",
+    "scope_boundary": "Research-only source-bounded universe consumption. No source population, mapping, CandidatePool, hypothesis, outcome, signal, strategy, scheduler, Engine-0 policy, broker, order, allocation, evidence tier, canonical eligibility, production authority, rotation cadence, or trading permission changed."
+  },
+  "outcome_access_containment": {
+    "status": "contained_zero_id",
+    "detail": "An early read-only git-log inspection in the unrelated dirty primary checkout displayed archived V1 performance text from a commit subject.",
+    "containment": "The engineering unit had already been fixed by the committed V2 backlog and prior receipt. No displayed value was used, no V2 outcome, candidate, treatment, experiment, or promotion was selected, no experiment ID was reserved, and all implementation and verification stayed in the dedicated automation/edge-v2 worktree."
+  },
+  "implementation": {
+    "explicit_backend_contract": "Runtime adapter v3 and observation v2 require backend, storage location, manifest_id, and timezone-aware as_of. Only legacy_jsonl_v1 and segmented_hot_v1 are accepted; there is no default or storage-path auto-detection.",
+    "single_hot_state": "Each segmented adapter invocation calls load_segmented_v2_universe_state exactly once, passes that same validated state to both the persisted SEC materialization graph validator and shared membership resolver, and accepts only the current hot-tip manifest.",
+    "no_fallback": "The segmented route does not call exact-generation recovery, traverse superseded lineage, or fall back to legacy after missing or corrupt hot records. Unknown backends fail before envelope or storage access.",
+    "identity_contract": "Adapter and observation identities bind the explicit backend plus storage capability, checkpoint, tail, and tip-manifest hashes while excluding absolute paths and consumer labels. The legacy and segmented routes retain the same membership semantic snapshot.",
+    "shared_resolver": "The legacy path reader and segmented state reader now feed one membership projection core, avoiding a second ledger load while preserving manifest/as-of, PIT, state, order, population, research-only, and default-off validation.",
+    "observation_handoff": "Daily and replay remain true aliases and forward the explicit backend contract through one adapter call. The observation revalidates backend/hot-state identity and stable machine errors, but does not invoke Engine-0 or establish a market decision clock.",
+    "stable_damage_boundary": "Non-string backend identities and non-string segmented storage capability markers now fail with stable V2 errors instead of leaking Python TypeError or KeyError.",
+    "compatibility_boundary": "The required signature is an intentional pre-Engine-0 API break. Repository-wide Python call-site review found no unmigrated consumer outside the definitions, observation handoff, and updated tests."
+  },
+  "reproduction": {
+    "platform": "Windows PowerShell",
+    "interpreter": ".venv\\Scripts\\python.exe (Python 3.11.1)",
+    "focused_sec_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant/test_v2_sec_8k_universe.py",
+    "invalid_head_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider quant/test_v2_universe_ledger_segments.py::test_invalid_head_storage_marker_fails_before_checkpoint_load",
+    "full_v2_command": ".\\.venv\\Scripts\\python.exe -B -m pytest -p no:cacheprovider (Get-ChildItem -File quant\\test_v2*.py | Select-Object -ExpandProperty FullName)",
+    "audit_command": ".\\.venv\\Scripts\\python.exe -B scripts\\experiment.py audit --lean-strict"
+  },
+  "verification": [
+    "49 focused SEC runtime, materialization, and observation tests passed in 37.19s.",
+    "Two invalid segmented HEAD storage-capability tests passed in 3.55s.",
+    "An independent final review ran 92 ledger and segmented-ledger tests successfully.",
+    "All 347 quant/test_v2*.py tests passed on the final code diff in 136.43s.",
+    "The checked-in 111-member SEC graph retained exact legacy/segmented membership identity across copied source, envelope, and segmented roots plus timezone-offset-equivalent as_of values.",
+    "One-load hot-state, true daily/replay aliases, no cold traversal, no backend auto-detection, and no silent fallback regressions passed for full and compact segmented stores.",
+    "Missing current checkpoints, unknown backend values, malformed backend identity, and non-string storage capability markers returned stable machine errors.",
+    "Target modules imported successfully without bytecode writes.",
+    "scripts/experiment.py audit --lean-strict passed before and after implementation.",
+    "All 33 present V2 receipt JSON files and all 25 decision-log JSONL rows parsed; every receipt remained default-off, and git diff whitespace validation passed with line-ending warnings only.",
+    "Independent code and contract reviews reported P0=0 and P1=0; final code review also reported P2=0."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger.py",
+    "quant/v2_universe_ledger_segments.py",
+    "quant/v2_sec_8k_universe.py",
+    "quant/v2_sec_8k_runtime_adapter.py",
+    "quant/v2_universe_observation.py",
+    "quant/test_v2_sec_8k_universe.py",
+    "quant/test_v2_universe_ledger_segments.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T2339Z_m2_explicit_segmented_hot_runtime_backend.json"
+  ],
+  "decision_log_change": "d-0025_adopt_explicit_segmented_hot_runtime_backend",
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T2004Z_noop_concurrent_m2_rotation_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but bounded: the checked-in 111-member source frame has machine-checked semantic identity across the explicit legacy reader and compact segmented-hot reader under equivalent timezone representations, copied paths, and daily/replay aliases. Deterministic synthetic fixtures separately cover full and compact hot stores plus fail-closed damage. No alpha, outcome, strategy, market-scale coverage, or promotion evidence was created.",
+  "parity_impact": "Positive source-bounded research parity only. The runtime and observation consumers can explicitly use one validated segmented hot-tip state without cold or legacy fallback, but the immutable source and manifest remain contract_only_unwired; scheduler, Engine-0, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Select and authorize a repository-external immutable or append-only anchor before any canonical eligibility claim; an internally self-hashed sidecar cannot detect rollback to an older valid HEAD.",
+    "Use real market population, churn, retention, and SLO evidence before choosing an automatic rotation cadence or absolute scale limit.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline.",
+    "Wire a production scheduler and policy consumer only after the source, universe, and Engine-0 contracts are eligible; this unit does not authorize those connections."
+  ],
+  "next_step": "Prepare the repository-external append-anchor decision packet and deployment contract; implement only after an immutable target, credentials boundary, and deployment owner are explicitly selected.",
+  "user_decisions_needed": [
+    "Before external anchoring can be implemented, select and authorize the external immutable or append-only target and its deployment owner; no decision is needed for this completed runtime unit."
+  ],
+  "made_by": "edge-v2-automation"
+}

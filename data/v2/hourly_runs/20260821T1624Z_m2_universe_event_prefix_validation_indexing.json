@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "record_type": "v2_hourly_run_receipt",
+  "run_started_at": "2026-08-21T16:00:36Z",
+  "run_started_at_basis": "Hourly wake inferred from the recorded 2026-08-21T15:00:36.486Z prior automation start plus the configured one-hour interval; the exact process-start clock was not captured before the read-only startup audit.",
+  "run_finished_at": "2026-08-21T16:24:21Z",
+  "milestone": "M2",
+  "work_unit": "m2_universe_event_prefix_validation_indexing",
+  "outcome": "completed",
+  "experiment_id": null,
+  "trade_enabled": false,
+  "source_commit": "99f83bbf34b859cf202528c594fd46b6966e6b9a",
+  "selection_rationale": {
+    "priority": "The previous committed handoff named the O(n^2) universe validation path as the earliest clean promotion-construction unit before market-scale expansion.",
+    "scout_lane": "No committed candidate-source input changed after the prior outcome-blind readiness audit, so its no-admission-ready-axis conclusion was reused. No outcome was read and no experiment ID was reserved.",
+    "chosen_unit": "Remove the extra quadratic event-prefix and manifest/clock identity history rescans in strict ledger load/write paths, add deterministic scale guards, and preserve every contract boundary.",
+    "scope_boundary": "Research-only universe ledger validation performance and error equivalence only; no universe membership, source evidence, feature, candidate, signal, outcome, policy, scheduler, broker, order, allocation, parity status, evidence tier, or trading authority changed."
+  },
+  "implementation": {
+    "event_prefix_index": "Loader and writer validate each encountered UniverseEvent, then classify immutable event_id identities through an event_id-to-semantic_hash index instead of repeatedly invoking the generic full-prefix append-only classifier.",
+    "error_equivalence": {
+      "loader_same_id_same_semantic": "duplicate_physical_universe_event",
+      "loader_same_id_changed_semantic": "immutable_key_conflict",
+      "writer_same_id_same_semantic": "idempotent duplicate with no event row written",
+      "writer_same_id_changed_semantic": "universe_event_id_conflict"
+    },
+    "manifest_identity_index": "Strict loading uses a manifest_id set and an incrementally extended session-clock binding registry, removing repeated scans of all prior manifests while retaining exact four-field clock identity bindings.",
+    "retained_guards": "Every manifest still receives exact shape/hash, complete event population, membership projection, immediate previous-event chain, input registry, causal clock, PIT ceiling, outcome-blind, research-only, paper/live-ineligible, and trade_enabled=false validation.",
+    "claim_boundary": "The unit removes extra O(E^2) event-row prefix and O(M^2) manifest/clock identity rescans. It does not claim a long-lived multi-manifest ledger is linear in logical events because each manifest still carries and validates cumulative event IDs, registries, and memberships, and the writer still atomically rewrites the whole file."
+  },
+  "scale_measurement": {
+    "metric": "Combined quant.v2_universe_ledger and quant.v2_contracts validate_universe_event invocations during one strict load",
+    "fixture": "data/v2/universe/sec_edgar_8k/20260820/20260821T125627Z/universe_ledger.jsonl",
+    "fixture_sha256": "b6d77be6c748d20491c40001950f6bbe3930d2a4dd4c3f7522952c88a20411da",
+    "fixture_bytes": 389472,
+    "event_count": 111,
+    "manifest_count": 1,
+    "before_calls": 6437,
+    "after_calls": 222,
+    "calls_removed": 6215,
+    "reduction_pct": 96.5512,
+    "improvement_ratio": 28.9955,
+    "wall_clock_threshold_used": false,
+    "deterministic_regression": "A 3-to-6 event scale test instruments both loader and empty-ledger writer validation bindings and requires no more than 2x validation work when the population doubles."
+  },
+  "verification": [
+    "3 focused scale/conflict/error-taxonomy tests passed in 1.21s.",
+    "32 complete universe-ledger tests passed in 9.36s.",
+    "91 ledger, external-coverage, SEC materialization/runtime, and observation tests passed in 21.14s.",
+    "279 complete quant/test_v2*.py tests passed in 26.40s.",
+    "The checked-in 111-event SEC ledger strict load reproduced the after-call budget of 222 against the frozen 389472-byte fixture.",
+    "The persisted 111-membership semantic hash and pre-Engine-0 observation hash remained e8663c0049b74e19397a475026c3efdca193b5f2929e84ba78e2f75803c0dd38 and aa6c8de67a8b2af052ad5c5eaee493932fa48990df768046aa9b40a0334342ae.",
+    "Target ledger and test modules compiled successfully.",
+    "scripts/experiment.py audit --lean-strict passed.",
+    "All 26 observed V2 hourly receipts and 20 durable decision rows parsed; decision IDs were unique.",
+    "Production V2 AST scan found zero trade_enabled=True assignments.",
+    "git diff --check passed with line-ending warnings only.",
+    "Independent final re-review reported P0=0, P1=0, and P2=0."
+  ],
+  "changed_files": [
+    "quant/v2_universe_ledger.py",
+    "quant/test_v2_universe_ledger.py",
+    "docs/v2/current_state.md",
+    "docs/v2/backlog.md",
+    "docs/v2/decision_log.jsonl",
+    "data/v2/hourly_runs/20260821T1624Z_m2_universe_event_prefix_validation_indexing.json"
+  ],
+  "preserved_unrelated_untracked_files": [
+    "data/v2/hourly_runs/20260819T1614Z_noop_concurrent_duplicate_audit.json",
+    "data/v2/hourly_runs/20260820T1610Z_noop_concurrent_alpha_audit.json",
+    "data/v2/hourly_runs/20260821T0709Z_noop_concurrent_m2_ledger_audit.json",
+    "data/v2/hourly_runs/20260821T0807Z_noop_concurrent_scout_protocol_handoff_audit.json",
+    "data/v2/hourly_runs/20260821T1306Z_noop_concurrent_m2_materializer_audit.json",
+    "data/v2/hourly_runs/20260821T1615Z_noop_concurrent_alpha_audit.json"
+  ],
+  "scientific_credibility_impact": "Positive but engineering-scoped: strict source-bounded universe validation can process a larger event batch without hidden quadratic prefix revalidation, while immutable identity conflicts, complete population/chain reconstruction, evidence ceilings, and outcome-blind/default-off guards remain unchanged. This produces no alpha or canonical evidence.",
+  "parity_impact": "None in status or semantics. Existing source-bounded daily/replay and pre-Engine-0 observation identities remained byte-stable; Engine-0, scheduler, production/backtest, execution, canonical, and paper/live parity remain unclaimed.",
+  "production_impact": "none",
+  "remaining_blockers": [
+    "Design checkpoint/segmentation and damage-recovery semantics for cumulative multi-manifest event/registry/membership surfaces and whole-file rewrite before long-lived market-scale use.",
+    "Establish a repository-external append anchor before any canonical eligibility claim.",
+    "Build a dynamic PIT market universe and market decision clock before a truthful M3 Engine-0 baseline.",
+    "Add a richer authorized SEC item/text semantic axis or another registered source axis before reserving a scout beyond coarse exact-8-K occurrence."
+  ],
+  "next_step": "Specify the minimal checkpoint/segmentation contract and adversarial recovery test for cumulative multi-manifest history; if a genuinely new admission-ready source axis appears first, run bounded outcome-blind zero-ID preflight.",
+  "user_decisions_needed": [],
+  "made_by": "edge-v2-automation"
+}

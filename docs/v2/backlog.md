@@ -1,66 +1,55 @@
 # V2 Backlog
 
-> 依赖顺序：identity -> clock -> source contract -> universe -> shared policy -> validation -> forward wiring -> allocator -> activation review。
-> 每轮取最靠前的一项可完成单元。完成后移入 current_state 或 decision log。
+> Promotion 依赖顺序：identity -> clock -> source contract -> universe -> shared policy -> validation -> forward wiring -> allocator -> activation review。
+> 这不是排他的小时队列；M1 scout kernel 就绪后，bounded research scout 与 M2-M5 并行。工作排序遵守
+> `P0/P1 containment -> unaffected active experiment -> admission-ready scout -> direct scout blocker -> promotion construction`。
 
-## M0（进行中）
+## M0（完成）
 
-- [x] 建立 `docs/v2/current_state.md`、`backlog.md`、`decision_log.jsonl`、`data/v2/hourly_runs/` receipt（2026-08-18 本轮）
-- [ ] T0 用户确认（提议 2026-08-18，见 d-0002）
-- [ ] V1 资产清单（机器可读；每项归入 reuse_directly / reuse_after_contract_upgrade / migrate_as_zero_weight_challenger / legacy_diagnostic_only / retire 五类之一）
-- [ ] 偏差登记表（V1 已知偏差：静态股票池、事后权重、只记赢家、幸存者名单等，逐条列出并标注 V2 对策）
+- [x] 建立 `docs/v2/current_state.md`、`backlog.md`、`decision_log.jsonl`、`data/v2/hourly_runs/` receipt（2026-08-18）
+- [x] 建立专用 `automation/edge-v2` worktree，并固定已提交源基线（2026-08-19）
+- [x] V1 资产清单：25 个功能资产组已机器校验并唯一归入五类（2026-08-19）
+- [x] 偏差登记表：6 类 V1 偏差已绑定证据、对策、严重度、阻断范围与定量解除条件（2026-08-19）
+- [x] T0 用户确认：`2026-08-18`，不追溯升级既有证据（2026-08-19 本地；见 `d-0005`）
 
-## M1（M0 后）
+## M1（完成）
 
-- [ ] `SourceContract`、`EvidenceRecord`、`UniverseEvent` 初始 schema + 校验
-- [ ] `ResearchClaim`、`HypothesisCandidate`、`CandidatePool` 初始 schema
-- [ ] `DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 初始 schema
-- [ ] append-only 与幂等测试（schema 层）
-- [ ] 时钟合同：交易日归属锚定数据日历 / 冻结 run date，禁止进程壁钟（V1 已有三次壁钟教训）
+- [x] `SourceContract`、`EvidenceRecord`、`UniverseEvent` 初始 schema + 校验（2026-08-19 本地）
+- [x] `ResearchClaim`、`HypothesisCandidate`、`CandidatePool` 初始 schema（2026-08-19 本地）
+- [x] `DecisionRecord`、`OrderIntent`、`SettledOutcome`、`ReplacementValue` 初始 schema（2026-08-20 本地）
+- [x] append-only 与幂等测试（schema 层；2026-08-20 本地）
+- [x] 时钟合同：以完整、证据绑定的数据日历冻结 run date / session，禁止进程壁钟；其余未建 typed evidence 的锚 fail closed（2026-08-20 本地）
 
-### 直接阻断 forward 的插队修复
+## Research Scout Lane（当前最高优先级）
 
-- [x] iBorrowDesk 抓取管道 www 主机故障修复（exp-20260825-001, accepted）:裸域 /api 断连自 ~07-21 冻结 PIT 借券归档;已修复并验证 10/10 定向 + 89/150 shard;每日 run.py Step 1.65 自动续传补齐
-- [x] readiness borrow 覆盖缺口修复（exp-20260826-001, accepted）：exposure observer 在 first_seen 冻结前对本轮新增 short 侧 ticker 定向预抓取（fail-open）;Step 1.65 预算 150→60 留限流余量;转化检查=下一个每日 batch 的 borrow_coverage
-- [x] 转化确认后消耗 pair-build 资格（exp-20260827-001, observed_only, 2026-08-27）：首个 measurement_ready batch 当轮 admit 为 dollar-neutral basket；sleeve 默认关每日接线；验收=冻结 forward 合同（≥20 baskets / ≥10 dates），首结算 ~2026-09-10
+- [x] 协议解除 M0-M5 串行闸门：bounded `research_pit / private_replay_scout` 在 M1 kernel 后可运行，结论硬封顶 `observed_only`（2026-08-21）
+- [x] 首个 V2 scout zero-ID preflight：2026-08-20 SEC exact-8-K complete frame 的 219 行 disposition、111 个 mapped-only CandidatePool、DecisionRecord、selection panel 与 promotion 已在 outcome-blind 状态冻结并通过 D0-D3（2026-08-21 本地）
+- [x] 首个 V2 scout reserve/run/close：`exp-20260822-001` 固定 2026-08-21 RTH H1、111 个等权证券、10 bps 成本和 cash/SPY/QQQ；111/111 可用，均值与 benchmark excess 为正，但 median=-0.1925%、positive share=42.34%，六项规则失败两项，关闭为 `rejected`（2026-08-21 本地）
+- [ ] 下一 scout：不得在 `exp-20260822-001` 的同一 frame 上做成本、持有分钟、item code、子集或 event-sign 阈值近邻搜索；只接受独立冻结的更晚 complete frame，或结果前可用的独立事件符号源，仍须 preflight/freeze/reserve 后才能读 outcome
 
-- [x] structured-news exposure 新行冻结本地 `first_seen_at`，旧行不倒填；同批两侧密度/集中度/重叠与 PIT indicative borrow readiness 每日幂等落盘（exp-20260824-002）
-- [x] 零 ID、outcome-blind 重建每日快照的保守历史 `known_at`：精确 Git 路径只有 5 个独立 entry-ready 时点 / 3 个 borrow-filtered；research-PIT EOD 路径有 20 个 entry-ready、16 个 H10、2 个 borrow-filtered，均未过预声明门槛（`data/alpha_search/news_pair_historical_reconstructability_20260824.json`）
-- [ ] research-PIT EOD 路径达到 20 个 H10 后才允许一次冻结的延迟/成本快速否证；不得把 20 降到当前 16，也不得据此声称 short 可执行
-- [ ] 仅在历史无法还原或作为最终确认时等待真实 `measurement_ready` batch；20 个 closed forward baskets / 10 个 decision dates 之前不做 forward alpha 接受判断
-- [ ] 任何 live short review 前补真实 broker locate contract；iBorrowDesk 不得升级冒充 locate
+## M2（并行 Promotion Construction）
 
-### SEC selling-holder overhang 快速转化链
-
-- [x] outcome-blind 建立 S-1/F-1 primary-document economics sidecar，并用交易前身份/流动性把 5,065 份资格压缩为 181 份候选；冻结 118 行 selling-holder roster（38/45/35）
-- [x] `exp-20260824-003` 完成一次固定口径 H10 market-hedged 私有回放：三窗口、双倍成本、集中度与完整性全部通过；结果仅为 observed-only positive lead
-- [x] outcome-blind 连接同一 registration 的 SEC `EFFECT`、424B3/424B4：118 行中 111 行有精确激活证据；重新按激活时点资格冻结 83 行（31/23/29）
-- [ ] 定义并接入真实 broker locate / short-availability 合同；没有逐 ticker 决策时点 locate 就不得 paper/live
-- [x] `exp-20260824-004` 只改 decision clock 做 EFFECT/424 独立确认并明确失败：三窗全负、合计 -$2,965.18、双成本 -$4,441.18；实际供给过hang 解释 rejected
-- [ ] 建立 unchanged acceptance-time 实时 observer + 决策时点真实 locate 证据，累计 settled forward replacement value；在此之前不得将 exp-003 接入 paper/live
-- [ ] 历史近邻回放线关闭：禁止 EFFECT-only/424-only 切片，以及 form/parser/clock/amount/liquidity/cooldown/cost/borrow/hold/hedge/sample 调参
-
-### Phase-2 estimate-revision 重开链（已重开，2026-08-29）
-
-- [x] 结算人口修复（exp-20260811-001）；h20 于 2026-08-19+ 日历成熟（08-28 实测 518/30）
-- [x] cash-conflict bar 合同修约（exp-20260828-001, accepted）：不可达罕见事件计数 → trace 能力条件（ok sessions>=30 且终身结构化冲突>=1）；reopen_readiness phase2 lane 首次 ready，其余 lane 不变
-- [x] conversion_debt 消费（2026-08-29, d-0012, 零 ID）：全新 outcome-blind D0-D3 scope `phase2-estimate-revision-20260829` 实际选出候选 → **Phase 2 重开**；3 候选全 pass、selector 选中 exploration breadth 候选
-- [x] 被选候选 cand-c748224bb9bc0f6a9118 当轮 park：feed 日批时钟使孤立对照仅 8 决策（vs 1510 breadth 成员），对照腿结构性不可达；blocker+定量重开条件落 `data/alpha_search/phase2_estimate_revision_breadth_reachability_20260829.json`
-- [x] exploitation 候选 quiet-tape 反证已执行并 REJECTED（exp-20260831-001, 2026-08-31, d-0013）：密度检查通过（802 conditioned / 656/427/142 settled）→ 单候选 scope 复验 → research_pit 升级（updated_at 保守重建 620/802）→ F1-F6 冻结反证 4 挂 2 过；already_priced 命中预测
-- [x] adjacent 注册候选 `cand-68d2f5dad2f903488307`（事前 overshoot 部分回吐）：干净 forward 反证合同已冻结（d-0014, 2026-08-31, 零 ID）——到达率检查通过（冻结规则下干净 stock 已 57 个 / 20 up / 37 down），bars B1-B5 从 08-29 注册措辞逐条冻结，样本 gate ≥30/gated horizon + ≥10/腿；现为 blocked_watch_item 等结算，保守 ETA h5 ~09-08 / h10 ~09-11，trigger 到达即 reserve→claim→run（≤24h）。合同：`data/alpha_search/phase2_adjacent_overshoot_clean_forward_contract_20260831.json`
-- [ ] adjacent 合同 trigger 监视：每日 outcome append 后常数时间重算干净 conditioned settled 计数；达 bar 前不得碰该候选，不得读干净切片结果值（09-01 recount：h5 24/30、h10 0/30，未触发）
-- [ ] 禁止：quiet-tape 包络阈值/窗口调参重试（重开条件见 d-0013）；在 daily-batch 时钟上重定义 breadth 阈值；动其余五项数值 bar
-
-### 前台等待事件 trigger（d-0015，2026-09-01）
-
-- [x] moomoo capital-flow DAY long-only preflight（d-0015, 零 ID）：全轴机器关闭，no_candidate close 落 `data/alpha_search/moomoo_capital_flow_day_longonly_preflight_20260901.json`；fallback prediction_market_postfix 同样 not_ready（指纹停滞）
-- [ ] 展示污染围栏（第 3 例）：top1 main-inflow accumulation 机制只在 exit_date>2026-08-31 的 position 上评估；重开 trigger = 干净 closed ≥20 跨 ≥10 entry dates（sleeve state 身份字段常数时间计数，ETA ~11 月中）；期间禁读 sleeve PnL 字段
-- [ ] 事件 trigger 队列（触发即 reserve→claim→run ≤24h）：d-0014 bar（~09-08..09-11）→ 冻结反证合同；negative-side 1508 re-read（1222/1508，~09-08）→ 冻结再读合同；pair 首结算（~09-10）→ 日常 observer 结算；prediction-market 计数（停滞）
-- [ ] trigger 全 pending 期间：小时单元只做常数时间 recount，no-op suppressed 退出；不开新 surface / 修复 lane
-- [ ] （管理单元候选，非插队）`daily_news_structured_event_observations_*.jsonl` 无结算消费者，退役/合并评估
+- [x] 研究 ledger 人口核心：严格 append-only `UniverseEvent` + manifest、原子锁定提交、完整前缀恢复校验、显式 manifest/as-of 共享 daily/replay reader；外部覆盖固定 unverified，research-only（2026-08-21）
+- [x] 外部 coverage/security surface：首个真实 SEC 8-K source bundle、219/219 行 `mapped / unmapped / excluded` disposition、111 个有效期映射/active membership、coverage evidence 与不可变 ledger/manifest 已冻结；范围仍是 research-only source frame，不是市场级完备性（2026-08-21）
+- [x] SEC 8-K source-bounded runtime adapter v3：required explicit backend/storage location/manifest/as-of；legacy 与 segmented-hot 均验证同一 envelope/coverage graph，segmented 每次只加载一次同一 hot state 且禁止自动探测、cold traversal 与 silent fallback；冻结 backend/hot-tip/input/snapshot identity，source ceiling 不升级（2026-08-21）
+- [x] 接入只读 pre-Engine-0/default-off universe observation v2：同一显式 backend/storage/manifest/as-of 经一次 adapter 调用进入 daily/replay 真 alias，精确保留 backend/membership/state/identity 并拒绝 ceiling、字段与语义 hash 漂移；不调用 Engine-0 policy、不建立 baseline 或市场决策时钟（2026-08-21）
+- [x] 给 event-row prefix 校验建立 deterministic 规模回归并用 event/manifest/clock identity 索引移除额外 O(E²)/O(M²) 历史重扫；保留完整 manifest/population/chain、PIT 与 default-off 校验（2026-08-21）
+- [x] 建立只读 checkpoint/segment sidecar 合同核心：常量 `HEAD` + 不可变 checkpoint + 单事务 hash-linked segments，严格重建 exact legacy view，referenced damage fail closed、orphan audit-only，future-effective/零事件 projection 与已提交 SEC 身份保持一致；明确保持 contract-only/unwired（2026-08-21）
+- [x] 接入显式 bootstrap 与 segmented writer：复用 legacy M1 transaction planner、create-only immutable checkpoint/segment、合作 writer 锁定串行、`HEAD`-last atomic replace、predecessor identity check、crash orphan 精确重试与 missing-HEAD 防回退；保持 contract-only/unwired（2026-08-21）
+- [x] 建立 compact checkpoint/rotation：热代只保留一份当前 events、一个 tip manifest、O(history) 身份胶囊和当前 generation tail；精确历史沿不可变 superseded 谱系冷回放，轮换与 audit 共用 writer 锁且不删除旧对象（2026-08-21）
+- [x] 建立 aggregate storage capability/rollback 合同：full/compact `HEAD.storage_contract` 明确分流，marker 与 checkpoint 类型 fail-closed 绑定；部署固定 reader-first，compact 切换后禁止同 root 原地 HEAD rewind 或回滚到不支持 compact lineage 的 binary，rotation 继续显式且 unscheduled（2026-08-21）
+- [x] 给 cold rotation/deep lineage 建立参数化结构回归：同一逻辑 tip 的 1/2/4 generation fixture 冻结 hot load 零 archive traversal、standalone exact pass 每个可达 record 单读、byte conservation 与保守 affine peak-memory guard；小型 fixture 不冒充真实 market-scale/SLO，elapsed 只记诊断，绝对 cadence 继续等待真实 population/churn/retention/SLO（2026-08-21）
+- [x] 将 segmented hot-state reader 以显式 backend 接入 source-bounded runtime，并证明显式 hot-tip manifest/as-of 的 daily/replay 等价；单次加载同一 state，禁止 backend 自动探测、cold traversal 或 silent legacy fallback，rotation 保持显式且 unscheduled（2026-08-21）
+- [x] 冻结仓库外 append anchor 的 target-independent decision/deployment contract：每次 HEAD transition、cutover/successor/receipt/retention/IAM/fail-closed 语义与 A1-A14 验收已机器绑定；target、owner、凭据边界和授权仍待用户选择（2026-08-21）
+- [ ] 任何 canonical 候选前建立仓库外 append anchor；本地有效旧 `HEAD` 回滚仍无法由仓库内 sidecar 检出
 
 ## 注意事项
 
-- V1 资产清单不按历史收益排序，按机制覆盖 / 合同完整度 / 授权 / 可回放性 / 工程依赖。
-- 建设期插队规则：只有直接阻断可信评估、forward 产出或 parity 的 measurement_repair 可以插队。
-- 无安全有价值工作时以 no-op audit 收尾，不硬开实验。
+- T0 真相源：`data/v2/t0.json`。T0 只是项目 / 前瞻分区边界，不授予 canonical PIT、策略资格或交易权限。
+- 资产分类与偏差登记不会授予任何 V2 决策或交易资格。
+- 原 V1 脏 checkout 的未提交证据不得静默进入 V2。
+- V2 不管理或等待 V1 自动化；V1 仅是可选只读历史参考，不阻塞 scout、forward 或晋级。
+- pre-Engine-0 observation handoff 不等于 M3：动态 PIT 市场 universe、market decision clock 与共享 feature/policy/decision baseline 均未建立。
+- M1 kernel 就绪后最多连续两个非阻断纯建设单元；存在 admission-ready scout 时，promotion-only P2 不得继续抢占。
+- 没有合格 novelty/PIT/映射/触达时不硬开实验；失败 preflight 不烧 ID。只优先解除安全、有价值、可完成且预计能直接形成 admission-ready scout 的 blocker，否则继续 promotion backlog 或 no-op。
+- Receipt 每轮必写；state/backlog/decision log 只在各自事实真正改变时更新，不复制实验 ticket/log/artifact 已记录的内容。
