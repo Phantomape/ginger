@@ -32,7 +32,7 @@
 - OpenD 交叉核对每次消耗约 26 个历史 K 线额度（30 天 100 个），所以只在需要时加 `--opend`。
 - 数据约 10 MB。每周例行运行：`.venv/Scripts/python.exe v3/data/fetch.py`，然后 `.venv/Scripts/python.exe v3/data/check.py --warehouse`。
 
-## 步骤 2：evaluator + 成本模型 + 单测 + 门槛可达性表 + lock — **通过（2026-10-08，待提交）**
+## 步骤 2：evaluator + 成本模型 + 单测 + 门槛可达性表 + lock — **通过（2026-10-08，提交 13d9339ac）**
 
 做了什么：
 - `v3/evaluator/engine.py`：回测引擎和冻结成本模型（ETF 每边 3 bp、个股和证据层每边 10 bp、每单 $1，资本 $100k）。
@@ -70,5 +70,4 @@
 
 ## 待用户决定
 
-- 第 2 步的提交（含 `.claude/settings.json` 和 `scripts/git-hooks/commit-msg`，这两个在 v3/ 之外）。
 - B 类的评估窗口（见第 2 步发现，B 类开放前再决定即可）。
