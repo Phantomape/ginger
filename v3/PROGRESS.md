@@ -32,8 +32,43 @@
 - OpenD 交叉核对每次消耗约 26 个历史 K 线额度（30 天 100 个），所以只在需要时加 `--opend`。
 - 数据约 10 MB。每周例行运行：`.venv/Scripts/python.exe v3/data/fetch.py`，然后 `.venv/Scripts/python.exe v3/data/check.py --warehouse`。
 
-## 步骤 2：evaluator + 成本模型 + 单测 + 门槛可达性表 + lock — 未开始
+## 步骤 2：evaluator + 成本模型 + 单测 + 门槛可达性表 + lock — **通过（2026-10-08，待提交）**
+
+做了什么：
+- `v3/evaluator/engine.py`：回测引擎和冻结成本模型（ETF 每边 3 bp、个股和证据层每边 10 bp、每单 $1，资本 $100k）。
+  只做多、权重和 ≤ 1，剩余部分是现金并按 3 个月国债利率计息，所以现金不会为负。
+  日频数据在信号次日收盘成交（exec_lag=1）；证据层月频数据在同月收盘成交（文献惯例）。
+- `data.py`（总收益 = 已按拆股调整的收盘价 + 分红 + 资本利得；Ken French 读取 lock 固定的版本）、
+  `metrics.py`（Sharpe、回撤、PSR/DSR、波动匹配超额、可达性表）、
+  `baselines.py`（S0 SPY 买入持有；S1 月末检查 SPY 总收益指数是否在 200 日均线之上）、
+  `evaluate.py`（verify / dev / submit / reachability / lock）。
+- `v3/portfolio/combine.py`：固定组合规则（逆波动等风险合成、单资产 25% 上限、10% 波动目标、不加杠杆）。
+- `v3/evaluator.lock`：evaluator 和 portfolio 的代码哈希、ETF/FRED 冻结段哈希、Ken French 固定版本。哈希对不上就拒绝运行。
+- `scripts/git-hooks/commit-msg`：lock 进入 HEAD 后，改 evaluator/portfolio/lock 的提交必须带 `evaluator-change-approved-by-user`。
+- `.claude/settings.json`：禁止 Claude 用编辑工具改 `v3/evaluator/**`、`v3/portfolio/**` 和 lock。
+
+对文档的具体化（文档没写细的地方）：
+- A 类：在每个声明的数据层上用截至 2026-06-30 的全历史一次性评估（开头留 13 个月预热）；显著性用最长的那一层，N = A 类累计提交数。
+- B 类：只评估 validation 窗口（2017-01-01 → 2026-06-30），N = B 类终身累计计数；没有 A 类通过之前拒绝提交。
+- DSR 的试验离散度用零假设 1/√T（可计算、不奖励相关变体）。
+- 没有交易层实现的候选不能通过（不能部署）。
+- 同一个策略文件只能提交一次；提交前策略必须已提交到 git、evaluator 必须干净。
+
+验收证据：
+
+| 验收项 | 结果 |
+|---|---|
+| 合成数据单测 | `pytest v3/tests`：19 passed（常数价格只亏成本、已知趋势方向、缺失值、分红/资本利得、禁止杠杆和做空、现金计息、无前视和成交滞后、月频同收盘成交、PSR 与可达性一致、200 日均线、组合上限） |
+| 门槛可达性 | 见 `v3/ledger/reachability.md`。证据层 99 年：N=4 只需 Sharpe 0.27 → **A 类典型 Sharpe（0.3–0.8）可以通过** |
+| lock | `evaluate.py verify` → ok |
+| 端到端冒烟 | 用一个临时 60/40 策略跑通 dev 和 submit（记录写在临时目录，没进正式账本，策略文件已删除）；重复提交被拒绝；5 个门槛都算出来了 |
+
+需要知道的发现：
+- **B 类在 validation 窗口上实际不可达**：9.5 年日频，N=12 需要 Sharpe 1.07，N=48 需要 1.27。这是文档“B 类只看 validation”的直接后果。
+  B 类本来要等 A 类组合有正 NS 后才开放；开放前需要用户决定是否给 B 类也加上长历史证据层。
+- 冒烟时 dev 段（1994–2016）S1 的 Sharpe（0.69）明显高于 S0（0.44）：200 日均线是个不弱的对照。
 
 ## 待用户决定
 
-- （无）
+- 第 2 步的提交（含 `.claude/settings.json` 和 `scripts/git-hooks/commit-msg`，这两个在 v3/ 之外）。
+- B 类的评估窗口（见第 2 步发现，B 类开放前再决定即可）。
