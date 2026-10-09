@@ -144,3 +144,20 @@ def test_portfolio_caps_and_vol_target():
     calm = rets * 0.05
     w2 = portfolio_signal([lambda h: {"A": 0.5, "B": 0.5}])(engine.History(calm, ZERO_CASH))
     assert w2 == pytest.approx({"A": 0.25, "B": 0.25})  # cannot lever up past the asset cap
+
+
+def test_core_satellite_equal_risk():
+    import numpy as np
+
+    rng = np.random.default_rng(1)
+    core = pd.Series(rng.normal(0, 0.02, len(DAYS)), index=DAYS)
+    sat = pd.Series(rng.normal(0, 0.01, len(DAYS)), index=DAYS)
+    combo = metrics.core_satellite(core, sat)
+    w_core = (1 / core.std()) / (1 / core.std() + 1 / sat.std())
+    assert combo.iloc[5] == pytest.approx(w_core * core.iloc[5] + (1 - w_core) * sat.iloc[5])
+    assert w_core == pytest.approx(1 / 3, abs=0.05)
+    # an uncorrelated stream with the same Sharpe raises the combined Sharpe
+    zero = pd.Series(0.0, index=DAYS)
+    a = pd.Series(rng.normal(0.001, 0.01, len(DAYS)), index=DAYS)
+    b = pd.Series(rng.normal(0.001, 0.01, len(DAYS)), index=DAYS)
+    assert metrics.sharpe(metrics.core_satellite(a, b), zero) > metrics.sharpe(a, zero)

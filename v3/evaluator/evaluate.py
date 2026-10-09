@@ -51,6 +51,10 @@ MAX_STRATEGY_LINES = 200
 GATE_CONF = 0.95
 GATE_SHARPE = 0.3
 GATE_MAX_DD = 0.25
+# 2026-10-08 (user-approved): the comparator gate changed from "beat S0 and S1 alone at matched
+# volatility" to "adding the candidate to an S1 core raises Sharpe".  Applies to submissions made
+# with this rule version; the five A-class records made under rule v1 are not re-judged.
+GATE_RULE_VERSION = 2
 LAYER_SETTINGS = {
     "trading": {"cost_kind": "etf", "exec_lag": 1},
     "evidence": {"cost_kind": "evidence", "exec_lag": 0},
@@ -240,7 +244,10 @@ def cmd_submit(path: Path) -> dict:
             info[f"vs_{n}"] = metrics.vol_matched(res.net, b.net, cash)
             info[f"{n}_sharpe"] = metrics.sharpe(b.net, cash)
         gates["trading_sharpe"] = info["sharpe"] >= GATE_SHARPE and info["sharpe_2x_cost"] > 0
-        gates["beats_baselines"] = all(info[f"vs_{n}"]["excess_ann"] > 0 for n in bases)
+        core = bases["S1"].net
+        info["s1_core_sharpe"] = metrics.sharpe(core, cash)
+        info["s1_core_plus_candidate_sharpe"] = metrics.sharpe(metrics.core_satellite(core, res.net), cash)
+        gates["improves_s1_core"] = info["s1_core_plus_candidate_sharpe"] > info["s1_core_sharpe"]
         gates["max_drawdown"] = info["max_drawdown"] >= -GATE_MAX_DD
         members = [load_strategy(REPO / t["strategy"]).SIGNALS["trading"]
                    for t in trials if t["passed"] and "trading" in t["layers"]]
@@ -259,7 +266,7 @@ def cmd_submit(path: Path) -> dict:
         "at_utc": now, "strategy": path.relative_to(REPO).as_posix(), "config_hash": cfg,
         "class": mod.CLASS, "family": mod.FAMILY, "count": weight, "n_trials": n_trials,
         "layers": {k: v[0] for k, v in layers.items()}, "significance_layer": longest,
-        "gates": gates, "passed": all(gates.values()),
+        "gates": gates, "passed": all(gates.values()), "gate_rule_version": GATE_RULE_VERSION,
     }
     append(TRIALS, record)
     return record

@@ -78,6 +78,20 @@ def vol_matched(r: pd.Series, bench: pd.Series, cash: pd.Series) -> dict:
     }
 
 
+def core_satellite(core: pd.Series, satellite: pd.Series) -> pd.Series:
+    """Return stream of core + satellite with equal risk, using full-window volatilities.
+
+    Static weights avoid a degenerate rolling estimate: while a timing core sits in cash its
+    trailing volatility collapses toward zero and would push almost all weight into cash.
+    Both inputs are already net of their own costs; weights are rebalanced daily (a comparison
+    statistic, not a trading rule).
+    """
+    df = pd.concat([core, satellite], axis=1, keys=["core", "sat"]).dropna()
+    inv = 1 / df.std()
+    w = inv / inv.sum()
+    return df["core"] * w["core"] + df["sat"] * w["sat"]
+
+
 def summary(r: pd.Series, cash: pd.Series) -> dict:
     ppy = periods_per_year(r.index)
     years = len(r) / ppy
