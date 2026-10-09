@@ -8,7 +8,7 @@ off for a week recovers with one run.  Rules:
   computed later from these columns.  yfinance's "Adj Close" is dropped because
   it rescales the whole history after every dividend.
 * Rows already stored are never overwritten.  If a re-download disagrees with a
-  stored row, the disagreement is written to raw/revisions/ and raised as an
+  stored row on any price / distribution column (volume is ignored), the disagreement is written to raw/revisions/ and raised as an
   alert; only dates after the stored last date are appended.
 * Only completed sessions are stored (no intraday snapshot rows).
 * Ken French tables revise history monthly, so they are stored as dated versions;
@@ -89,7 +89,8 @@ def merge_append_only(old: pd.DataFrame | None, new: pd.DataFrame, rtol: float =
         return new.reset_index(drop=True), pd.DataFrame()
     last = old["date"].max()
     overlap = old.merge(new, on="date", suffixes=("_old", "_new"))
-    value_cols = [c for c in new.columns if c != "date"]
+    # volume of the latest session is routinely finalised a day later and is not used for returns
+    value_cols = [c for c in new.columns if c not in ("date", "volume")]
     changed = pd.Series(False, index=overlap.index)
     for c in value_cols:
         a, b = overlap[f"{c}_old"], overlap[f"{c}_new"]

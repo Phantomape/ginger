@@ -78,3 +78,10 @@ def test_french_monthly_table_parse():
     df = fetch.parse_french_first_table(text)
     assert df["month"].tolist() == ["1926-07", "1926-08"]
     assert pd.isna(df.loc[1, "Mkt-RF"]) and df.loc[0, "SMB"] == -2.55
+
+
+def test_late_volume_update_is_not_a_revision():
+    old = _etf(["2026-01-02"], [10.0])
+    new = _etf(["2026-01-02"], [10.0])
+    new["volume"] = 999
+    assert fetch.merge_append_only(old, new)[1].empty
