@@ -161,3 +161,38 @@ def test_core_satellite_equal_risk():
     a = pd.Series(rng.normal(0.001, 0.01, len(DAYS)), index=DAYS)
     b = pd.Series(rng.normal(0.001, 0.01, len(DAYS)), index=DAYS)
     assert metrics.sharpe(metrics.core_satellite(a, b), zero) > metrics.sharpe(a, zero)
+
+
+def test_holding_cost_for_sorted_portfolios():
+    months = pd.date_range("2000-01-31", periods=24, freq="ME")
+    rets = pd.DataFrame({"MOM:Hi PRIOR": 0.0}, index=months)
+    res = engine.run(hold("MOM:Hi PRIOR"), rets, pd.Series(0.0, index=months), start=months[0], end=months[-1],
+                     cost_kind="evidence", exec_lag=0, holding_cost_annual={"MOM:Hi PRIOR": 0.03})
+    # after the first month the only cost is 3%/12 per month on a full position
+    assert res.cost.iloc[5] == pytest.approx(0.03 / 12)
+    res2 = engine.run(hold("MOM:Hi PRIOR"), rets, pd.Series(0.0, index=months), start=months[0], end=months[-1],
+                      cost_kind="evidence", exec_lag=0, cost_mult=2.0, holding_cost_annual={"MOM:Hi PRIOR": 0.03})
+    assert res2.cost.iloc[5] == pytest.approx(0.06 / 12)
+
+
+def test_trim_to_first_holding():
+    import evaluate
+
+    def late(hist):
+        return {"A": 1.0} if len(hist.returns) > 100 else {}
+
+    res = engine.run(late, panel(A=0.001), ZERO_CASH, start=DAYS[0], end=DAYS[-1])
+    trimmed, first = evaluate.trim_to_first_holding(res)
+    assert first == min(d for d, w in res.weights.items() if w)
+    assert trimmed.net.index[0] == first and len(trimmed.net) < len(res.net)
+
+
+def test_sorts_panel_columns():
+    import evaluate
+
+    lock = evaluate.verify_lock()
+    so, rf = data.sorts_panel({k: v["path"] for k, v in lock["french"].items()})
+    for col in ("MOM:Hi PRIOR", "OP:Hi 10", "INV:Lo 10", "BM:Hi 10", "MKT"):
+        assert col in so.columns
+    assert so["MOM:Hi PRIOR"].first_valid_index().year == 1927
+    assert so["OP:Hi 10"].first_valid_index().year == 1963

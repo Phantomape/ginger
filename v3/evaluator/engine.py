@@ -70,8 +70,12 @@ def _trade(weights: dict, target: dict, nav: float, bps: float, fee: float) -> t
 
 def run(signal, returns: pd.DataFrame, cash: pd.Series, *, start, end, freq: str = "M",
         cost_kind: str = "etf", cost_mult: float = 1.0, exec_lag: int = 1,
-        capital: float = CAPITAL_USD) -> Result:
+        capital: float = CAPITAL_USD, holding_cost_annual: dict | None = None) -> Result:
+    """``holding_cost_annual`` charges a per-asset annual rate on held weight each period: the
+    trading cost of turnover inside a sorted portfolio, which the engine cannot observe."""
     bps = COST_BPS_PER_SIDE[cost_kind] * cost_mult / 1e4
+    hold_rate = holding_cost_annual or {}
+    ppy = 252 if pd.Series(returns.index).diff().median() <= pd.Timedelta(days=5) else 12
     fee = ORDER_FEE_USD * cost_mult
     dates = returns.index[(returns.index >= pd.Timestamp(start)) & (returns.index <= pd.Timestamp(end))]
     rebal = rebalance_dates(returns.index, freq)
@@ -84,6 +88,7 @@ def run(signal, returns: pd.DataFrame, cash: pd.Series, *, start, end, freq: str
         held = [a for a in weights if pd.isna(r[a])]
         if held:
             raise ValueError(f"{d.date()}: holding {held} but return is missing")
+        hold_cost = sum(w * hold_rate.get(a, 0.0) for a, w in weights.items()) * cost_mult / ppy
         asset_val = {a: w * (1 + r[a]) for a, w in weights.items()}
         total = sum(asset_val.values()) + (1 - sum(weights.values())) * (1 + float(cash.loc[d]))
         weights = {a: v / total for a, v in asset_val.items()}
@@ -93,10 +98,12 @@ def run(signal, returns: pd.DataFrame, cash: pd.Series, *, start, end, freq: str
             target = validate_weights(signal(History(returns.loc[:d], cash.loc[:d])), returns.columns)
             if i + exec_lag < len(dates):
                 pending = (i + exec_lag, target)
-        cost_frac, turnover = 0.0, 0.0
+        cost_frac, turnover = hold_cost, 0.0
+        nav *= 1 - hold_cost
         if pending and pending[0] == i:
-            cost_frac, turnover = _trade(weights, pending[1], nav, bps, fee)
-            nav *= 1 - cost_frac
+            trade_cost, turnover = _trade(weights, pending[1], nav, bps, fee)
+            nav *= 1 - trade_cost
+            cost_frac = 1 - (1 - hold_cost) * (1 - trade_cost)
             weights = dict(pending[1])
             executed[d] = weights
             pending = None

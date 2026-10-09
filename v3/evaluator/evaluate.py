@@ -54,11 +54,19 @@ GATE_MAX_DD = 0.25
 # 2026-10-08 (user-approved): the comparator gate changed from "beat S0 and S1 alone at matched
 # volatility" to "adding the candidate to an S1 core raises Sharpe".  Applies to submissions made
 # with this rule version; the five A-class records made under rule v1 are not re-judged.
-GATE_RULE_VERSION = 2
+# 2026-10-09 (user-approved, rule v3): adds the "evidence_sorts" layer (CRSP stock portfolios sorted
+# on a characteristic) with a fixed holding cost for turnover inside those portfolios, and measures
+# each A-class layer from the first date the strategy actually holds something (instead of carrying
+# years of cash before its assets existed).
+GATE_RULE_VERSION = 3
 LAYER_SETTINGS = {
     "trading": {"cost_kind": "etf", "exec_lag": 1},
     "evidence": {"cost_kind": "evidence", "exec_lag": 0},
+    "evidence_sorts": {"cost_kind": "evidence", "exec_lag": 0},
 }
+# Annual cost charged on held weight for turnover inside a sorted portfolio (conservative, fixed
+# before any sort-portfolio evaluation): monthly-rebalanced momentum vs annually rebalanced sorts.
+SORT_HOLDING_COST_ANNUAL = {"MOM": 0.03, "OP": 0.01, "INV": 0.01, "BM": 0.01}
 
 
 # ---------------------------------------------------------------- lock
@@ -108,8 +116,26 @@ def verify_lock() -> dict:
 
 def panels(lock: dict) -> dict:
     tr, cash = data.etf_panel()
-    ev, rf = data.evidence_panel({k: v["path"] for k, v in lock["french"].items()})
-    return {"trading": (tr, cash), "evidence": (ev, rf)}
+    paths = {k: v["path"] for k, v in lock["french"].items()}
+    ev, rf = data.evidence_panel(paths)
+    so, rf2 = data.sorts_panel(paths)
+    return {"trading": (tr, cash), "evidence": (ev, rf), "evidence_sorts": (so, rf2)}
+
+
+def holding_costs(layer: str, columns) -> dict:
+    if layer != "evidence_sorts":
+        return {}
+    return {c: SORT_HOLDING_COST_ANNUAL[c.split(":")[0]] for c in columns if ":" in c}
+
+
+def trim_to_first_holding(res):
+    """Drop the leading all-cash stretch before the strategy's first fill."""
+    first = next((d for d, w in res.weights.items() if w), None)
+    if first is None:
+        raise SystemExit("strategy never holds anything")
+    weights = {d: w for d, w in res.weights.items() if d >= first}
+    return engine.Result(res.net.loc[first:], res.gross.loc[first:], res.cost.loc[first:],
+                         res.turnover.loc[first:], weights), first
 
 
 def first_start(returns: pd.DataFrame) -> pd.Timestamp:
@@ -120,7 +146,7 @@ def run_layer(signal, layer: str, panel, start, end, freq: str, cost_mult: float
     returns, cash = panel
     returns, cash = returns.loc[:end], cash.loc[:end]
     return engine.run(signal, returns, cash, start=start, end=end, freq=freq, cost_mult=cost_mult,
-                      **LAYER_SETTINGS[layer])
+                      holding_cost_annual=holding_costs(layer, returns.columns), **LAYER_SETTINGS[layer])
 
 
 def load_strategy(path: Path):
@@ -131,7 +157,7 @@ def load_strategy(path: Path):
         if not hasattr(mod, attr):
             raise SystemExit(f"{path}: missing {attr}")
     if mod.CLASS not in ("A", "B") or not set(mod.SIGNALS) <= set(LAYER_SETTINGS) or not mod.SIGNALS:
-        raise SystemExit(f"{path}: CLASS must be A/B and SIGNALS keys trading/evidence")
+        raise SystemExit(f"{path}: CLASS must be A/B and SIGNALS keys in {sorted(LAYER_SETTINGS)}")
     lines = path.read_text(encoding="utf-8").count("\n") + 1
     if lines > MAX_STRATEGY_LINES:
         raise SystemExit(f"{path}: {lines} lines > {MAX_STRATEGY_LINES}")
@@ -227,6 +253,10 @@ def cmd_submit(path: Path) -> dict:
         start = VALID_START if mod.CLASS == "B" else first_start(returns)
         res = run_layer(sig, lay, pn[lay], start, FREEZE_END, mod.FREQ)
         res2 = run_layer(sig, lay, pn[lay], start, FREEZE_END, mod.FREQ, cost_mult=2.0)
+        if mod.CLASS == "A":
+            res, start = trim_to_first_holding(res)
+            res2 = engine.Result(res2.net.loc[start:], res2.gross.loc[start:], res2.cost.loc[start:],
+                                 res2.turnover.loc[start:], {})
         ex = res.net - cash.reindex(res.net.index).fillna(0.0)
         info = describe(res, cash)
         info["sharpe_2x_cost"] = metrics.sharpe(res2.net, cash)
@@ -275,7 +305,9 @@ def cmd_submit(path: Path) -> dict:
 def cmd_reachability() -> str:
     rows = [
         ("证据层全历史（月频 1927-2026）", 99.0, 12),
+        ("排序组合证据层（月频 1964-2026，盈利/投资）", 62.0, 12),
         ("交易层全历史（日频，SPY 1994-2026）", 32.0, 252),
+        ("因子 ETF 交易层（日频 2014-2026）", 12.5, 252),
         ("交易层全历史（日频，多数 ETF 2003-2026）", 23.0, 252),
         ("Validation（日频 2017-2026-06）", 9.5, 252),
     ]

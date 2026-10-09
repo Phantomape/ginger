@@ -34,6 +34,7 @@ ETFS = [
     "SPY", "QQQ", "IWM", "EFA", "EEM", "TLT", "IEF", "SHY", "GLD", "DBC",
     "VNQ", "HYG", "LQD", "UUP", "BIL",
     "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY",
+    "MTUM", "QUAL", "VLUE",  # stock-factor ETFs (trading layer for stock-sort candidates)
 ]
 ETF_COLUMNS = ["date", "open", "high", "low", "close", "volume", "dividend", "split", "capital_gain"]
 FRED_SERIES = ["DTB3", "DGS3MO", "DGS2", "DGS10"]
@@ -43,6 +44,11 @@ FRENCH_FILES = {
     "ind49_vw_monthly": "49_Industry_Portfolios_CSV.zip",
     "ff3_monthly": "F-F_Research_Data_Factors_CSV.zip",
     "mom_monthly": "F-F_Momentum_Factor_CSV.zip",
+    # value-weighted portfolios of all CRSP stocks (delisted included) sorted on a characteristic
+    "sort_prior_12_2_vw_monthly": "10_Portfolios_Prior_12_2_CSV.zip",
+    "sort_op_vw_monthly": "Portfolios_Formed_on_OP_CSV.zip",
+    "sort_inv_vw_monthly": "Portfolios_Formed_on_INV_CSV.zip",
+    "sort_bm_vw_monthly": "Portfolios_Formed_on_BE-ME_CSV.zip",
 }
 # End of the validation window (architecture doc section 3); rows up to here are frozen.
 FREEZE_THROUGH = "2026-06-30"

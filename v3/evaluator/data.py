@@ -57,3 +57,27 @@ def evidence_panel(paths: dict) -> tuple[pd.DataFrame, pd.Series]:
     ff3 = latest("french/ff3_monthly")
     ind["MKT"] = ff3["Mkt-RF"] + ff3["RF"]
     return ind, ff3["RF"].reindex(ind.index).fillna(0.0)
+
+
+SORT_FILES = {
+    "MOM": "french/sort_prior_12_2_vw_monthly",
+    "OP": "french/sort_op_vw_monthly",
+    "INV": "french/sort_inv_vw_monthly",
+    "BM": "french/sort_bm_vw_monthly",
+}
+
+
+def sorts_panel(paths: dict) -> tuple[pd.DataFrame, pd.Series]:
+    """Monthly value-weighted returns of CRSP stock portfolios sorted on a characteristic
+    (columns like 'MOM:Hi PRIOR', 'OP:Hi 10'), plus 'MKT'; and the monthly risk-free rate."""
+
+    def read(key: str) -> pd.DataFrame:
+        df = _read(paths[key])
+        df.index = pd.PeriodIndex(df.pop("month"), freq="M").to_timestamp(how="end").normalize()
+        return df / 100.0
+
+    ff3 = read("french/ff3_monthly")
+    cols = {f"{prefix}:{c}": s for prefix, key in SORT_FILES.items() for c, s in read(key).items()}
+    panel = pd.DataFrame(cols).reindex(ff3.index)
+    panel["MKT"] = ff3["Mkt-RF"] + ff3["RF"]
+    return panel, ff3["RF"]
