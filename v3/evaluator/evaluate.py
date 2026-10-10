@@ -74,7 +74,10 @@ LAYER_SETTINGS = {
 }
 # Annual cost charged on held weight for turnover inside a sorted portfolio (conservative, fixed
 # before any sort-portfolio evaluation): monthly-rebalanced momentum vs annually rebalanced sorts.
-SORT_HOLDING_COST_ANNUAL = {"MOM": 0.03, "OP": 0.01, "INV": 0.01, "BM": 0.01}
+SORT_HOLDING_COST_ANNUAL = {"MOM": 0.03, "OP": 0.01, "INV": 0.01, "BM": 0.01,
+                            # 2026-10-10: variance sorts are re-formed monthly and the high-variance
+                            # decile holds small, illiquid names, so the most conservative rate
+                            "VAR": 0.04}
 
 
 # ---------------------------------------------------------------- lock

@@ -64,6 +64,7 @@ SORT_FILES = {
     "OP": "french/sort_op_vw_monthly",
     "INV": "french/sort_inv_vw_monthly",
     "BM": "french/sort_bm_vw_monthly",
+    "VAR": "french/sort_var_vw_monthly",
 }
 
 
