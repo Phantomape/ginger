@@ -58,7 +58,10 @@ GATE_MAX_DD = 0.25
 # on a characteristic) with a fixed holding cost for turnover inside those portfolios, and measures
 # each A-class layer from the first date the strategy actually holds something (instead of carrying
 # years of cash before its assets existed).
-GATE_RULE_VERSION = 3
+# 2026-10-09 (user-approved, rule v4): the 25% drawdown limit applies to the S1 core + candidate
+# combination, consistent with judging candidates as satellites of S1 (a fully invested equity
+# satellite alone fails 25% by construction: SPY itself fell about 34% in 2020 and 55% in 2008).
+GATE_RULE_VERSION = 4
 LAYER_SETTINGS = {
     "trading": {"cost_kind": "etf", "exec_lag": 1},
     "evidence": {"cost_kind": "evidence", "exec_lag": 0},
@@ -276,9 +279,11 @@ def cmd_submit(path: Path) -> dict:
         gates["trading_sharpe"] = info["sharpe"] >= GATE_SHARPE and info["sharpe_2x_cost"] > 0
         core = bases["S1"].net
         info["s1_core_sharpe"] = metrics.sharpe(core, cash)
-        info["s1_core_plus_candidate_sharpe"] = metrics.sharpe(metrics.core_satellite(core, res.net), cash)
+        combo = metrics.core_satellite(core, res.net)
+        info["s1_core_plus_candidate_sharpe"] = metrics.sharpe(combo, cash)
+        info["s1_core_plus_candidate_max_drawdown"] = metrics.max_drawdown(combo)
         gates["improves_s1_core"] = info["s1_core_plus_candidate_sharpe"] > info["s1_core_sharpe"]
-        gates["max_drawdown"] = info["max_drawdown"] >= -GATE_MAX_DD
+        gates["max_drawdown"] = info["s1_core_plus_candidate_max_drawdown"] >= -GATE_MAX_DD
         members = [load_strategy(REPO / t["strategy"]).SIGNALS["trading"]
                    for t in trials if t["passed"] and "trading" in t["layers"]]
         for t in trials:
