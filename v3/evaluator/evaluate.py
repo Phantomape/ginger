@@ -61,7 +61,12 @@ GATE_MAX_DD = 0.25
 # 2026-10-09 (user-approved, rule v4): the 25% drawdown limit applies to the S1 core + candidate
 # combination, consistent with judging candidates as satellites of S1 (a fully invested equity
 # satellite alone fails 25% by construction: SPY itself fell about 34% in 2020 and 55% in 2008).
-GATE_RULE_VERSION = 4
+# 2026-10-10 (user-approved, rule v5, stricter): significance is tested on return in excess of a
+# same-volatility market position (MKT for evidence layers, SPY for the trading layer), not on
+# Sharpe > 0; the trading layer must also beat vol-matched SPY; and only rule >= 5 passes count as
+# accepted (portfolio members, opening of B-class).  The rule-v4 profitability pass was market beta.
+GATE_RULE_VERSION = 5
+ACCEPT_MIN_RULE = 5
 LAYER_SETTINGS = {
     "trading": {"cost_kind": "etf", "exec_lag": 1},
     "evidence": {"cost_kind": "evidence", "exec_lag": 0},
@@ -213,6 +218,10 @@ def cmd_dev(path: Path, layer: str | None) -> dict:
     return report
 
 
+def accepted(trial: dict) -> bool:
+    return trial["passed"] and trial.get("gate_rule_version", 1) >= ACCEPT_MIN_RULE
+
+
 def git_dirty(paths: list[Path]) -> str:
     out = subprocess.run(["git", "status", "--porcelain", "--", *[str(p) for p in paths]],
                          cwd=REPO, capture_output=True, text=True, check=True)
@@ -237,7 +246,7 @@ def cmd_submit(path: Path) -> dict:
     now = datetime.now(timezone.utc).isoformat()
     weight = 1
     if mod.CLASS == "B":
-        accepted_a = [t for t in trials if t["class"] == "A" and t["passed"]]
+        accepted_a = [t for t in trials if t["class"] == "A" and accepted(t)]
         if not accepted_a:
             raise SystemExit("B-class submissions open only after an A-class portfolio exists (doc section 4)")
         if any(t["family"] == mod.FAMILY and t["class"] == "B" and not t["passed"] for t in trials):
@@ -264,10 +273,17 @@ def cmd_submit(path: Path) -> dict:
         info = describe(res, cash)
         info["sharpe_2x_cost"] = metrics.sharpe(res2.net, cash)
         info["dsr"] = metrics.dsr(ex, n_trials)
+        if lay == "trading":
+            market = run_layer(baselines.s0_spy, "trading", pn["trading"], start, FREEZE_END, "M").net
+        else:
+            market = returns["MKT"]
+        active = metrics.active_vs_market(res.net, market, cash)
+        info["active_ann"] = float(active.mean() * metrics.periods_per_year(active.index))
+        info["dsr_vs_market"] = metrics.dsr(active, n_trials)
         layers[lay] = (info, res, start)
 
     longest = max(layers, key=lambda k: layers[k][0]["years"])
-    gates = {"significance": layers[longest][0]["dsr"] >= GATE_CONF}
+    gates = {"significance": layers[longest][0]["dsr_vs_market"] >= GATE_CONF}
     if "trading" in layers:
         info, res, start = layers["trading"]
         returns, cash = pn["trading"]
@@ -277,6 +293,7 @@ def cmd_submit(path: Path) -> dict:
             info[f"vs_{n}"] = metrics.vol_matched(res.net, b.net, cash)
             info[f"{n}_sharpe"] = metrics.sharpe(b.net, cash)
         gates["trading_sharpe"] = info["sharpe"] >= GATE_SHARPE and info["sharpe_2x_cost"] > 0
+        gates["beats_spy_vol_matched"] = info["vs_S0"]["excess_ann"] > 0
         core = bases["S1"].net
         info["s1_core_sharpe"] = metrics.sharpe(core, cash)
         combo = metrics.core_satellite(core, res.net)
@@ -285,9 +302,9 @@ def cmd_submit(path: Path) -> dict:
         gates["improves_s1_core"] = info["s1_core_plus_candidate_sharpe"] > info["s1_core_sharpe"]
         gates["max_drawdown"] = info["s1_core_plus_candidate_max_drawdown"] >= -GATE_MAX_DD
         members = [load_strategy(REPO / t["strategy"]).SIGNALS["trading"]
-                   for t in trials if t["passed"] and "trading" in t["layers"]]
+                   for t in trials if accepted(t) and "trading" in t["layers"]]
         for t in trials:
-            if t["passed"] and file_sha(REPO / t["strategy"]) != t["config_hash"]:
+            if accepted(t) and file_sha(REPO / t["strategy"]) != t["config_hash"]:
                 raise SystemExit(f"portfolio member {t['strategy']} changed after acceptance")
         with_c = run_layer(portfolio_signal(members + [mod.SIGNALS["trading"]]), "trading", pn["trading"], start, FREEZE_END, "M")
         sh_with = metrics.sharpe(with_c.net, cash)

@@ -78,6 +78,15 @@ def vol_matched(r: pd.Series, bench: pd.Series, cash: pd.Series) -> dict:
     }
 
 
+def active_vs_market(r: pd.Series, market: pd.Series, cash: pd.Series) -> pd.Series:
+    """Return of r minus the market scaled (with cash) to r's volatility: the part of r that a
+    same-risk market position would not have earned."""
+    c = cash.reindex(r.index).fillna(0.0)
+    m = market.reindex(r.index)
+    k = (r - c).std() / (m - c).std()
+    return r - (c + k * (m - c))
+
+
 def core_satellite(core: pd.Series, satellite: pd.Series) -> pd.Series:
     """Return stream of core + satellite with equal risk, using full-window volatilities.
 

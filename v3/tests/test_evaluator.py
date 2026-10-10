@@ -196,3 +196,15 @@ def test_sorts_panel_columns():
         assert col in so.columns
     assert so["MOM:Hi PRIOR"].first_valid_index().year == 1927
     assert so["OP:Hi 10"].first_valid_index().year == 1963
+
+
+def test_active_vs_market_removes_beta():
+    import numpy as np
+
+    rng = np.random.default_rng(2)
+    mkt = pd.Series(rng.normal(0.0004, 0.01, len(DAYS)), index=DAYS)
+    levered = 0.5 * mkt  # pure market exposure at half the risk: no excess return
+    act = metrics.active_vs_market(levered, mkt, ZERO_CASH)
+    assert act.abs().max() < 1e-12
+    alpha = mkt * 0.5 + 0.0002
+    assert metrics.active_vs_market(alpha, mkt, ZERO_CASH).mean() == pytest.approx(0.0002, rel=1e-6)
