@@ -27,6 +27,12 @@ SIGNALS = {"baselines:s1_spy_200dma": baselines.s1_spy_200dma, "baselines:s0_spy
 REL_TOL = 1e-9
 
 
+def spy_vs_sma(returns: pd.DataFrame) -> float:
+    """How far the SPY total-return index is above (+) or below (-) its 200-day average."""
+    tri = (1 + returns["SPY"].dropna()).cumprod()
+    return float(tri.iloc[-1] / tri.iloc[-baselines.SMA_DAYS:].mean() - 1)
+
+
 def replay(dep: dict, returns: pd.DataFrame, cash: pd.Series) -> dict:
     signal = SIGNALS[dep["signal"]]
     last = returns.index[-1]
@@ -51,6 +57,7 @@ def replay(dep: dict, returns: pd.DataFrame, cash: pd.Series) -> dict:
                        for d, w in res.weights.items()],
             "rule_state_now": signal(engine.History(returns, cash)),
             "next_decision_on_or_before": str(month_end.date()),
+            "spy_vs_200dma": spy_vs_sma(returns),
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         },
     }
@@ -79,6 +86,7 @@ def main() -> int:
             f"累计 {snap['return_since_start']:+.2%}（同期 SPY {snap['spy_return_since_start']:+.2%}）",
             f"- 当前持仓（最近一次成交）：{snap['last_executed_weights'] or '现金'}；规则此刻的状态：{snap['rule_state_now'] or '现金'}",
             f"- 下一次月末决定：{snap['next_decision_on_or_before']}，次日收盘成交",
+            f"- SPY 相对 200 日均线：{snap['spy_vs_200dma']:+.2%}（月末时为正 → 持有 SPY，为负 → 现金；月中穿越不触发交易）",
             "",
         ]
     if alerts:
