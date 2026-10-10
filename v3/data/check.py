@@ -20,7 +20,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fetch import DEFAULT_ROOT, ETFS, atomic_write, last_complete_date, read_stored, utc_now  # noqa: E402
+from fetch import DEFAULT_ROOT, ETFS, STOCKS, atomic_write, last_complete_date, read_stored, utc_now  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 ETF_STALE_BDAYS = 1
@@ -37,19 +37,21 @@ def bdays_behind(last: str, cutoff: str) -> int:
     return max(len(pd.bdate_range(pd.Timestamp(last) + pd.Timedelta(days=1), cutoff)), 0)
 
 
-def etf_frames(root: Path) -> dict[str, pd.DataFrame]:
+def etf_frames(root: Path, tickers=ETFS, folder: str = "etf") -> dict[str, pd.DataFrame]:
     out = {}
-    for t in ETFS:
-        df = read_stored(root / "raw" / "etf" / f"{t}.csv")
+    for t in tickers:
+        df = read_stored(root / "raw" / folder / f"{t}.csv")
         if df is not None:
             out[t] = df
     return out
 
 
-def check_etf(frames: dict[str, pd.DataFrame], cutoff: str) -> tuple[list[str], list[str]]:
+def check_etf(frames: dict[str, pd.DataFrame], cutoff: str, tickers=ETFS,
+              calendar: set | None = None) -> tuple[list[str], list[str]]:
     alerts, warnings = [], []
-    calendar = set(frames["SPY"]["date"]) if "SPY" in frames else set()
-    for t in ETFS:
+    if calendar is None:
+        calendar = set(frames["SPY"]["date"]) if "SPY" in frames else set()
+    for t in tickers:
         df = frames.get(t)
         if df is None:
             alerts.append(f"{t}: missing file")
@@ -184,6 +186,11 @@ def main() -> int:
     manifest = json.loads((args.root / "manifest.json").read_text(encoding="utf-8"))
     frames = etf_frames(args.root)
     alerts, warnings = check_etf(frames, cutoff)
+    stocks = etf_frames(args.root, STOCKS, "stocks")
+    a, w = check_etf(stocks, cutoff, STOCKS, set(frames["SPY"]["date"]) if "SPY" in frames else set())
+    alerts += a
+    warnings += w
+    frames = {**frames, **stocks}
     alerts += check_fred_french(args.root, manifest, cutoff)
     alerts += [f"fetch: {e}" for e in manifest.get("last_run_errors", [])]
     alerts += [f"fetch: {a}" for a in manifest.get("last_run_alerts", [])]

@@ -35,6 +35,15 @@ ETFS = [
     "VNQ", "HYG", "LQD", "UUP", "BIL",
     "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY",
     "MTUM", "QUAL", "VLUE",  # stock-factor ETFs (trading layer for stock-sort candidates)
+    "SPHB",  # S&P 500 high-beta stocks (trading layer for the high-volatility timing candidate)
+]
+# V1 core pool (quant/filter.py _BASE_WATCHLIST without ETFs), fixed 2026-10-10 for the
+# single-stock trend-exit study.  Chosen with hindsight: these are recent winners.
+STOCKS = [
+    "NVDA", "META", "AMD", "CRDO", "APP", "GOOG", "MU", "MSFT", "AAPL", "AVGO", "TSM",
+    "PLTR", "DDOG", "NOW", "SNOW", "TSLA", "MCD", "AMZN", "BKNG", "NFLX", "DIS", "SPOT",
+    "COIN", "V", "MA", "GS", "JPM", "LLY", "NVO", "UNH", "ISRG", "XOM", "CVX", "CAT", "DE",
+    "GE", "RTX",
 ]
 ETF_COLUMNS = ["date", "open", "high", "low", "close", "volume", "dividend", "split", "capital_gain"]
 FRED_SERIES = ["DTB3", "DGS3MO", "DGS2", "DGS10"]
@@ -49,6 +58,7 @@ FRENCH_FILES = {
     "sort_op_vw_monthly": "Portfolios_Formed_on_OP_CSV.zip",
     "sort_inv_vw_monthly": "Portfolios_Formed_on_INV_CSV.zip",
     "sort_bm_vw_monthly": "Portfolios_Formed_on_BE-ME_CSV.zip",
+    "sort_var_vw_monthly": "Portfolios_Formed_on_VAR_CSV.zip",
 }
 # End of the validation window (architecture doc section 3); rows up to here are frozen.
 FREEZE_THROUGH = "2026-06-30"
@@ -223,6 +233,15 @@ def run(root: Path, only: set[str]) -> dict:
             except Exception as exc:  # keep going; the failure is reported, not hidden
                 errors.append(f"etf {t}: {exc!r}")
 
+    if "stock" in only:
+        for t in STOCKS:
+            try:
+                entry = update_series(f"stock_{t}", root / "raw" / "stocks" / f"{t}.csv", download_etf(t, cutoff), root, stamp, alerts)
+                entry["source"] = f"yfinance history(period=max, auto_adjust=False, actions=True) {t}"
+                files[f"stock/{t}"] = entry
+            except Exception as exc:
+                errors.append(f"stock {t}: {exc!r}")
+
     if "fred" in only:
         for s in FRED_SERIES:
             try:
@@ -265,7 +284,7 @@ def run(root: Path, only: set[str]) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--root", type=Path, default=DEFAULT_ROOT)
-    ap.add_argument("--only", default="etf,fred,french")
+    ap.add_argument("--only", default="etf,stock,fred,french")
     args = ap.parse_args()
     m = run(args.root, set(args.only.split(",")))
     for a in m["last_run_alerts"]:
