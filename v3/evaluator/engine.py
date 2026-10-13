@@ -81,7 +81,7 @@ def run(signal, returns: pd.DataFrame, cash: pd.Series, *, start, end, freq: str
     rebal = rebalance_dates(returns.index, freq)
     weights: dict = {}
     nav = capital
-    pending = None  # (execute at position i, target)
+    pending: dict = {}  # position to execute at -> target; a later signal never overwrites an unfilled order
     net, gross, costs, turns, executed = [], [], [], [], {}
     for i, d in enumerate(dates):
         r = returns.loc[d]
@@ -97,16 +97,16 @@ def run(signal, returns: pd.DataFrame, cash: pd.Series, *, start, end, freq: str
         if d in rebal and i < len(dates) - 1:
             target = validate_weights(signal(History(returns.loc[:d], cash.loc[:d])), returns.columns)
             if i + exec_lag < len(dates):
-                pending = (i + exec_lag, target)
+                pending[i + exec_lag] = target
         cost_frac, turnover = hold_cost, 0.0
         nav *= 1 - hold_cost
-        if pending and pending[0] == i:
-            trade_cost, turnover = _trade(weights, pending[1], nav, bps, fee)
+        if i in pending:
+            target = pending.pop(i)
+            trade_cost, turnover = _trade(weights, target, nav, bps, fee)
             nav *= 1 - trade_cost
             cost_frac = 1 - (1 - hold_cost) * (1 - trade_cost)
-            weights = dict(pending[1])
+            weights = dict(target)
             executed[d] = weights
-            pending = None
         net.append(total * (1 - cost_frac) - 1)
         gross.append(total - 1)
         costs.append(cost_frac)

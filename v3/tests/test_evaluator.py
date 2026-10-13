@@ -104,6 +104,17 @@ def test_no_lookahead_and_execution_lag():
     assert list(res.weights)[0] == nxt
 
 
+def test_daily_signals_fill_every_session():
+    # each daily decision fills at the next close; the next decision must not overwrite it
+    flip = lambda hist: {"A": 1.0} if len(hist.returns) % 2 else {}
+    res = engine.run(flip, panel(A=[0.001] * len(DAYS)), ZERO_CASH, start=DAYS[0], end=DAYS[-1], freq="D")
+    fills = list(res.weights.items())
+    assert len(fills) == len(DAYS) - 1
+    for j, (d, w) in enumerate(fills, start=1):
+        assert d == DAYS[j]
+        assert w == ({"A": 1.0} if j % 2 else {})
+
+
 def test_monthly_same_close_execution():
     months = pd.date_range("2000-01-31", periods=24, freq="ME")
     rets = pd.DataFrame({"A": 0.01}, index=months)
