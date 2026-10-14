@@ -1,0 +1,15 @@
+#!/bin/sh
+# V3 evaluator freeze (docs/v3_minimal_architecture.md section 3): once v3/evaluator.lock is
+# committed, any commit touching the evaluator, portfolio rule or lock must carry the
+# user's approval phrase in its message.
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+cd "$repo_root" || exit 0
+git cat-file -e HEAD:v3/evaluator.lock 2>/dev/null || exit 0
+if git diff --cached --name-only | grep -qE '^v3/(evaluator/|portfolio/|evaluator\.lock$)'; then
+  if ! grep -q 'evaluator-change-approved-by-user' "$1"; then
+    echo "Commit blocked: v3/evaluator, v3/portfolio or v3/evaluator.lock changed." >&2
+    echo "Only the user may approve this; add 'evaluator-change-approved-by-user' to the message." >&2
+    exit 1
+  fi
+fi
+exit 0
